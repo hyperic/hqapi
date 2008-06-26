@@ -15,7 +15,7 @@ public class UserGetUser_test extends HQApiTestBase {
         GetUserResponse response = api.getUser("hqadmin");
 
         // Assert success response
-        assertEquals(response.getStatus(), ResponseStatus.SUCCESS);
+        assertEquals(ResponseStatus.SUCCESS, response.getStatus());
 
         // Assert First & Last Name
         assertEquals(response.getUser().getFirstName(), "HQ");
@@ -27,6 +27,6 @@ public class UserGetUser_test extends HQApiTestBase {
         GetUserResponse response = api.getUser("unknownUser");
 
         // Assert Failure
-        assertEquals(response.getStatus(), ResponseStatus.FAILURE);
+        assertEquals(ResponseStatus.FAILURE, response.getStatus());
     }
 }

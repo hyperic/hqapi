@@ -22,7 +22,7 @@ public class UserCreate_test extends HQApiTestBase {
 
         CreateUserResponse response = api.createUser(user, "asdfasdf");
 
-        assertEquals(response.getStatus(), ResponseStatus.SUCCESS);
+        assertEquals(ResponseStatus.SUCCESS, response.getStatus());
     }
 
     public void testCreateEmptyUser() throws Exception {
@@ -31,7 +31,7 @@ public class UserCreate_test extends HQApiTestBase {
         User user = new User();
         CreateUserResponse response = api.createUser(user, null);
 
-        assertEquals(response.getStatus(), ResponseStatus.FAILURE);
+        assertEquals(ResponseStatus.FAILURE, response.getStatus());
     }
 
     public void testCreateEmptyName() throws Exception {
@@ -45,7 +45,7 @@ public class UserCreate_test extends HQApiTestBase {
 
         CreateUserResponse response = api.createUser(user, "asdfasdf");
 
-        assertEquals(response.getStatus(), ResponseStatus.FAILURE);
+        assertEquals(ResponseStatus.FAILURE, response.getStatus());
     }
 
     public void testCreateEmptyFirstName() throws Exception {
@@ -59,7 +59,7 @@ public class UserCreate_test extends HQApiTestBase {
 
         CreateUserResponse response = api.createUser(user, "asdfasdf");
 
-        assertEquals(response.getStatus(), ResponseStatus.FAILURE);
+        assertEquals(ResponseStatus.FAILURE, response.getStatus());
     }
 
     public void testCreateEmptyLastName() throws Exception {
@@ -73,7 +73,7 @@ public class UserCreate_test extends HQApiTestBase {
 
         CreateUserResponse response = api.createUser(user, "asdfasdf");
 
-        assertEquals(response.getStatus(), ResponseStatus.FAILURE);
+        assertEquals(ResponseStatus.FAILURE, response.getStatus());
     }
 
     public void testCreateEmptyEmailAddress() throws Exception {
@@ -87,7 +87,7 @@ public class UserCreate_test extends HQApiTestBase {
 
         CreateUserResponse response = api.createUser(user, "asdfasdf");
 
-        assertEquals(response.getStatus(), ResponseStatus.FAILURE);
+        assertEquals(ResponseStatus.FAILURE, response.getStatus());
     }
 
     public void testCreateEmptyPassword() throws Exception {
@@ -101,6 +101,6 @@ public class UserCreate_test extends HQApiTestBase {
 
         CreateUserResponse response = api.createUser(user, null);
 
-        assertEquals(response.getStatus(), ResponseStatus.FAILURE);
+        assertEquals(ResponseStatus.FAILURE, response.getStatus());
     }
 }

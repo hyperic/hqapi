@@ -18,7 +18,7 @@ public class UserGetUsers_test extends HQApiTestBase {
         GetUsersResponse response = api.getUsers();
 
         // Assert success response
-        assertEquals(response.getStatus(), ResponseStatus.SUCCESS);
+        assertEquals(ResponseStatus.SUCCESS, response.getStatus());
 
         // Should never have 0 users
         assertNotNull(response);
