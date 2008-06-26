@@ -84,7 +84,9 @@ public abstract class HQConnection {
         for (Iterator i = params.keySet().iterator(); i.hasNext(); ) {
             String key = (String)i.next();
             String value = (String)params.get(key);
-            query.append(urlEncode(key)).append("=").append(urlEncode(value));
+            if (value != null) {
+                query.append(urlEncode(key)).append("=").append(urlEncode(value));
+            }
             if (i.hasNext()) {
                 query.append("&");
             }

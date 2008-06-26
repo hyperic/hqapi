@@ -2,6 +2,7 @@ package com.hyperic.hq.hqapi1;
 
 import org.hyperic.hq.hqapi1.jaxb.GetUsersResponse;
 import org.hyperic.hq.hqapi1.jaxb.GetUserResponse;
+import org.hyperic.hq.hqapi1.jaxb.CreateUserResponse;
 
 import javax.xml.bind.JAXBException;
 import java.util.HashMap;
@@ -36,5 +37,21 @@ public class HQApi extends HQConnection {
     {
         return (GetUsersResponse)getRequest("/hqu/hqapi1/user/list.hqu",
                                             NO_PARAMS, GetUsersResponse.class);
+    }
+
+    public CreateUserResponse createUser(String name, String firstName,
+                                         String lastName, String password,
+                                         String email)
+        throws IOException, JAXBException
+    {
+        Map params = new HashMap();
+        params.put("Name", name);
+        params.put("FirstName", firstName);
+        params.put("LastName", lastName);
+        params.put("Password", password);
+        params.put("EmailAddress", email);
+
+        return (CreateUserResponse)getRequest("/hqu/hqapi1/user/create.hqu",
+                                              params, CreateUserResponse.class);
     }
 }
