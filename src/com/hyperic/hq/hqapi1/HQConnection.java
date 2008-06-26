@@ -21,7 +21,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.net.SocketException;
 
-public class HQConnection {
+public abstract class HQConnection {
 
     private static Log _log = LogFactory.getLog(HQConnection.class);
 
@@ -31,8 +31,8 @@ public class HQConnection {
     private String  _user;
     private String  _password;
 
-    public HQConnection(String host, int port, boolean isSecure,
-                        String user, String password) {
+    HQConnection(String host, int port, boolean isSecure, String user,
+                 String password) {
         _host     = host;
         _port     = port;
         _isSecure = isSecure;
@@ -71,7 +71,7 @@ public class HQConnection {
         return URLEncoder.encode(s, "UTF-8");
     }
 
-    protected Object getRequest(String path, Map params, Class resultClass)
+    Object getRequest(String path, Map params, Class resultClass)
         throws IOException, JAXBException
     {
         GetMethod method = getHttpGetMethod();

@@ -8,12 +8,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.io.IOException;
 
+/**
+ * Public API to the HQApi.
+ *
+ * TODO: Move methods to subclasses on a per-controller basis?
+ */
 public class HQApi extends HQConnection {
 
     private static final Map NO_PARAMS = new HashMap();
 
     public HQApi(String host, int port, boolean isSecure, String user,
-                  String password) {
+                 String password) {
         super(host, port, isSecure, user, password);
     }
 
