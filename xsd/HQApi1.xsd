@@ -63,4 +63,13 @@
       </xs:complexType>
   </xs:element>
 
+  <xs:element name="DeleteUserResponse">
+      <xs:complexType>
+          <xs:sequence>
+              <xs:element name="Status" type="ResponseStatus"/>
+              <xs:element name="Error" minOccurs="0" type="ServiceError"/>
+          </xs:sequence>
+      </xs:complexType>
+  </xs:element>
+
 </xs:schema>

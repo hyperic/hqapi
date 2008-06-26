@@ -7,7 +7,7 @@ import ErrorHandler
 class UserController extends BaseController
 {
     protected void init() {
-        setXMLMethods(['list', 'get', 'create'])
+        setXMLMethods(['list', 'get', 'create', 'delete'])
     }
 
     private printUser(xmlOut, u) {
@@ -95,7 +95,32 @@ class UserController extends BaseController
                 }
             } catch (Exception e) {
                 xmlOut.CreateUserResponse() {
-                    ErrorHandler.printFailureStatus(xmlOut, "UnkownError")
+                    ErrorHandler.printFailureStatus(xmlOut, "UnexpectedError")
+                }
+            }
+        }
+
+        xmlOut
+    }
+
+    def delete(xmlOut, params) {
+        def name = params.getOne('Name')
+
+        def existing = userHelper.findUser(name)
+        if (!existing) {
+            xmlOut.DeleteUserResponse() {
+                ErrorHandler.printFailureStatus(xmlOut, "ObjectNotFound")
+            }
+        } else {
+            try {
+                userHelper.removeUser(existing.id)
+                xmlOut.DeleteUserResponse() {
+                    ErrorHandler.printSuccessStatus(xmlOut)
+                }
+            } catch (Exception e) {
+                log.error("UnexpectedError: " + e.getMessage(), e)
+                xmlOut.DeleteUserResponse() {
+                    ErrorHandler.printFailureStatus(xmlOut, "UnexpectedError")
                 }
             }
         }

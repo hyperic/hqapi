@@ -9,7 +9,7 @@ import java.util.Random;
 
 public class UserCreate_test extends HQApiTestBase {
 
-    private static final String PASSWORD = "apitest";
+    static final String PASSWORD = "apitest";
 
     public UserCreate_test(String name) {
         super(name);

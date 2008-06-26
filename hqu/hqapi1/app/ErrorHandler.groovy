@@ -5,7 +5,7 @@ class ErrorHandler {
      ObjectNotFound: "The requested object could not be found",
      ObjectExists: "The given object already exists",
      InvalidParameters: "The given parameters are incorrect",
-     UnkownError: "An unexpected error occured"]
+     UnexpectedError: "An unexpected error occured"]
 
     static void printSuccessStatus(xmlOut) {
         xmlOut.Status("Success")
@@ -14,7 +14,7 @@ class ErrorHandler {
     static void printFailureStatus(xmlOut, code) {
         def reason = codes.get(code)
         if (reason == null) {
-            throw new IllegalArgumentException("Invalid ErrorCode")
+            throw new IllegalArgumentException("Invalid ErrorCode: " + code)
         }
 
         xmlOut.Status("Failure")

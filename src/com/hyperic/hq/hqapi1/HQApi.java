@@ -4,6 +4,7 @@ import org.hyperic.hq.hqapi1.jaxb.GetUsersResponse;
 import org.hyperic.hq.hqapi1.jaxb.GetUserResponse;
 import org.hyperic.hq.hqapi1.jaxb.CreateUserResponse;
 import org.hyperic.hq.hqapi1.jaxb.User;
+import org.hyperic.hq.hqapi1.jaxb.DeleteUserResponse;
 
 import javax.xml.bind.JAXBException;
 import java.util.HashMap;
@@ -57,5 +58,16 @@ public class HQApi extends HQConnection {
 
         return (CreateUserResponse)getRequest("/hqu/hqapi1/user/create.hqu",
                                               params, CreateUserResponse.class);
+    }
+
+    public DeleteUserResponse deleteUser(User user)
+        throws IOException, JAXBException
+    {
+        Map params = new HashMap();
+
+        params.put("Name", user.getName());
+
+        return (DeleteUserResponse)getRequest("/hqu/hqapi1/user/delete.hqu",
+                                              params, DeleteUserResponse.class);
     }
 }
