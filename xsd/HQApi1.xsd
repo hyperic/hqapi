@@ -17,12 +17,6 @@
       </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="ServiceErrors">
-      <xs:sequence>
-          <xs:element name="Error" maxOccurs="unbounded" type="ServiceError"/>
-      </xs:sequence>
-  </xs:complexType>
-   
   <!-- User objects -->
   <xs:complexType name="User">
     <xs:sequence>
@@ -44,7 +38,7 @@
     <xs:complexType>
         <xs:sequence>
             <xs:element name="Status" type="ResponseStatus"/>
-            <xs:element name="Errors" minOccurs="0" type="ServiceErrors"/>
+            <xs:element name="Error" minOccurs="0" type="ServiceError"/>
             <xs:element name="User" minOccurs="0" type="User"/>
         </xs:sequence>
     </xs:complexType>
@@ -54,7 +48,7 @@
       <xs:complexType>
           <xs:sequence>
               <xs:element name="Status" type="ResponseStatus"/>
-              <xs:element name="Errors" minOccurs="0" type="ServiceErrors"/>
+              <xs:element name="Error" minOccurs="0" type="ServiceError"/>
               <xs:element name="User" maxOccurs="unbounded" type="User"/>
           </xs:sequence>
       </xs:complexType>
@@ -64,7 +58,7 @@
       <xs:complexType>
           <xs:sequence>
               <xs:element name="Status" type="ResponseStatus"/>
-              <xs:element name="Errors" minOccurs="0" type="ServiceErrors"/>
+              <xs:element name="Error" minOccurs="0" type="ServiceError"/>
           </xs:sequence>
       </xs:complexType>
   </xs:element>
