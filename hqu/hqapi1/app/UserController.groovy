@@ -12,6 +12,7 @@ class UserController extends BaseController
 
     private printUser(xmlOut, u) {
         xmlOut.User() {
+            Id(u.id)
             Name(u.name)
             FirstName(u.firstName)
             LastName(u.lastName)
