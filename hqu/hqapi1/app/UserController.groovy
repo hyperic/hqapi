@@ -15,10 +15,11 @@ class UserController extends BaseController
             Name(u.name)
             FirstName(u.firstName)
             LastName(u.lastName)
+            Department(u.department)
             EmailAddress(u.emailAddress)
+            SMSAddress(u.SMSAddress)
             Active(u.active)
             HtmlEmail(u.htmlEmail)
-            SMSAddress(u.SMSAddress)
         }
     }
 

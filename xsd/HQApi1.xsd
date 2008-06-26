@@ -29,10 +29,11 @@
       <xs:element name="Name" type="xs:string"/>
       <xs:element name="FirstName" type="xs:string"/>
       <xs:element name="LastName" type="xs:string"/>
+      <xs:element name="Department" type="xs:string"/>
       <xs:element name="EmailAddress" type="xs:string"/>
+      <xs:element name="SMSAddress" type="xs:string"/>
       <xs:element name="Active" type="xs:boolean"/>
       <xs:element name="HtmlEmail" type="xs:boolean"/>
-      <xs:element name="SMSAddress" type="xs:string"/>
     </xs:sequence>
    </xs:complexType>
 
