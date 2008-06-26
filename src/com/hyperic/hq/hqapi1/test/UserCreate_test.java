@@ -42,6 +42,19 @@ public class UserCreate_test extends HQApiTestBase {
         assertEquals(ResponseStatus.SUCCESS, response.getStatus());
     }
 
+    public void testCreateDuplicate() throws Exception {
+        HQApi api = getApi();
+
+        User user = getTestUser();
+
+        CreateUserResponse response = api.createUser(user, PASSWORD);
+        assertEquals(ResponseStatus.SUCCESS, response.getStatus());
+
+        // Attempt to create the same user again
+        CreateUserResponse response2 = api.createUser(user, PASSWORD);
+        assertEquals(ResponseStatus.FAILURE, response2.getStatus());
+    }
+
     public void testCreateEmptyUser() throws Exception {
         HQApi api = getApi();
 
