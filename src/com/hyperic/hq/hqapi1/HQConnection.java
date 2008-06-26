@@ -83,14 +83,15 @@ public abstract class HQConnection {
             query.append("?");
         }
 
-        for (Iterator i = params.keySet().iterator(); i.hasNext(); ) {
+        int idx = 0;
+        for (Iterator i = params.keySet().iterator(); i.hasNext(); idx++) {
             String key = (String)i.next();
             String value = (String)params.get(key);
             if (value != null) {
-                query.append(urlEncode(key)).append("=").append(urlEncode(value));
-            }
-            if (i.hasNext()) {
-                query.append("&");
+                if (idx > 0) {
+                    query.append("&");
+                }
+                query.append(key).append("=").append(urlEncode(value));
             }
         }
 
