@@ -13,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import java.util.Map;
 import java.util.Iterator;
 import java.io.IOException;
@@ -56,6 +57,7 @@ public abstract class HQConnection {
         String pkg = res.getPackage().getName();
         JAXBContext jc = JAXBContext.newInstance(pkg);
         Unmarshaller u = jc.createUnmarshaller();
+        u.setEventHandler(new DefaultValidationEventHandler());
         return res.cast(u.unmarshal(is));
     }
 
