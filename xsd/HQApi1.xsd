@@ -19,7 +19,7 @@
 
   <xs:complexType name="ServiceErrors">
       <xs:sequence>
-          <xs:element name="Errors" maxOccurs="unbounded" type="ServiceError"/>
+          <xs:element name="Error" maxOccurs="unbounded" type="ServiceError"/>
       </xs:sequence>
   </xs:complexType>
    

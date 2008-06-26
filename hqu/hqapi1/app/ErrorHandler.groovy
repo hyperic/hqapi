@@ -16,8 +16,8 @@ class ErrorHandler {
         }
 
         xmlOut.Status("Failure")
-        xmlOut.ServiceErrors() {
-            xmlOut.ServiceError() {
+        xmlOut.Errors() {
+            xmlOut.Error() {
                 ErrorCode(code)
                 ReasonText(reason)
             }
