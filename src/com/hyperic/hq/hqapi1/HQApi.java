@@ -1,4 +1,4 @@
-package com.hyperic.hq.hqapi;
+package com.hyperic.hq.hqapi1;
 
 import org.hyperic.hq.hqapi1.jaxb.GetUsersResponse;
 import org.hyperic.hq.hqapi1.jaxb.GetUserResponse;
@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.io.IOException;
 
-public class HQApi1 extends HQConnection {
+public class HQApi extends HQConnection {
 
     private static final Map NO_PARAMS = new HashMap();
 
-    public HQApi1(String host, int port, boolean isSecure, String user,
+    public HQApi(String host, int port, boolean isSecure, String user,
                   String password) {
         super(host, port, isSecure, user, password);
     }
