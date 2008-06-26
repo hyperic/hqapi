@@ -1,8 +1,8 @@
-package com.hyperic.hq.hqapi.test;
+package com.hyperic.hq.hqapi1.test;
 
 import junit.framework.TestCase;
 
-import com.hyperic.hq.hqapi.HQApi1;
+import com.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.jaxb.User;
 import org.hyperic.hq.hqapi1.jaxb.GetUserResponse;
 import org.hyperic.hq.hqapi1.jaxb.GetUsersResponse;
@@ -23,16 +23,16 @@ public class Users_test extends TestCase {
         super(name);
     }
 
-    private HQApi1 getApiBadCredentials() {
-        return new HQApi1(HOST, PORT, IS_SECURE, USER, BADPASSWORD);
+    private HQApi getApiBadCredentials() {
+        return new HQApi(HOST, PORT, IS_SECURE, USER, BADPASSWORD);
     }
 
-    private HQApi1 getApi() {
-        return new HQApi1(HOST, PORT, IS_SECURE, USER, PASSWORD);
+    private HQApi getApi() {
+        return new HQApi(HOST, PORT, IS_SECURE, USER, PASSWORD);
     }
 
     public void testGetUserValid() throws Exception {
-        HQApi1 api = getApi();
+        HQApi api = getApi();
         GetUserResponse response = api.getUser("hqadmin");
 
         // Assert success response
@@ -44,7 +44,7 @@ public class Users_test extends TestCase {
     }
 
     public void testGetUserInvalid() throws Exception {
-        HQApi1 api = getApi();
+        HQApi api = getApi();
         GetUserResponse response = api.getUser("unknownUser");
         
         // Assert Failure
@@ -52,7 +52,7 @@ public class Users_test extends TestCase {
     }
 
     public void testGetUsers() throws Exception {
-        HQApi1 api = getApi();
+        HQApi api = getApi();
         GetUsersResponse response = api.getUsers();
 
         // Assert success response
