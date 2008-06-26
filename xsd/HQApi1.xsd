@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- Error handling -->
+  <xs:simpleType name="ResponseStatus">
+    <xs:restriction base="xs:string">
+        <xs:enumeration value="Success"/>
+        <xs:enumeration value="Failure"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="ServiceError">
+      <xs:sequence>
+          <xs:element name="ErrorCode" type="xs:string"/>
+          <xs:element name="ReasonText" type="xs:string"/>
+      </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ServiceErrors">
+      <xs:sequence>
+          <xs:element name="Errors" maxOccurs="unbounded" type="ServiceError"/>
+      </xs:sequence>
+  </xs:complexType>
+   
+  <!-- User objects -->
+  <xs:complexType name="User">
+    <xs:sequence>
+      <xs:element name="Name" type="xs:string"/>
+      <xs:element name="FirstName" type="xs:string"/>
+      <xs:element name="LastName" type="xs:string"/>
+      <xs:element name="EmailAddress" type="xs:string"/>
+      <xs:element name="Active" type="xs:boolean"/>
+      <xs:element name="HtmlEmail" type="xs:boolean"/>
+      <xs:element name="SMSAddress" type="xs:string"/>
+    </xs:sequence>
+   </xs:complexType>
+
+  <!-- User Responses -->
+  <xs:element name="GetUserResponse">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="Status" type="ResponseStatus"/>
+            <xs:element name="Errors" minOccurs="0" type="ServiceErrors"/>
+            <xs:element name="User" minOccurs="0" type="User"/>
+        </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetUsersResponse">
+      <xs:complexType>
+          <xs:sequence>
+              <xs:element name="Status" type="ResponseStatus"/>
+              <xs:element name="Errors" minOccurs="0" type="ServiceErrors"/>
+              <xs:element name="User" maxOccurs="unbounded" type="User"/>
+          </xs:sequence>
+      </xs:complexType>
+  </xs:element>
+
+</xs:schema>

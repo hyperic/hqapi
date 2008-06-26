@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<project name="hqapi" default="build" basedir=".">
+    <property environment="ENV" />
+    <property name="build.dir" location="build"/>
+    <property name="dist.dir" location="${build.dir}/dist"/>
+
+    <path id="compile.classpath">
+        <fileset dir="lib" includes="*.jar"/>
+    </path>
+
+    <path id="test.classpath">
+        <fileset dir="lib" includes="*.jar"/>
+        <fileset dir="${dist.dir}" includes="*.jar"/>
+    </path>
+
+    <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask"
+             classpathref="compile.classpath"/>
+
+    <target name="generate">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.dir}/src"/>
+        <mkdir dir="${build.dir}/classes"/>
+
+        <xjc destdir="${build.dir}/src" extension="true" removeOldOutput="yes"
+             package="org.hyperic.hq.hqapi1.jaxb">
+            <schema dir="xsd" includes="HQApi1.xsd"/>
+            <produces dir="${build.dir}/src/org/hyperic/hq/hqapi1/jaxb"
+                      includes="**/"/>
+        </xjc>
+    </target>
+
+    <target name="compile" depends="generate">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.dir}/src"/>
+        <mkdir dir="${build.dir}/classes"/>
+
+        <javac destdir="${build.dir}/classes"
+               optimize="off"
+               debug="on"
+               classpathref="compile.classpath">
+            <src>
+                <path location="${build.dir}/src"/>
+                <path location="src"/>
+            </src>
+        </javac>
+    </target>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="build" depends="compile">
+
+        <mkdir dir="${dist.dir}"/>
+        <jar file="${dist.dir}/hqapi1.jar">
+            <fileset dir="${build.dir}/classes" includes="**"/>
+        </jar>
+
+    </target>
+
+    <target name="test" depends="build">
+        <mkdir dir="${build.dir}/testresults"/>
+
+        <junit printsummary="yes" fork="yes"
+               haltonfailure="yes" showoutput="true">
+
+            <jvmarg value="-Dlog4j.rootLogger=DEBUG"/>
+            <classpath refid="test.classpath"/>
+            <formatter type="plain"/>
+            <batchtest fork="yes" todir="${build.dir}/testresults">
+                <fileset dir="src">
+                    <include name="**/*_test.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    <!-- XXX: make this a bit more generic... -->
+    <target name="deploy">
+        <delete dir="${ENV.JBOSS_HOME}/server/default/deploy/hq.ear/hq.war/hqu/hqapi1"/>
+        <sleep seconds="2"/>
+        <copy toDir="${ENV.JBOSS_HOME}/server/default/deploy/hq.ear/hq.war/hqu/">
+            <fileset dir="hqu">
+                <include name="hqapi1/**"/>
+            </fileset>
+        </copy>
+    </target>
+
+</project>
