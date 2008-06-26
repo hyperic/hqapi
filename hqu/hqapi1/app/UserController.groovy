@@ -86,8 +86,9 @@ class UserController extends BaseController
                         ErrorHandler.printFailureStatus(xmlOut, "ObjectExists")
                     }
                 } else {
-                    userHelper.createUser(name, active, dsn, dept, email,
-                                          first, last, phone, sms, htmlEmail)
+                    userHelper.createUser(name, password, active, dsn, dept,
+                                          email, first, last, phone, sms,
+                                          htmlEmail)
                     xmlOut.CreateUserResponse() {
                         ErrorHandler.printSuccessStatus(xmlOut)
                     }
