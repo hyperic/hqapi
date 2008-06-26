@@ -3,6 +3,7 @@ package com.hyperic.hq.hqapi1;
 import org.hyperic.hq.hqapi1.jaxb.GetUsersResponse;
 import org.hyperic.hq.hqapi1.jaxb.GetUserResponse;
 import org.hyperic.hq.hqapi1.jaxb.CreateUserResponse;
+import org.hyperic.hq.hqapi1.jaxb.User;
 
 import javax.xml.bind.JAXBException;
 import java.util.HashMap;
@@ -39,17 +40,20 @@ public class HQApi extends HQConnection {
                                             NO_PARAMS, GetUsersResponse.class);
     }
 
-    public CreateUserResponse createUser(String name, String firstName,
-                                         String lastName, String password,
-                                         String email)
+    public CreateUserResponse createUser(User user, String password)
         throws IOException, JAXBException
     {
         Map params = new HashMap();
-        params.put("Name", name);
-        params.put("FirstName", firstName);
-        params.put("LastName", lastName);
+
+        params.put("Name", user.getName());
         params.put("Password", password);
-        params.put("EmailAddress", email);
+        params.put("FirstName", user.getFirstName());
+        params.put("LastName", user.getLastName());
+        params.put("EmailAddress", user.getEmailAddress());
+        params.put("Active", Boolean.valueOf(user.isActive()).toString());
+        params.put("Department", user.getDepartment());
+        params.put("HtmlEmail", Boolean.valueOf(user.isActive()).toString());
+        params.put("SMSAddress", user.getSMSAddress());
 
         return (CreateUserResponse)getRequest("/hqu/hqapi1/user/create.hqu",
                                               params, CreateUserResponse.class);
