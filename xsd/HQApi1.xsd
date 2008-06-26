@@ -58,4 +58,13 @@
       </xs:complexType>
   </xs:element>
 
+  <xs:element name="CreateUserResponse">
+      <xs:complexType>
+          <xs:sequence>
+              <xs:element name="Status" type="ResponseStatus"/>
+              <xs:element name="Errors" minOccurs="0" type="ServiceErrors"/>
+          </xs:sequence>
+      </xs:complexType>
+  </xs:element>
+
 </xs:schema>
