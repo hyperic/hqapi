@@ -3,7 +3,9 @@ class ErrorHandler {
     static codes =
     [LoginFailure: "The given username and password could not be validated",
      ObjectNotFound: "The requested object could not be found",
-     InvalidParameters: "The given parameters are incorrect"]
+     ObjectExists: "The given object already exists",
+     InvalidParameters: "The given parameters are incorrect",
+     UnkownError: "An unexpected error occured"]
 
     static void printSuccessStatus(xmlOut) {
         xmlOut.Status("Success")

@@ -64,8 +64,8 @@ class UserController extends BaseController
         def email = params.getOne("EmailAddress")
 
         // Optional attributes
-        def htmlEmail = params.getOne("HtmlEmail", "false")
-        def active = params.getOne("Active", "true")
+        def htmlEmail = params.getOne("HtmlEmail", "false").toBoolean()
+        def active = params.getOne("Active", "false").toBoolean()
         def dept = params.getOne("Department")
         def phone = params.getOne("Phone")
         def sms = params.getOne("SMSAddress")
@@ -79,9 +79,23 @@ class UserController extends BaseController
                 ErrorHandler.printFailureStatus(xmlOut, "InvalidParameters")
             }
         } else {
-            // XXX: Do it
-            xmlOut.CreateUserResponse() {
-                ErrorHandler.printSuccessStatus(xmlOut)
+            try {
+                def existing = userHelper.findUser(name)
+                if (existing) {
+                    xmlOut.CreateUserResponse() {
+                        ErrorHandler.printFailureStatus(xmlOut, "ObjectExists")
+                    }
+                } else {
+                    userHelper.createUser(name, active, dsn, dept, email,
+                                          first, last, phone, sms, htmlEmail)
+                    xmlOut.CreateUserResponse() {
+                        ErrorHandler.printSuccessStatus(xmlOut)
+                    }
+                }
+            } catch (Exception e) {
+                xmlOut.CreateUserResponse() {
+                    ErrorHandler.printFailureStatus(xmlOut, "UnkownError")
+                }
             }
         }
 
