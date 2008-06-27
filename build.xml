@@ -10,7 +10,7 @@
 
     <path id="test.classpath">
         <fileset dir="lib" includes="*.jar"/>
-        <fileset dir="${dist.dir}" includes="*.jar"/>
+        <path location="${build.dir}/classes" />
     </path>
 
     <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask"
@@ -53,7 +53,10 @@
 
         <mkdir dir="${dist.dir}"/>
         <jar file="${dist.dir}/hqapi1.jar">
-            <fileset dir="${build.dir}/classes" includes="**"/>
+            <fileset dir="${build.dir}/classes">
+                <include name="**"/>
+                <exclude name="**/*_test.class"/>
+            </fileset>
         </jar>
 
     </target>
