@@ -52,6 +52,15 @@
     <target name="build" depends="compile">
 
         <mkdir dir="${dist.dir}"/>
+
+        <echo>Copying HQU plugins</echo>
+        <copy todir="${dist.dir}">
+            <fileset dir="hqu">
+                <include name="hqapi1/**"/>
+            </fileset>
+        </copy>
+
+        <echo>Building Java API jar</echo>
         <jar file="${dist.dir}/hqapi1.jar">
             <fileset dir="${build.dir}/classes">
                 <include name="**"/>
@@ -59,6 +68,15 @@
             </fileset>
         </jar>
 
+        <echo>Packaging example scripts</echo>
+        <mkdir dir="${dist.dir}/examples"/>
+        <mkdir dir="${dist.dir}/examples/scripts"/>
+
+        <copy todir="${dist.dir}/examples/scripts">
+            <fileset dir="${basedir}/scripts/hqapi1/">
+                <include name="*.sh"/>
+            </fileset>
+        </copy>
     </target>
 
     <target name="test" depends="build">
@@ -80,18 +98,6 @@
 
     <!-- XXX: make this a bit more generic... -->
     <target name="deploy" depends="build">
-
-        <!-- Copy to dist -->
-        <copy todir="${dist.dir}">
-            <fileset dir="hqu">
-                <include name="hqapi1/**"/>
-            </fileset>
-        </copy>
-
-        <!-- Package API jar -->
-        <mkdir dir="${dist.dir}/hqapi1/lib"/>
-        <copy todir="${dist.dir}/hqapi1/lib"
-              file="${dist.dir}/hqapi1.jar"/>
 
         <delete dir="${ENV.JBOSS_HOME}/server/default/deploy/hq.ear/hq.war/hqu/hqapi1"/>
         <sleep seconds="2"/>
