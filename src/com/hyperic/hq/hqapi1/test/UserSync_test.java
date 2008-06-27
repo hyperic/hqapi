@@ -16,7 +16,7 @@ public class UserSync_test extends UserTestBase {
 
         HQApi api = getApi();
 
-        User user = getTestUser();
+        User user = generateTestUser();
 
         CreateUserResponse createResponse = api.createUser(user, PASSWORD);
         assertEquals(ResponseStatus.SUCCESS, createResponse.getStatus());

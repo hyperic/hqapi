@@ -13,10 +13,10 @@ public class UserTestBase extends HQApiTestBase {
     }
 
     /**
-     * Return a valid User object that's guaranteed to have a unique Name
+     * Generate a valid User object that's guaranteed to have a unique Name
      * @return A valid User object.
      */
-    public User getTestUser() {
+    public User generateTestUser() {
 
         Random r = new Random();
 

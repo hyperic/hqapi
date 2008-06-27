@@ -17,7 +17,7 @@ public class UserDelete_test extends UserTestBase {
 
         HQApi api = getApi();
 
-        User user = getTestUser();
+        User user = generateTestUser();
 
         // Create the user
         CreateUserResponse createResponse = api.createUser(user, PASSWORD);

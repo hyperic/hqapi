@@ -5,8 +5,6 @@ import org.hyperic.hq.hqapi1.jaxb.CreateUserResponse;
 import org.hyperic.hq.hqapi1.jaxb.ResponseStatus;
 import org.hyperic.hq.hqapi1.jaxb.User;
 
-import java.util.Random;
-
 public class UserCreate_test extends UserTestBase {
 
     public UserCreate_test(String name) {
@@ -16,7 +14,7 @@ public class UserCreate_test extends UserTestBase {
     public void testCreateValidParameters() throws Exception {
         HQApi api = getApi();
 
-        User user = getTestUser();
+        User user = generateTestUser();
 
         CreateUserResponse response = api.createUser(user, PASSWORD);
 
@@ -26,7 +24,7 @@ public class UserCreate_test extends UserTestBase {
     public void testCreateDuplicate() throws Exception {
         HQApi api = getApi();
 
-        User user = getTestUser();
+        User user = generateTestUser();
 
         CreateUserResponse response = api.createUser(user, PASSWORD);
         assertEquals(ResponseStatus.SUCCESS, response.getStatus());
@@ -48,7 +46,7 @@ public class UserCreate_test extends UserTestBase {
     public void testCreateEmptyName() throws Exception {
         HQApi api = getApi();
 
-        User user = getTestUser();
+        User user = generateTestUser();
         user.setName(null);
 
         CreateUserResponse response = api.createUser(user, PASSWORD);
@@ -59,7 +57,7 @@ public class UserCreate_test extends UserTestBase {
     public void testCreateEmptyFirstName() throws Exception {
         HQApi api = getApi();
 
-        User user = getTestUser();
+        User user = generateTestUser();
         user.setFirstName(null);
 
         CreateUserResponse response = api.createUser(user, PASSWORD);
@@ -70,7 +68,7 @@ public class UserCreate_test extends UserTestBase {
     public void testCreateEmptyLastName() throws Exception {
         HQApi api = getApi();
 
-        User user = getTestUser();
+        User user = generateTestUser();
         user.setLastName(null);
 
         CreateUserResponse response = api.createUser(user, PASSWORD);
@@ -81,7 +79,7 @@ public class UserCreate_test extends UserTestBase {
     public void testCreateEmptyEmailAddress() throws Exception {
         HQApi api = getApi();
 
-        User user = getTestUser();
+        User user = generateTestUser();
         user.setEmailAddress(null);
 
         CreateUserResponse response = api.createUser(user, PASSWORD);
@@ -92,7 +90,7 @@ public class UserCreate_test extends UserTestBase {
     public void testCreateEmptyPassword() throws Exception {
         HQApi api = getApi();
 
-        User user = getTestUser();
+        User user = generateTestUser();
 
         CreateUserResponse response = api.createUser(user, null);
 
