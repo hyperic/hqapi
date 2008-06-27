@@ -76,11 +76,24 @@
     </target>
 
     <!-- XXX: make this a bit more generic... -->
-    <target name="deploy">
+    <target name="deploy" depends="build">
+
+        <!-- Copy to dist -->
+        <copy todir="${dist.dir}">
+            <fileset dir="hqu">
+                <include name="hqapi1/**"/>
+            </fileset>
+        </copy>
+
+        <!-- Package API jar -->
+        <mkdir dir="${dist.dir}/hqapi1/lib"/>
+        <copy todir="${dist.dir}/hqapi1/lib"
+              file="${dist.dir}/hqapi1.jar"/>
+
         <delete dir="${ENV.JBOSS_HOME}/server/default/deploy/hq.ear/hq.war/hqu/hqapi1"/>
         <sleep seconds="2"/>
         <copy toDir="${ENV.JBOSS_HOME}/server/default/deploy/hq.ear/hq.war/hqu/">
-            <fileset dir="hqu">
+            <fileset dir="${dist.dir}">
                 <include name="hqapi1/**"/>
             </fileset>
         </copy>
