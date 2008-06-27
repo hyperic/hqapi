@@ -1,10 +1,6 @@
 import org.hyperic.hq.hqu.rendit.BaseController
 
-import ErrorHandler
-
-// XXX: Need to create a base class more suitable.  It should include the
-//      bits from ErrorHandler.groovy
-class UserController extends BaseController
+class UserController extends ApiController
 {
     protected void init() {
         setXMLMethods(['list', 'get', 'create', 'delete', 'sync'])
@@ -28,7 +24,7 @@ class UserController extends BaseController
         def users = userHelper.allUsers
 
         xmlOut.GetUsersResponse() {
-            ErrorHandler.printSuccessStatus(xmlOut)
+            printSuccessStatus(xmlOut)
             for (u in users.sort {a, b -> a.name <=> b.name}) {
                 printUser(xmlOut, u)
             }
@@ -43,11 +39,11 @@ class UserController extends BaseController
 
         if (u == null) {
             xmlOut.GetUserResponse() {
-                ErrorHandler.printFailureStatus(xmlOut, "ObjectNotFound")
+                printFailureStatus(xmlOut, "ObjectNotFound")
             }
         } else {
             xmlOut.GetUserResponse() {
-                ErrorHandler.printSuccessStatus(xmlOut)
+                printSuccessStatus(xmlOut)
                 printUser(xmlOut, u)
             }
         }
@@ -76,26 +72,26 @@ class UserController extends BaseController
         if (name == null || password == null || first == null ||
             last == null || email == null) {
             xmlOut.CreateUserResponse() {
-                ErrorHandler.printFailureStatus(xmlOut, "InvalidParameters")
+                printFailureStatus(xmlOut, "InvalidParameters")
             }
         } else {
             try {
                 def existing = userHelper.findUser(name)
                 if (existing) {
                     xmlOut.CreateUserResponse() {
-                        ErrorHandler.printFailureStatus(xmlOut, "ObjectExists")
+                        printFailureStatus(xmlOut, "ObjectExists")
                     }
                 } else {
                     userHelper.createUser(name, password, active, dsn, dept,
                                           email, first, last, phone, sms,
                                           htmlEmail)
                     xmlOut.CreateUserResponse() {
-                        ErrorHandler.printSuccessStatus(xmlOut)
+                        printSuccessStatus(xmlOut)
                     }
                 }
             } catch (Exception e) {
                 xmlOut.CreateUserResponse() {
-                    ErrorHandler.printFailureStatus(xmlOut, "UnexpectedError")
+                    printFailureStatus(xmlOut, "UnexpectedError")
                 }
             }
         }
@@ -109,18 +105,18 @@ class UserController extends BaseController
         def existing = userHelper.findUser(name)
         if (!existing) {
             xmlOut.DeleteUserResponse() {
-                ErrorHandler.printFailureStatus(xmlOut, "ObjectNotFound")
+                printFailureStatus(xmlOut, "ObjectNotFound")
             }
         } else {
             try {
                 userHelper.removeUser(existing.id)
                 xmlOut.DeleteUserResponse() {
-                    ErrorHandler.printSuccessStatus(xmlOut)
+                    printSuccessStatus(xmlOut)
                 }
             } catch (Exception e) {
                 log.error("UnexpectedError: " + e.getMessage(), e)
                 xmlOut.DeleteUserResponse() {
-                    ErrorHandler.printFailureStatus(xmlOut, "UnexpectedError")
+                    printFailureStatus(xmlOut, "UnexpectedError")
                 }
             }
         }
@@ -131,7 +127,7 @@ class UserController extends BaseController
     def sync(xmlOut, params) {
 
         xmlOut.SyncUserResponse() {
-            ErrorHandler.printSuccessStatus(xmlOut)
+            printSuccessStatus(xmlOut)
         }
 
         xmlOut
