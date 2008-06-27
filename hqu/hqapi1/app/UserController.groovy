@@ -7,7 +7,7 @@ import ErrorHandler
 class UserController extends BaseController
 {
     protected void init() {
-        setXMLMethods(['list', 'get', 'create', 'delete'])
+        setXMLMethods(['list', 'get', 'create', 'delete', 'sync'])
     }
 
     private printUser(xmlOut, u) {
@@ -123,6 +123,15 @@ class UserController extends BaseController
                     ErrorHandler.printFailureStatus(xmlOut, "UnexpectedError")
                 }
             }
+        }
+
+        xmlOut
+    }
+
+    def sync(xmlOut, params) {
+
+        xmlOut.SyncUserResponse() {
+            ErrorHandler.printSuccessStatus(xmlOut)
         }
 
         xmlOut
