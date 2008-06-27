@@ -6,7 +6,7 @@ import org.hyperic.hq.hqapi1.jaxb.CreateUserResponse;
 import org.hyperic.hq.hqapi1.jaxb.ResponseStatus;
 import org.hyperic.hq.hqapi1.jaxb.SyncUserResponse;
 
-public class UserSync_test extends UserCreate_test {
+public class UserSync_test extends UserTestBase {
 
     public UserSync_test(String name) {
         super(name);

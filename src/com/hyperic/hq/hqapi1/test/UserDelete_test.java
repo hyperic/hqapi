@@ -7,7 +7,7 @@ import org.hyperic.hq.hqapi1.jaxb.ResponseStatus;
 import org.hyperic.hq.hqapi1.jaxb.DeleteUserResponse;
 import org.hyperic.hq.hqapi1.jaxb.GetUserResponse;
 
-public class UserDelete_test extends UserCreate_test {
+public class UserDelete_test extends UserTestBase {
 
     public UserDelete_test(String name) {
         super(name);

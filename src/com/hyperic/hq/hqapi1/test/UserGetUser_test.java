@@ -4,7 +4,7 @@ import com.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.jaxb.GetUserResponse;
 import org.hyperic.hq.hqapi1.jaxb.ResponseStatus;
 
-public class UserGetUser_test extends HQApiTestBase {
+public class UserGetUser_test extends UserTestBase {
 
     public UserGetUser_test(String name) {
         super(name);
