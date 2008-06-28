@@ -1,5 +1,7 @@
 import org.hyperic.hq.hqu.rendit.BaseController
 
+import org.hyperic.hq.authz.shared.PermissionException;
+
 class UserController extends ApiController
 {
     protected void init() {
@@ -137,7 +139,7 @@ class UserController extends ApiController
                     printFailureStatus(xmlOut, "ObjectNotFound")
                 }
             } else {
-                userHelper.updateUser(user,
+                userHelper.updateUser(existing,
                                       xmlIn['Active'].text()?.toBoolean(),
                                       "CAM", // Dsn
                                       xmlIn['Department'].text(),
@@ -150,6 +152,10 @@ class UserController extends ApiController
                 xmlOut.SyncUserResponse() {
                     printSuccessStatus(xmlOut)
                 }
+            }
+        } catch (PermissionException e) {
+            xmlOut.SyncUserResponse() {
+                printFailureStatus(xmlOut, "PermissionDenied")
             }
         } catch (Exception e) {
             log.error("UnexpectedError: " + e.getMessage(), e)

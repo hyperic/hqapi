@@ -8,7 +8,8 @@ class ApiController extends BaseController {
      ObjectNotFound: "The requested object could not be found",
      ObjectExists: "The given object already exists",
      InvalidParameters: "The given parameters are incorrect",
-     UnexpectedError: "An unexpected error occured"]
+     UnexpectedError: "An unexpected error occured",
+     PermissionDenied: "Permission denied"]
 
     void printSuccessStatus(xmlOut) {
         xmlOut.Status("Success")
