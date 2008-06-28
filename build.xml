@@ -138,6 +138,7 @@
                  maxmemory="256M"
                  use="true"
                  packagenames="com.hyperic.*"
+                 excludepackagenames="com.hyperic.hq.hqapi1.test.*"
                  windowtitle="Hyperic HQ API">
             <sourcepath>
                 <pathelement location="src"/>
@@ -148,7 +149,7 @@
             </classpath>
             <doctitle><![CDATA[Hyperic HQ API Specification]]></doctitle>
             <bottom>
-                <![CDATA[Copyright &#169; 2004-2006 Hyperic, Inc. <a href="mailto:info@hyperic.net">info@hyperic.net</a>, All Rights Reserved.]]>
+                <![CDATA[Copyright &#169; 2008 <a href="http://www.hyperic.com>Hyperic, Inc.</a>, All Rights Reserved.]]>
             </bottom>
         </javadoc>
         
