@@ -127,7 +127,8 @@ class UserController extends ApiController
     def sync(xmlOut, params) {
 
         try {
-            def xmlIn = new XmlParser().parseText(getUpload('postdata'))
+            def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+            def xmlIn = syncRequest['User'];
 
             def name = xmlIn['Name'].text()
             def existing = userHelper.findUser(name)

@@ -6,6 +6,7 @@ import org.hyperic.hq.hqapi1.jaxb.CreateUserResponse;
 import org.hyperic.hq.hqapi1.jaxb.User;
 import org.hyperic.hq.hqapi1.jaxb.DeleteUserResponse;
 import org.hyperic.hq.hqapi1.jaxb.SyncUserResponse;
+import org.hyperic.hq.hqapi1.jaxb.SyncUserRequest;
 
 import javax.xml.bind.JAXBException;
 import java.util.HashMap;
@@ -75,7 +76,10 @@ public class HQApi extends HQConnection {
     public SyncUserResponse syncUser(User user)
         throws IOException, JAXBException
     {
-        return (SyncUserResponse)doGet("/hqu/hqapi1/user/sync.hqu",
-                                       NO_PARAMS, SyncUserResponse.class);
+        SyncUserRequest req = new SyncUserRequest();
+        req.setUser(user);
+
+        return (SyncUserResponse)doPost("/hqu/hqapi1/user/sync.hqu",
+                                        req, SyncUserResponse.class);
     }
 }

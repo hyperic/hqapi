@@ -72,6 +72,14 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="SyncUserRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="User" type="User"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="SyncUserResponse">
         <xs:complexType>
             <xs:sequence>
