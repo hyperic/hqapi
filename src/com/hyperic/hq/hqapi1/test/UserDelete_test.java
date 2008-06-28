@@ -34,9 +34,11 @@ public class UserDelete_test extends UserTestBase {
         // Assert that user is no longer available
         GetUserResponse getResponse2 = api.getUser(user.getName());
         assertEquals(ResponseStatus.FAILURE, getResponse2.getStatus());
+        assertEquals("ObjectNotFound", getResponse2.getError().getErrorCode());
 
         // Assert a second delete of this user results in failure
         DeleteUserResponse deleteResponse2 = api.deleteUser(user);
         assertEquals(ResponseStatus.FAILURE, deleteResponse2.getStatus());
+        assertEquals("ObjectNotFound", deleteResponse2.getError().getErrorCode());
     }
 }

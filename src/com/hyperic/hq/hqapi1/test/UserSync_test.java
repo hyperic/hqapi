@@ -70,10 +70,11 @@ public class UserSync_test extends UserTestBase {
         HQApi apiNewUser = getApi(user.getName(), PASSWORD);
 
         User u = new User();
-        user.setName("hqadmin");
-        user.setFirstName("Updated FirstName");
+        u.setName("hqadmin");
+        u.setFirstName("Updated FirstName");
 
         SyncUserResponse syncResponse = apiNewUser.syncUser(u);
         assertEquals(ResponseStatus.FAILURE, syncResponse.getStatus());
+        assertEquals("PermissionDenied", syncResponse.getError().getErrorCode());
     }
 }

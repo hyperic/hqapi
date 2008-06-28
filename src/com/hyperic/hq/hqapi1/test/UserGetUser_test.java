@@ -28,5 +28,6 @@ public class UserGetUser_test extends UserTestBase {
 
         // Assert Failure
         assertEquals(ResponseStatus.FAILURE, response.getStatus());
+        assertEquals("ObjectNotFound", response.getError().getErrorCode());
     }
 }

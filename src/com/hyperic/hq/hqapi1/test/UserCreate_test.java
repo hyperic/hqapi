@@ -32,6 +32,7 @@ public class UserCreate_test extends UserTestBase {
         // Attempt to create the same user again
         CreateUserResponse response2 = api.createUser(user, PASSWORD);
         assertEquals(ResponseStatus.FAILURE, response2.getStatus());
+        assertEquals("ObjectExists", response2.getError().getErrorCode());
     }
 
     public void testCreateEmptyUser() throws Exception {
@@ -41,6 +42,7 @@ public class UserCreate_test extends UserTestBase {
         CreateUserResponse response = api.createUser(user, PASSWORD);
 
         assertEquals(ResponseStatus.FAILURE, response.getStatus());
+        assertEquals("InvalidParameters", response.getError().getErrorCode());
     }
 
     public void testCreateEmptyName() throws Exception {
@@ -52,6 +54,7 @@ public class UserCreate_test extends UserTestBase {
         CreateUserResponse response = api.createUser(user, PASSWORD);
 
         assertEquals(ResponseStatus.FAILURE, response.getStatus());
+        assertEquals("InvalidParameters", response.getError().getErrorCode());
     }
 
     public void testCreateEmptyFirstName() throws Exception {
@@ -63,6 +66,7 @@ public class UserCreate_test extends UserTestBase {
         CreateUserResponse response = api.createUser(user, PASSWORD);
 
         assertEquals(ResponseStatus.FAILURE, response.getStatus());
+        assertEquals("InvalidParameters", response.getError().getErrorCode());
     }
 
     public void testCreateEmptyLastName() throws Exception {
@@ -74,6 +78,7 @@ public class UserCreate_test extends UserTestBase {
         CreateUserResponse response = api.createUser(user, PASSWORD);
 
         assertEquals(ResponseStatus.FAILURE, response.getStatus());
+        assertEquals("InvalidParameters", response.getError().getErrorCode());
     }
 
     public void testCreateEmptyEmailAddress() throws Exception {
@@ -85,6 +90,7 @@ public class UserCreate_test extends UserTestBase {
         CreateUserResponse response = api.createUser(user, PASSWORD);
 
         assertEquals(ResponseStatus.FAILURE, response.getStatus());
+        assertEquals("InvalidParameters", response.getError().getErrorCode());
     }
 
     public void testCreateEmptyPassword() throws Exception {
@@ -95,5 +101,6 @@ public class UserCreate_test extends UserTestBase {
         CreateUserResponse response = api.createUser(user, null);
 
         assertEquals(ResponseStatus.FAILURE, response.getStatus());
+        assertEquals("InvalidParameters", response.getError().getErrorCode());
     }
 }
