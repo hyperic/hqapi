@@ -1,0 +1,13 @@
+<SyncUserRequest>
+    <User>
+        <Id>1</Id>
+        <Name>hqadmin</Name>
+        <FirstName>HQ</FirstName>
+        <LastName>Administrator</LastName>
+        <Department/>
+        <EmailAddress>localhost</EmailAddress>
+        <SMSAddress/>
+        <Active>true</Active>
+        <HtmlEmail>false</HtmlEmail>
+    </User>
+</SyncUserRequest>
