@@ -5,6 +5,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.logging.Log;
@@ -73,10 +74,18 @@ public abstract class HQConnection {
         return URLEncoder.encode(s, "UTF-8");
     }
 
-    Object getRequest(String path, Map params, Class resultClass)
+    Object doGet(String path, Map params, Class resultClass)
         throws IOException, JAXBException
     {
-        GetMethod method = getHttpGetMethod();
+        GetMethod method = new GetMethod();
+        method.setDoAuthentication(true);
+        return getRequest(method, path, params, resultClass);
+    }
+
+    Object getRequest(HttpMethodBase method, String path, Map params,
+                      Class resultClass)
+        throws IOException, JAXBException
+    {
         String protocol = _isSecure ? "https" : "http";
         StringBuffer query = new StringBuffer(path);
         if (query.charAt(query.length() - 1) != '?') {

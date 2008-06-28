@@ -31,15 +31,15 @@ public class HQApi extends HQConnection {
     {
         Map params = new HashMap();
         params.put("name", name);
-        return (GetUserResponse)getRequest("/hqu/hqapi1/user/get.hqu",
-                                            params, GetUserResponse.class);
+        return (GetUserResponse)doGet("/hqu/hqapi1/user/get.hqu",
+                                      params, GetUserResponse.class);
     }
     
     public GetUsersResponse getUsers()
         throws IOException, JAXBException
     {
-        return (GetUsersResponse)getRequest("/hqu/hqapi1/user/list.hqu",
-                                            NO_PARAMS, GetUsersResponse.class);
+        return (GetUsersResponse)doGet("/hqu/hqapi1/user/list.hqu",
+                                       NO_PARAMS, GetUsersResponse.class);
     }
 
     public CreateUserResponse createUser(User user, String password)
@@ -57,8 +57,8 @@ public class HQApi extends HQConnection {
         params.put("HtmlEmail", Boolean.valueOf(user.isActive()).toString());
         params.put("SMSAddress", user.getSMSAddress());
 
-        return (CreateUserResponse)getRequest("/hqu/hqapi1/user/create.hqu",
-                                              params, CreateUserResponse.class);
+        return (CreateUserResponse)doGet("/hqu/hqapi1/user/create.hqu",
+                                         params, CreateUserResponse.class);
     }
 
     public DeleteUserResponse deleteUser(User user)
@@ -68,14 +68,14 @@ public class HQApi extends HQConnection {
 
         params.put("Name", user.getName());
 
-        return (DeleteUserResponse)getRequest("/hqu/hqapi1/user/delete.hqu",
-                                              params, DeleteUserResponse.class);
+        return (DeleteUserResponse)doGet("/hqu/hqapi1/user/delete.hqu",
+                                         params, DeleteUserResponse.class);
     }
 
     public SyncUserResponse syncUser(User user)
         throws IOException, JAXBException
     {
-        return (SyncUserResponse)getRequest("/hqu/hqapi1/user/sync.hqu",
-                                            NO_PARAMS, SyncUserResponse.class);
+        return (SyncUserResponse)doGet("/hqu/hqapi1/user/sync.hqu",
+                                       NO_PARAMS, SyncUserResponse.class);
     }
 }
