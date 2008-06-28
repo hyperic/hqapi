@@ -126,8 +126,35 @@ class UserController extends ApiController
 
     def sync(xmlOut, params) {
 
-        xmlOut.SyncUserResponse() {
-            printSuccessStatus(xmlOut)
+        try {
+            def xmlIn = new XmlParser().parseText(getUpload('postdata'))
+
+            def name = xmlIn['Name'].text()
+            def existing = userHelper.findUser(name)
+            if (!existing) {
+                xmlOut.SyncUserResponse() {
+                    printFailureStatus(xmlOut, "ObjectNotFound")
+                }
+            } else {
+                userHelper.updateUser(user,
+                                      xmlIn['Active'].text()?.toBoolean(),
+                                      "CAM", // Dsn
+                                      xmlIn['Department'].text(),
+                                      xmlIn['EmailAddress'].text(),
+                                      xmlIn['FirstName'].text(),
+                                      xmlIn['LastName'].text(),
+                                      xmlIn['Phone'].text(),
+                                      xmlIn['SMSAddress'].text(),
+                                      xmlIn['HtmlEmail'].text()?.toBoolean())
+                xmlOut.SyncUserResponse() {
+                    printSuccessStatus(xmlOut)
+                }
+            }
+        } catch (Exception e) {
+            log.error("UnexpectedError: " + e.getMessage(), e)
+            xmlOut.SyncUserResponse() {
+                printFailureStatus(xmlOut, "UnexpectedError")
+            }
         }
 
         xmlOut
