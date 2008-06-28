@@ -79,6 +79,15 @@
         </copy>
     </target>
 
+    <target name="single-test">
+        <fail message="Must specify a test case system property: -Dtestcase=org.hyperic.My_test"
+              unless="testcase"/>
+        <echo message="Running Single Test: ${testcase}"/>
+        <antcall target="test">
+            <param name="single.test" value="true" />
+        </antcall>
+    </target>
+
     <target name="test" depends="build">
         <mkdir dir="${build.dir}/testresults"/>
 
@@ -88,7 +97,12 @@
             <jvmarg value="-Dlog4j.rootLogger=DEBUG"/>
             <classpath refid="test.classpath"/>
             <formatter type="plain"/>
-            <batchtest fork="yes" todir="${build.dir}/testresults">
+
+            <test name="${testcase}" todir="${build.dir}/testresults"
+                  if="single.test" />
+            
+            <batchtest fork="yes" todir="${build.dir}/testresults"
+                       unless="single.test">
                 <fileset dir="src">
                     <include name="**/*_test.java"/>
                 </fileset>
