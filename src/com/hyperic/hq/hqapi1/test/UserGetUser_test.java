@@ -1,8 +1,8 @@
 package com.hyperic.hq.hqapi1.test;
 
 import com.hyperic.hq.hqapi1.HQApi;
-import org.hyperic.hq.hqapi1.jaxb.GetUserResponse;
-import org.hyperic.hq.hqapi1.jaxb.ResponseStatus;
+import com.hyperic.hq.hqapi1.jaxb.GetUserResponse;
+import com.hyperic.hq.hqapi1.jaxb.ResponseStatus;
 
 public class UserGetUser_test extends UserTestBase {
 

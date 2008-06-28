@@ -24,9 +24,9 @@
         <mkdir dir="${build.dir}/classes"/>
 
         <xjc destdir="${build.dir}/src" extension="true" removeOldOutput="yes"
-             package="org.hyperic.hq.hqapi1.jaxb">
+             package="com.hyperic.hq.hqapi1.jaxb">
             <schema dir="xsd" includes="HQApi1.xsd"/>
-            <produces dir="${build.dir}/src/org/hyperic/hq/hqapi1/jaxb"
+            <produces dir="${build.dir}/src/com/hyperic/hq/hqapi1/jaxb"
                       includes="**/"/>
         </xjc>
     </target>

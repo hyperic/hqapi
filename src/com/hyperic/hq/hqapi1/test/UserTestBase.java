@@ -1,6 +1,6 @@
 package com.hyperic.hq.hqapi1.test;
 
-import org.hyperic.hq.hqapi1.jaxb.User;
+import com.hyperic.hq.hqapi1.jaxb.User;
 
 import java.util.Random;
 

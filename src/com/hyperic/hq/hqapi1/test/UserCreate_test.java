@@ -1,9 +1,9 @@
 package com.hyperic.hq.hqapi1.test;
 
 import com.hyperic.hq.hqapi1.HQApi;
-import org.hyperic.hq.hqapi1.jaxb.CreateUserResponse;
-import org.hyperic.hq.hqapi1.jaxb.ResponseStatus;
-import org.hyperic.hq.hqapi1.jaxb.User;
+import com.hyperic.hq.hqapi1.jaxb.CreateUserResponse;
+import com.hyperic.hq.hqapi1.jaxb.ResponseStatus;
+import com.hyperic.hq.hqapi1.jaxb.User;
 
 public class UserCreate_test extends UserTestBase {
 

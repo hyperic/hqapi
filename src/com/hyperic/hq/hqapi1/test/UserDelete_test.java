@@ -1,11 +1,11 @@
 package com.hyperic.hq.hqapi1.test;
 
 import com.hyperic.hq.hqapi1.HQApi;
-import org.hyperic.hq.hqapi1.jaxb.User;
-import org.hyperic.hq.hqapi1.jaxb.CreateUserResponse;
-import org.hyperic.hq.hqapi1.jaxb.ResponseStatus;
-import org.hyperic.hq.hqapi1.jaxb.DeleteUserResponse;
-import org.hyperic.hq.hqapi1.jaxb.GetUserResponse;
+import com.hyperic.hq.hqapi1.jaxb.User;
+import com.hyperic.hq.hqapi1.jaxb.CreateUserResponse;
+import com.hyperic.hq.hqapi1.jaxb.ResponseStatus;
+import com.hyperic.hq.hqapi1.jaxb.DeleteUserResponse;
+import com.hyperic.hq.hqapi1.jaxb.GetUserResponse;
 
 public class UserDelete_test extends UserTestBase {
 

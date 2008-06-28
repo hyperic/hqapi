@@ -1,12 +1,12 @@
 package com.hyperic.hq.hqapi1;
 
-import org.hyperic.hq.hqapi1.jaxb.GetUsersResponse;
-import org.hyperic.hq.hqapi1.jaxb.GetUserResponse;
-import org.hyperic.hq.hqapi1.jaxb.CreateUserResponse;
-import org.hyperic.hq.hqapi1.jaxb.User;
-import org.hyperic.hq.hqapi1.jaxb.DeleteUserResponse;
-import org.hyperic.hq.hqapi1.jaxb.SyncUserResponse;
-import org.hyperic.hq.hqapi1.jaxb.SyncUserRequest;
+import com.hyperic.hq.hqapi1.jaxb.GetUsersResponse;
+import com.hyperic.hq.hqapi1.jaxb.GetUserResponse;
+import com.hyperic.hq.hqapi1.jaxb.CreateUserResponse;
+import com.hyperic.hq.hqapi1.jaxb.User;
+import com.hyperic.hq.hqapi1.jaxb.DeleteUserResponse;
+import com.hyperic.hq.hqapi1.jaxb.SyncUserResponse;
+import com.hyperic.hq.hqapi1.jaxb.SyncUserRequest;
 
 import javax.xml.bind.JAXBException;
 import java.util.HashMap;
