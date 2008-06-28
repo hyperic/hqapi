@@ -27,7 +27,7 @@
             <xs:element name="Department" minOccurs="0" type="xs:string"/>
             <xs:element name="EmailAddress" type="xs:string"/>
             <xs:element name="SMSAddress" minOccurs="0" type="xs:string"/>
-            <xs:element name="Phone" minOccurs="0" type="xs:string"/>
+            <xs:element name="PhoneNumber" minOccurs="0" type="xs:string"/>
             <xs:element name="Active" type="xs:boolean" default="false"/>
             <xs:element name="HtmlEmail" type="xs:boolean" default="false"/>
         </xs:sequence>

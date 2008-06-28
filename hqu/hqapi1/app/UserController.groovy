@@ -17,6 +17,7 @@ class UserController extends ApiController
             Department(u.department)
             EmailAddress(u.emailAddress)
             SMSAddress(u.SMSAddress)
+            PhoneNumber(u.phoneNumber)
             Active(u.active)
             HtmlEmail(u.htmlEmail)
         }
@@ -65,7 +66,7 @@ class UserController extends ApiController
         def htmlEmail = params.getOne("HtmlEmail", "false").toBoolean()
         def active = params.getOne("Active", "false").toBoolean()
         def dept = params.getOne("Department")
-        def phone = params.getOne("Phone")
+        def phone = params.getOne("PhoneNumber")
         def sms = params.getOne("SMSAddress")
 
         // We require the user to authenticate via built in JDBC
@@ -146,7 +147,7 @@ class UserController extends ApiController
                                       xmlIn['EmailAddress'].text(),
                                       xmlIn['FirstName'].text(),
                                       xmlIn['LastName'].text(),
-                                      xmlIn['Phone'].text(),
+                                      xmlIn['PhoneNumber'].text(),
                                       xmlIn['SMSAddress'].text(),
                                       xmlIn['HtmlEmail'].text()?.toBoolean())
                 xmlOut.SyncUserResponse() {
