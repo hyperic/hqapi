@@ -27,4 +27,8 @@ class ApiController extends BaseController {
             ReasonText(reason)
         }
     }
+
+    def index(params) {
+        render(locals:[plugin: getPlugin()])
+    }
 }

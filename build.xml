@@ -1,14 +1,15 @@
 <?xml version="1.0"?>
-<project name="hqapi" default="build" basedir=".">
+<project name="hqapi" default="compile" basedir=".">
     <property environment="ENV" />
     <property name="build.dir" location="build"/>
     <property name="dist.dir" location="${build.dir}/dist"/>
+    <property name="javadoc.dir" location="${build.dir}/javadoc"/>
 
     <path id="compile.classpath">
         <fileset dir="lib" includes="*.jar"/>
     </path>
 
-    <path id="test.classpath">
+    <path id="all.classpath">
         <fileset dir="lib" includes="*.jar"/>
         <path location="${build.dir}/classes" />
     </path>
@@ -16,6 +17,7 @@
     <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask"
              classpathref="compile.classpath"/>
 
+    <!-- Generate the Java XML bindings -->
     <target name="generate">
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${build.dir}/src"/>
@@ -49,36 +51,38 @@
         <delete dir="${build.dir}"/>
     </target>
 
-    <target name="build" depends="compile">
+    <!-- Package a distribution -->
+    <target name="dist" depends="compile,javadoc">
 
         <mkdir dir="${dist.dir}"/>
 
-        <echo>Copying HQU plugins</echo>
         <copy todir="${dist.dir}">
             <fileset dir="hqu">
                 <include name="hqapi1/**"/>
             </fileset>
         </copy>
 
-        <echo>Building Java API jar</echo>
-        <jar file="${dist.dir}/hqapi1.jar">
+        <!-- Bundle API jar in the public directory for easy distribution -->
+        <jar file="${dist.dir}/hqapi1/public/hqapi1.jar">
             <fileset dir="${build.dir}/classes">
                 <include name="**"/>
                 <exclude name="**/*_test.class"/>
             </fileset>
         </jar>
 
-        <echo>Packaging example scripts</echo>
-        <mkdir dir="${dist.dir}/examples"/>
-        <mkdir dir="${dist.dir}/examples/scripts"/>
+        <!-- Include the XSD -->
+        <copy toDir="${dist.dir}/hqapi1/public"
+              file="${basedir}/xsd/HQApi1.xsd"/>
 
-        <copy todir="${dist.dir}/examples/scripts">
-            <fileset dir="${basedir}/scripts/hqapi1/">
-                <include name="*.sh"/>
+        <!-- Include API java doc -->
+        <copy todir="${dist.dir}/hqapi1/public">
+            <fileset dir="${build.dir}">
+                <include name="javadoc/**"/>
             </fileset>
         </copy>
     </target>
 
+    <!-- Run a single test -->
     <target name="single-test">
         <fail message="Must specify a test case system property: -Dtestcase=org.hyperic.My_test"
               unless="testcase"/>
@@ -88,14 +92,15 @@
         </antcall>
     </target>
 
-    <target name="test" depends="build">
+    <!-- Run the full test suite -->
+    <target name="test" depends="compile">
         <mkdir dir="${build.dir}/testresults"/>
 
         <junit printsummary="yes" fork="yes"
                haltonfailure="yes" showoutput="true">
 
             <jvmarg value="-Dlog4j.rootLogger=DEBUG"/>
-            <classpath refid="test.classpath"/>
+            <classpath refid="all.classpath"/>
             <formatter type="plain"/>
 
             <test name="${testcase}" todir="${build.dir}/testresults"
@@ -110,9 +115,8 @@
         </junit>
     </target>
 
-    <!-- XXX: make this a bit more generic... -->
-    <target name="deploy" depends="build">
-
+    <!-- Target to hot deploy the plugins into a running HQ instance -->
+    <target name="deploy" depends="dist">
         <delete dir="${ENV.JBOSS_HOME}/server/default/deploy/hq.ear/hq.war/hqu/hqapi1"/>
         <sleep seconds="2"/>
         <copy toDir="${ENV.JBOSS_HOME}/server/default/deploy/hq.ear/hq.war/hqu/">
@@ -120,6 +124,34 @@
                 <include name="hqapi1/**"/>
             </fileset>
         </copy>
+    </target>
+
+    <target name="javadoc">
+
+        <mkdir dir="${javadoc.dir}"/>
+
+        <javadoc destdir="${javadoc.dir}"
+                 private="false"
+                 package="false"
+                 version="true"
+                 author="true"
+                 maxmemory="256M"
+                 use="true"
+                 packagenames="com.hyperic.*"
+                 windowtitle="Hyperic HQ API">
+            <sourcepath>
+                <pathelement location="src"/>
+                <pathelement location="${build.dir}/src"/>
+            </sourcepath>
+            <classpath>
+                <path refid="all.classpath"/>
+            </classpath>
+            <doctitle><![CDATA[Hyperic HQ API Specification]]></doctitle>
+            <bottom>
+                <![CDATA[Copyright &#169; 2004-2006 Hyperic, Inc. <a href="mailto:info@hyperic.net">info@hyperic.net</a>, All Rights Reserved.]]>
+            </bottom>
+        </javadoc>
+        
     </target>
 
 </project>
