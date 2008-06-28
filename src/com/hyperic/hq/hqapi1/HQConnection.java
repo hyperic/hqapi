@@ -137,7 +137,7 @@ public abstract class HQConnection {
         String protocol = _isSecure ? "https" : "http";
 
         URL url = new URL(protocol, _host, _port, uri);
-        _log.info("HTTP Request: " + url.toString());
+        _log.debug("HTTP Request: " + url.toString());
         method.setURI(new URI(url.toString(), true));
 
         int code;
@@ -150,9 +150,9 @@ public abstract class HQConnection {
         if (code == 200) {
             // We only deal with HTTP_OK responses
             if (resultClass != null) {
-                if (_log.isInfoEnabled()) {
-                    _log.info("HTTP Response: " +
-                              method.getResponseBodyAsString());
+                if (_log.isDebugEnabled()) {
+                    _log.debug("HTTP Response: " +
+                               method.getResponseBodyAsString());
                 }
                 
                 InputStream is = method.getResponseBodyAsStream();
