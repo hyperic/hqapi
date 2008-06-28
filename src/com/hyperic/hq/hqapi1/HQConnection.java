@@ -7,6 +7,10 @@ import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,11 +18,14 @@ import org.apache.commons.logging.LogFactory;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import java.util.Map;
 import java.util.Iterator;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.net.SocketException;
@@ -62,10 +69,14 @@ public abstract class HQConnection {
         return res.cast(u.unmarshal(is));
     }
 
-    private GetMethod getHttpGetMethod() {
-        GetMethod m = new GetMethod();
-        m.setDoAuthentication(true);
-        return m;
+    private void serialize(Object o, OutputStream os)
+        throws JAXBException
+    {
+        String pkg = o.getClass().getPackage().getName();
+        JAXBContext jc = JAXBContext.newInstance(pkg);
+        Marshaller m = jc.createMarshaller();
+        m.setEventHandler(new DefaultValidationEventHandler());
+        m.marshal(o, os);
     }
 
     private String urlEncode(String s)
@@ -79,17 +90,10 @@ public abstract class HQConnection {
     {
         GetMethod method = new GetMethod();
         method.setDoAuthentication(true);
-        return getRequest(method, path, params, resultClass);
-    }
 
-    Object getRequest(HttpMethodBase method, String path, Map params,
-                      Class resultClass)
-        throws IOException, JAXBException
-    {
-        String protocol = _isSecure ? "https" : "http";
-        StringBuffer query = new StringBuffer(path);
-        if (query.charAt(query.length() - 1) != '?') {
-            query.append("?");
+        StringBuffer uri = new StringBuffer(path);
+        if (uri.charAt(uri.length() - 1) != '?') {
+            uri.append("?");
         }
 
         int idx = 0;
@@ -98,14 +102,42 @@ public abstract class HQConnection {
             String value = (String)params.get(key);
             if (value != null) {
                 if (idx > 0) {
-                    query.append("&");
+                    uri.append("&");
                 }
-                query.append(key).append("=").append(urlEncode(value));
+                uri.append(key).append("=").append(urlEncode(value));
             }
         }
 
-        URL url = new URL(protocol, _host, _port, query.toString());
-        _log.debug("HTTP Request: " + url.toString());
+        return runMethod(method, uri.toString(), resultClass);
+    }
+
+    Object doPost(String path, Object o, Class resultClass)
+        throws IOException, JAXBException
+    {
+        PostMethod method = new PostMethod();
+        method.setDoAuthentication(true);
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        serialize(o, bos);
+
+        Part[] parts = {
+            new StringPart("postdata", bos.toString())
+        };
+
+        method.setRequestEntity(new MultipartRequestEntity(parts,
+                                                           method.getParams()));
+
+        return runMethod(method, path, resultClass);
+    }
+
+    private Object runMethod(HttpMethodBase method, String uri,
+                             Class resultClass)
+        throws IOException, JAXBException
+    {
+        String protocol = _isSecure ? "https" : "http";
+
+        URL url = new URL(protocol, _host, _port, uri);
+        _log.info("HTTP Request: " + url.toString());
         method.setURI(new URI(url.toString(), true));
 
         int code;
@@ -118,9 +150,9 @@ public abstract class HQConnection {
         if (code == 200) {
             // We only deal with HTTP_OK responses
             if (resultClass != null) {
-                if (_log.isDebugEnabled()) {
-                    _log.debug("HTTP Response: " +
-                               method.getResponseBodyAsString());
+                if (_log.isInfoEnabled()) {
+                    _log.info("HTTP Response: " +
+                              method.getResponseBodyAsString());
                 }
                 
                 InputStream is = method.getResponseBodyAsStream();
