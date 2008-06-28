@@ -18,4 +18,8 @@ public class HQApiTestBase  extends TestCase {
     HQApi getApi() {
         return new HQApi(HOST, PORT, IS_SECURE, USER, PASSWORD);
     }
+
+    HQApi getApi(String user, String password) {
+        return new HQApi(HOST, PORT, IS_SECURE, user, password);
+    }
 }
