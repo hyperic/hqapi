@@ -4,8 +4,8 @@ import org.hyperic.hq.hqu.rendit.HQUPlugin
 import UserController
 
 class Plugin extends HQUPlugin {
-    void initialize(File pluginDir) {
-        super.initialize(pluginDir)
+    Plugin() {
+        addAdminView(true, '/api/index.hqu', 'HQ Web Services Api')
     }
 }
 
