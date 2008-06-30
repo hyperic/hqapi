@@ -1,6 +1,6 @@
 package com.hyperic.hq.hqapi1.test;
 
-import com.hyperic.hq.hqapi1.HQApi;
+import com.hyperic.hq.hqapi1.UserApi;
 import com.hyperic.hq.hqapi1.jaxb.User;
 import com.hyperic.hq.hqapi1.jaxb.CreateUserResponse;
 import com.hyperic.hq.hqapi1.jaxb.ResponseStatus;
@@ -15,7 +15,7 @@ public class UserSync_test extends UserTestBase {
 
     public void testSync() throws Exception {
 
-        HQApi api = getApi();
+        UserApi api = getUserApi();
 
         User user = generateTestUser();
 
@@ -58,7 +58,7 @@ public class UserSync_test extends UserTestBase {
 
     public void testSyncNoPermission() throws Exception {
 
-        HQApi api = getApi();
+        UserApi api = getUserApi();
 
         User user = generateTestUser();
 
@@ -67,7 +67,7 @@ public class UserSync_test extends UserTestBase {
 
         // Reconnect as the new user
 
-        HQApi apiNewUser = getApi(user.getName(), PASSWORD);
+        UserApi apiNewUser = getUserApi(user.getName(), PASSWORD);
 
         User u = new User();
         u.setName("hqadmin");

@@ -22,6 +22,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.HashMap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,6 +33,8 @@ import java.net.SocketException;
 
 public abstract class HQConnection {
 
+    protected static final Map NO_PARAMS = new HashMap();
+    
     private static Log _log = LogFactory.getLog(HQConnection.class);
 
     private String  _host;

@@ -1,6 +1,7 @@
 package com.hyperic.hq.hqapi1.test;
 
 import com.hyperic.hq.hqapi1.HQApi;
+import com.hyperic.hq.hqapi1.UserApi;
 import com.hyperic.hq.hqapi1.jaxb.User;
 import com.hyperic.hq.hqapi1.jaxb.CreateUserResponse;
 import com.hyperic.hq.hqapi1.jaxb.ResponseStatus;
@@ -15,7 +16,7 @@ public class UserDelete_test extends UserTestBase {
 
     public void testCreateDelete() throws Exception {
 
-        HQApi api = getApi();
+        UserApi api = getUserApi();
 
         User user = generateTestUser();
 

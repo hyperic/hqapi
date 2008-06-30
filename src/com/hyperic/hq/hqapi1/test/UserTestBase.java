@@ -1,6 +1,7 @@
 package com.hyperic.hq.hqapi1.test;
 
 import com.hyperic.hq.hqapi1.jaxb.User;
+import com.hyperic.hq.hqapi1.UserApi;
 
 import java.util.Random;
 
@@ -10,6 +11,14 @@ public class UserTestBase extends HQApiTestBase {
         
     public UserTestBase(String name) {
         super(name);
+    }
+
+    UserApi getUserApi() {
+        return getApi().getUserApi();
+    }
+
+    UserApi getUserApi(String user, String password) {
+        return getApi(user, password).getUserApi();
     }
 
     /**

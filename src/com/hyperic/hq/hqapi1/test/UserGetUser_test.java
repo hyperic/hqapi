@@ -1,6 +1,7 @@
 package com.hyperic.hq.hqapi1.test;
 
 import com.hyperic.hq.hqapi1.HQApi;
+import com.hyperic.hq.hqapi1.UserApi;
 import com.hyperic.hq.hqapi1.jaxb.GetUserResponse;
 import com.hyperic.hq.hqapi1.jaxb.ResponseStatus;
 
@@ -11,7 +12,7 @@ public class UserGetUser_test extends UserTestBase {
     }
                      
     public void testGetUserValid() throws Exception {
-        HQApi api = getApi();
+        UserApi api = getUserApi();
         GetUserResponse response = api.getUser("hqadmin");
 
         // Assert success response
@@ -23,7 +24,7 @@ public class UserGetUser_test extends UserTestBase {
     }
 
     public void testGetUserInvalid() throws Exception {
-        HQApi api = getApi();
+        UserApi api = getUserApi();
         GetUserResponse response = api.getUser("unknownUser");
 
         // Assert Failure
