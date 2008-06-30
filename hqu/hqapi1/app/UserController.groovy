@@ -93,6 +93,7 @@ class UserController extends ApiController
                     }
                 }
             } catch (Exception e) {
+                log.error("UnexpectedError: " + e.getMessage(), e);
                 xmlOut.CreateUserResponse() {
                     printFailureStatus(xmlOut, "UnexpectedError")
                 }
