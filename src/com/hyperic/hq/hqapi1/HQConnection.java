@@ -30,6 +30,10 @@ import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.net.SocketException;
+import java.lang.reflect.Method;
+
+import com.hyperic.hq.hqapi1.jaxb.ResponseStatus;
+import com.hyperic.hq.hqapi1.jaxb.ServiceError;
 
 public abstract class HQConnection {
 
@@ -62,6 +66,37 @@ public abstract class HQConnection {
         return client;
     }
 
+    /**
+     * XXX: It would be nice here if we could get JAXB to generate an
+     *      interface for all response objects so we don't need to use
+     *      Java reflection here.
+     */
+    private Object getErrorResponse(Class res, ServiceError error)
+        throws IOException
+    {
+        try {
+            Object ret = res.newInstance();
+
+            Method setResponse = res.getDeclaredMethod("setStatus",
+                                                       ResponseStatus.class);
+            setResponse.invoke(ret, ResponseStatus.FAILURE);
+
+            Method setError = res.getDeclaredMethod("setError",
+                                                    ServiceError.class);
+            setError.invoke(ret, error);
+
+            return ret;
+        } catch (Exception e) {
+            // This shouldn't happen unless programmer error.  For instance,
+            // a result object not containing a Status or Error field.
+            if (_log.isDebugEnabled()) {
+                _log.debug("Error generating error response", e);
+            }
+
+            throw new IOException("Error generating Error response");
+        }
+    }
+
     private Object deserialize(Class res, InputStream is)
         throws JAXBException
     {
@@ -89,7 +124,7 @@ public abstract class HQConnection {
     }
 
     Object doGet(String path, Map params, Class resultClass)
-        throws IOException, JAXBException
+        throws IOException
     {
         GetMethod method = new GetMethod();
         method.setDoAuthentication(true);
@@ -115,14 +150,24 @@ public abstract class HQConnection {
     }
 
     Object doPost(String path, Object o, Class resultClass)
-        throws IOException, JAXBException
+        throws IOException
     {
         PostMethod method = new PostMethod();
         method.setDoAuthentication(true);
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        serialize(o, bos);
-
+        try {
+            serialize(o, bos);
+        } catch (JAXBException e) {
+            ServiceError error = new ServiceError();
+            error.setErrorCode("UnexpectedError");
+            error.setReasonText("Unable to serialize response");
+            if (_log.isDebugEnabled()) {
+                _log.debug("Unable to serialize response", e);
+            }
+            return getErrorResponse(resultClass, error);
+        }
+        
         Part[] parts = {
             new StringPart("postdata", bos.toString())
         };
@@ -135,7 +180,7 @@ public abstract class HQConnection {
 
     private Object runMethod(HttpMethodBase method, String uri,
                              Class resultClass)
-        throws IOException, JAXBException
+        throws IOException
     {
         String protocol = _isSecure ? "https" : "http";
 
@@ -152,19 +197,36 @@ public abstract class HQConnection {
 
         if (code == 200) {
             // We only deal with HTTP_OK responses
-            if (resultClass != null) {
-                if (_log.isDebugEnabled()) {
-                    _log.debug("HTTP Response: " +
-                               method.getResponseBodyAsString());
-                }
-                
-                InputStream is = method.getResponseBodyAsStream();
-                return deserialize(resultClass, is);
+            if (_log.isDebugEnabled()) {
+                _log.debug("HTTP Response: " +
+                           method.getResponseBodyAsString());
             }
+                
+            InputStream is = method.getResponseBodyAsStream();
+            try {
+                return deserialize(resultClass, is);
+            } catch (JAXBException e) {
+                ServiceError error = new ServiceError();
+                error.setErrorCode("UnexpectedError");
+                error.setReasonText("Unable to deserialize result");
+                if (_log.isDebugEnabled()) {
+                    _log.debug("Unable to deserialize result", e);
+                }
+                return getErrorResponse(resultClass, error);
+            }
+        } else if (code == 401) {
+            // Unauthorized
+            ServiceError error = new  ServiceError();
+            error.setErrorCode("LoginFailure");
+            error.setReasonText("The given username and password could " +
+                                "not be validated");
+            return getErrorResponse(resultClass, error);
         } else {
-            throw new HttpException("Invalid HTTP return code " + code);
-        }
-
-        return null;   
+            // Some other server blow up.
+            ServiceError error = new ServiceError();
+            error.setErrorCode("UnexpectedError");
+            error.setReasonText("An unexpected error occured");
+            return getErrorResponse(resultClass, error);
+        } 
     }
 }

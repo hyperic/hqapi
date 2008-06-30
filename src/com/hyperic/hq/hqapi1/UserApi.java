@@ -50,14 +50,14 @@ public class UserApi extends HQConnection {
      *
      * <p>
      * <ul>
+     *   <li>LoginFailure - The given username and password could not be validated.
      *   <li>ObjectNotFound - The given user was not found.
      * </ul>
      * </p>
-     * @throws java.io.IOException
-     * @throws javax.xml.bind.JAXBException
+     * @throws IOException If a network error occurs while making the request.
      */
     public GetUserResponse getUser(String name)
-        throws IOException, JAXBException
+        throws IOException
     {
         Map params = new HashMap();
         params.put("name", name);
@@ -70,11 +70,19 @@ public class UserApi extends HQConnection {
      * @return On {@link com.hyperic.hq.hqapi1.jaxb.ResponseStatus#SUCCESS},
      * a list of Users is returned.
      *
-     * @throws IOException
-     * @throws JAXBException
+     * On {@link com.hyperic.hq.hqapi1.jaxb.ResponseStatus#FAILURE} the
+     * following error codes can be returned:
+     *
+     * <p>
+     * <ul>
+     *   <li>LoginFailure - The given username and password could not be validated.
+     * </ul>
+     * </p>
+     *
+     * @throws IOException If a network error occurs while making the request.
      */
     public GetUsersResponse getUsers()
-        throws IOException, JAXBException
+        throws IOException
     {
         return (GetUsersResponse)doGet("/hqu/hqapi1/user/list.hqu",
                                        NO_PARAMS, GetUsersResponse.class);
@@ -93,16 +101,16 @@ public class UserApi extends HQConnection {
      *
      * <p>
      * <ul>
+     *   <li>LoginFailure - The given username and password could not be validated.
      *   <li>InvalidParameters - All the required parameters in the User object were not supplied.
      *   <li>ObjectExists - The user by the given name already exists.
      *   <li>UnexpectedError - Any other internal server error.
      * </ul>
      * </p>
-     * @throws IOException
-     * @throws JAXBException
+     * @throws IOException If a network error occurs while making the request.
      */
     public CreateUserResponse createUser(User user, String password)
-        throws IOException, JAXBException
+        throws IOException
     {
         Map params = new HashMap();
 
@@ -132,12 +140,12 @@ public class UserApi extends HQConnection {
      *
      * <p>
      * <ul>
+     *   <li>LoginFailure - The given username and password could not be validated.
      *   <li>ObjectNotFound - The given user was not found in the system.
      *   <li>UnexpectedError - Any other internal server error.
      * </ul>
      * </p>
-     * @throws IOException
-     * @throws JAXBException
+     * @throws IOException If a network error occurs while making the request.
      */
     public DeleteUserResponse deleteUser(User user)
         throws IOException, JAXBException
@@ -162,13 +170,13 @@ public class UserApi extends HQConnection {
      *
      * <p>
      * <ul>
+     *   <li>LoginFailure - The given username and password could not be validated. 
      *   <li>ObjectNotFound - The given user was not found in the system.
      *   <li>PermissionDenied - The connected user does not have permission to modify this user.
      *   <li>UnexpectedError - Any other internal server error.
      * </ul>
      * </p>
-     * @throws IOException
-     * @throws JAXBException
+     * @throws IOException If a network error occurs while making the request.
      */
     public SyncUserResponse syncUser(User user)
         throws IOException, JAXBException
