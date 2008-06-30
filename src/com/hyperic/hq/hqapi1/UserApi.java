@@ -32,7 +32,7 @@ public class UserApi extends HQConnection {
      * @param user     The user to connect as.
      * @param password The password for the given user.
      */
-    public UserApi(String host, int port, boolean isSecure, String user,
+    UserApi(String host, int port, boolean isSecure, String user,
                    String password) {
         super(host, port, isSecure, user, password);
     }
