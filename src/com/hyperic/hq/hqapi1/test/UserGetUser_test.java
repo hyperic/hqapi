@@ -2,7 +2,6 @@ package com.hyperic.hq.hqapi1.test;
 
 import com.hyperic.hq.hqapi1.UserApi;
 import com.hyperic.hq.hqapi1.types.GetUserResponse;
-import com.hyperic.hq.hqapi1.types.ResponseStatus;
 
 public class UserGetUser_test extends UserTestBase {
 

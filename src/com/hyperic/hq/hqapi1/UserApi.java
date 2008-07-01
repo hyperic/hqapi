@@ -58,7 +58,7 @@ public class UserApi extends HQConnection {
     public GetUserResponse getUser(String name)
         throws IOException
     {
-        Map params = new HashMap();
+        Map<String, String> params = new HashMap<String, String>();
         params.put("name", name);
         return (GetUserResponse)doGet("/hqu/hqapi1/user/get.hqu",
                                       params, GetUserResponse.class);
@@ -111,7 +111,7 @@ public class UserApi extends HQConnection {
     public CreateUserResponse createUser(User user, String password)
         throws IOException
     {
-        Map params = new HashMap();
+        Map<String, String> params = new HashMap<String, String>();
 
         params.put("Name", user.getName());
         params.put("Password", password);
@@ -149,7 +149,7 @@ public class UserApi extends HQConnection {
     public DeleteUserResponse deleteUser(User user)
         throws IOException
     {
-        Map params = new HashMap();
+        Map<String, String> params = new HashMap<String, String>();
 
         params.put("Name", user.getName());
 
@@ -184,6 +184,6 @@ public class UserApi extends HQConnection {
         req.setUser(user);
 
         return (UpdateUserResponse)doPost("/hqu/hqapi1/user/update.hqu",
-                                        req, UpdateUserResponse.class);
+                                          req, UpdateUserResponse.class);
     }
 }
