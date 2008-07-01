@@ -4,16 +4,16 @@ import com.hyperic.hq.hqapi1.UserApi;
 import com.hyperic.hq.hqapi1.jaxb.User;
 import com.hyperic.hq.hqapi1.jaxb.CreateUserResponse;
 import com.hyperic.hq.hqapi1.jaxb.ResponseStatus;
-import com.hyperic.hq.hqapi1.jaxb.SyncUserResponse;
+import com.hyperic.hq.hqapi1.jaxb.UpdateUserResponse;
 import com.hyperic.hq.hqapi1.jaxb.GetUserResponse;
 
-public class UserSync_test extends UserTestBase {
+public class UserUpdate_test extends UserTestBase {
 
-    public UserSync_test(String name) {
+    public UserUpdate_test(String name) {
         super(name);
     }
 
-    public void testSync() throws Exception {
+    public void testUpdate() throws Exception {
 
         UserApi api = getUserApi();
 
@@ -39,8 +39,8 @@ public class UserSync_test extends UserTestBase {
         user.setPhoneNumber(PHONE);
         user.setActive(ACTIVE);
         user.setHtmlEmail(HTML);
-        SyncUserResponse syncResponse = api.syncUser(user);
-        assertEquals(ResponseStatus.SUCCESS, syncResponse.getStatus());
+        UpdateUserResponse updateResponse = api.updateUser(user);
+        assertEquals(ResponseStatus.SUCCESS, updateResponse.getStatus());
 
         // Test the name has been updated
         GetUserResponse getResponse = api.getUser(user.getName());
@@ -56,7 +56,7 @@ public class UserSync_test extends UserTestBase {
         assertEquals(HTML,   u.isHtmlEmail());
     }
 
-    public void testSyncNoPermission() throws Exception {
+    public void testUpdateNoPermission() throws Exception {
 
         UserApi api = getUserApi();
 
@@ -73,8 +73,8 @@ public class UserSync_test extends UserTestBase {
         u.setName("hqadmin");
         u.setFirstName("Updated FirstName");
 
-        SyncUserResponse syncResponse = apiNewUser.syncUser(u);
-        assertEquals(ResponseStatus.FAILURE, syncResponse.getStatus());
-        assertEquals("PermissionDenied", syncResponse.getError().getErrorCode());
+        UpdateUserResponse updateResponse = apiNewUser.updateUser(u);
+        assertEquals(ResponseStatus.FAILURE, updateResponse.getStatus());
+        assertEquals("PermissionDenied", updateResponse.getError().getErrorCode());
     }
 }

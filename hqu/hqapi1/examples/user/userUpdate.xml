@@ -1,4 +1,4 @@
-<SyncUserRequest>
+<UpdateUserRequest>
     <User>
         <Id>1</Id>
         <Name>hqadmin</Name>
@@ -10,4 +10,4 @@
         <Active>true</Active>
         <HtmlEmail>false</HtmlEmail>
     </User>
-</SyncUserRequest>
+</UpdateUserRequest>

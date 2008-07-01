@@ -72,7 +72,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="SyncUserRequest">
+    <xs:element name="UpdateUserRequest">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="User" type="User"/>
@@ -80,7 +80,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="SyncUserResponse">
+    <xs:element name="UpdateUserResponse">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="Status" type="ResponseStatus"/>

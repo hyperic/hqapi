@@ -5,8 +5,8 @@ import com.hyperic.hq.hqapi1.jaxb.GetUsersResponse;
 import com.hyperic.hq.hqapi1.jaxb.CreateUserResponse;
 import com.hyperic.hq.hqapi1.jaxb.User;
 import com.hyperic.hq.hqapi1.jaxb.DeleteUserResponse;
-import com.hyperic.hq.hqapi1.jaxb.SyncUserResponse;
-import com.hyperic.hq.hqapi1.jaxb.SyncUserRequest;
+import com.hyperic.hq.hqapi1.jaxb.UpdateUserResponse;
+import com.hyperic.hq.hqapi1.jaxb.UpdateUserRequest;
 
 import java.io.IOException;
 import java.util.Map;
@@ -158,11 +158,11 @@ public class UserApi extends HQConnection {
     }
 
     /**
-     * Sync a {@link User} with HQ.
+     * Update a {@link User}
      *
-     * @param user The user to sync
+     * @param user The user to update.
      * @return {@link com.hyperic.hq.hqapi1.jaxb.ResponseStatus#SUCCESS} if the
-     * user was synced successfully.
+     * user was updated successfully.
      *
      * On {@link com.hyperic.hq.hqapi1.jaxb.ResponseStatus#FAILURE} the
      * following error codes can be returned:
@@ -177,13 +177,13 @@ public class UserApi extends HQConnection {
      * </p>
      * @throws IOException If a network error occurs while making the request.
      */
-    public SyncUserResponse syncUser(User user)
+    public UpdateUserResponse updateUser(User user)
         throws IOException
     {
-        SyncUserRequest req = new SyncUserRequest();
+        UpdateUserRequest req = new UpdateUserRequest();
         req.setUser(user);
 
-        return (SyncUserResponse)doPost("/hqu/hqapi1/user/sync.hqu",
-                                        req, SyncUserResponse.class);
+        return (UpdateUserResponse)doPost("/hqu/hqapi1/user/update.hqu",
+                                        req, UpdateUserResponse.class);
     }
 }

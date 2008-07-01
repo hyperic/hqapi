@@ -5,7 +5,7 @@ import org.hyperic.hq.authz.shared.PermissionException;
 class UserController extends ApiController
 {
     protected void init() {
-        setXMLMethods(['list', 'get', 'create', 'delete', 'sync'])
+        setXMLMethods(['list', 'get', 'create', 'delete', 'update'])
     }
 
     private printUser(xmlOut, u) {
@@ -128,16 +128,16 @@ class UserController extends ApiController
         xmlOut
     }
 
-    def sync(xmlOut, params) {
+    def update(xmlOut, params) {
 
         try {
-            def syncRequest = new XmlParser().parseText(getUpload('postdata'))
-            def xmlIn = syncRequest['User'];
+            def updateRequest = new XmlParser().parseText(getUpload('postdata'))
+            def xmlIn = updateRequest['User'];
 
             def name = xmlIn['Name'].text()
             def existing = userHelper.findUser(name)
             if (!existing) {
-                xmlOut.SyncUserResponse() {
+                xmlOut.UpdateUserResponse() {
                     printFailureStatus(xmlOut, "ObjectNotFound")
                 }
             } else {
@@ -151,17 +151,17 @@ class UserController extends ApiController
                                       xmlIn['PhoneNumber'].text(),
                                       xmlIn['SMSAddress'].text(),
                                       xmlIn['HtmlEmail'].text()?.toBoolean())
-                xmlOut.SyncUserResponse() {
+                xmlOut.UpdateUserResponse() {
                     printSuccessStatus(xmlOut)
                 }
             }
         } catch (PermissionException e) {
-            xmlOut.SyncUserResponse() {
+            xmlOut.UpdateUserResponse() {
                 printFailureStatus(xmlOut, "PermissionDenied")
             }
         } catch (Exception e) {
             log.error("UnexpectedError: " + e.getMessage(), e)
-            xmlOut.SyncUserResponse() {
+            xmlOut.UpdateUserResponse() {
                 printFailureStatus(xmlOut, "UnexpectedError")
             }
         }
