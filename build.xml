@@ -24,9 +24,9 @@
         <mkdir dir="${build.dir}/classes"/>
 
         <xjc destdir="${build.dir}/src" extension="true" removeOldOutput="yes"
-             package="com.hyperic.hq.hqapi1.jaxb">
+             package="com.hyperic.hq.hqapi1.types">
             <schema dir="xsd" includes="HQApi1.xsd"/>
-            <produces dir="${build.dir}/src/com/hyperic/hq/hqapi1/jaxb"
+            <produces dir="${build.dir}/src/com/hyperic/hq/hqapi1/types"
                       includes="**/"/>
         </xjc>
     </target>
@@ -51,7 +51,7 @@
         <delete dir="${build.dir}"/>
     </target>
 
-    <!-- Package a distribution -->
+    <!-- Package a distribution, this needs some work -->
     <target name="dist" depends="compile,javadoc">
 
         <mkdir dir="${dist.dir}"/>
@@ -62,8 +62,26 @@
             </fileset>
         </copy>
 
-        <!-- Bundle API jar in the public directory for easy distribution -->
-        <jar file="${dist.dir}/hqapi1/public/hqapi1.jar">
+        <!-- Bundle a distribution for easy download through HQ -->
+        <mkdir dir="${build.dir}/hqapi1"/>
+        <mkdir dir="${build.dir}/hqapi1/lib"/>
+
+        <!-- Include support jars -->
+        <copy todir="${build.dir}/hqapi1/lib">
+            <fileset dir="${basedir}/lib">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
+
+        <!-- Include javadoc -->
+        <copy todir="${build.dir}/hqapi1">
+            <fileset dir="${build.dir}">
+                <include name="javadoc/**"/>
+            </fileset>            
+        </copy>
+
+        <!-- Include hqapi1.jar -->
+        <jar file="${build.dir}/hqapi1/hqapi1.jar">
             <fileset dir="${build.dir}/classes">
                 <include name="**"/>
                 <exclude name="**/*_test.class"/>
@@ -71,15 +89,17 @@
         </jar>
 
         <!-- Include the XSD -->
-        <copy toDir="${dist.dir}/hqapi1/public"
+        <copy toDir="${build.dir}/hqapi1"
               file="${basedir}/xsd/HQApi1.xsd"/>
 
-        <!-- Include API java doc -->
-        <copy todir="${dist.dir}/hqapi1/public">
-            <fileset dir="${build.dir}">
-                <include name="javadoc/**"/>
-            </fileset>
-        </copy>
+        <tar tarfile="${dist.dir}/hqapi1/public/hqapi1.tar.gz"
+             longfile="gnu"
+             compression="gzip">
+            <tarfileset dir="${build.dir}" mode="755">
+                <include name="hqapi1/**"/>
+            </tarfileset>
+        </tar>
+
     </target>
 
     <!-- Run a single test -->

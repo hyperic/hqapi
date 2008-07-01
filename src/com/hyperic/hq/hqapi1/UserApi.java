@@ -1,12 +1,12 @@
 package com.hyperic.hq.hqapi1;
 
-import com.hyperic.hq.hqapi1.jaxb.GetUserResponse;
-import com.hyperic.hq.hqapi1.jaxb.GetUsersResponse;
-import com.hyperic.hq.hqapi1.jaxb.CreateUserResponse;
-import com.hyperic.hq.hqapi1.jaxb.User;
-import com.hyperic.hq.hqapi1.jaxb.DeleteUserResponse;
-import com.hyperic.hq.hqapi1.jaxb.UpdateUserResponse;
-import com.hyperic.hq.hqapi1.jaxb.UpdateUserRequest;
+import com.hyperic.hq.hqapi1.types.GetUserResponse;
+import com.hyperic.hq.hqapi1.types.GetUsersResponse;
+import com.hyperic.hq.hqapi1.types.CreateUserResponse;
+import com.hyperic.hq.hqapi1.types.User;
+import com.hyperic.hq.hqapi1.types.DeleteUserResponse;
+import com.hyperic.hq.hqapi1.types.UpdateUserResponse;
+import com.hyperic.hq.hqapi1.types.UpdateUserRequest;
 
 import java.io.IOException;
 import java.util.Map;
@@ -17,9 +17,9 @@ import java.util.HashMap;
  *
  * This class provides access to the users within the HQ system.  Each of the
  * methods in this class return response objects that wrap the result of the
- * method with a {@link com.hyperic.hq.hqapi1.jaxb.ResponseStatus} and a
- * {@link com.hyperic.hq.hqapi1.jaxb.ServiceError} that indicates the error
- * if the response status is {@link com.hyperic.hq.hqapi1.jaxb.ResponseStatus#FAILURE}.
+ * method with a {@link com.hyperic.hq.hqapi1.types.ResponseStatus} and a
+ * {@link com.hyperic.hq.hqapi1.types.ServiceError} that indicates the error
+ * if the response status is {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE}.
  *
  */
 public class UserApi extends HQConnection {
@@ -37,14 +37,14 @@ public class UserApi extends HQConnection {
     }
 
     /**
-     * Find a {@link com.hyperic.hq.hqapi1.jaxb.User} by name.
+     * Find a {@link com.hyperic.hq.hqapi1.types.User} by name.
      *
      * @param name The user name to search for.
-     * @return On {@link com.hyperic.hq.hqapi1.jaxb.ResponseStatus#SUCCESS},
+     * @return On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the User by the given name is returned via
-     * {@link com.hyperic.hq.hqapi1.jaxb.GetUserResponse#getUser()}.
+     * {@link com.hyperic.hq.hqapi1.types.GetUserResponse#getUser()}.
      *
-     * On {@link com.hyperic.hq.hqapi1.jaxb.ResponseStatus#FAILURE} the
+     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>
@@ -65,11 +65,11 @@ public class UserApi extends HQConnection {
     }
 
     /**
-     * Find all {@link com.hyperic.hq.hqapi1.jaxb.User}s in the system.
-     * @return On {@link com.hyperic.hq.hqapi1.jaxb.ResponseStatus#SUCCESS},
+     * Find all {@link com.hyperic.hq.hqapi1.types.User}s in the system.
+     * @return On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * a list of Users is returned.
      *
-     * On {@link com.hyperic.hq.hqapi1.jaxb.ResponseStatus#FAILURE} the
+     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>
@@ -88,14 +88,14 @@ public class UserApi extends HQConnection {
     }
 
     /**
-     * Create a {@link com.hyperic.hq.hqapi1.jaxb.User}.
+     * Create a {@link com.hyperic.hq.hqapi1.types.User}.
      *
      * @param user The user to create.
      * @param password The password for this user.
-     * @return {@link com.hyperic.hq.hqapi1.jaxb.ResponseStatus#SUCCESS} is the
+     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} is the
      * user was created successfully.
      *
-     * On {@link com.hyperic.hq.hqapi1.jaxb.ResponseStatus#FAILURE} the
+     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>
@@ -131,10 +131,10 @@ public class UserApi extends HQConnection {
      * Delete a {@link User}
      *
      * @param user The user to delete.
-     * @return {@link com.hyperic.hq.hqapi1.jaxb.ResponseStatus#SUCCESS} is the
+     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} is the
      * user was deleted successfully.
      *
-     * On {@link com.hyperic.hq.hqapi1.jaxb.ResponseStatus#FAILURE} the
+     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>
@@ -161,10 +161,10 @@ public class UserApi extends HQConnection {
      * Update a {@link User}
      *
      * @param user The user to update.
-     * @return {@link com.hyperic.hq.hqapi1.jaxb.ResponseStatus#SUCCESS} if the
+     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * user was updated successfully.
      *
-     * On {@link com.hyperic.hq.hqapi1.jaxb.ResponseStatus#FAILURE} the
+     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>

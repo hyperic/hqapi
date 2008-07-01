@@ -1,10 +1,9 @@
 package com.hyperic.hq.hqapi1.test;
 
-import com.hyperic.hq.hqapi1.HQApi;
 import com.hyperic.hq.hqapi1.UserApi;
-import com.hyperic.hq.hqapi1.jaxb.User;
-import com.hyperic.hq.hqapi1.jaxb.GetUsersResponse;
-import com.hyperic.hq.hqapi1.jaxb.ResponseStatus;
+import com.hyperic.hq.hqapi1.types.User;
+import com.hyperic.hq.hqapi1.types.GetUsersResponse;
+import com.hyperic.hq.hqapi1.types.ResponseStatus;
 
 import java.util.Iterator;
 

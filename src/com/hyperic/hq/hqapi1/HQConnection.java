@@ -32,8 +32,8 @@ import java.net.URLEncoder;
 import java.net.SocketException;
 import java.lang.reflect.Method;
 
-import com.hyperic.hq.hqapi1.jaxb.ResponseStatus;
-import com.hyperic.hq.hqapi1.jaxb.ServiceError;
+import com.hyperic.hq.hqapi1.types.ResponseStatus;
+import com.hyperic.hq.hqapi1.types.ServiceError;
 
 public abstract class HQConnection {
 
