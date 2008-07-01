@@ -40,11 +40,12 @@ public class UserUpdate_test extends UserTestBase {
         user.setActive(ACTIVE);
         user.setHtmlEmail(HTML);
         UpdateUserResponse updateResponse = api.updateUser(user);
-        assertEquals(ResponseStatus.SUCCESS, updateResponse.getStatus());
+        // Assert update success
+        hqAssertSuccess(updateResponse.getStatus());
 
         // Test the name has been updated
         GetUserResponse getResponse = api.getUser(user.getName());
-        assertEquals(ResponseStatus.SUCCESS, getResponse.getStatus());
+        hqAssertSuccess(getResponse.getStatus());
         User u = getResponse.getUser();
         assertEquals(FIRST,  u.getFirstName());
         assertEquals(LAST,   u.getLastName());
@@ -63,7 +64,7 @@ public class UserUpdate_test extends UserTestBase {
         User user = generateTestUser();
 
         CreateUserResponse createResponse = api.createUser(user, PASSWORD);
-        assertEquals(ResponseStatus.SUCCESS, createResponse.getStatus());
+        hqAssertSuccess(createResponse.getStatus());
 
         // Reconnect as the new user
 
@@ -74,7 +75,7 @@ public class UserUpdate_test extends UserTestBase {
         u.setFirstName("Updated FirstName");
 
         UpdateUserResponse updateResponse = apiNewUser.updateUser(u);
-        assertEquals(ResponseStatus.FAILURE, updateResponse.getStatus());
-        assertEquals("PermissionDenied", updateResponse.getError().getErrorCode());
+        hqAssertFailure(updateResponse.getStatus());
+        hqAssertErrorPermissionDenied(updateResponse.getError());
     }
 }

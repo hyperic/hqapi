@@ -18,7 +18,7 @@ public class UserGetUsers_test extends UserTestBase {
         GetUsersResponse response = api.getUsers();
 
         // Assert success response
-        assertEquals(ResponseStatus.SUCCESS, response.getStatus());
+        hqAssertSuccess(response.getStatus());
 
         // Should never have 0 users
         assertNotNull(response);

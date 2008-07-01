@@ -18,7 +18,7 @@ public class UserCreate_test extends UserTestBase {
 
         CreateUserResponse response = api.createUser(user, PASSWORD);
 
-        assertEquals(ResponseStatus.SUCCESS, response.getStatus());
+        hqAssertSuccess(response.getStatus());
     }
 
     public void testCreateDuplicate() throws Exception {
@@ -31,8 +31,8 @@ public class UserCreate_test extends UserTestBase {
 
         // Attempt to create the same user again
         CreateUserResponse response2 = api.createUser(user, PASSWORD);
-        assertEquals(ResponseStatus.FAILURE, response2.getStatus());
-        assertEquals("ObjectExists", response2.getError().getErrorCode());
+        hqAssertFailure(response2.getStatus());
+        hqAssertErrorObjectExists(response2.getError());
     }
 
     public void testCreateEmptyUser() throws Exception {
@@ -41,8 +41,8 @@ public class UserCreate_test extends UserTestBase {
         User user = new User();
         CreateUserResponse response = api.createUser(user, PASSWORD);
 
-        assertEquals(ResponseStatus.FAILURE, response.getStatus());
-        assertEquals("InvalidParameters", response.getError().getErrorCode());
+        hqAssertFailure(response.getStatus());
+        hqAssertErrorInvalidParameters(response.getError());
     }
 
     public void testCreateEmptyName() throws Exception {
@@ -53,8 +53,8 @@ public class UserCreate_test extends UserTestBase {
 
         CreateUserResponse response = api.createUser(user, PASSWORD);
 
-        assertEquals(ResponseStatus.FAILURE, response.getStatus());
-        assertEquals("InvalidParameters", response.getError().getErrorCode());
+        hqAssertFailure(response.getStatus());
+        hqAssertErrorInvalidParameters(response.getError());
     }
 
     public void testCreateEmptyFirstName() throws Exception {
@@ -65,8 +65,8 @@ public class UserCreate_test extends UserTestBase {
 
         CreateUserResponse response = api.createUser(user, PASSWORD);
 
-        assertEquals(ResponseStatus.FAILURE, response.getStatus());
-        assertEquals("InvalidParameters", response.getError().getErrorCode());
+        hqAssertFailure(response.getStatus());
+        hqAssertErrorInvalidParameters(response.getError());
     }
 
     public void testCreateEmptyLastName() throws Exception {
@@ -77,8 +77,8 @@ public class UserCreate_test extends UserTestBase {
 
         CreateUserResponse response = api.createUser(user, PASSWORD);
 
-        assertEquals(ResponseStatus.FAILURE, response.getStatus());
-        assertEquals("InvalidParameters", response.getError().getErrorCode());
+        hqAssertFailure(response.getStatus());
+        hqAssertErrorInvalidParameters(response.getError());
     }
 
     public void testCreateEmptyEmailAddress() throws Exception {
@@ -89,8 +89,8 @@ public class UserCreate_test extends UserTestBase {
 
         CreateUserResponse response = api.createUser(user, PASSWORD);
 
-        assertEquals(ResponseStatus.FAILURE, response.getStatus());
-        assertEquals("InvalidParameters", response.getError().getErrorCode());
+        hqAssertFailure(response.getStatus());
+        hqAssertErrorInvalidParameters(response.getError());
     }
 
     public void testCreateEmptyPassword() throws Exception {
@@ -100,7 +100,7 @@ public class UserCreate_test extends UserTestBase {
 
         CreateUserResponse response = api.createUser(user, null);
 
-        assertEquals(ResponseStatus.FAILURE, response.getStatus());
-        assertEquals("InvalidParameters", response.getError().getErrorCode());
+        hqAssertFailure(response.getStatus());
+        hqAssertErrorInvalidParameters(response.getError());
     }
 }

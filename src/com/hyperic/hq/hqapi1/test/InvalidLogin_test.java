@@ -15,7 +15,7 @@ public class InvalidLogin_test extends HQApiTestBase {
         UserApi api = getApi("invalidUser", "invalidPassword").getUserApi();
         GetUsersResponse response = api.getUsers();
 
-        assertEquals(ResponseStatus.FAILURE, response.getStatus());
-        assertEquals("LoginFailure", response.getError().getErrorCode());
+        hqAssertFailure(response.getStatus());
+        hqAssertErrorLoginFailure(response.getError());
     }
 }
