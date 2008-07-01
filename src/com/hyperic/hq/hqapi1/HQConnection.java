@@ -64,15 +64,22 @@ public class HQConnection {
     }
 
     /**
+     * Generate an response object with the given Error.  In some cases the
+     * HQ server will not give us a result, so we generate one ourselves.
      * XXX: It would be nice here if we could get JAXB to generate an
      *      interface for all response objects so we don't need to use
-     *      Java reflection here.
+     *      reflection here.
+     * 
+     * @param res The return Class
+     * @param error The ServiceError to include in the response
+     * @return A response object of the given type with the given service error.
+     * @throws IOException If an error occurs generating the error object.
      */
-    private Object getErrorResponse(Class res, ServiceError error)
+    private <T> T getErrorResponse(Class<T> res, ServiceError error)
         throws IOException
     {
         try {
-            Object ret = res.newInstance();
+            T ret = res.newInstance();
 
             Method setResponse = res.getDeclaredMethod("setStatus",
                                                        ResponseStatus.class);
@@ -94,7 +101,7 @@ public class HQConnection {
         }
     }
 
-    private Object deserialize(Class res, InputStream is)
+    private <T> T deserialize(Class<T> res, InputStream is)
         throws JAXBException
     {
         String pkg = res.getPackage().getName();
@@ -120,7 +127,7 @@ public class HQConnection {
         return URLEncoder.encode(s, "UTF-8");
     }
 
-    Object doGet(String path, Map params, Class resultClass)
+    <T> T doGet(String path, Map params, Class<T> resultClass)
         throws IOException
     {
         GetMethod method = new GetMethod();
@@ -146,7 +153,7 @@ public class HQConnection {
         return runMethod(method, uri.toString(), resultClass);
     }
 
-    Object doPost(String path, Object o, Class resultClass)
+    <T> T doPost(String path, Object o, Class<T> resultClass)
         throws IOException
     {
         PostMethod method = new PostMethod();
@@ -175,8 +182,8 @@ public class HQConnection {
         return runMethod(method, path, resultClass);
     }
 
-    private Object runMethod(HttpMethodBase method, String uri,
-                             Class resultClass)
+    private <T> T runMethod(HttpMethodBase method, String uri,
+                            Class<T> resultClass)
         throws IOException
     {
         String protocol = _isSecure ? "https" : "http";

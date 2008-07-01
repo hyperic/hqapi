@@ -54,9 +54,8 @@ public class UserApi {
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("name", name);
-        return (GetUserResponse)_connection.doGet("/hqu/hqapi1/user/get.hqu",
-                                                  params,
-                                                  GetUserResponse.class);
+        return _connection.doGet("/hqu/hqapi1/user/get.hqu",
+                                 params, GetUserResponse.class);
     }
 
     /**
@@ -78,9 +77,8 @@ public class UserApi {
     public GetUsersResponse getUsers()
         throws IOException
     {
-        return (GetUsersResponse)_connection.doGet("/hqu/hqapi1/user/list.hqu",
-                                                   new HashMap(),
-                                                   GetUsersResponse.class);
+        return _connection.doGet("/hqu/hqapi1/user/list.hqu",
+                                 new HashMap(), GetUsersResponse.class);
     }
 
     /**
@@ -119,9 +117,8 @@ public class UserApi {
         params.put("HtmlEmail", Boolean.valueOf(user.isActive()).toString());
         params.put("SMSAddress", user.getSMSAddress());
 
-        return (CreateUserResponse)_connection.doGet("/hqu/hqapi1/user/create.hqu",
-                                                     params,
-                                                     CreateUserResponse.class);
+        return _connection.doGet("/hqu/hqapi1/user/create.hqu",
+                                 params, CreateUserResponse.class);
     }
 
     /**
@@ -150,9 +147,8 @@ public class UserApi {
 
         params.put("Name", user.getName());
 
-        return (DeleteUserResponse)_connection.doGet("/hqu/hqapi1/user/delete.hqu",
-                                                     params,
-                                                     DeleteUserResponse.class);
+        return _connection.doGet("/hqu/hqapi1/user/delete.hqu",
+                                 params, DeleteUserResponse.class);
     }
 
     /**
@@ -181,7 +177,7 @@ public class UserApi {
         UpdateUserRequest req = new UpdateUserRequest();
         req.setUser(user);
 
-        return (UpdateUserResponse)_connection.doPost("/hqu/hqapi1/user/update.hqu",
-                                                      req, UpdateUserResponse.class);
+        return _connection.doPost("/hqu/hqapi1/user/update.hqu",
+                                  req, UpdateUserResponse.class);
     }
 }
