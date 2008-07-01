@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <!-- Error handling -->
+    <xs:simpleType name="ResponseStatus">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Success"/>
+            <xs:enumeration value="Failure"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>
