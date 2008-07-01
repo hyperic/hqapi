@@ -22,18 +22,12 @@ import java.util.HashMap;
  * if the response status is {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE}.
  *
  */
-public class UserApi extends HQConnection {
+public class UserApi {
 
-    /**
-     * @param host     The hostname of the HQ Server to connect to.
-     * @param port     The port on the HQ server to connect to.
-     * @param isSecure Set to true if connecting via SSL.
-     * @param user     The user to connect as.
-     * @param password The password for the given user.
-     */
-    UserApi(String host, int port, boolean isSecure, String user,
-                   String password) {
-        super(host, port, isSecure, user, password);
+    private HQConnection _connection;
+
+    UserApi(HQConnection connection) {
+        _connection = connection;
     }
 
     /**
@@ -60,8 +54,9 @@ public class UserApi extends HQConnection {
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("name", name);
-        return (GetUserResponse)doGet("/hqu/hqapi1/user/get.hqu",
-                                      params, GetUserResponse.class);
+        return (GetUserResponse)_connection.doGet("/hqu/hqapi1/user/get.hqu",
+                                                  params,
+                                                  GetUserResponse.class);
     }
 
     /**
@@ -83,8 +78,9 @@ public class UserApi extends HQConnection {
     public GetUsersResponse getUsers()
         throws IOException
     {
-        return (GetUsersResponse)doGet("/hqu/hqapi1/user/list.hqu",
-                                       NO_PARAMS, GetUsersResponse.class);
+        return (GetUsersResponse)_connection.doGet("/hqu/hqapi1/user/list.hqu",
+                                                   new HashMap(),
+                                                   GetUsersResponse.class);
     }
 
     /**
@@ -123,8 +119,9 @@ public class UserApi extends HQConnection {
         params.put("HtmlEmail", Boolean.valueOf(user.isActive()).toString());
         params.put("SMSAddress", user.getSMSAddress());
 
-        return (CreateUserResponse)doGet("/hqu/hqapi1/user/create.hqu",
-                                         params, CreateUserResponse.class);
+        return (CreateUserResponse)_connection.doGet("/hqu/hqapi1/user/create.hqu",
+                                                     params,
+                                                     CreateUserResponse.class);
     }
 
     /**
@@ -153,8 +150,9 @@ public class UserApi extends HQConnection {
 
         params.put("Name", user.getName());
 
-        return (DeleteUserResponse)doGet("/hqu/hqapi1/user/delete.hqu",
-                                         params, DeleteUserResponse.class);
+        return (DeleteUserResponse)_connection.doGet("/hqu/hqapi1/user/delete.hqu",
+                                                     params,
+                                                     DeleteUserResponse.class);
     }
 
     /**
@@ -183,7 +181,7 @@ public class UserApi extends HQConnection {
         UpdateUserRequest req = new UpdateUserRequest();
         req.setUser(user);
 
-        return (UpdateUserResponse)doPost("/hqu/hqapi1/user/update.hqu",
-                                          req, UpdateUserResponse.class);
+        return (UpdateUserResponse)_connection.doPost("/hqu/hqapi1/user/update.hqu",
+                                                      req, UpdateUserResponse.class);
     }
 }

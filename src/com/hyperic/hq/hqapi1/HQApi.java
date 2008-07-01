@@ -7,7 +7,7 @@ package com.hyperic.hq.hqapi1;
  */
 public class HQApi {
 
-    UserApi _userApi;
+    private UserApi _userApi;
 
     /**
      * @param host The hostname of the HQ Server to connect to.
@@ -18,7 +18,9 @@ public class HQApi {
      */
     public HQApi(String host, int port, boolean isSecure, String user,
                  String password) {
-        _userApi = new UserApi(host, port, isSecure, user, password);
+        HQConnection connection = new HQConnection(host, port, isSecure,
+                                                   user, password);
+        _userApi = new UserApi(connection);
     }
 
     /**
