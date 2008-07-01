@@ -189,7 +189,6 @@ public class HQConnection {
         String protocol = _isSecure ? "https" : "http";
 
         URL url = new URL(protocol, _host, _port, uri);
-        _log.debug("HTTP Request: " + url.toString());
         method.setURI(new URI(url.toString(), true));
 
         int code;
@@ -201,11 +200,6 @@ public class HQConnection {
 
         if (code == 200) {
             // We only deal with HTTP_OK responses
-            if (_log.isDebugEnabled()) {
-                _log.debug("HTTP Response: " +
-                           method.getResponseBodyAsString());
-            }
-                
             InputStream is = method.getResponseBodyAsStream();
             try {
                 return deserialize(resultClass, is);

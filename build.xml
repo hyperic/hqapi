@@ -120,17 +120,19 @@
     <target name="test" depends="compile">
         <mkdir dir="${build.dir}/testresults"/>
 
-        <junit printsummary="yes" fork="yes"
+        <property name="log" value="info"/>
+
+        <junit printsummary="yes" fork="no"
                haltonfailure="yes" showoutput="true">
 
-            <jvmarg value="-Dlog4j.rootLogger=DEBUG"/>
+            <sysproperty key="log" value="${log}"/>
             <classpath refid="all.classpath"/>
             <formatter type="plain"/>
 
             <test name="${testcase}" todir="${build.dir}/testresults"
                   if="single.test" />
             
-            <batchtest fork="yes" todir="${build.dir}/testresults"
+            <batchtest fork="no" todir="${build.dir}/testresults"
                        unless="single.test">
                 <fileset dir="src">
                     <include name="**/*_test.java"/>
