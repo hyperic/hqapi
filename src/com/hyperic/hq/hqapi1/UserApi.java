@@ -8,7 +8,6 @@ import com.hyperic.hq.hqapi1.jaxb.DeleteUserResponse;
 import com.hyperic.hq.hqapi1.jaxb.SyncUserResponse;
 import com.hyperic.hq.hqapi1.jaxb.SyncUserRequest;
 
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
@@ -148,7 +147,7 @@ public class UserApi extends HQConnection {
      * @throws IOException If a network error occurs while making the request.
      */
     public DeleteUserResponse deleteUser(User user)
-        throws IOException, JAXBException
+        throws IOException
     {
         Map params = new HashMap();
 
@@ -179,7 +178,7 @@ public class UserApi extends HQConnection {
      * @throws IOException If a network error occurs while making the request.
      */
     public SyncUserResponse syncUser(User user)
-        throws IOException, JAXBException
+        throws IOException
     {
         SyncUserRequest req = new SyncUserRequest();
         req.setUser(user);
