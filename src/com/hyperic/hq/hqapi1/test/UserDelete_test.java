@@ -20,24 +20,22 @@ public class UserDelete_test extends UserTestBase {
 
         // Create the user
         CreateUserResponse createResponse = api.createUser(user, PASSWORD);
-        hqAssertSuccess(createResponse.getStatus());
+        hqAssertSuccess(createResponse);
 
         // Assert the new user exists
         GetUserResponse getResponse = api.getUser(user.getName());
-        hqAssertSuccess(getResponse.getStatus());
+        hqAssertSuccess(getResponse);
 
         // Delete the same user
         DeleteUserResponse deleteResponse = api.deleteUser(user);
-        hqAssertSuccess(deleteResponse.getStatus());
+        hqAssertSuccess(deleteResponse);
 
         // Assert that user is no longer available
         GetUserResponse getResponse2 = api.getUser(user.getName());
-        hqAssertFailure(getResponse2.getStatus());
-        hqAssertErrorObjectNotFound(getResponse2.getError());
+        hqAssertFailureObjectNotFound(getResponse2);
 
         // Assert a second delete of this user results in failure
         DeleteUserResponse deleteResponse2 = api.deleteUser(user);
-        hqAssertFailure(deleteResponse2.getStatus());
-        hqAssertErrorObjectNotFound(deleteResponse2.getError());
+        hqAssertFailureObjectNotFound(deleteResponse2);
     }
 }

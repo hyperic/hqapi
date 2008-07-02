@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import com.hyperic.hq.hqapi1.HQApi;
 import com.hyperic.hq.hqapi1.types.ResponseStatus;
 import com.hyperic.hq.hqapi1.types.ServiceError;
+import com.hyperic.hq.hqapi1.types.Response;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.util.Properties;
@@ -66,40 +67,50 @@ public class HQApiTestBase  extends TestCase {
         return new HQApi(HOST, PORT, IS_SECURE, user, password);
     }
 
-    // Checks for status success or failure.
+    // Assert SUCCESS
 
-    void hqAssertSuccess(ResponseStatus status) {
-        assertEquals(ResponseStatus.SUCCESS, status);
+    void hqAssertSuccess(Response response) {
+        String error = (response.getError() != null) ?
+            response.getError().getReasonText() : "";
+        assertEquals(error, ResponseStatus.SUCCESS, response.getStatus());
     }
 
-    void hqAssertFailure(ResponseStatus status) {
-        assertEquals(ResponseStatus.FAILURE, status);
-    }
-
-    // Error code checks
+    // Assert a particular FAILURE
     
-    void hqAssertErrorLoginFailure(ServiceError error) {
-        assertEquals("LoginFailure", error.getErrorCode());
+    void hqAssertFailureLoginFailure(Response response) {
+        assertEquals(ResponseStatus.FAILURE, response.getStatus());
+        assertEquals(response.getError().getReasonText(),
+                     "LoginFailure", response.getError().getErrorCode());
     }
 
-    void hqAssertErrorObjectNotFound(ServiceError error) {
-        assertEquals("ObjectNotFound", error.getErrorCode());
+    void hqAssertFailureObjectNotFound(Response response) {
+        assertEquals(ResponseStatus.FAILURE, response.getStatus());
+        assertEquals(response.getError().getReasonText(),
+                     "ObjectNotFound", response.getError().getErrorCode());
     }
 
-    void hqAssertErrorObjectExists(ServiceError error) {
-        assertEquals("ObjectExists", error.getErrorCode());
+    void hqAssertFailureObjectExists(Response response) {
+        assertEquals(ResponseStatus.FAILURE, response.getStatus());
+        assertEquals(response.getError().getReasonText(),
+                     "ObjectExists", response.getError().getErrorCode());
     }
 
-    void hqAssertErrorInvalidParameters(ServiceError error) {
-        assertEquals("InvalidParameters", error.getErrorCode());
+    void hqAssertFailureInvalidParameters(Response response) {
+        assertEquals(ResponseStatus.FAILURE, response.getStatus());
+        assertEquals(response.getError().getReasonText(),
+                     "InvalidParameters", response.getError().getErrorCode());
     }
 
     // Unlikely, but here for completeness.
-    void hqAssertErrorUnexpectedError(ServiceError error) {
-        assertEquals("UnexpectedError", error.getErrorCode());
+    void hqAssertFailureUnexpectedError(Response response) {
+        assertEquals(ResponseStatus.FAILURE, response.getStatus());
+        assertEquals(response.getError().getReasonText(),
+                     "UnexpectedError", response.getError().getErrorCode());
     }
 
-    void hqAssertErrorPermissionDenied(ServiceError error) {
-        assertEquals("PermissionDenied", error.getErrorCode());
+    void hqAssertFailurePermissionDenied(Response response) {
+        assertEquals(ResponseStatus.FAILURE, response.getStatus());
+        assertEquals(response.getError().getReasonText(),
+                     "PermissionDenied", response.getError().getErrorCode());
     }
 }
