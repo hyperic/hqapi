@@ -33,7 +33,7 @@ public class EscalationApi {
      * @param name The escalation name to search for.
      * @return On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the Escalation by the given name is returned via
-     * {@link com.hyperic.hq.hqapi1.types.GetEscalationResponse#getEscalationByName()}.
+     * {@link com.hyperic.hq.hqapi1.types.GetEscalationResponse#getEscalation()}.
      *
      * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
