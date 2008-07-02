@@ -7,15 +7,15 @@
     <!-- User objects -->
     <xs:complexType name="User">
         <xs:attribute name="id"           type="xs:positiveInteger" use="required"/>
-        <xs:attribute name="name"         type="xs:string" use="required"/>
-        <xs:attribute name="firstName"    type="xs:string" use="required"/>
-        <xs:attribute name="lastName"     type="xs:string" use="required"/>
-        <xs:attribute name="department"   type="xs:string"/>
-        <xs:attribute name="emailAddress" type="xs:string" use="required"/>
-        <xs:attribute name="SMSAddress"   type="xs:string"/>
-        <xs:attribute name="phoneNumber"  type="xs:string"/>
-        <xs:attribute name="active"       type="xs:boolean" default="false"/>
-        <xs:attribute name="htmlEmail"    type="xs:boolean" default="false"/>
+        <xs:attribute name="name"         type="xs:string"  use="required"/>
+        <xs:attribute name="firstName"    type="xs:string"  use="required"/>
+        <xs:attribute name="lastName"     type="xs:string"  use="required"/>
+        <xs:attribute name="department"   type="xs:string"  use="required"/>
+        <xs:attribute name="emailAddress" type="xs:string"  use="required"/>
+        <xs:attribute name="SMSAddress"   type="xs:string"  use="required"/>
+        <xs:attribute name="phoneNumber"  type="xs:string"  use="required"/>
+        <xs:attribute name="active"       type="xs:boolean" use="required"/>
+        <xs:attribute name="htmlEmail"    type="xs:boolean" use="required"/>
     </xs:complexType>
 
     <!-- User Responses -->
