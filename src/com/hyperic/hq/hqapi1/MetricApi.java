@@ -1,0 +1,90 @@
+package com.hyperic.hq.hqapi1;
+
+import com.hyperic.hq.hqapi1.types.DisableMetricResponse;
+import com.hyperic.hq.hqapi1.types.EnableMetricResponse;
+import com.hyperic.hq.hqapi1.types.Metric;
+import com.hyperic.hq.hqapi1.types.SetIntervalResponse;
+
+public class MetricApi {
+
+    private static final String HQU_URI = "/hqu/hqapi1/user";
+
+    private final HQConnection _conn;
+
+    public MetricApi(HQConnection conn) {
+        _conn = conn;
+    }
+    
+    /**
+     * Disable a {@link com.hyperic.hq.hqapi1.types.Metric}.
+     *
+     * @param metric The metric to disable.
+     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * metric was successfully disabled.
+     *
+     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * following error codes can be returned:
+     *
+     * <p>
+     * <ul>
+     *   <li>LoginFailure - The given username and password could not be validated.
+     *   <li>InvalidParameters - All the required parameters in the Metric object were not supplied.
+     *   <li>ObjectNotFound - The given Metric does not exist.
+     *   <li>UnexpectedError - Any other internal server error.
+     * </ul>
+     * </p>
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public DisableMetricResponse disableMetric(Metric metric) {
+        return null;
+    }
+
+    /**
+     * Enable a {@link com.hyperic.hq.hqapi1.types.Metric}.
+     *
+     * @param metric The metric to enable.
+     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * metric was successfully enabled.
+     *
+     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * following error codes can be returned:
+     *
+     * <p>
+     * <ul>
+     *   <li>LoginFailure - The given username and password could not be validated.
+     *   <li>InvalidParameters - All the required parameters in the Metric object were not supplied.
+     *   <li>ObjectNotFound - The specified Metric does not exist.
+     *   <li>UnexpectedError - Any other internal server error.
+     * </ul>
+     * </p>
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public EnableMetricResponse enableMetric(Metric metric) {
+        return null;
+    }
+
+    /**
+     * Set a {@link com.hyperic.hq.hqapi1.types.Metric} collection interval.
+     *
+     * @param metric The metric to change the collection interval.
+     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * metric's collection interval was successfully updated.
+     *
+     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * following error codes can be returned:
+     *
+     * <p>
+     * <ul>
+     *   <li>LoginFailure - The given username and password could not be validated.
+     *   <li>InvalidParameters - All the required parameters in the Metric object were not supplied.
+     *   <li>ObjectNotFound - The given Metric does not exist.
+     *   <li>UnexpectedError - Any other internal server error.
+     * </ul>
+     * </p>
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public SetIntervalResponse setInterval(Metric metric, int interval) {
+        return null;
+    }
+
+}

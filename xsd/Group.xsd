@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:include schemaLocation="ResponseStatus.xsd"/>
+    <xs:include schemaLocation="ServiceError.xsd"/>
+    <xs:include schemaLocation="Resource.xsd"/>
+
+    <!-- Group objects -->
+    <xs:complexType name="Role">
+        <xs:sequence>
+            <xs:element name="Id"   type="xs:positiveInteger"/>
+            <xs:element name="Name" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Group objects -->
+    <xs:complexType name="Criteria">
+        <xs:all>
+            <xs:element name="Id"   type="xs:positiveInteger"/>
+            <xs:element name="Name" type="xs:string"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="Group">
+        <xs:sequence>
+            <xs:element name="Id"   type="xs:positiveInteger"/>
+            <xs:element name="Name" type="xs:string"/>
+            <xs:element name="Location"  type="xs:string"/>
+            <xs:element name="GroupType" type="xs:positiveInteger"/>
+            <xs:element name="ClusterId" type="xs:positiveInteger"/>
+            <xs:element name="Role"      type="Role"     minOccurs="1" maxOccurs="unbounded"/>
+            <xs:element name="Resource"  type="Resource" minOccurs="1" maxOccurs="unbounded"/>
+            <xs:element name="Criteria"  type="Criteria" minOccurs="0"/>
+            <xs:element name="Description" type="xs:string"/>
+            <xs:element name="ResourcePrototype" type="xs:positiveInteger"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Group Responses -->
+    <xs:complexType name="CreateGroupResponse">
+        <xs:sequence>
+            <xs:element name="Status" type="ResponseStatus"/>
+            <xs:element name="Error"  type="ServiceError" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DeleteGroupResponse">
+        <xs:sequence>
+            <xs:element name="Status" type="ResponseStatus"/>
+            <xs:element name="Error"  type="ServiceError" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="RemoveResourceFromGroupResponse">
+        <xs:sequence>
+            <xs:element name="Status" type="ResponseStatus"/>
+            <xs:element name="Error"  type="ServiceError" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="AddResourceToGroupResponse">
+        <xs:sequence>
+            <xs:element name="Status" type="ResponseStatus"/>
+            <xs:element name="Error"  type="ServiceError" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="GetGroupsResponse">
+        <xs:sequence>
+            <xs:element name="Status" type="ResponseStatus"/>
+            <xs:element name="Error"  type="ServiceError" minOccurs="0"/>
+            <xs:element name="Group"  type="Resource" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="GetResourcesInGroupResponse">
+        <xs:sequence>
+            <xs:element name="Status"   type="ResponseStatus"/>
+            <xs:element name="Error"    type="ServiceError" minOccurs="0"/>
+            <xs:element name="Resource" type="Resource" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

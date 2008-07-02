@@ -4,5 +4,7 @@
 
     <!-- User objects -->
     <xs:include schemaLocation="User.xsd" />
+    <xs:include schemaLocation="Group.xsd" />
+    <xs:include schemaLocation="Metric.xsd" />
 
 </xs:schema>

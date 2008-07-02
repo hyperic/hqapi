@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:include schemaLocation="ResponseStatus.xsd"/>
+    <xs:include schemaLocation="ServiceError.xsd"/>
+    <xs:include schemaLocation="Resource.xsd"/>
+
+    <!-- Metric objects -->
+    <xs:complexType name="Metric">
+        <xs:sequence>
+            <xs:element name="Id"       type="xs:positiveInteger"/>
+            <xs:element name="Interval" type="xs:positiveInteger"/>
+            <xs:element name="Enabled"  type="xs:boolean"/>
+            <xs:element name="Resource" type="Resource"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Metric Responses -->
+    <xs:complexType name="EnableMetricResponse">
+        <xs:sequence>
+            <xs:element name="Status" type="ResponseStatus"/>
+            <xs:element name="Error"  type="ServiceError" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DisableMetricResponse">
+        <xs:sequence>
+            <xs:element name="Status" type="ResponseStatus"/>
+            <xs:element name="Error"  type="ServiceError" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SetIntervalResponse">
+        <xs:sequence>
+            <xs:element name="Status" type="ResponseStatus"/>
+            <xs:element name="Error"  type="ServiceError" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="GetMetricResponse">
+        <xs:sequence>
+            <xs:element name="Status" type="ResponseStatus"/>
+            <xs:element name="Error"  type="ServiceError" minOccurs="0"/>
+            <xs:element name="Metric" type="Metric"       minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="GetResourceResponse">
+        <xs:sequence>
+            <xs:element name="Status"   type="ResponseStatus"/>
+            <xs:element name="Error"    type="ServiceError" minOccurs="0"/>
+            <xs:element name="Resource" type="Resource"     minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>
