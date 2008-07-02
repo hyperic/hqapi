@@ -86,7 +86,7 @@ public class UserApi {
      *
      * @param user The user to create.
      * @param password The password for this user.
-     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} is the
+     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * user was created successfully.
      *
      * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
@@ -125,7 +125,7 @@ public class UserApi {
      * Delete a {@link User}
      *
      * @param user The user to delete.
-     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} is the
+     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * user was deleted successfully.
      *
      * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
