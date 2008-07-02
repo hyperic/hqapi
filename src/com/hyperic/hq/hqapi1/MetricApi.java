@@ -7,11 +7,11 @@ import com.hyperic.hq.hqapi1.types.SetIntervalResponse;
 
 public class MetricApi {
 
-    private static final String HQU_URI = "/hqu/hqapi1/user";
+    private static final String HQU_URI = "/hqu/hqapi1/metric";
 
     private final HQConnection _conn;
 
-    public MetricApi(HQConnection conn) {
+    MetricApi(HQConnection conn) {
         _conn = conn;
     }
     

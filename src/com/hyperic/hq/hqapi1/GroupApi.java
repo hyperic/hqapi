@@ -13,11 +13,11 @@ import com.hyperic.hq.hqapi1.types.Resource;
 
 public class GroupApi {
     
-    private static final String HQU_URI = "/hqu/hqapi1/user";
+    private static final String HQU_URI = "/hqu/hqapi1/group";
 
     private final HQConnection _conn;
 
-    public GroupApi(HQConnection conn) {
+    GroupApi(HQConnection conn) {
         _conn = conn;
     }
     

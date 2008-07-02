@@ -7,7 +7,9 @@ package com.hyperic.hq.hqapi1;
  */
 public class HQApi {
 
-    private UserApi _userApi;
+    private final UserApi _userApi;
+    private final MetricApi _metricApi;
+    private final GroupApi _groupApi;
 
     /**
      * @param host The hostname of the HQ Server to connect to.
@@ -21,6 +23,8 @@ public class HQApi {
         HQConnection connection = new HQConnection(host, port, isSecure,
                                                    user, password);
         _userApi = new UserApi(connection);
+        _groupApi = new GroupApi(connection);
+        _metricApi = new MetricApi(connection);
     }
 
     /**
@@ -30,5 +34,13 @@ public class HQApi {
      */
     public UserApi getUserApi() {
         return _userApi;
+    }
+    
+    public GroupApi getGroupApi() {
+        return _groupApi;
+    }
+    
+    public MetricApi getMetricApi() {
+        return _metricApi;
     }
 }

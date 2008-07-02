@@ -4,7 +4,11 @@
 
     <!-- User objects -->
     <xs:include schemaLocation="User.xsd" />
+
+    <!-- Group objects -->
     <xs:include schemaLocation="Group.xsd" />
+
+    <!-- Metric objects -->
     <xs:include schemaLocation="Metric.xsd" />
 
     <!-- Escalation objects -->
