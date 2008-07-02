@@ -8,11 +8,11 @@
     <!-- Metric objects -->
     <xs:complexType name="Metric">
         <xs:sequence>
-            <xs:element name="Id"       type="xs:positiveInteger"/>
-            <xs:element name="Interval" type="xs:positiveInteger"/>
-            <xs:element name="Enabled"  type="xs:boolean"/>
             <xs:element name="Resource" type="Resource"/>
         </xs:sequence>
+        <xs:attribute name="Id"       type="xs:positiveInteger"/>
+        <xs:attribute name="Interval" type="xs:positiveInteger"/>
+        <xs:attribute name="Enabled"  type="xs:boolean"/>
     </xs:complexType>
 
     <!-- Metric Responses -->

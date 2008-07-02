@@ -23,17 +23,17 @@
 
     <xs:complexType name="Group">
         <xs:sequence>
-            <xs:element name="Id"   type="xs:positiveInteger"/>
-            <xs:element name="Name" type="xs:string"/>
-            <xs:element name="Location"  type="xs:string"/>
-            <xs:element name="GroupType" type="xs:positiveInteger"/>
-            <xs:element name="ClusterId" type="xs:positiveInteger"/>
-            <xs:element name="Role"      type="Role"     minOccurs="1" maxOccurs="unbounded"/>
-            <xs:element name="Resource"  type="Resource" minOccurs="1" maxOccurs="unbounded"/>
-            <xs:element name="Criteria"  type="Criteria" minOccurs="0"/>
+            <xs:element name="Role"        type="Role"     minOccurs="1" maxOccurs="unbounded"/>
+            <xs:element name="Resource"    type="Resource" minOccurs="1" maxOccurs="unbounded"/>
+            <xs:element name="Criteria"    type="Criteria" minOccurs="0"/>
             <xs:element name="Description" type="xs:string"/>
-            <xs:element name="ResourcePrototype" type="xs:positiveInteger"/>
         </xs:sequence>
+        <xs:attribute name="Id"   type="xs:positiveInteger"/>
+        <xs:attribute name="Name" type="xs:string"/>
+        <xs:attribute name="Location"  type="xs:string"/>
+        <xs:attribute name="GroupType" type="xs:positiveInteger"/>
+        <xs:attribute name="ClusterId" type="xs:positiveInteger"/>
+        <xs:attribute name="ResourcePrototype" type="xs:positiveInteger"/>
     </xs:complexType>
 
     <!-- Group Responses -->
