@@ -7,10 +7,14 @@ import com.hyperic.hq.hqapi1.types.User;
 import com.hyperic.hq.hqapi1.types.DeleteUserResponse;
 import com.hyperic.hq.hqapi1.types.UpdateUserResponse;
 import com.hyperic.hq.hqapi1.types.UpdateUserRequest;
+import com.hyperic.hq.hqapi1.types.SyncUsersResponse;
+import com.hyperic.hq.hqapi1.types.AssignRolesResponse;
+import com.hyperic.hq.hqapi1.types.Role;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * The Hyperic HQ User API.
@@ -180,5 +184,56 @@ public class UserApi {
 
         return _connection.doPost("/hqu/hqapi1/user/update.hqu",
                                   req, UpdateUserResponse.class);
+    }
+
+    /**
+     * Sync a list of {@link User}s.
+     *
+     * @param users The list of users to sync.
+     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * user was updated successfully.
+     *
+     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * following error codes can be returned:
+     *
+     * <p>
+     * <ul>
+     *   <li>LoginFailure - The given username and password could not be validated.
+     *   <li>PermissionDenied - The connected user does not have permission to sync a user.
+     *   <li>UnexpectedError - Any other internal server error.
+     * </ul>
+     * </p>
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public SyncUsersResponse syncUsers(List<User> users)
+        throws IOException
+    {
+        return null;
+    }
+
+    /**
+     * Assign a list of {@link Role}s to a {@link User}
+     *
+     * @param roles The list of roles to assign.
+     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * user was updated successfully.
+     *
+     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * following error codes can be returned:
+     *
+     * <p>
+     * <ul>
+     *   <li>LoginFailure - The given username and password could not be validated.
+     *   <li>ObjectNotFound - A given user or role was not found in the system. 
+     *   <li>PermissionDenied - The connected user does not have permission to sync a user.
+     *   <li>UnexpectedError - Any other internal server error.
+     * </ul>
+     * </p>
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public AssignRolesResponse assignRoles(List<Role> roles)
+        throws IOException
+    {
+        return null;
     }
 }

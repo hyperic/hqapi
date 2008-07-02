@@ -75,4 +75,20 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="SyncUsersResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response"/>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="AssignRolesResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response"/>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
 </xs:schema>
