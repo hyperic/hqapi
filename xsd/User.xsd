@@ -6,18 +6,16 @@
 
     <!-- User objects -->
     <xs:complexType name="User">
-        <xs:sequence>
-            <xs:element name="Id" type="xs:positiveInteger"/>
-            <xs:element name="Name" type="xs:string"/>
-            <xs:element name="FirstName" type="xs:string"/>
-            <xs:element name="LastName" type="xs:string"/>
-            <xs:element name="Department" minOccurs="0" type="xs:string"/>
-            <xs:element name="EmailAddress" type="xs:string"/>
-            <xs:element name="SMSAddress" minOccurs="0" type="xs:string"/>
-            <xs:element name="PhoneNumber" minOccurs="0" type="xs:string"/>
-            <xs:element name="Active" type="xs:boolean" default="false"/>
-            <xs:element name="HtmlEmail" type="xs:boolean" default="false"/>
-        </xs:sequence>
+        <xs:attribute name="id"           type="xs:positiveInteger" use="required"/>
+        <xs:attribute name="name"         type="xs:string" use="required"/>
+        <xs:attribute name="firstName"    type="xs:string" use="required"/>
+        <xs:attribute name="lastName"     type="xs:string" use="required"/>
+        <xs:attribute name="department"   type="xs:string"/>
+        <xs:attribute name="emailAddress" type="xs:string" use="required"/>
+        <xs:attribute name="SMSAddress"   type="xs:string"/>
+        <xs:attribute name="phoneNumber"  type="xs:string"/>
+        <xs:attribute name="active"       type="xs:boolean" default="false"/>
+        <xs:attribute name="htmlEmail"    type="xs:boolean" default="false"/>
     </xs:complexType>
 
     <!-- User Responses -->

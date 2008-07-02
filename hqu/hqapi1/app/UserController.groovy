@@ -5,35 +5,33 @@ import org.hyperic.hq.authz.shared.PermissionException;
 class UserController extends ApiController
 {
     protected void init() {
-        setXMLMethods(['list', 'get', 'create', 'delete', 'update'])
+        setXMLMethods(['get', 'create', 'delete', 'update'])
     }
 
     private printUser(xmlOut, u) {
-        xmlOut.User() {
-            Id(u.id)
-            Name(u.name)
-            FirstName(u.firstName)
-            LastName(u.lastName)
-            Department(u.department)
-            EmailAddress(u.emailAddress)
-            SMSAddress(u.SMSAddress)
-            PhoneNumber(u.phoneNumber)
-            Active(u.active)
-            HtmlEmail(u.htmlEmail)
-        }
+        xmlOut.User(id:u.id,
+                    name:u.name,
+                    firstName: u.firstName,
+                    lastName: u.lastName,
+                    department: (u.department ? u.department : ''),
+                    email: u.emailAddress,
+                    smsAddress: (u.SMSAddress ? u.SMSAddress : ''),
+                    phoneNumber: (u.phoneNumber ? u.phoneNumber : ''),
+                    active: u.active,
+                    htmlEmail: u.htmlEmail)
     }
 
-    def list(xmlOut, params) {
+    def list(params) {
         def users = userHelper.allUsers
 
-        xmlOut.GetUsersResponse() {
-            printSuccessStatus(xmlOut)
-            for (u in users.sort {a, b -> a.name <=> b.name}) {
-                printUser(xmlOut, u)
+        renderXml() { xmlOut ->
+            GetUsersResponse() {    
+                printSuccessStatus(xmlOut)
+                for (u in users.sort {a, b -> a.name <=> b.name}) {
+                    printUser(xmlOut, u)
+                }
             }
         }
-
-        xmlOut
     }
 
     def get(xmlOut, params) {
@@ -56,17 +54,17 @@ class UserController extends ApiController
 
     def create(xmlOut, params) {
         // Required attributes
-        def name = params.getOne("Name")
-        def password = params.getOne("Password")
-        def first = params.getOne("FirstName")
-        def last = params.getOne("LastName")
-        def email = params.getOne("EmailAddress")
+        def name = params.getOne("name")
+        def password = params.getOne("password")
+        def first = params.getOne("firstName")
+        def last = params.getOne("lastName")
+        def email = params.getOne("emailAddress")
 
         // Optional attributes
-        def htmlEmail = params.getOne("HtmlEmail", "false").toBoolean()
-        def active = params.getOne("Active", "false").toBoolean()
-        def dept = params.getOne("Department")
-        def phone = params.getOne("PhoneNumber")
+        def htmlEmail = params.getOne("htmlEmail", "false").toBoolean()
+        def active = params.getOne("active", "false").toBoolean()
+        def dept = params.getOne("department")
+        def phone = params.getOne("phoneNumber")
         def sms = params.getOne("SMSAddress")
 
         // We require the user to authenticate via built in JDBC
@@ -104,7 +102,7 @@ class UserController extends ApiController
     }
 
     def delete(xmlOut, params) {
-        def name = params.getOne('Name')
+        def name = params.getOne('name')
 
         def existing = userHelper.findUser(name)
         if (!existing) {
@@ -132,9 +130,20 @@ class UserController extends ApiController
 
         try {
             def updateRequest = new XmlParser().parseText(getUpload('postdata'))
-            def xmlIn = updateRequest['User'];
+            def xmlUser = updateRequest['User']
+            
+            if (xmlUser == null || xmlUser.size() != 1) {
+                xmlOut.UpdateUserResponse() {
+                    printFailureStatus(xmlOut, 'InvalidParameters')
+                }
+                return xmlOut
+            }
+            
+            def xmlIn = xmlUser[0]
 
-            def name = xmlIn['Name'].text()
+            def name = xmlIn.'@name'
+            log.info "xmlIn = ${xmlIn}"
+            log.info "xmlIn.active = ${xmlIn.'@active'}"
             def existing = userHelper.findUser(name)
             if (!existing) {
                 xmlOut.UpdateUserResponse() {
@@ -142,15 +151,15 @@ class UserController extends ApiController
                 }
             } else {
                 userHelper.updateUser(existing,
-                                      xmlIn['Active'].text()?.toBoolean(),
+                                      xmlIn.'@active'?.toBoolean(),
                                       "CAM", // Dsn
-                                      xmlIn['Department'].text(),
-                                      xmlIn['EmailAddress'].text(),
-                                      xmlIn['FirstName'].text(),
-                                      xmlIn['LastName'].text(),
-                                      xmlIn['PhoneNumber'].text(),
-                                      xmlIn['SMSAddress'].text(),
-                                      xmlIn['HtmlEmail'].text()?.toBoolean())
+                                      xmlIn.'@department',
+                                      xmlIn.'@emailAddress',
+                                      xmlIn.'@firstName',
+                                      xmlIn.'@lastName',
+                                      xmlIn.'@phoneNumber',
+                                      xmlIn.'@SMSAddress',
+                                      xmlIn.'@htmlEmail'?.toBoolean())
                 xmlOut.UpdateUserResponse() {
                     printSuccessStatus(xmlOut)
                 }

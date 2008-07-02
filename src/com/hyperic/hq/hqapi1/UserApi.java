@@ -108,14 +108,14 @@ public class UserApi {
     {
         Map<String, String> params = new HashMap<String, String>();
 
-        params.put("Name", user.getName());
-        params.put("Password", password);
-        params.put("FirstName", user.getFirstName());
-        params.put("LastName", user.getLastName());
-        params.put("EmailAddress", user.getEmailAddress());
-        params.put("Active", Boolean.valueOf(user.isActive()).toString());
-        params.put("Department", user.getDepartment());
-        params.put("HtmlEmail", Boolean.valueOf(user.isActive()).toString());
+        params.put("name", user.getName());
+        params.put("password", password);
+        params.put("firstName", user.getFirstName());
+        params.put("lastName", user.getLastName());
+        params.put("emailAddress", user.getEmailAddress());
+        params.put("active", Boolean.valueOf(user.isActive()).toString());
+        params.put("department", user.getDepartment());
+        params.put("htmlEmail", Boolean.valueOf(user.isActive()).toString());
         params.put("SMSAddress", user.getSMSAddress());
 
         return _connection.doGet("/hqu/hqapi1/user/create.hqu",
@@ -146,7 +146,7 @@ public class UserApi {
     {
         Map<String, String> params = new HashMap<String, String>();
 
-        params.put("Name", user.getName());
+        params.put("name", user.getName());
 
         return _connection.doGet("/hqu/hqapi1/user/delete.hqu",
                                  params, DeleteUserResponse.class);
