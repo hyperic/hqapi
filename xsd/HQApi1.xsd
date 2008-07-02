@@ -7,4 +7,7 @@
     <xs:include schemaLocation="Group.xsd" />
     <xs:include schemaLocation="Metric.xsd" />
 
+    <!-- Escalation objects -->
+    <xs:include schemaLocation="Escalation.xsd" />
+
 </xs:schema>

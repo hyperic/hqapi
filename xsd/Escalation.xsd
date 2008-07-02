@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:include schemaLocation="ResponseStatus.xsd"/>
+    <xs:include schemaLocation="ServiceError.xsd"/>
+
+    <!-- Escalation objects -->
+    <xs:complexType name="EscalationAction">
+        <xs:sequence>
+            <xs:element name="Id" type="xs:positiveInteger"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Escalation">
+        <xs:sequence>
+            <xs:element name="Id" type="xs:positiveInteger"/>
+            <xs:element name="Name" type="xs:string"/>
+            <xs:element name="Action" type="EscalationAction"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Escalation Responses -->
+    <xs:element name="GetEscalationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Status" type="ResponseStatus"/>
+                <xs:element name="Error" minOccurs="0" type="ServiceError"/>
+                <xs:element name="Escalation" minOccurs="0" type="Escalation"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="SyncEscalationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Status" type="ResponseStatus"/>
+                <xs:element name="Error" minOccurs="0" type="ServiceError"/>
+                <xs:element name="Escalation" minOccurs="0" type="Escalation"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DeleteEscalationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Status" type="ResponseStatus"/>
+                <xs:element name="Error" minOccurs="0" type="ServiceError"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
+
