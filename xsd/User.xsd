@@ -2,8 +2,7 @@
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-    <xs:include schemaLocation="ResponseStatus.xsd"/>
-    <xs:include schemaLocation="ServiceError.xsd"/>
+    <xs:include schemaLocation="Response.xsd"/>
 
     <!-- User objects -->
     <xs:complexType name="User">
@@ -24,39 +23,41 @@
     <!-- User Responses -->
     <xs:element name="GetUserResponse">
         <xs:complexType>
-            <xs:sequence>
-                <xs:element name="Status" type="ResponseStatus"/>
-                <xs:element name="Error" minOccurs="0" type="ServiceError"/>
-                <xs:element name="User" minOccurs="0" type="User"/>
-            </xs:sequence>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="User" minOccurs="0" type="User"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
         </xs:complexType>
     </xs:element>
 
     <xs:element name="GetUsersResponse">
         <xs:complexType>
-            <xs:sequence>
-                <xs:element name="Status" type="ResponseStatus"/>
-                <xs:element name="Error" minOccurs="0" type="ServiceError"/>
-                <xs:element name="User" maxOccurs="unbounded" type="User"/>
-            </xs:sequence>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="User" maxOccurs="unbounded" type="User"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
         </xs:complexType>
     </xs:element>
 
     <xs:element name="CreateUserResponse">
         <xs:complexType>
-            <xs:sequence>
-                <xs:element name="Status" type="ResponseStatus"/>
-                <xs:element name="Error" minOccurs="0" type="ServiceError"/>
-            </xs:sequence>
+            <xs:complexContent>
+                <xs:extension base="Response" />
+            </xs:complexContent>
         </xs:complexType>
     </xs:element>
 
     <xs:element name="DeleteUserResponse">
         <xs:complexType>
-            <xs:sequence>
-                <xs:element name="Status" type="ResponseStatus"/>
-                <xs:element name="Error" minOccurs="0" type="ServiceError"/>
-            </xs:sequence>
+            <xs:complexContent>
+                <xs:extension base="Response" />
+            </xs:complexContent>
         </xs:complexType>
     </xs:element>
 
@@ -70,10 +71,9 @@
 
     <xs:element name="UpdateUserResponse">
         <xs:complexType>
-            <xs:sequence>
-                <xs:element name="Status" type="ResponseStatus"/>
-                <xs:element name="Error" minOccurs="0" type="ServiceError"/>
-            </xs:sequence>
+            <xs:complexContent>
+                <xs:extension base="Response"/>
+            </xs:complexContent>
         </xs:complexType>
     </xs:element>
 

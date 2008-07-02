@@ -81,12 +81,10 @@ public class HQConnection {
         try {
             T ret = res.newInstance();
 
-            Method setResponse = res.getDeclaredMethod("setStatus",
-                                                       ResponseStatus.class);
+            Method setResponse = res.getMethod("setStatus", ResponseStatus.class);
             setResponse.invoke(ret, ResponseStatus.FAILURE);
 
-            Method setError = res.getDeclaredMethod("setError",
-                                                    ServiceError.class);
+            Method setError = res.getMethod("setError", ServiceError.class);
             setError.invoke(ret, error);
 
             return ret;
