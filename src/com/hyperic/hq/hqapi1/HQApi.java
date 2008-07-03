@@ -10,6 +10,7 @@ public class HQApi {
     private final UserApi _userApi;
     private final MetricApi _metricApi;
     private final GroupApi _groupApi;
+    private final EscalationApi _escalationApi;
 
     /**
      * @param host The hostname of the HQ Server to connect to.
@@ -25,6 +26,7 @@ public class HQApi {
         _userApi = new UserApi(connection);
         _groupApi = new GroupApi(connection);
         _metricApi = new MetricApi(connection);
+        _escalationApi = new EscalationApi(connection);
     }
 
     /**
@@ -42,5 +44,9 @@ public class HQApi {
     
     public MetricApi getMetricApi() {
         return _metricApi;
+    }
+
+    public EscalationApi getEscalationApi() {
+        return _escalationApi;
     }
 }
