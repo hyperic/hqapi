@@ -9,6 +9,7 @@ import com.hyperic.hq.hqapi1.types.CreateEscalationResponse;
 import com.hyperic.hq.hqapi1.types.DeleteEscalationResponse;
 import com.hyperic.hq.hqapi1.types.Escalation;
 import com.hyperic.hq.hqapi1.types.GetEscalationResponse;
+import com.hyperic.hq.hqapi1.types.ListEscalationsResponse;
 import com.hyperic.hq.hqapi1.types.SyncEscalationResponse;
 import com.hyperic.hq.hqapi1.types.UpdateEscalationResponse;
 
@@ -136,6 +137,30 @@ public class EscalationApi {
     }
 
     /**
+     * Find all {@link com.hyperic.hq.hqapi1.types.Escalation}s in system.
+     *
+     * @return On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * a collection of Escalations is returned via
+     * {@link com.hyperic.hq.hqapi1.types.ListEscalationsResponse#getEscalations()}.
+     *
+     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * following error codes can be returned:
+     *
+     * <p>
+     * <ul>
+     *   <li>LoginFailure - The given username and password could not be validated.
+     *   <li>ObjectNotFound - The given escalation was not found.
+     * </ul>
+     * </p>
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public ListEscalationsResponse listEscalations()
+        throws IOException {
+        return _connection.doGet("/hqu/hqapi1/escalation/list.hqu",
+                                 null, ListEscalationsResponse.class);
+    }
+    
+    /**
      * Sync a collection of {@link Escalation}s by creating or updating
      *
      * @param escs The collections of escalations to sync.
@@ -153,7 +178,7 @@ public class EscalationApi {
      * </p>
      * @throws IOException If a network error occurs while making the request.
      */
-    public SyncEscalationResponse syncEscalation(Collection<Escalation> escs)
+    public SyncEscalationResponse syncEscalations(Collection<Escalation> escs)
         throws IOException {
         Map<String, String> params = new HashMap<String, String>();
         return _connection.doGet("/hqu/hqapi1/escalation/sync.hqu",
