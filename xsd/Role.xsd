@@ -5,11 +5,137 @@
     <xs:include schemaLocation="Response.xsd"/>
 
     <!-- Role objects -->
+    <xs:simpleType name="Operation">
+        <xs:restriction base="xs:string">
+            <!-- Platform operations -->
+            <xs:enumeration value="createPlatform"/>
+            <xs:enumeration value="modifyPlatform"/>
+            <xs:enumeration value="removePlatform"/>
+            <xs:enumeration value="addServer"/>
+            <xs:enumeration value="viewPlatform"/>
+            <xs:enumeration value="monitorPlatform"/>
+            <xs:enumeration value="controlPlatform"/>
+            <xs:enumeration value="managePlatformAlerts"/>
+            <!-- Server operations -->
+            <xs:enumeration value="createServer"/>
+            <xs:enumeration value="modifyServer"/>
+            <xs:enumeration value="removeServer"/>
+            <xs:enumeration value="addService"/>
+            <xs:enumeration value="viewServer"/>
+            <xs:enumeration value="monitorServer"/>
+            <xs:enumeration value="controlServer"/>
+            <xs:enumeration value="manageServerAlerts"/>
+            <!-- Service operations -->
+            <xs:enumeration value="createService"/>
+            <xs:enumeration value="modifyService"/>
+            <xs:enumeration value="removeService"/>
+            <xs:enumeration value="viewService"/>
+            <xs:enumeration value="monitorService"/>
+            <xs:enumeration value="controlService"/>
+            <xs:enumeration value="manageServiceAlerts"/>
+            <!-- Application operations -->
+            <xs:enumeration value="createApplication"/>
+            <xs:enumeration value="modifyApplication"/>
+            <xs:enumeration value="removeApplication"/>
+            <xs:enumeration value="viewApplication"/>
+            <xs:enumeration value="monitorApplication"/>
+            <xs:enumeration value="controlApplication"/>
+            <xs:enumeration value="manageApplicationAlerts"/>
+            <!-- Group operations -->
+            <xs:enumeration value="viewResourceGroup"/>
+            <xs:enumeration value="manageGroupAlerts"/>
+            <xs:enumeration value="modifyResourceGroup"/>
+            <xs:enumeration value="addRole"/>
+            <xs:enumeration value="removeResourceGroup"/>
+            <xs:enumeration value="controlResourceGroup"/>
+            <xs:enumeration value="monitorResourceGroup"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:complexType name="Role">
         <xs:sequence>
-            <xs:element name="Id"   type="xs:positiveInteger"/>
-            <xs:element name="Name" type="xs:string"/>
+            <xs:element name="Operations" maxOccurs="unbounded" type="Operation"/>    
         </xs:sequence>
+        <xs:attribute name="id"   type="xs:positiveInteger" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="description" type="xs:string" use="required"/>
     </xs:complexType>
+
+    <!-- Role response objects -->
+    <xs:element name="GetRoleResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="Role" minOccurs="0" type="Role"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetRolesResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="Role" maxOccurs="unbounded" type="Role"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateRoleResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="Role" maxOccurs="1" type="Role"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DeleteRoleResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response" />
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="UpdateRoleResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response"/>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="SyncRoleResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response"/>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="AssignUsersResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response"/>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="AssignOperationsResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response"/>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
 
 </xs:schema>

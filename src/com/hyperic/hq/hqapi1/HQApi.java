@@ -8,6 +8,7 @@ package com.hyperic.hq.hqapi1;
 public class HQApi {
 
     private final UserApi _userApi;
+    private final RoleApi _roleApi;
     private final MetricApi _metricApi;
     private final GroupApi _groupApi;
     private final EscalationApi _escalationApi;
@@ -25,6 +26,7 @@ public class HQApi {
         HQConnection connection = new HQConnection(host, port, isSecure,
                                                    user, password);
         _userApi = new UserApi(connection);
+        _roleApi = new RoleApi(connection);
         _groupApi = new GroupApi(connection);
         _metricApi = new MetricApi(connection);
         _escalationApi = new EscalationApi(connection);
@@ -32,7 +34,7 @@ public class HQApi {
     }
 
     /**
-     * Add, remove and update Users in HQ.
+     * Add, remove and update users.
      * 
      * @return The API for operating on users.
      */
@@ -41,7 +43,16 @@ public class HQApi {
     }
 
     /**
-     * Add, remove and modify Groups in HQ.
+     * Add, remove and update roles.
+     *
+     * @return The API for operating on roles.
+     */
+    public RoleApi getRoleApi() {
+        return _roleApi;
+    }
+
+    /**
+     * Add, remove and modify groups.
      *
      * @return The API for operating on groups.
      */
