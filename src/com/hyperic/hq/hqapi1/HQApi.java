@@ -11,6 +11,7 @@ public class HQApi {
     private final MetricApi _metricApi;
     private final GroupApi _groupApi;
     private final EscalationApi _escalationApi;
+    private final AutodiscoveryApi _autodiscoveryApi;
 
     /**
      * @param host The hostname of the HQ Server to connect to.
@@ -27,26 +28,51 @@ public class HQApi {
         _groupApi = new GroupApi(connection);
         _metricApi = new MetricApi(connection);
         _escalationApi = new EscalationApi(connection);
+        _autodiscoveryApi = new AutodiscoveryApi(connection);
     }
 
     /**
-     * Operate on Users
+     * Add, remove and update Users in HQ.
      * 
-     * @return The User API for operating on Users in the HQ system.
+     * @return The API for operating on users.
      */
     public UserApi getUserApi() {
         return _userApi;
     }
-    
+
+    /**
+     * Add, remove and modify Groups in HQ.
+     *
+     * @return The API for operating on groups.
+     */
     public GroupApi getGroupApi() {
         return _groupApi;
     }
-    
+
+    /**
+     * Import, export measurement data and modify measurement schedules.
+     *
+     * @return The API for operating on measurement data and schedules.
+     */
     public MetricApi getMetricApi() {
         return _metricApi;
     }
 
+    /**
+     * Add, remove and assign escalations.
+     *
+     * @return The API for operating on esclations.
+     */
     public EscalationApi getEscalationApi() {
         return _escalationApi;
+    }
+
+    /**
+     * List and approve auto-discovered resources.
+     *
+     * @return The API for operating on auto-discovered resources.
+     */
+    public AutodiscoveryApi getAutodiscoveryApi() {
+        return _autodiscoveryApi;
     }
 }
