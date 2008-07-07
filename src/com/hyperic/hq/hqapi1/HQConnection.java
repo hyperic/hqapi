@@ -125,6 +125,17 @@ public class HQConnection {
         return URLEncoder.encode(s, "UTF-8");
     }
 
+    /**
+     * Issue a GET against the API.
+     *
+     * @param path The web service endpoint.
+     * @param params A Map of key value pairs that are converted into query
+     * arguments.
+     * @param resultClass The response object type.
+     * @return The response object from the operation.  This response will be of
+     * the type given in the resultClass argument.
+     * @throws IOException If a network error occurs during the request.
+     */
     <T> T doGet(String path, Map params, Class<T> resultClass)
         throws IOException
     {
@@ -151,6 +162,17 @@ public class HQConnection {
         return runMethod(method, uri.toString(), resultClass);
     }
 
+    /**
+     * Issue a POST against the API.
+     *
+     * @param path The web service endpoint
+     * @param o The object to POST.  This object will be serialized into XML
+     * prior to being sent.
+     * @param resultClass The result object type.
+     * @return The response object from the operation.  This response will be
+     * of the type given in the resultClass argument.
+     * @throws IOException If a network error occurs during the request.
+     */
     <T> T doPost(String path, Object o, Class<T> resultClass)
         throws IOException
     {
