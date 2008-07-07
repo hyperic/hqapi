@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:include schemaLocation="Response.xsd"/>
+
+    <!-- Queue objects -->
+    <xs:complexType name="AIPlatform">
+        <xs:attribute name="id"   type="xs:positiveInteger" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="fqdn" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="AIIp">
+        <xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+        <xs:attribute name="address" type="xs:string"/>
+        <xs:attribute name="macAddress" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="AIServer">
+        <xs:attribute name="id"   type="xs:positiveInteger" use="required"/>
+        <xs:attribute name="name" type="xs:positiveInteger" use="required"/>
+    </xs:complexType>
+
+    <xs:element name="GetQueueResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="AIPlatform" maxOccurs="unbounded" type="AIPlatform"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="QueueApproveResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response"/>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

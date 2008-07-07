@@ -14,4 +14,7 @@
     <!-- Escalation objects -->
     <xs:include schemaLocation="Escalation.xsd" />
 
+    <!-- Autodiscovery objects -->
+    <xs:include schemaLocation="Autodiscovery.xsd"/>
+    
 </xs:schema>
