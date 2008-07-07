@@ -10,8 +10,8 @@ class UserController extends ApiController {
                  firstName   : u.firstName,
                  lastName    : u.lastName,
                  department  : (u.department ? u.department : ''),
-                 email       : u.emailAddress,
-                 smsAddress  : (u.SMSAddress ? u.SMSAddress : ''),
+                 emailAddress: u.emailAddress,
+                 SMSAddress  : (u.SMSAddress ? u.SMSAddress : ''),
                  phoneNumber : (u.phoneNumber ? u.phoneNumber : ''),
                  active      : u.active,
                  htmlEmail   : u.htmlEmail)
