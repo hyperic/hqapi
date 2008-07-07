@@ -4,15 +4,8 @@
 
     <xs:include schemaLocation="Resource.xsd"/>
     <xs:include schemaLocation="Response.xsd"/>
-
-    <!-- Group objects -->
-    <xs:complexType name="Role">
-        <xs:sequence>
-            <xs:element name="Id"   type="xs:positiveInteger"/>
-            <xs:element name="Name" type="xs:string"/>
-        </xs:sequence>
-    </xs:complexType>
-
+    <xs:include schemaLocation="Role.xsd"/>
+    
     <!-- Group objects -->
     <xs:complexType name="Criteria">
         <xs:all>

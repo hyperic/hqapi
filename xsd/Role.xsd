@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:include schemaLocation="Response.xsd"/>
+
+    <!-- Role objects -->
+    <xs:complexType name="Role">
+        <xs:sequence>
+            <xs:element name="Id"   type="xs:positiveInteger"/>
+            <xs:element name="Name" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>
