@@ -141,7 +141,7 @@ public class EscalationApi {
      *
      * @return On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * a collection of Escalations is returned via
-     * {@link com.hyperic.hq.hqapi1.types.ListEscalationsResponse#getEscalations()}.
+     * {@link com.hyperic.hq.hqapi1.types.ListEscalationsResponse#getEscalation()}.
      *
      * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
