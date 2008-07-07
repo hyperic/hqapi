@@ -156,7 +156,7 @@ class UserController extends ApiController {
                                       xmlIn.'@htmlEmail'?.toBoolean())
             }
         } catch (PermissionException e) {
-            log.error("Permission denied [${user.name}]", e)
+            log.debug("Permission denied [${user.name}]", e)
             failureXml = getFailureXML("PermissionDenied")
         } catch (Exception e) {
             log.error("UnexpectedError: " + e.getMessage(), e)
@@ -172,6 +172,5 @@ class UserController extends ApiController {
                 }
             }
         }
-        xmlOut
     }
 }
