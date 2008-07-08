@@ -83,7 +83,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="AssignRolesResponse">
+    <xs:element name="SetRolesResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response"/>
