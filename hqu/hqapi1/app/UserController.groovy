@@ -102,9 +102,9 @@ class UserController extends ApiController {
     }
 
     def delete(params) {
-        def name = params.getOne('name')
+        def id = params.getOne('id')?.toInteger()
 
-        def existing = userHelper.findUser(name)
+        def existing = userHelper.getUser(id)
         def failureXml
         
         if (!existing) {

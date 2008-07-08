@@ -157,7 +157,7 @@ public class UserApi {
     /**
      * Delete a {@link User}
      *
-     * @param user The user to delete.
+     * @param id The user id to delete.
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * user was deleted successfully.
      *
@@ -174,12 +174,12 @@ public class UserApi {
      * 
      * @throws IOException If a network error occurs while making the request.
      */
-    public DeleteUserResponse deleteUser(User user)
+    public DeleteUserResponse deleteUser(Integer id)
         throws IOException
     {
         Map<String, String> params = new HashMap<String, String>();
 
-        params.put("name", user.getName());
+        params.put("id", id.toString());
 
         return _connection.doGet("/hqu/hqapi1/user/delete.hqu",
                                  params, DeleteUserResponse.class);
