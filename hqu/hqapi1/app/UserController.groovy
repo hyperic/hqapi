@@ -71,7 +71,7 @@ class UserController extends ApiController {
         def dsn = "CAM"
 
         def failureXml
-        
+        def newUser
         if (!name || !password || !first || !last || !email) {
             failureXml = getFailureXML("InvalidParameters")
         } else {
@@ -80,9 +80,9 @@ class UserController extends ApiController {
                 if (existing) {
                     failureXml = getFailureXML("ObjectExists")
                 } else {
-                    userHelper.createUser(name, password, active,
-                                          dsn, dept, email, first,
-                                          last, phone, sms, htmlEmail)
+                    newUser = userHelper.createUser(name, password, active,
+                                                    dsn, dept, email, first,
+                                                    last, phone, sms, htmlEmail)
                 }
             } catch (Exception e) {
                 log.error("UnexpectedError: " + e.getMessage(), e);
@@ -96,6 +96,7 @@ class UserController extends ApiController {
                     out << failureXml
                 } else {
                     out << getSuccessXML()
+                    out << getUserXML(newUser)
                 }
             }
         }

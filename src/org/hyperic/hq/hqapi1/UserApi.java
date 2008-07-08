@@ -120,8 +120,9 @@ public class UserApi {
      *
      * @param user The user to create.
      * @param password The password for this user.
-     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
-     * user was created successfully.
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
+     * the created user is returned via
+     * {@link org.hyperic.hq.hqapi1.types.CreateUserResponse#getUser()}.
      *
      * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:

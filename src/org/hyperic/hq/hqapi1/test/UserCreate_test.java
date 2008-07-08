@@ -19,6 +19,11 @@ public class UserCreate_test extends UserTestBase {
         CreateUserResponse response = api.createUser(user, PASSWORD);
 
         hqAssertSuccess(response);
+
+        User createdUser = response.getUser();
+        assertEquals(user.getName(), createdUser.getName());
+        assertEquals(user.getFirstName(), createdUser.getFirstName());
+        assertEquals(user.getLastName(), createdUser.getLastName());
     }
 
     public void testCreateDuplicate() throws Exception {
