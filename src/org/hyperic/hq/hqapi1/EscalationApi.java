@@ -188,7 +188,7 @@ public class EscalationApi {
     /**
      * Delete an {@link Escalation}
      *
-     * @param esc The escalation to delete.
+     * @param id The ID of the escalation to delete.
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * escalation was deleted successfully.
      *
@@ -204,9 +204,10 @@ public class EscalationApi {
      * </p>
      * @throws IOException If a network error occurs while making the request.
      */
-    public DeleteEscalationResponse deleteEscalation(Escalation esc)
+    public DeleteEscalationResponse deleteEscalation(Integer id)
         throws IOException {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, Integer> params = new HashMap<String, Integer>();
+        params.put("id", id);
         return _connection.doGet("/hqu/hqapi1/escalation/delete.hqu",
                                  params, DeleteEscalationResponse.class);
     }

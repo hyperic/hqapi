@@ -6,16 +6,43 @@
 
     <!-- Escalation objects -->
     <xs:complexType name="EscalationAction">
-        <xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+        <xs:attribute name="id" type="xs:int" use="required"/>
+        <xs:attribute name="wait" type="xs:long" use="required"/>
     </xs:complexType>
 
     <xs:complexType name="Escalation">
         <xs:sequence>
-            <xs:element name="Id" type="xs:positiveInteger"/>
-            <xs:element name="Name" type="xs:string"/>
             <xs:element name="Action" type="EscalationAction"/>
         </xs:sequence>
+        <xs:attribute name="id" type="xs:int" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="description" type="xs:string" use="required"/>
+        <xs:attribute name="pauseAllowed" type="xs:boolean" use="required"/>
+        <xs:attribute name="maxPauseTime" type="xs:long" use="required"/>
+        <xs:attribute name="notifyAll" type="xs:boolean" use="required"/>
+        <xs:attribute name="repeat" type="xs:boolean" use="required"/>
     </xs:complexType>
+
+    <xs:element name="EmailAction">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="EscalationAction">
+                    <xs:sequence>
+                        <xs:element name="notify" minOccurs="0" type="xs:string"/>
+                    </xs:sequence>
+                    <xs:attribute name="sms" type="xs:boolean" use="required"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="SuppressAction">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="EscalationAction"/>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
 
     <!-- Escalation Responses -->
     <xs:element name="GetEscalationResponse">
