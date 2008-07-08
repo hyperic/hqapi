@@ -14,8 +14,8 @@ public class UserGetUser_test extends UserTestBase {
         GetUserResponse response = api.getUser("hqadmin");
 
         hqAssertSuccess(response);
-        assertEquals(response.getUser().getFirstName(), "HQ");
-        assertEquals(response.getUser().getLastName(), "Administrator");
+        assertEquals("HQ", response.getUser().getFirstName());
+        assertEquals("Administrator", response.getUser().getLastName());
     }
 
     public void testGetUserInvalid() throws Exception {
@@ -30,8 +30,8 @@ public class UserGetUser_test extends UserTestBase {
         GetUserResponse response = api.getUser(1);
 
         hqAssertSuccess(response);
-        assertEquals(response.getUser().getFirstName(), "HQ");
-        assertEquals(response.getUser().getLastName(), "Administrator");
+        assertEquals("HQ", response.getUser().getFirstName());
+        assertEquals("Administrator", response.getUser().getLastName());
     }
 
     public void testGetUserByIdInvalid() throws Exception {
