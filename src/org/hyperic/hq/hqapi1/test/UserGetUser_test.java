@@ -13,10 +13,7 @@ public class UserGetUser_test extends UserTestBase {
         UserApi api = getUserApi();
         GetUserResponse response = api.getUser("hqadmin");
 
-        // Assert success response
         hqAssertSuccess(response);
-
-        // Assert First & Last Name
         assertEquals(response.getUser().getFirstName(), "HQ");
         assertEquals(response.getUser().getLastName(), "Administrator");
     }
@@ -24,6 +21,22 @@ public class UserGetUser_test extends UserTestBase {
     public void testGetUserInvalid() throws Exception {
         UserApi api = getUserApi();
         GetUserResponse response = api.getUser("unknownUser");
+
+        hqAssertFailureObjectNotFound(response);
+    }
+
+    public void testGetUserById() throws Exception {
+        UserApi api = getUserApi();
+        GetUserResponse response = api.getUser(1);
+
+        hqAssertSuccess(response);
+        assertEquals(response.getUser().getFirstName(), "HQ");
+        assertEquals(response.getUser().getLastName(), "Administrator");
+    }
+
+    public void testGetUserByIdInvalid() throws Exception {
+        UserApi api = getUserApi();
+        GetUserResponse response = api.getUser(Integer.MAX_VALUE);
 
         hqAssertFailureObjectNotFound(response);
     }

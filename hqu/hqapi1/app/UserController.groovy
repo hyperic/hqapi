@@ -30,9 +30,16 @@ class UserController extends ApiController {
     }
 
     def get(params) {
+        def id   = params.getOne("id")?.toInteger()
         def name = params.getOne("name")
-        def u    = userHelper.findUser(name)
 
+        def u
+        if (id) {
+            u = userHelper.getUser(id)
+        } else {
+            u = userHelper.findUser(name)
+        }
+        
         renderXml() {
             GetUserResponse() {
                 if (!u) {

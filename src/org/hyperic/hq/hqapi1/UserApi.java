@@ -64,6 +64,34 @@ public class UserApi {
     }
 
     /**
+     * Get a {@link org.hyperic.hq.hqapi1.types.User} by id.
+     *
+     * @param id The user id to look up.
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the User by the given id is returned via
+     * {@link org.hyperic.hq.hqapi1.types.GetUserResponse#getUser()}.
+     *
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * following error codes can be returned:
+     *
+     * <p>
+     * <ul>
+     *   <li>LoginFailure - The given username and password could not be validated.
+     *   <li>ObjectNotFound - The given user was not found.
+     * </ul>
+     * </p>
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public GetUserResponse getUser(Integer id)
+        throws IOException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("id", id.toString());
+        return _connection.doGet("/hqu/hqapi1/user/get.hqu",
+                                 params, GetUserResponse.class);
+    }
+
+    /**
      * Find all {@link org.hyperic.hq.hqapi1.types.User}s in the system.
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * a list of Users is returned.
