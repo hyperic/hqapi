@@ -10,6 +10,7 @@ import org.hyperic.hq.hqapi1.types.UpdateUserRequest;
 import org.hyperic.hq.hqapi1.types.SyncUsersResponse;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.SetRolesResponse;
+import org.hyperic.hq.hqapi1.types.GetRolesResponse;
 
 import java.io.IOException;
 import java.util.Map;
@@ -244,6 +245,7 @@ public class UserApi {
      * Set a list of {@link Role}s to a {@link User}.  Any previous roles
      * associated with this user will be removed.
      *
+     * @param user The user to set roles for.
      * @param roles The list of roles to set.
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * user was updated successfully.
@@ -255,13 +257,40 @@ public class UserApi {
      * <ul>
      *   <li>LoginFailure - The given username and password could not be validated.
      *   <li>ObjectNotFound - A given user or role was not found in the system. 
-     *   <li>PermissionDenied - The connected user does not have permission to modify the user user.
+     *   <li>PermissionDenied - The connected user does not have permission to modify the user.
      *   <li>UnexpectedError - Any other internal server error.
      * </ul>
      * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public SetRolesResponse setRoles(User user, List<Role> roles)
+        throws IOException
+    {
+        return null;
+    }
+
+    /**
+     * Get the list of {@link Role}s assigned to a {@link User}.
+     *
+     * @param user The user to get roles for.
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
+     * a list of Roles is returned via
+     * {@link org.hyperic.hq.hqapi1.types.GetRolesResponse#getRole()}.
+     *
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * following error codes can be returned:
+     *
+     * <p>
+     * <ul>
+     *   <li>LoginFailure - The given username and password could not be validated.
+     *   <li>ObjectNotFound - A given user was not found in the system.
+     *   <li>PermissionDenied - The connected user does not have permission to list roles for this user.
+     *   <li>UnexpectedError - Any other internal server error.
+     * </ul>
+     * </p>
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public GetRolesResponse getRoles(User user)
         throws IOException
     {
         return null;
