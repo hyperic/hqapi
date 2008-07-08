@@ -1,13 +1,3 @@
 <UpdateUserRequest>
-    <User>
-        <Id>1</Id>
-        <Name>hqadmin</Name>
-        <FirstName>HQ</FirstName>
-        <LastName>Administrator</LastName>
-        <Department/>
-        <EmailAddress>localhost</EmailAddress>
-        <SMSAddress/>
-        <Active>true</Active>
-        <HtmlEmail>false</HtmlEmail>
-    </User>
+    <User id="1" name="hqadmin" firstName="HQ" lastName="Administrator" departement="" emailAddress="localhost" SMSAddress="" active="true" htmlEmail="false"/>
 </UpdateUserRequest>
