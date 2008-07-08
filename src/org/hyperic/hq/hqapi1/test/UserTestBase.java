@@ -8,7 +8,13 @@ import java.util.Random;
 public class UserTestBase extends HQApiTestBase {
 
     static final String PASSWORD = "apitest";
-        
+
+    static final String TESTUSER_NAME_PREFIX = "apitest";
+    static final String TESTUSER_FIRSTNAME   = "API";
+    static final String TESTUSER_LASTNAME    = "Test";
+    static final String TESTUSER_EMAIL       = "apitest@hyperic.com";
+    static final boolean TESTUSER_ACTIVE     = true;
+
     public UserTestBase(String name) {
         super(name);
     }
@@ -30,11 +36,11 @@ public class UserTestBase extends HQApiTestBase {
         Random r = new Random();
 
         User user = new User();
-        user.setName("apitest" + r.nextInt());
-        user.setFirstName("API");
-        user.setLastName("Test");
-        user.setEmailAddress("apitest@hyperic.com");
-        user.setActive(true);
+        user.setName(TESTUSER_NAME_PREFIX + r.nextInt());
+        user.setFirstName(TESTUSER_FIRSTNAME);
+        user.setLastName(TESTUSER_LASTNAME);
+        user.setEmailAddress(TESTUSER_EMAIL);
+        user.setActive(TESTUSER_ACTIVE);
         return user;
     }
 }

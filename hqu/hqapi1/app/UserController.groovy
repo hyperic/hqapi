@@ -181,4 +181,56 @@ class UserController extends ApiController {
             }
         }
     }
+
+    def sync(params) {
+        def failureXml
+        try {
+            def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+            for (xmlUser in syncRequest['User']) {
+                def name = xmlUser.'@name'
+                def existing = userHelper.findUser(name)
+                if (existing) {
+                    log.info "Updating user " + name
+                    userHelper.updateUser(existing,
+                                          xmlUser.'@active'?.toBoolean(),
+                                          "CAM", // Dsn
+                                          xmlUser.'@department',
+                                          xmlUser.'@emailAddress',
+                                          xmlUser.'@firstName',
+                                          xmlUser.'@lastName',
+                                          xmlUser.'@phoneNumber',
+                                          xmlUser.'@SMSAddress',
+                                          xmlUser.'@htmlEmail'?.toBoolean())
+                } else {
+                    log.info "Creating user " + name
+                    // XXX: This needs to handle the password hash
+                    userHelper.createUser(xmlUser.'@name',
+                                          xmlUser.'@active'?.toBoolean(),
+                                          "CAM", // Dsn
+                                          xmlUser.'@department',
+                                          xmlUser.'@emailAddress',
+                                          xmlUser.'@firstName',
+                                          xmlUser.'@lastName',
+                                          xmlUser.'@phoneNumber',
+                                          xmlUser.'@SMSAddress',
+                                          xmlUser.'@htmlEmail'?.toBoolean())
+                }
+            }
+        } catch (PermissionException e) {
+            log.debug("Permission denied [${user.name}]", e)
+        } catch (Exception e) {
+            log.error("UnexpectedError: " + e.getMessage(), e)
+            failureXml = getFailureXML("UnexpectedError")
+        }
+
+        renderXml() {
+            SyncUsersResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                }
+            }
+        }
+    }
 }

@@ -11,6 +11,7 @@ import org.hyperic.hq.hqapi1.types.SyncUsersResponse;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.SetRolesResponse;
 import org.hyperic.hq.hqapi1.types.GetRolesResponse;
+import org.hyperic.hq.hqapi1.types.SyncUsersRequest;
 
 import java.io.IOException;
 import java.util.Map;
@@ -239,7 +240,11 @@ public class UserApi {
     public SyncUsersResponse syncUsers(List<User> users)
         throws IOException
     {
-        return null;
+        SyncUsersRequest request = new SyncUsersRequest();
+        request.getUser().addAll(users);
+
+        return _connection.doPost("/hqu/hqapi1/user/sync.hqu", request,
+                                  SyncUsersResponse.class);
     }
 
     /**

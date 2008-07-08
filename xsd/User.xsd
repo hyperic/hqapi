@@ -79,6 +79,14 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="SyncUsersRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="User" maxOccurs="unbounded" type="User"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="SyncUsersResponse">
         <xs:complexType>
             <xs:complexContent>
