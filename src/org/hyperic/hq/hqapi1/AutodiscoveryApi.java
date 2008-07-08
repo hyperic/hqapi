@@ -1,7 +1,7 @@
-package com.hyperic.hq.hqapi1;
+package org.hyperic.hq.hqapi1;
 
-import com.hyperic.hq.hqapi1.types.GetQueueResponse;
-import com.hyperic.hq.hqapi1.types.QueueApproveResponse;
+import org.hyperic.hq.hqapi1.types.GetQueueResponse;
+import org.hyperic.hq.hqapi1.types.QueueApproveResponse;
 
 import java.io.IOException;
 
@@ -9,11 +9,11 @@ import java.io.IOException;
  * The Hyperic HQ Autodiscovery API.
  *
  * This class provides access to the auto discovery queue.  Each of the
- * methods in this class return {@link com.hyperic.hq.hqapi1.types.Response}
+ * methods in this class return {@link org.hyperic.hq.hqapi1.types.Response}
  * objects that wrap the result of the method with a
- * {@link com.hyperic.hq.hqapi1.types.ResponseStatus} and a
- * {@link com.hyperic.hq.hqapi1.types.ServiceError} that indicates the error
- * if the response status is {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE}.
+ * {@link org.hyperic.hq.hqapi1.types.ResponseStatus} and a
+ * {@link org.hyperic.hq.hqapi1.types.ServiceError} that indicates the error
+ * if the response status is {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE}.
  *
  */
 public class AutodiscoveryApi {
@@ -27,11 +27,11 @@ public class AutodiscoveryApi {
     /**
      * Get all the entries in the auto-discovery queue.
      *
-     * @return On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
-     * a list of {@link com.hyperic.hq.hqapi1.types.AIPlatform} objects is
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
+     * a list of {@link org.hyperic.hq.hqapi1.types.AIPlatform} objects is
      * returned.
      *
-     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>
@@ -50,15 +50,15 @@ public class AutodiscoveryApi {
     }
 
     /**
-     * Approve a {@link com.hyperic.hq.hqapi1.types.AIPlatform} into the HQ
+     * Approve a {@link org.hyperic.hq.hqapi1.types.AIPlatform} into the HQ
      * inventory.
      *
-     * @param fqdn The {@link com.hyperic.hq.hqapi1.types.AIPlatform#getFqdn()}
+     * @param fqdn The {@link org.hyperic.hq.hqapi1.types.AIPlatform#getFqdn()}
      * to approve.
-     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
      * if the platform was approved into the inventory.
      *
-     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>

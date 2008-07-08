@@ -1,7 +1,7 @@
-package com.hyperic.hq.hqapi1.test;
+package org.hyperic.hq.hqapi1.test;
 
-import com.hyperic.hq.hqapi1.UserApi;
-import com.hyperic.hq.hqapi1.types.GetUserResponse;
+import org.hyperic.hq.hqapi1.UserApi;
+import org.hyperic.hq.hqapi1.types.GetUserResponse;
 
 public class UserGetUser_test extends UserTestBase {
 

@@ -24,9 +24,9 @@
         <mkdir dir="${build.dir}/classes"/>
 
         <xjc destdir="${build.dir}/src" extension="true" removeOldOutput="yes"
-             package="com.hyperic.hq.hqapi1.types">
+             package="org.hyperic.hq.hqapi1.types">
             <schema dir="xsd" includes="HQApi1.xsd"/>
-            <produces dir="${build.dir}/src/com/hyperic/hq/hqapi1/types"
+            <produces dir="${build.dir}/src/org/hyperic/hq/hqapi1/types"
                       includes="**/"/>
         </xjc>
     </target>
@@ -163,8 +163,8 @@
                  author="true"
                  maxmemory="256M"
                  use="true"
-                 packagenames="com.hyperic.*"
-                 excludepackagenames="com.hyperic.hq.hqapi1.test.*"
+                 packagenames="org.hyperic.*"
+                 excludepackagenames="org.hyperic.hq.hqapi1.test.*"
                  windowtitle="Hyperic HQ API">
             <sourcepath>
                 <pathelement location="src"/>

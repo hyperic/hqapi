@@ -1,9 +1,9 @@
-package com.hyperic.hq.hqapi1;
+package org.hyperic.hq.hqapi1;
 
-import com.hyperic.hq.hqapi1.types.DisableMetricResponse;
-import com.hyperic.hq.hqapi1.types.EnableMetricResponse;
-import com.hyperic.hq.hqapi1.types.Metric;
-import com.hyperic.hq.hqapi1.types.SetIntervalResponse;
+import org.hyperic.hq.hqapi1.types.DisableMetricResponse;
+import org.hyperic.hq.hqapi1.types.EnableMetricResponse;
+import org.hyperic.hq.hqapi1.types.Metric;
+import org.hyperic.hq.hqapi1.types.SetIntervalResponse;
 
 public class MetricApi {
 
@@ -16,13 +16,13 @@ public class MetricApi {
     }
     
     /**
-     * Disable a {@link com.hyperic.hq.hqapi1.types.Metric}.
+     * Disable a {@link org.hyperic.hq.hqapi1.types.Metric}.
      *
      * @param metric The metric to disable.
-     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * metric was successfully disabled.
      *
-     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>
@@ -40,13 +40,13 @@ public class MetricApi {
     }
 
     /**
-     * Enable a {@link com.hyperic.hq.hqapi1.types.Metric}.
+     * Enable a {@link org.hyperic.hq.hqapi1.types.Metric}.
      *
      * @param metric The metric to enable.
-     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * metric was successfully enabled.
      *
-     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>
@@ -64,13 +64,13 @@ public class MetricApi {
     }
 
     /**
-     * Set a {@link com.hyperic.hq.hqapi1.types.Metric} collection interval.
+     * Set a {@link org.hyperic.hq.hqapi1.types.Metric} collection interval.
      *
      * @param metric The metric to change the collection interval.
-     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * metric's collection interval was successfully updated.
      *
-     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>

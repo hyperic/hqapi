@@ -1,15 +1,15 @@
-package com.hyperic.hq.hqapi1;
+package org.hyperic.hq.hqapi1;
 
-import com.hyperic.hq.hqapi1.types.GetUserResponse;
-import com.hyperic.hq.hqapi1.types.GetUsersResponse;
-import com.hyperic.hq.hqapi1.types.CreateUserResponse;
-import com.hyperic.hq.hqapi1.types.User;
-import com.hyperic.hq.hqapi1.types.DeleteUserResponse;
-import com.hyperic.hq.hqapi1.types.UpdateUserResponse;
-import com.hyperic.hq.hqapi1.types.UpdateUserRequest;
-import com.hyperic.hq.hqapi1.types.SyncUsersResponse;
-import com.hyperic.hq.hqapi1.types.AssignRolesResponse;
-import com.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.GetUserResponse;
+import org.hyperic.hq.hqapi1.types.GetUsersResponse;
+import org.hyperic.hq.hqapi1.types.CreateUserResponse;
+import org.hyperic.hq.hqapi1.types.User;
+import org.hyperic.hq.hqapi1.types.DeleteUserResponse;
+import org.hyperic.hq.hqapi1.types.UpdateUserResponse;
+import org.hyperic.hq.hqapi1.types.UpdateUserRequest;
+import org.hyperic.hq.hqapi1.types.SyncUsersResponse;
+import org.hyperic.hq.hqapi1.types.AssignRolesResponse;
+import org.hyperic.hq.hqapi1.types.Role;
 
 import java.io.IOException;
 import java.util.Map;
@@ -20,11 +20,11 @@ import java.util.List;
  * The Hyperic HQ User API.
  *
  * This class provides access to the users within the HQ system.  Each of the
- * methods in this class return {@link com.hyperic.hq.hqapi1.types.Response}
+ * methods in this class return {@link org.hyperic.hq.hqapi1.types.Response}
  * objects that wrap the result of the method with a
- * {@link com.hyperic.hq.hqapi1.types.ResponseStatus} and a
- * {@link com.hyperic.hq.hqapi1.types.ServiceError} that indicates the error
- * if the response status is {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE}.
+ * {@link org.hyperic.hq.hqapi1.types.ResponseStatus} and a
+ * {@link org.hyperic.hq.hqapi1.types.ServiceError} that indicates the error
+ * if the response status is {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE}.
  *
  */
 public class UserApi {
@@ -36,14 +36,14 @@ public class UserApi {
     }
 
     /**
-     * Find a {@link com.hyperic.hq.hqapi1.types.User} by name.
+     * Find a {@link org.hyperic.hq.hqapi1.types.User} by name.
      *
      * @param name The user name to search for.
-     * @return On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the User by the given name is returned via
-     * {@link com.hyperic.hq.hqapi1.types.GetUserResponse#getUser()}.
+     * {@link org.hyperic.hq.hqapi1.types.GetUserResponse#getUser()}.
      *
-     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>
@@ -64,11 +64,11 @@ public class UserApi {
     }
 
     /**
-     * Find all {@link com.hyperic.hq.hqapi1.types.User}s in the system.
-     * @return On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * Find all {@link org.hyperic.hq.hqapi1.types.User}s in the system.
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * a list of Users is returned.
      *
-     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>
@@ -87,14 +87,14 @@ public class UserApi {
     }
 
     /**
-     * Create a {@link com.hyperic.hq.hqapi1.types.User}.
+     * Create a {@link org.hyperic.hq.hqapi1.types.User}.
      *
      * @param user The user to create.
      * @param password The password for this user.
-     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * user was created successfully.
      *
-     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>
@@ -130,10 +130,10 @@ public class UserApi {
      * Delete a {@link User}
      *
      * @param user The user to delete.
-     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * user was deleted successfully.
      *
-     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>
@@ -143,6 +143,7 @@ public class UserApi {
      *   <li>UnexpectedError - Any other internal server error.
      * </ul>
      * </p>
+     * 
      * @throws IOException If a network error occurs while making the request.
      */
     public DeleteUserResponse deleteUser(User user)
@@ -160,10 +161,10 @@ public class UserApi {
      * Update a {@link User}
      *
      * @param user The user to update.
-     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * user was updated successfully.
      *
-     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>
@@ -190,10 +191,10 @@ public class UserApi {
      * Sync a list of {@link User}s.
      *
      * @param users The list of users to sync.
-     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * user was updated successfully.
      *
-     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>
@@ -215,10 +216,10 @@ public class UserApi {
      * Assign a list of {@link Role}s to a {@link User}
      *
      * @param roles The list of roles to assign.
-     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * user was updated successfully.
      *
-     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>

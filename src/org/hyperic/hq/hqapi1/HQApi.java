@@ -1,4 +1,4 @@
-package com.hyperic.hq.hqapi1;
+package org.hyperic.hq.hqapi1;
 
 /**
  * The Hyperic HQ API.

@@ -1,10 +1,10 @@
-package com.hyperic.hq.hqapi1.test;
+package org.hyperic.hq.hqapi1.test;
 
-import com.hyperic.hq.hqapi1.UserApi;
-import com.hyperic.hq.hqapi1.types.User;
-import com.hyperic.hq.hqapi1.types.CreateUserResponse;
-import com.hyperic.hq.hqapi1.types.DeleteUserResponse;
-import com.hyperic.hq.hqapi1.types.GetUserResponse;
+import org.hyperic.hq.hqapi1.UserApi;
+import org.hyperic.hq.hqapi1.types.User;
+import org.hyperic.hq.hqapi1.types.CreateUserResponse;
+import org.hyperic.hq.hqapi1.types.DeleteUserResponse;
+import org.hyperic.hq.hqapi1.types.GetUserResponse;
 
 public class UserDelete_test extends UserTestBase {
 

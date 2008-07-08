@@ -1,10 +1,10 @@
-package com.hyperic.hq.hqapi1.test;
+package org.hyperic.hq.hqapi1.test;
 
 import junit.framework.TestCase;
-import com.hyperic.hq.hqapi1.HQApi;
-import com.hyperic.hq.hqapi1.types.ResponseStatus;
-import com.hyperic.hq.hqapi1.types.ServiceError;
-import com.hyperic.hq.hqapi1.types.Response;
+import org.hyperic.hq.hqapi1.HQApi;
+import org.hyperic.hq.hqapi1.types.ResponseStatus;
+import org.hyperic.hq.hqapi1.types.ServiceError;
+import org.hyperic.hq.hqapi1.types.Response;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.util.Properties;

@@ -1,4 +1,4 @@
-package com.hyperic.hq.hqapi1;
+package org.hyperic.hq.hqapi1;
 
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.HttpClient;
@@ -31,8 +31,8 @@ import java.net.URLEncoder;
 import java.net.SocketException;
 import java.lang.reflect.Method;
 
-import com.hyperic.hq.hqapi1.types.ResponseStatus;
-import com.hyperic.hq.hqapi1.types.ServiceError;
+import org.hyperic.hq.hqapi1.types.ResponseStatus;
+import org.hyperic.hq.hqapi1.types.ServiceError;
 
 public class HQConnection {
 

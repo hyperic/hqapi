@@ -1,15 +1,15 @@
-package com.hyperic.hq.hqapi1;
+package org.hyperic.hq.hqapi1;
 
 import java.io.IOException;
 
-import com.hyperic.hq.hqapi1.types.AddResourceToGroupResponse;
-import com.hyperic.hq.hqapi1.types.CreateGroupResponse;
-import com.hyperic.hq.hqapi1.types.DeleteGroupResponse;
-import com.hyperic.hq.hqapi1.types.GetGroupsResponse;
-import com.hyperic.hq.hqapi1.types.GetResourcesInGroupResponse;
-import com.hyperic.hq.hqapi1.types.Group;
-import com.hyperic.hq.hqapi1.types.RemoveResourceFromGroupResponse;
-import com.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.AddResourceToGroupResponse;
+import org.hyperic.hq.hqapi1.types.CreateGroupResponse;
+import org.hyperic.hq.hqapi1.types.DeleteGroupResponse;
+import org.hyperic.hq.hqapi1.types.GetGroupsResponse;
+import org.hyperic.hq.hqapi1.types.GetResourcesInGroupResponse;
+import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.RemoveResourceFromGroupResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
 
 public class GroupApi {
     
@@ -22,13 +22,13 @@ public class GroupApi {
     }
     
     /**
-     * Create a {@link com.hyperic.hq.hqapi1.types.Group}.
+     * Create a {@link org.hyperic.hq.hqapi1.types.Group}.
      *
      * @param group The group to create.
-     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * group was created successfully.
      *
-     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>
@@ -49,10 +49,10 @@ public class GroupApi {
      * Delete a {@link Group}
      *
      * @param group The group to delete.
-     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * group was deleted successfully.
      *
-     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>
@@ -72,10 +72,10 @@ public class GroupApi {
      * Delete a {@link Resource} from a {@link Group}
      *
      * @param group The group to delete the resource from.
-     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * resource was successfully removed from the group.
      *
-     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>
@@ -95,10 +95,10 @@ public class GroupApi {
     /**
      * List all the Groups in HQ visible by the login
      *
-     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if 
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if 
      * all the groups were successfully retrieved from the server.
      *
-     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>
@@ -116,10 +116,10 @@ public class GroupApi {
     /**
      * List all the Resources associated with a {@link Group}
      *
-     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if all
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if all
      * the resources were successfully retrieved from the server
      *
-     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>
@@ -138,10 +138,10 @@ public class GroupApi {
     /**
      * Add the specified {@link Resource} to the {@link Group}
      *
-     * @return {@link com.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * resource was successfully added to the group.
      *
-     * On {@link com.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
+     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
      * following error codes can be returned:
      *
      * <p>

@@ -1,11 +1,11 @@
-package com.hyperic.hq.hqapi1.test;
+package org.hyperic.hq.hqapi1.test;
 
-import com.hyperic.hq.hqapi1.UserApi;
-import com.hyperic.hq.hqapi1.types.User;
-import com.hyperic.hq.hqapi1.types.CreateUserResponse;
-import com.hyperic.hq.hqapi1.types.ResponseStatus;
-import com.hyperic.hq.hqapi1.types.UpdateUserResponse;
-import com.hyperic.hq.hqapi1.types.GetUserResponse;
+import org.hyperic.hq.hqapi1.UserApi;
+import org.hyperic.hq.hqapi1.types.User;
+import org.hyperic.hq.hqapi1.types.CreateUserResponse;
+import org.hyperic.hq.hqapi1.types.ResponseStatus;
+import org.hyperic.hq.hqapi1.types.UpdateUserResponse;
+import org.hyperic.hq.hqapi1.types.GetUserResponse;
 
 public class UserUpdate_test extends UserTestBase {
 
