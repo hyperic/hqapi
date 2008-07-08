@@ -7,13 +7,14 @@ package org.hyperic.hq.hqapi1;
  */
 public class HQApi {
 
-    private final UserApi _userApi;
-    private final RoleApi _roleApi;
-    private final MetricApi _metricApi;
-    private final GroupApi _groupApi;
-    private final EscalationApi _escalationApi;
+    private final UserApi          _userApi;
+    private final RoleApi          _roleApi;
+    private final MetricApi        _metricApi;
+    private final GroupApi         _groupApi;
+    private final EscalationApi    _escalationApi;
     private final AutodiscoveryApi _autodiscoveryApi;
-
+    private final ResourceApi      _resourceApi;
+    
     /**
      * @param host The hostname of the HQ Server to connect to.
      * @param port The port on the HQ server to connect to.
@@ -25,12 +26,13 @@ public class HQApi {
                  String password) {
         HQConnection connection = new HQConnection(host, port, isSecure,
                                                    user, password);
-        _userApi = new UserApi(connection);
-        _roleApi = new RoleApi(connection);
-        _groupApi = new GroupApi(connection);
-        _metricApi = new MetricApi(connection);
-        _escalationApi = new EscalationApi(connection);
+        _userApi          = new UserApi(connection);
+        _roleApi          = new RoleApi(connection);
+        _groupApi         = new GroupApi(connection);
+        _metricApi        = new MetricApi(connection);
+        _escalationApi    = new EscalationApi(connection);
         _autodiscoveryApi = new AutodiscoveryApi(connection);
+        _resourceApi      = new ResourceApi(connection);
     }
 
     /**
@@ -42,6 +44,10 @@ public class HQApi {
         return _userApi;
     }
 
+    public ResourceApi getResourceApi() {
+        return _resourceApi;
+    }
+    
     /**
      * Add, remove and update roles.
      *

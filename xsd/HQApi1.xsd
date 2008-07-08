@@ -1,23 +1,11 @@
 <?xml version="1.0"?>
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-
-    <!-- User objects -->
+    <xs:include schemaLocation="Resource.xsd"/>
     <xs:include schemaLocation="User.xsd" />
-
-    <!-- Role objects -->
     <xs:include schemaLocation="Role.xsd"/>
-
-    <!-- Group objects -->
     <xs:include schemaLocation="Group.xsd" />
-
-    <!-- Metric objects -->
     <xs:include schemaLocation="Metric.xsd" />
-
-    <!-- Escalation objects -->
     <xs:include schemaLocation="Escalation.xsd" />
-
-    <!-- Autodiscovery objects -->
     <xs:include schemaLocation="Autodiscovery.xsd"/>
-    
 </xs:schema>
