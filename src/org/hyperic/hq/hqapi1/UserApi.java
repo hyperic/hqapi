@@ -37,7 +37,7 @@ public class UserApi {
     }
 
     /**
-     * Find a {@link org.hyperic.hq.hqapi1.types.User} by name.
+     * Get a {@link org.hyperic.hq.hqapi1.types.User} by name.
      *
      * @param name The user name to search for.
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
@@ -242,7 +242,7 @@ public class UserApi {
     }
 
     /**
-     * Set a list of {@link Role}s to a {@link User}.  Any previous roles
+     * Set a list of {@link Role}s for a {@link User}.  Any previous roles
      * associated with this user will be removed.
      *
      * @param user The user to set roles for.
