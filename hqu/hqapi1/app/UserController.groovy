@@ -1,8 +1,10 @@
 import org.hyperic.hq.hqu.rendit.BaseController
 
-import org.hyperic.hq.authz.shared.PermissionException;
+import org.hyperic.hq.authz.shared.PermissionException
+import org.hyperic.hq.hqapi1.ErrorCode;
 
 class UserController extends ApiController {
+
     private Closure getUserXML(u) {
         { doc -> 
             User(id          : u.id,
@@ -43,7 +45,7 @@ class UserController extends ApiController {
         renderXml() {
             GetUserResponse() {
                 if (!u) {
-                    out << getFailureXML("ObjectNotFound")
+                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
                 } else {
                     out << getSuccessXML()
                     out << getUserXML(u)
@@ -73,12 +75,12 @@ class UserController extends ApiController {
         def failureXml
         def newUser
         if (!name || !password || !first || !last || !email) {
-            failureXml = getFailureXML("InvalidParameters")
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             try {
                 def existing = userHelper.findUser(name)
                 if (existing) {
-                    failureXml = getFailureXML("ObjectExists")
+                    failureXml = getFailureXML(ErrorCode.OBJECT_EXISTS)
                 } else {
                     newUser = userHelper.createUser(name, password, active,
                                                     dsn, dept, email, first,
@@ -86,7 +88,7 @@ class UserController extends ApiController {
                 }
             } catch (Exception e) {
                 log.error("UnexpectedError: " + e.getMessage(), e);
-                failureXml = getFailureXML("UnexpectedError")
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
             }
         }
         
@@ -109,13 +111,13 @@ class UserController extends ApiController {
         def failureXml
         
         if (!existing) {
-            failureXml = getFailureXML("ObjectNotFound")
+            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
         } else {
             try {
                 userHelper.removeUser(existing.id)
             } catch (Exception e) {
                 log.error("UnexpectedError: " + e.getMessage(), e)
-                failureXml = getFailureXML("UnexpectedError")
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
             }
         }
         
@@ -139,7 +141,7 @@ class UserController extends ApiController {
             if (!xmlUser || xmlUser.size() != 1) {
                 renderXml() {
                     UpdateUserResponse() {
-                        out << getFailureXML('InvalidParameters')
+                        out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
                     }
                 }
                 return
@@ -150,7 +152,7 @@ class UserController extends ApiController {
             def name = xmlIn.'@name'
             def existing = userHelper.findUser(name)
             if (!existing) {
-                failureXml = getFailureXML("ObjectNotFound")
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
             } else {
                 userHelper.updateUser(existing,
                                       xmlIn.'@active'?.toBoolean(),
@@ -165,10 +167,10 @@ class UserController extends ApiController {
             }
         } catch (PermissionException e) {
             log.debug("Permission denied [${user.name}]", e)
-            failureXml = getFailureXML("PermissionDenied")
+            failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
         } catch (Exception e) {
             log.error("UnexpectedError: " + e.getMessage(), e)
-            failureXml = getFailureXML("UnexpectedError")
+            failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
         }
 
         renderXml() {
@@ -216,9 +218,10 @@ class UserController extends ApiController {
             }
         } catch (PermissionException e) {
             log.debug("Permission denied [${user.name}]", e)
+            failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
         } catch (Exception e) {
             log.error("UnexpectedError: " + e.getMessage(), e)
-            failureXml = getFailureXML("UnexpectedError")
+            failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
         }
 
         renderXml() {

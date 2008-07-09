@@ -51,51 +51,44 @@
         <delete dir="${build.dir}"/>
     </target>
 
-    <!-- Package a distribution, this needs some work -->
+    <!-- Package a distribution -->
     <target name="dist" depends="compile,javadoc">
 
         <mkdir dir="${dist.dir}"/>
 
+        <!-- Copy UI plugin -->
         <copy todir="${dist.dir}">
             <fileset dir="hqu">
                 <include name="hqapi1/**"/>
             </fileset>
         </copy>
 
-        <!-- Bundle a distribution for easy download through HQ -->
+        <!-- Bundle hqapi1.tar.gz in plugin public directory with all
+             necessary jars, javadoc and xsds. -->
         <mkdir dir="${build.dir}/hqapi1"/>
         <mkdir dir="${build.dir}/hqapi1/lib"/>
-
-        <!-- Include support jars -->
         <copy todir="${build.dir}/hqapi1/lib">
             <fileset dir="${basedir}/lib">
                 <include name="*.jar"/>
             </fileset>
         </copy>
-
-        <!-- Include javadoc -->
         <copy todir="${build.dir}/hqapi1">
             <fileset dir="${build.dir}">
                 <include name="javadoc/**"/>
             </fileset>            
         </copy>
-
-        <!-- Include hqapi1.jar -->
         <jar file="${build.dir}/hqapi1/hqapi1.jar">
             <fileset dir="${build.dir}/classes">
                 <include name="**"/>
                 <exclude name="**/*_test.class"/>
             </fileset>
         </jar>
-
-        <!-- Include the XSD -->
         <mkdir dir="${build.dir}/hqapi1/xsd"/>
         <copy toDir="${build.dir}/hqapi1/xsd">
             <fileset dir="${basedir}/xsd">
                 <include name="*.xsd"/>
             </fileset>
         </copy>
-
         <tar tarfile="${dist.dir}/hqapi1/public/hqapi1.tar.gz"
              longfile="gnu"
              compression="gzip">
@@ -103,6 +96,10 @@
                 <include name="hqapi1/**"/>
             </tarfileset>
         </tar>
+
+        <!-- Include hqapi1.jar in plugin classpath -->
+        <copy toDir="${dist.dir}/hqapi1/lib"
+              file="${build.dir}/hqapi1/hqapi1.jar"/>
 
     </target>
 
