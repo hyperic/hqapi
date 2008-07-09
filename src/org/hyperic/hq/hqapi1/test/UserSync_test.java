@@ -81,9 +81,21 @@ public class UserSync_test extends UserTestBase {
         assertEquals(HTML,   syncedUser.isHtmlEmail());
     }
 
-    public void testSync() throws Exception {
+    public void testMultiSyncCreateAndUpdate() throws Exception {
 
         UserApi api = getUserApi();
+
+        // Create 10 users via sync()
+        List<User> toCreate = new ArrayList<User>();
+        for (int i = 0; i < 10; i++) {
+            User u = generateTestUser();
+            toCreate.add(u);
+        }
+
+        SyncUsersResponse syncCreateResponse = api.syncUsers(toCreate);
+        hqAssertSuccess(syncCreateResponse);
+
+        // Update user's firstname.
         GetUsersResponse getUsersRespose = api.getUsers();
         hqAssertSuccess(getUsersRespose);
 

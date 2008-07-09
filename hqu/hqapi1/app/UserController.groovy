@@ -190,7 +190,6 @@ class UserController extends ApiController {
                 def name = xmlUser.'@name'
                 def existing = userHelper.findUser(name)
                 if (existing) {
-                    log.info "Updating user " + name
                     userHelper.updateUser(existing,
                                           xmlUser.'@active'?.toBoolean(),
                                           "CAM", // Dsn
@@ -202,7 +201,6 @@ class UserController extends ApiController {
                                           xmlUser.'@SMSAddress',
                                           xmlUser.'@htmlEmail'?.toBoolean())
                 } else {
-                    log.info "Creating user " + name
                     // XXX: This needs to handle the password hash
                     userHelper.createUser(xmlUser.'@name',
                                           xmlUser.'@active'?.toBoolean(),
