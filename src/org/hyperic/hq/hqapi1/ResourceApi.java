@@ -26,7 +26,7 @@ public class ResourceApi extends BaseApi {
      * Find all {@link ResourcePrototype}s in the system.  
      *
      * @see ResponseStatus#SUCCESS
-     * @see LoginFailure
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
      */    
     public ListResourcePrototypesResponse listResourcePrototypes() 
         throws IOException

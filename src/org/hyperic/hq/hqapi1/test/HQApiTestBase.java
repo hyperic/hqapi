@@ -2,6 +2,7 @@ package org.hyperic.hq.hqapi1.test;
 
 import junit.framework.TestCase;
 import org.hyperic.hq.hqapi1.HQApi;
+import org.hyperic.hq.hqapi1.ErrorCode;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.ServiceError;
 import org.hyperic.hq.hqapi1.types.Response;
@@ -80,37 +81,43 @@ public class HQApiTestBase  extends TestCase {
     void hqAssertFailureLoginFailure(Response response) {
         assertEquals(ResponseStatus.FAILURE, response.getStatus());
         assertEquals(response.getError().getReasonText(),
-                     "LoginFailure", response.getError().getErrorCode());
+                     ErrorCode.LOGIN_FAILURE.getErrorCode(),
+                     response.getError().getErrorCode());
     }
 
     void hqAssertFailureObjectNotFound(Response response) {
         assertEquals(ResponseStatus.FAILURE, response.getStatus());
         assertEquals(response.getError().getReasonText(),
-                     "ObjectNotFound", response.getError().getErrorCode());
+                     ErrorCode.OBJECT_NOT_FOUND.getErrorCode(),
+                     response.getError().getErrorCode());
     }
 
     void hqAssertFailureObjectExists(Response response) {
         assertEquals(ResponseStatus.FAILURE, response.getStatus());
         assertEquals(response.getError().getReasonText(),
-                     "ObjectExists", response.getError().getErrorCode());
+                     ErrorCode.OBJECT_EXISTS.getErrorCode(),
+                     response.getError().getErrorCode());
     }
 
     void hqAssertFailureInvalidParameters(Response response) {
         assertEquals(ResponseStatus.FAILURE, response.getStatus());
         assertEquals(response.getError().getReasonText(),
-                     "InvalidParameters", response.getError().getErrorCode());
+                     ErrorCode.INVALID_PARAMETERS.getErrorCode(),
+                     response.getError().getErrorCode());
     }
 
     // Unlikely, but here for completeness.
     void hqAssertFailureUnexpectedError(Response response) {
         assertEquals(ResponseStatus.FAILURE, response.getStatus());
         assertEquals(response.getError().getReasonText(),
-                     "UnexpectedError", response.getError().getErrorCode());
+                     ErrorCode.UNEXPECTED_ERROR.getErrorCode(),
+                     response.getError().getErrorCode());
     }
 
     void hqAssertFailurePermissionDenied(Response response) {
         assertEquals(ResponseStatus.FAILURE, response.getStatus());
         assertEquals(response.getError().getReasonText(),
-                     "PermissionDenied", response.getError().getErrorCode());
+                     ErrorCode.PERMISSION_DENIED.getErrorCode(),
+                     response.getError().getErrorCode());
     }
 }

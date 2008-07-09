@@ -45,15 +45,9 @@ public class UserApi {
      * the User by the given name is returned via
      * {@link org.hyperic.hq.hqapi1.types.GetUserResponse#getUser()}.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
      *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>ObjectNotFound - The given user was not found.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public GetUserResponse getUser(String name)
@@ -73,15 +67,9 @@ public class UserApi {
      * the User by the given id is returned via
      * {@link org.hyperic.hq.hqapi1.types.GetUserResponse#getUser()}.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
      *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>ObjectNotFound - The given user was not found.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public GetUserResponse getUser(Integer id)
@@ -98,14 +86,7 @@ public class UserApi {
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * a list of Users is returned.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
-     *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     * </ul>
-     * </p>
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
      *
      * @throws IOException If a network error occurs while making the request.
      */
@@ -125,17 +106,11 @@ public class UserApi {
      * the created user is returned via
      * {@link org.hyperic.hq.hqapi1.types.CreateUserResponse#getUser()}.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
+     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_EXISTS
+     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>InvalidParameters - All the required parameters in the User object were not supplied.
-     *   <li>ObjectExists - The user by the given name already exists.
-     *   <li>UnexpectedError - Any other internal server error.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public CreateUserResponse createUser(User user, String password)
@@ -164,16 +139,9 @@ public class UserApi {
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * user was deleted successfully.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
-     *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>ObjectNotFound - The given user was not found in the system.
-     *   <li>UnexpectedError - Any other internal server error.
-     * </ul>
-     * </p>
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
+     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      * 
      * @throws IOException If a network error occurs while making the request.
      */
@@ -195,17 +163,11 @@ public class UserApi {
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * user was updated successfully.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
+     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
+     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated. 
-     *   <li>ObjectNotFound - The given user was not found in the system.
-     *   <li>PermissionDenied - The connected user does not have permission to modify this user.
-     *   <li>UnexpectedError - Any other internal server error.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public UpdateUserResponse updateUser(User user)
@@ -225,16 +187,10 @@ public class UserApi {
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * user was updated successfully.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
+     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>PermissionDenied - The connected user does not have permission to sync a user.
-     *   <li>UnexpectedError - Any other internal server error.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public SyncUsersResponse syncUsers(List<User> users)
@@ -256,17 +212,11 @@ public class UserApi {
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * user was updated successfully.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
+     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
+     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>ObjectNotFound - A given user or role was not found in the system. 
-     *   <li>PermissionDenied - The connected user does not have permission to modify the user.
-     *   <li>UnexpectedError - Any other internal server error.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public SetRolesResponse setRoles(User user, List<Role> roles)
@@ -283,17 +233,11 @@ public class UserApi {
      * a list of Roles is returned via
      * {@link org.hyperic.hq.hqapi1.types.GetRolesResponse#getRole()}.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
+     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
+     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>ObjectNotFound - A given user was not found in the system.
-     *   <li>PermissionDenied - The connected user does not have permission to list roles for this user.
-     *   <li>UnexpectedError - Any other internal server error.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public GetRolesResponse getRoles(User user)
