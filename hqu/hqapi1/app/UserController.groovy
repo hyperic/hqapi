@@ -203,17 +203,22 @@ class UserController extends ApiController {
                                           xmlUser.'@SMSAddress',
                                           xmlUser.'@htmlEmail'?.toBoolean())
                 } else {
-                    // XXX: This needs to handle the password hash
-                    userHelper.createUser(xmlUser.'@name',
-                                          xmlUser.'@active'?.toBoolean(),
-                                          "CAM", // Dsn
-                                          xmlUser.'@department',
-                                          xmlUser.'@emailAddress',
-                                          xmlUser.'@firstName',
-                                          xmlUser.'@lastName',
-                                          xmlUser.'@phoneNumber',
-                                          xmlUser.'@SMSAddress',
-                                          xmlUser.'@htmlEmail'?.toBoolean())
+                    if (!xmlUser.'@name' || !xmlUser.'@firstName' ||
+                        !xmlUser.'@lastName' || !xmlUser.'@emailAddress') {
+                        failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                    } else {
+                        // XXX: This needs to handle the password hash                        
+                        userHelper.createUser(xmlUser.'@name',
+                                              xmlUser.'@active'?.toBoolean(),
+                                              "CAM", // Dsn
+                                              xmlUser.'@department',
+                                              xmlUser.'@emailAddress',
+                                              xmlUser.'@firstName',
+                                              xmlUser.'@lastName',
+                                              xmlUser.'@phoneNumber',
+                                              xmlUser.'@SMSAddress',
+                                              xmlUser.'@htmlEmail'?.toBoolean())
+                    }
                 }
             }
         } catch (PermissionException e) {
