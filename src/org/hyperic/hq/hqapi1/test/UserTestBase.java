@@ -1,6 +1,7 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.types.User;
+import org.hyperic.hq.hqapi1.types.GetUsersResponse;
 import org.hyperic.hq.hqapi1.UserApi;
 
 import java.util.Random;
@@ -42,5 +43,22 @@ public class UserTestBase extends HQApiTestBase {
         user.setEmailAddress(TESTUSER_EMAIL);
         user.setActive(TESTUSER_ACTIVE);
         return user;
+    }
+
+    /**
+     * Before each test run, clean up orphaned test users.
+     */
+    public void setUp() throws Exception {
+
+        super.setUp();
+        
+        UserApi api = getUserApi();
+        GetUsersResponse response = api.getUsers();
+
+        for (User u : response.getUser()) {
+            if (u.getName().startsWith(TESTUSER_NAME_PREFIX)) {
+                api.deleteUser(u.getId());
+            }
+        }
     }
 }
