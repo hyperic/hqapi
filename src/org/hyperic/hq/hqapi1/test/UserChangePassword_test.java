@@ -22,9 +22,39 @@ public class UserChangePassword_test extends UserTestBase {
 
         // Change that users password.
         User createdUser = createResponse.getUser();
-        String PASS = "NEWPASSWORD";
         ChangePasswordResponse response = api.changePassword(createdUser,
-                                                             PASS);
+                                                             "NEWPASSWORD");
         hqAssertSuccess(response);
+    }
+
+    public void testChangePasswordEmpty() throws Exception {
+
+        UserApi api = getUserApi();
+
+        // Create a new user.
+        User u = generateTestUser();
+        CreateUserResponse createResponse = api.createUser(u, PASSWORD);
+        hqAssertSuccess(createResponse);
+
+        // Change that users password.
+        User createdUser = createResponse.getUser();
+        ChangePasswordResponse response = api.changePassword(createdUser,
+                                                             "");
+        hqAssertFailureInvalidParameters(response);        
+    }
+
+    public void testChangePasswordNull() throws Exception {
+        UserApi api = getUserApi();
+
+        // Create a new user.
+        User u = generateTestUser();
+        CreateUserResponse createResponse = api.createUser(u, PASSWORD);
+        hqAssertSuccess(createResponse);
+
+        // Change that users password.
+        User createdUser = createResponse.getUser();
+        ChangePasswordResponse response = api.changePassword(createdUser,
+                                                             null);
+        hqAssertFailureInvalidParameters(response);
     }
 }
