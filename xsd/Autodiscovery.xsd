@@ -34,7 +34,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="QueueApproveResponse">
+    <xs:element name="ApproveResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response"/>

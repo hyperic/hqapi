@@ -1,9 +1,10 @@
 package org.hyperic.hq.hqapi1;
 
 import org.hyperic.hq.hqapi1.types.GetQueueResponse;
-import org.hyperic.hq.hqapi1.types.QueueApproveResponse;
+import org.hyperic.hq.hqapi1.types.ApproveResponse;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * The Hyperic HQ Autodiscovery API.
@@ -29,24 +30,19 @@ public class AutodiscoveryApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
      * a list of {@link org.hyperic.hq.hqapi1.types.AIPlatform} objects is
-     * returned.
+     * returned via {@link org.hyperic.hq.hqapi1.types.GetQueueResponse#getAIPlatform()}
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
+     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>PermissionDenied - The connected user does not have permission to sync a user.
-     *   <li>UnexpectedError - Any other internal server error.
-     * </ul>
-     * </p>
      * @throws java.io.IOException If a network error occurs while making the request.
      */
     public GetQueueResponse getQueue()
         throws IOException
     {
-        return null;
+        return _connection.doGet("/hqu/hqapi1/autodiscovery/getQueue.hqu",
+                                 new HashMap(), GetQueueResponse.class);
     }
 
     /**
@@ -58,21 +54,20 @@ public class AutodiscoveryApi {
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
      * if the platform was approved into the inventory.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
+     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>PermissionDenied - The connected user does not have permission to sync a user.
-     *   <li>UnexpectedError - Any other internal server error.
-     * </ul>
-     * </p>
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public QueueApproveResponse approve(String fqdn)
+    public ApproveResponse approve(String fqdn)
         throws IOException
     {
-        return null;
+        HashMap<String, String> params = new HashMap<String, String>();
+
+        params.put("fqdn", fqdn);
+
+        return _connection.doGet("/hqu/hqapi1/autodiscovery/approve.hqu",
+                                 params, ApproveResponse.class);
     }
 }
