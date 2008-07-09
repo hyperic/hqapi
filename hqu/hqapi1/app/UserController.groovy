@@ -234,4 +234,33 @@ class UserController extends ApiController {
             }
         }
     }
+
+    def changePassword(params) {
+        def id = params.getOne('id')?.toInteger()
+        def password = params.getOne('password')
+
+        def failureXml
+
+        def user = userHelper.getUser(id)
+        if (!user) {
+            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+        } else {
+            try {
+                userHelper.changeUserPassword(user, password)
+            } catch (Exception e) {
+                log.error("UnexpectedError: " + e.getMessage(), e)
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+            }
+        }
+
+        renderXml() {
+            ChangePasswordResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                }
+            }
+        }
+    }
 }

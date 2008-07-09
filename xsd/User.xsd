@@ -103,4 +103,12 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="ChangePasswordResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response"/>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
 </xs:schema>

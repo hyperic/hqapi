@@ -12,6 +12,7 @@ import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.SetRolesResponse;
 import org.hyperic.hq.hqapi1.types.GetRolesResponse;
 import org.hyperic.hq.hqapi1.types.SyncUsersRequest;
+import org.hyperic.hq.hqapi1.types.ChangePasswordResponse;
 
 import java.io.IOException;
 import java.util.Map;
@@ -201,6 +202,29 @@ public class UserApi {
 
         return _connection.doPost("/hqu/hqapi1/user/sync.hqu", request,
                                   SyncUsersResponse.class);
+    }
+
+    /**
+     * Change the password for the given {@link User}.
+     *
+     * @param user The user's password to change.
+     * @param password The new password.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * user's password was updated successfully.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public ChangePasswordResponse changePassword(User user, String password)
+        throws IOException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+
+        params.put("id", String.valueOf(user.getId()));
+        params.put("password", password);
+
+        return _connection.doGet("/hqu/hqapi1/user/changePassword.hqu",
+                                 params, ChangePasswordResponse.class);
     }
 
     /**
