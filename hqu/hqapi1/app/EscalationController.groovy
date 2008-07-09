@@ -37,7 +37,7 @@ class EscalationController extends ApiController {
 
     def list(params) {
         renderXml() {
-            out << GetEscalationrsResponse() {
+            out << ListEscalationsResponse() {
                 out << getSuccessXML()
                 for (e in escalationHelper.allEscalations.sort {a, b -> a.name <=> b.name}) {
                     out << getEscalationXML(e)

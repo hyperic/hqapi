@@ -157,7 +157,7 @@ public class EscalationApi {
     public ListEscalationsResponse listEscalations()
         throws IOException {
         return _connection.doGet("/hqu/hqapi1/escalation/list.hqu",
-                                 null, ListEscalationsResponse.class);
+                                 new HashMap(), ListEscalationsResponse.class);
     }
     
     /**
