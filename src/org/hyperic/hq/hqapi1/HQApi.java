@@ -44,6 +44,11 @@ public class HQApi {
         return _userApi;
     }
 
+    /**
+     * Add, remove and list resource and resource prototypes.
+     *
+     * @return The API for operating on resource and resource prototypes.
+     */
     public ResourceApi getResourceApi() {
         return _resourceApi;
     }
