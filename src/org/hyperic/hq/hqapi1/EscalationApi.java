@@ -107,7 +107,13 @@ public class EscalationApi {
     public CreateEscalationResponse createEscalation(Escalation esc)
         throws IOException {
         Map<String, String> params = new HashMap<String, String>();
-        return _connection.doGet("/hqu/hqapi1/escalation/update.hqu",
+        params.put("name", esc.getName());
+        params.put("description", esc.getDescription());
+        params.put("pauseAllowed", String.valueOf(esc.isPauseAllowed()));
+        params.put("maxWaitTime", String.valueOf(esc.getMaxPauseTime()));
+        params.put("notifyAll", String.valueOf(esc.isNotifyAll()));
+        params.put("repeat", String.valueOf(esc.isRepeat()));
+        return _connection.doGet("/hqu/hqapi1/escalation/create.hqu",
                                  params, CreateEscalationResponse.class);
     }
 
@@ -206,8 +212,8 @@ public class EscalationApi {
      */
     public DeleteEscalationResponse deleteEscalation(Integer id)
         throws IOException {
-        Map<String, Integer> params = new HashMap<String, Integer>();
-        params.put("id", id);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("id", String.valueOf(id));
         return _connection.doGet("/hqu/hqapi1/escalation/delete.hqu",
                                  params, DeleteEscalationResponse.class);
     }
