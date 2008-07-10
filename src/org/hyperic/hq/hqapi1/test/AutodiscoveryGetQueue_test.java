@@ -15,5 +15,6 @@ public class AutodiscoveryGetQueue_test extends AutodiscoveryTestBase {
 
         GetQueueResponse response = api.getQueue();
         hqAssertSuccess(response);
+        assertNotNull(response.getAIPlatform());
     }
 }

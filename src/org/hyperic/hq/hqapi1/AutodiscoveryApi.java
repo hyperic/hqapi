@@ -49,7 +49,7 @@ public class AutodiscoveryApi {
      * Approve a {@link org.hyperic.hq.hqapi1.types.AIPlatform} into the HQ
      * inventory.
      *
-     * @param fqdn The {@link org.hyperic.hq.hqapi1.types.AIPlatform#getFqdn()}
+     * @param id The {@link org.hyperic.hq.hqapi1.types.AIPlatform#getId()}
      * to approve.
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
      * if the platform was approved into the inventory.
@@ -60,12 +60,12 @@ public class AutodiscoveryApi {
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public ApproveResponse approve(String fqdn)
+    public ApproveResponse approve(int id)
         throws IOException
     {
         HashMap<String, String> params = new HashMap<String, String>();
 
-        params.put("fqdn", fqdn);
+        params.put("id", String.valueOf(id));
 
         return _connection.doGet("/hqu/hqapi1/autodiscovery/approve.hqu",
                                  params, ApproveResponse.class);
