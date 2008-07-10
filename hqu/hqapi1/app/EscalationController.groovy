@@ -55,4 +55,25 @@ class EscalationController extends ApiController {
             }
         }
     }
+    
+    def create(params) {
+        def name         = params.getOne("name")
+        def desc         = params.getOne("description")
+        def pauseAllowed = params.getOne("pauseAllowed").toBoolean()
+        def maxWaitTime  = params.getOne("maxWaitTime").toLong()
+        def notifyAll    = params.getOne("notifyAll").toBoolean()
+        def repeat       = params.getOne("repeat").toBoolean()
+        
+        renderXml() {
+            out << CreateEscalationResponse() {
+                out << getSuccessXML()
+                out << getEscalationXML(escalationHelper
+                                            .createEscalation(name, desc,
+                                                              pauseAllowed,
+                                                              maxWaitTime,
+                                                              notifyAll,
+                                                              repeat))
+            }
+        }
+    }
 }
