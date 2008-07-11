@@ -21,7 +21,8 @@ public abstract class BaseApi {
      *                like:  '/hqu/hqapi1/user/listUsers.hqu'
      *                ex:  'resource/listResources.hqu'
      */
-    protected <T> T doGet(String action, Map params, Class<T> resultClass)
+    protected <T> T doGet(String action, Map<String, String> params, 
+                          Class<T> resultClass)
         throws IOException
     {
         return _conn.doGet(BASE_URI + action, params, resultClass);

@@ -53,8 +53,8 @@ public class EscalationApi {
      */
     public GetEscalationResponse getEscalation(Integer id)
         throws IOException {
-        Map<String, Integer> params = new HashMap<String, Integer>();
-        params.put("id", id);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("id", String.valueOf(id));
         return _connection.doGet("/hqu/hqapi1/escalation/get.hqu",
                                  params, GetEscalationResponse.class);
     }

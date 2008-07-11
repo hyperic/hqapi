@@ -136,7 +136,7 @@ public class HQConnection {
      * the type given in the resultClass argument.
      * @throws IOException If a network error occurs during the request.
      */
-    <T> T doGet(String path, Map params, Class<T> resultClass)
+    <T> T doGet(String path, Map<String, String> params, Class<T> resultClass)
         throws IOException
     {
         GetMethod method = new GetMethod();
