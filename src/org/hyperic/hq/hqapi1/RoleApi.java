@@ -1,9 +1,12 @@
 package org.hyperic.hq.hqapi1;
 
 import org.hyperic.hq.hqapi1.types.GetRolesResponse;
+import org.hyperic.hq.hqapi1.types.GetUserResponse;
+import org.hyperic.hq.hqapi1.types.GetRoleResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The Hyperic HQ Role API.
@@ -39,5 +42,49 @@ public class RoleApi {
         return _connection.doGet("/hqu/hqapi1/role/list.hqu",
                                  new HashMap<String, String>(),
                                  GetRolesResponse.class);
+    }
+
+    /**
+     * Get a {@link org.hyperic.hq.hqapi1.types.Role} by name.
+     *
+     * @param name The role name to search for.
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the Role by the given name is returned via
+     * {@link org.hyperic.hq.hqapi1.types.GetRoleResponse#getRole()}.
+     *
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public GetRoleResponse getRole(String name)
+        throws IOException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("name", name);
+        return _connection.doGet("/hqu/hqapi1/role/get.hqu",
+                                 params, GetRoleResponse.class);
+    }
+
+    /**
+     * Get a {@link org.hyperic.hq.hqapi1.types.Role} by id.
+     *
+     * @param id The role id to look up.
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the Role by the given id is returned via
+     * {@link org.hyperic.hq.hqapi1.types.GetRoleResponse#getRole()}.
+     *
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public GetRoleResponse getRole(int id)
+        throws IOException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("id", String.valueOf(id));
+        return _connection.doGet("/hqu/hqapi1/role/get.hqu",
+                                 params, GetRoleResponse.class);
     }
 }
