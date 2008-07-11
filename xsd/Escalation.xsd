@@ -23,18 +23,16 @@
         <xs:attribute name="repeat" type="xs:boolean" use="required"/>
     </xs:complexType>
 
-    <xs:element name="EmailAction">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="EscalationAction">
-                    <xs:sequence>
-                        <xs:element name="notify" maxOccurs="unbounded" type="xs:string"/>
-                    </xs:sequence>
-                    <xs:attribute name="sms" type="xs:boolean" use="required"/>
-                </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
+    <xs:complexType name="EmailAction">
+        <xs:complexContent>
+            <xs:extension base="EscalationAction">
+                <xs:sequence>
+                    <xs:element name="notify" maxOccurs="unbounded" type="xs:string"/>
+                </xs:sequence>
+                <xs:attribute name="sms" type="xs:boolean" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
 
     <xs:element name="SuppressAction">
         <xs:complexType>
@@ -106,6 +104,14 @@
             <xs:complexContent>
                 <xs:extension base="Response"/>
             </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="SyncEscalationsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="escalation" maxOccurs="unbounded" type="Escalation"/>
+            </xs:sequence>
         </xs:complexType>
     </xs:element>
 

@@ -17,9 +17,12 @@ public class EscalationListEscalations_test extends EscalationTestBase {
         // Assert success response
         hqAssertSuccess(response);
 
-        // Check each Escalation in the list has a Name
+        // Check each Escalation in the list has a Name and find test escalation
+        boolean testEscFound = false;
         for (Escalation e : response.getEscalation()) {
             assertNotNull(e.getName());
+            testEscFound |= e.getName().equals(TEST_NAME);
         }
+        assertTrue(testEscFound);
     }
 }

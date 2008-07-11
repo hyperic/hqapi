@@ -57,22 +57,51 @@ class EscalationController extends ApiController {
     }
     
     def create(params) {
-        def name         = params.getOne("name")
-        def desc         = params.getOne("description")
-        def pauseAllowed = params.getOne("pauseAllowed").toBoolean()
-        def maxWaitTime  = params.getOne("maxWaitTime").toLong()
-        def notifyAll    = params.getOne("notifyAll").toBoolean()
-        def repeat       = params.getOne("repeat").toBoolean()
+        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+
+        for (xmlEsc in syncRequest['escalation']) {
+            def name         = xmlEsc.'@name'
+            def desc         = xmlEsc.'@description'
+            def pauseAllowed = xmlEsc.'@pauseAllowed'.toBoolean()
+            def maxWaitTime  = xmlEsc.'@maxPauseTime'.toLong()
+            def notifyAll    = xmlEsc.'@notifyAll'.toBoolean()
+            def repeat       = xmlEsc.'@repeat'.toBoolean()
         
-        renderXml() {
-            out << CreateEscalationResponse() {
-                out << getSuccessXML()
-                out << getEscalationXML(escalationHelper
-                                            .createEscalation(name, desc,
-                                                              pauseAllowed,
-                                                              maxWaitTime,
-                                                              notifyAll,
-                                                              repeat))
+            renderXml() {
+                out << CreateEscalationResponse() {
+                    out << getSuccessXML()
+                    out << getEscalationXML(escalationHelper
+                                                .createEscalation(name, desc,
+                                                                  pauseAllowed,
+                                                                  maxWaitTime,
+                                                                  notifyAll,
+                                                                  repeat))
+                }
+            }
+        }
+    }
+    
+    def update(params) {
+        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+
+        for (xmlEsc in syncRequest['escalation']) {
+            def id 			 = xmlEsc.'@id'?.toInteger()
+            def name         = xmlEsc.'@name'
+            def desc         = xmlEsc.'@description'
+            def pauseAllowed = xmlEsc.'@pauseAllowed'.toBoolean()
+            def maxWaitTime  = xmlEsc.'@maxPauseTime'.toLong()
+            def notifyAll    = xmlEsc.'@notifyAll'.toBoolean()
+            def repeat       = xmlEsc.'@repeat'.toBoolean()
+        
+            def esc = escalationHelper.getEscalation(id, name)
+            escalationHelper.updateEscalation(esc, name, desc, pauseAllowed,
+                                              maxWaitTime, notifyAll, repeat)
+            
+            renderXml() {
+                out << UpdateEscalationResponse() {
+                    out << getSuccessXML()
+                    out << getEscalationXML(esc)
+                }
             }
         }
     }

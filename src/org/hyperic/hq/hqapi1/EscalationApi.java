@@ -11,6 +11,7 @@ import org.hyperic.hq.hqapi1.types.Escalation;
 import org.hyperic.hq.hqapi1.types.GetEscalationResponse;
 import org.hyperic.hq.hqapi1.types.ListEscalationsResponse;
 import org.hyperic.hq.hqapi1.types.SyncEscalationResponse;
+import org.hyperic.hq.hqapi1.types.SyncEscalationsRequest;
 import org.hyperic.hq.hqapi1.types.UpdateEscalationResponse;
 
 /**
@@ -106,15 +107,11 @@ public class EscalationApi {
      */
     public CreateEscalationResponse createEscalation(Escalation esc)
         throws IOException {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("name", esc.getName());
-        params.put("description", esc.getDescription());
-        params.put("pauseAllowed", String.valueOf(esc.isPauseAllowed()));
-        params.put("maxWaitTime", String.valueOf(esc.getMaxPauseTime()));
-        params.put("notifyAll", String.valueOf(esc.isNotifyAll()));
-        params.put("repeat", String.valueOf(esc.isRepeat()));
-        return _connection.doGet("/hqu/hqapi1/escalation/create.hqu",
-                                 params, CreateEscalationResponse.class);
+        
+        SyncEscalationsRequest req = new SyncEscalationsRequest();
+        req.getEscalation().add(esc);
+        return _connection.doPost("/hqu/hqapi1/escalation/create.hqu", req,
+                                  CreateEscalationResponse.class);
     }
 
     /**
@@ -137,9 +134,10 @@ public class EscalationApi {
      */
     public UpdateEscalationResponse updateEscalation(Escalation esc)
         throws IOException {
-        Map<String, String> params = new HashMap<String, String>();
-        return _connection.doGet("/hqu/hqapi1/escalation/update.hqu",
-                                 params, UpdateEscalationResponse.class);
+        SyncEscalationsRequest req = new SyncEscalationsRequest();
+        req.getEscalation().add(esc);
+        return _connection.doPost("/hqu/hqapi1/escalation/update.hqu",
+                                  req, UpdateEscalationResponse.class);
     }
 
     /**
