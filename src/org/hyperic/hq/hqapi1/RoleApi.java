@@ -1,5 +1,10 @@
 package org.hyperic.hq.hqapi1;
 
+import org.hyperic.hq.hqapi1.types.GetRolesResponse;
+
+import java.io.IOException;
+import java.util.HashMap;
+
 /**
  * The Hyperic HQ Role API.
  *
@@ -16,6 +21,23 @@ public class RoleApi {
     private HQConnection _connection;
 
     public RoleApi(HQConnection connection) {
+        _connection = connection;
+    }
 
+    /**
+     * Find all {@link org.hyperic.hq.hqapi1.types.Role}s in the system.
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * a list of roles is returned.
+     *
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public GetRolesResponse getRoles()
+        throws IOException
+    {
+        return _connection.doGet("/hqu/hqapi1/role/list.hqu",
+                                 new HashMap<String, String>(),
+                                 GetRolesResponse.class);
     }
 }

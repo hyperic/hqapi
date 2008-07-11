@@ -49,12 +49,35 @@
             <xs:enumeration value="removeResourceGroup"/>
             <xs:enumeration value="controlResourceGroup"/>
             <xs:enumeration value="monitorResourceGroup"/>
+            <!-- Role ops -->
+            <xs:enumeration value="viewRole"/>
+            <xs:enumeration value="createRole"/>
+            <xs:enumeration value="modifyRole"/>
+            <xs:enumeration value="removeRole"/>
+            <!-- Subject ops -->
+            <xs:enumeration value="viewSubject"/>
+            <xs:enumeration value="modifySubject"/>
+            <xs:enumeration value="removeSubject"/>
+            <xs:enumeration value="createSubject"/>
+            <!-- Admin op -->
+            <xs:enumeration value="administerCAM"/>
+            <!-- Escalation opts -->
+            <xs:enumeration value="createEscalation"/>
+            <xs:enumeration value="modifyEscalation"/>
+            <xs:enumeration value="removeEscalation"/>
+            <!-- Resource ops -->
+            <xs:enumeration value="createResource"/>
+            <xs:enumeration value="modifyResourceType"/>
+            <!-- Operation ops -->
+            <xs:enumeration value="addOperation"/>
+            <xs:enumeration value="removeOperation"/>
+            
         </xs:restriction>
     </xs:simpleType>
 
     <xs:complexType name="Role">
         <xs:sequence>
-            <xs:element name="Operations" maxOccurs="unbounded" type="Operation"/>    
+            <xs:element name="Operation" maxOccurs="unbounded" type="Operation"/>    
         </xs:sequence>
         <xs:attribute name="id"   type="xs:positiveInteger" use="required"/>
         <xs:attribute name="name" type="xs:string" use="required"/>
