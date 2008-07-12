@@ -32,7 +32,7 @@ class RoleController extends ApiController {
 
         def r
         if (id) {
-            r = roleHelper.findRoleById(id)
+            r = roleHelper.getRoleById(id)
         } else {
             r = roleHelper.findRoleByName(name)
         }

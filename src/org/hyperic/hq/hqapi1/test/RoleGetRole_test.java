@@ -40,12 +40,11 @@ public class RoleGetRole_test extends RoleTestBase {
         assertEquals(GUEST_ROLENAME, r.getName());
     }
 
-    // XXX: Fix this test..
     public void testGetRoleIdInvalid() throws Exception {
 
-        //RoleApi api = getRoleApi();
+        RoleApi api = getRoleApi();
 
-        //GetRoleResponse response = api.getRole(Integer.MAX_VALUE);
-        //hqAssertFailureObjectNotFound(response);
+        GetRoleResponse response = api.getRole(Integer.MAX_VALUE);
+        hqAssertFailureObjectNotFound(response);
     }
 }
