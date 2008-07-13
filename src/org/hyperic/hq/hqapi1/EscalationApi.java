@@ -7,9 +7,11 @@ import java.util.Map;
 
 import org.hyperic.hq.hqapi1.types.CreateEscalationResponse;
 import org.hyperic.hq.hqapi1.types.DeleteEscalationResponse;
+import org.hyperic.hq.hqapi1.types.EmailAction;
 import org.hyperic.hq.hqapi1.types.Escalation;
 import org.hyperic.hq.hqapi1.types.GetEscalationResponse;
 import org.hyperic.hq.hqapi1.types.ListEscalationsResponse;
+import org.hyperic.hq.hqapi1.types.SuppressAction;
 import org.hyperic.hq.hqapi1.types.SyncEscalationResponse;
 import org.hyperic.hq.hqapi1.types.SyncEscalationsRequest;
 import org.hyperic.hq.hqapi1.types.UpdateEscalationResponse;
@@ -216,4 +218,23 @@ public class EscalationApi {
                                  params, DeleteEscalationResponse.class);
     }
 
+    /**
+     * Create a new EmailAction
+     * @return an EmailAction
+     */
+    public EmailAction createEmailAction() {
+        EmailAction ea = new EmailAction();
+        ea.setActionType(ea.getTypeName());
+        return ea;
+    }
+    
+    /**
+     * Create a new SuppressAction
+     * @return a SuppressAction
+     */
+    public SuppressAction createSuppressAction() {
+        SuppressAction sa = new SuppressAction();
+        sa.setActionType(sa.getTypeName());
+        return sa;
+    }
 }

@@ -8,6 +8,7 @@
     <xs:complexType name="EscalationAction">
         <xs:attribute name="id" type="xs:int" use="required"/>
         <xs:attribute name="wait" type="xs:long" use="required"/>
+        <xs:attribute name="actionType" type="xs:string" use="required"/>
     </xs:complexType>
 
     <xs:complexType name="Escalation">
@@ -27,20 +28,22 @@
         <xs:complexContent>
             <xs:extension base="EscalationAction">
                 <xs:sequence>
-                    <xs:element name="notify" maxOccurs="unbounded" type="xs:string"/>
+                    <xs:element name="Notify" maxOccurs="unbounded" type="xs:string"/>
                 </xs:sequence>
+                <xs:attribute name="typeName" type="xs:string" fixed="EmailAction" use="required"/>
+                <xs:attribute name="notifyType" type="xs:string" use="required"/>
                 <xs:attribute name="sms" type="xs:boolean" use="required"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
 
-    <xs:element name="SuppressAction">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="EscalationAction"/>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
+    <xs:complexType name="SuppressAction">
+        <xs:complexContent>
+            <xs:extension base="EscalationAction">
+                <xs:attribute name="typeName" type="xs:string" fixed="SuppressAction" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
 
     <!-- Escalation Responses -->
     <xs:element name="GetEscalationResponse">
@@ -110,7 +113,7 @@
     <xs:element name="SyncEscalationsRequest">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="escalation" maxOccurs="unbounded" type="Escalation"/>
+                <xs:element name="Escalation" maxOccurs="unbounded" type="Escalation"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
