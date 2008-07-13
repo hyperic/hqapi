@@ -40,7 +40,7 @@
     <xs:complexType name="SuppressAction">
         <xs:complexContent>
             <xs:extension base="EscalationAction">
-                <xs:attribute name="typeName" type="xs:string" fixed="SuppressAction" use="required"/>
+                <xs:attribute name="typeName" type="xs:string" fixed="NoOpAction" use="required"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

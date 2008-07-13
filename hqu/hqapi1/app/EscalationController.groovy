@@ -1,7 +1,7 @@
 import org.hyperic.hq.hqu.rendit.BaseController
 
-import org.hyperic.hq.authz.shared.PermissionException;
-import com.hyperic.hq.bizapp.server.action.email.EmailAction
+import org.hyperic.hq.authz.shared.PermissionException
+import org.hyperic.hq.bizapp.shared.action.EmailActionConfig
 import org.hyperic.hq.events.NoOpAction
 import org.hyperic.hq.hqapi1.ErrorCode
 
@@ -14,7 +14,14 @@ class EscalationController extends ApiController {
                        pauseAllowed : e.pauseAllowed,
                        maxPauseTime : e.maxPauseTime,
                        notifyAll :    e.notifyAll,
-                       repeat :       e.repeat)
+                       repeat :       e.repeat) {
+                for (ea in e.actions) {
+                    def a = ea.action
+                    Action(wait : ea.waitTime,
+                           actionType : (a.className  =~ /.+\.([A-Za-z]+)/) [0][1]
+                    )
+                }
+            }
         }
     }
 
@@ -123,18 +130,19 @@ class EscalationController extends ApiController {
             switch (xmlAct.'@actionType') {
             case 'EmailAction' :
                 // Create Email action
-                action = new EmailAction()
+                action =
+                    Class.forName(EmailActionConfig.implementor).newInstance()
                 action.setSms(xmlAct.'@sms'.toBoolean())
 
                 switch (xmlAct.'@notifyType') {
                 case 'notifyRoles' :
-                    action.setType(EmailAction.TYPE_ROLES)
+                    action.setType(EmailActionConfig.TYPE_ROLES)
                     break
                 case 'notifyUsers' :
-                    action.setType(EmailAction.TYPE_USERS)
+                    action.setType(EmailActionConfig.TYPE_USERS)
                     break
                 default :
-                    action.setType(EmailAction.TYPE_EMAILS)
+                    action.setType(EmailActionConfig.TYPE_EMAILS)
                     break
                 }
 
@@ -157,7 +165,7 @@ class EscalationController extends ApiController {
 
                 action.setNames(names.join(","))
                 break
-            case 'SuppressAction' :
+            case 'NoOpAction' :
                 action = new NoOpAction()
                 break
             }
