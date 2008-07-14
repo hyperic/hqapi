@@ -11,9 +11,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
 import java.security.NoSuchAlgorithmException;
 import java.security.KeyManagementException;
+import java.security.cert.X509Certificate;
 import java.net.Socket;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.io.IOException;
 
 // For use with Commons-HTTPClient
@@ -55,7 +55,7 @@ public class UntrustedSSLProtocolSocketFactory
         }
     }
 
-    public UntrustedSSLProtocolSocketFactory(){
+    public UntrustedSSLProtocolSocketFactory() {
         super();
 
         try {
@@ -79,21 +79,21 @@ public class UntrustedSSLProtocolSocketFactory
 
     public Socket createSocket(String host, int port,
                                InetAddress clientHost, int clientPort)
-        throws IOException, UnknownHostException
+        throws IOException
     {
         return this.factory.createSocket(host, port, clientHost,
                                          clientPort);
     }
 
     public Socket createSocket(String host, int port)
-        throws IOException, UnknownHostException
+        throws IOException
     {
         return this.factory.createSocket(host, port);
     }
 
     public Socket createSocket(Socket socket, String host, int port,
                                boolean autoClose)
-        throws IOException, UnknownHostException
+        throws IOException
     {
         return this.factory.createSocket(socket, host, port, autoClose);
     }
@@ -102,11 +102,37 @@ public class UntrustedSSLProtocolSocketFactory
                                InetAddress clientHost,
                                int clientPort,
                                HttpConnectionParams params)
-        throws IOException, UnknownHostException, ConnectTimeoutException
+        throws IOException
     {
         //as of 3.0 super.createSocket jumps through some hoops to support
         //timeout in jre 1.3 and in the process by-passes our factory
         return createSocket(host, port, clientHost, clientPort);
     }
+
+    class BogusTrustManager 
+        implements X509TrustManager
+    {
+        public void checkClientTrusted(X509Certificate[] chain,
+                                       String authType) {}
+
+        public void checkServerTrusted(X509Certificate[] chain,
+                                       String authType) {}
+
+        //required for jdk 1.3/jsse 1.0.3_01
+        public boolean isClientTrusted(X509Certificate[] chain) {
+            return true;
+        }
+
+        //required for jdk 1.3/jsse 1.0.3_01
+        public boolean isServerTrusted(X509Certificate[] chain) {
+            return true;
+        }
+
+        public X509Certificate[] getAcceptedIssuers(){
+            return null;
+        }
+    }
 }
+
+
 
