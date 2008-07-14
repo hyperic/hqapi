@@ -1,12 +1,19 @@
 package org.hyperic.hq.hqapi1;
 
 import org.hyperic.hq.hqapi1.types.GetRolesResponse;
-import org.hyperic.hq.hqapi1.types.GetUserResponse;
 import org.hyperic.hq.hqapi1.types.GetRoleResponse;
+import org.hyperic.hq.hqapi1.types.CreateRoleResponse;
+import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.DeleteRoleResponse;
+import org.hyperic.hq.hqapi1.types.UpdateRoleResponse;
+import org.hyperic.hq.hqapi1.types.SyncRolesResponse;
+import org.hyperic.hq.hqapi1.types.User;
+import org.hyperic.hq.hqapi1.types.SetUsersResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 /**
  * The Hyperic HQ Role API.
@@ -28,7 +35,8 @@ public class RoleApi {
     }
 
     /**
-     * Find all {@link org.hyperic.hq.hqapi1.types.Role}s in the system.
+     * Find all {@link Role}s in the system.
+     *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * a list of roles is returned.
      *
@@ -45,7 +53,7 @@ public class RoleApi {
     }
 
     /**
-     * Get a {@link org.hyperic.hq.hqapi1.types.Role} by name.
+     * Get a {@link Role} by name.
      *
      * @param name The role name to search for.
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
@@ -67,7 +75,7 @@ public class RoleApi {
     }
 
     /**
-     * Get a {@link org.hyperic.hq.hqapi1.types.Role} by id.
+     * Get a {@link Role} by id.
      *
      * @param id The role id to look up.
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
@@ -86,5 +94,87 @@ public class RoleApi {
         params.put("id", String.valueOf(id));
         return _connection.doGet("/hqu/hqapi1/role/get.hqu",
                                  params, GetRoleResponse.class);
+    }
+
+    /**
+     * Create a {@link Role}.
+     *
+     * @param role The role to create
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the Role by the given id is returned via
+     * {@link org.hyperic.hq.hqapi1.types.CreateRoleResponse#getRole()}.
+     *
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
+     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+
+    public CreateRoleResponse createRole(Role role)
+        throws IOException
+    {
+        return null;
+    }
+
+    /**
+     * Delete a {@link Role}.
+     *
+     * @param id The role id to delete
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if
+     * the role was successfully removed.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public DeleteRoleResponse deleteRole(int id)
+        throws IOException
+    {
+        return null;
+    }
+
+    /**
+     * Update a {@link Role}.
+     *
+     * @param role The role to update
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if
+     * the role was successfully removed.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public UpdateRoleResponse updateRole(Role role)
+        throws IOException
+    {
+        return null;
+    }
+
+    /**
+     * Sync a List of {@link Role}s.
+     *
+     * @param roles The List of roles to sync.
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if
+     * the roles were successuflly synced.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public SyncRolesResponse syncRoles(List<Role> roles)
+        throws IOException
+    {
+        return null;
+    }
+
+    /**
+     * Set the {@link User}s for the given {@link Role}.
+     *
+     * @param role The role to add users for.
+     * @param users The list of Users to add to the Role.
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if
+     * the users were sucessfully assigned to the role.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public SetUsersResponse setUsers(Role role, List<User> users)
+        throws IOException
+    {
+        return null;
     }
 }

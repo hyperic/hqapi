@@ -137,7 +137,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="SyncRoleResponse">
+    <xs:element name="SyncRolesResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response"/>
@@ -145,15 +145,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="AssignUsersResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-    
-    <xs:element name="AssignOperationsResponse">
+    <xs:element name="SetUsersResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response"/>
