@@ -16,6 +16,7 @@ public class HQApiTestBase  extends TestCase {
 
     private static final String  HOST        = "localhost";
     private static final int     PORT        = 7080;
+    private static final int     SSL_PORT    = 7443;
     private static final boolean IS_SECURE   = false;
     private static final String  USER        = "hqadmin";
     private static final String  PASSWORD    = "hqadmin";
@@ -62,6 +63,10 @@ public class HQApiTestBase  extends TestCase {
 
     HQApi getApi() {
         return new HQApi(HOST, PORT, IS_SECURE, USER, PASSWORD);
+    }
+
+    HQApi getApi(boolean secure) {
+        return new HQApi(HOST, SSL_PORT, secure, USER, PASSWORD);
     }
 
     HQApi getApi(String user, String password) {
