@@ -39,7 +39,7 @@ public class UserApi {
     }
 
     /**
-     * Get a {@link org.hyperic.hq.hqapi1.types.User} by name.
+     * Get a {@link User} by name.
      *
      * @param name The user name to search for.
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
@@ -61,7 +61,7 @@ public class UserApi {
     }
 
     /**
-     * Get a {@link org.hyperic.hq.hqapi1.types.User} by id.
+     * Get a {@link User} by id.
      *
      * @param id The user id to look up.
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
@@ -84,6 +84,7 @@ public class UserApi {
 
     /**
      * Find all {@link org.hyperic.hq.hqapi1.types.User}s in the system.
+     *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * a list of Users is returned.
      *
@@ -95,11 +96,12 @@ public class UserApi {
         throws IOException
     {
         return _connection.doGet("/hqu/hqapi1/user/list.hqu",
-                                 new HashMap(), GetUsersResponse.class);
+                                 new HashMap<String,String>(),
+                                 GetUsersResponse.class);
     }
 
     /**
-     * Create a {@link org.hyperic.hq.hqapi1.types.User}.
+     * Create a {@link User}.
      *
      * @param user The user to create.
      * @param password The password for this user.
@@ -186,7 +188,7 @@ public class UserApi {
      *
      * @param users The list of users to sync.
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
-     * user was updated successfully.
+     * users were updated successfully.
      *
      * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
      * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
