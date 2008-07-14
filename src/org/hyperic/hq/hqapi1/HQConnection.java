@@ -51,6 +51,11 @@ public class HQConnection {
         _isSecure = isSecure;
         _user     = user;
         _password = password;
+
+        if (_isSecure) {
+            // To allow for self signed certificates
+            UntrustedSSLProtocolSocketFactory.register();
+        }
     }
 
     private HttpClient getHttpClient() {
