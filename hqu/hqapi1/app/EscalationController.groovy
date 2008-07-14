@@ -17,7 +17,8 @@ class EscalationController extends ApiController {
                        repeat :       e.repeat) {
                 for (ea in e.actions) {
                     def a = ea.action
-                    Action(wait : ea.waitTime,
+                    Action(id : a.id,
+                           wait : ea.waitTime,
                            actionType : (a.className  =~ /.+\.([A-Za-z]+)/) [0][1]
                     )
                 }
@@ -30,7 +31,6 @@ class EscalationController extends ApiController {
         def name = params.getOne("name")
         
         def esc = escalationHelper.getEscalation(id, name)
-
         renderXml() {
             out << GetEscalationResponse() {
                 if (!esc) {
@@ -68,7 +68,7 @@ class EscalationController extends ApiController {
     def create(params) {
         def syncRequest = new XmlParser().parseText(getUpload('postdata'))
 
-        for (xmlEsc in syncRequest['escalation']) {
+        for (xmlEsc in syncRequest['Escalation']) {
             def name         = xmlEsc.'@name'
             def desc         = xmlEsc.'@description'
             def pauseAllowed = xmlEsc.'@pauseAllowed'.toBoolean()
@@ -94,7 +94,7 @@ class EscalationController extends ApiController {
     def update(params) {
         def syncRequest = new XmlParser().parseText(getUpload('postdata'))
         
-        for (xmlEsc in syncRequest['escalation']) {
+        for (xmlEsc in syncRequest['Escalation']) {
             def id 			 = xmlEsc.'@id'?.toInteger()
             def name         = xmlEsc.'@name'
             def desc         = xmlEsc.'@description'

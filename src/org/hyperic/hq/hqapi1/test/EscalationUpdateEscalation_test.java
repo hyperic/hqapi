@@ -40,5 +40,7 @@ public class EscalationUpdateEscalation_test extends EscalationTestBase {
         assertTrue(esc.isNotifyAll());
         assertTrue(esc.isPauseAllowed());
         assertTrue(esc.isRepeat());
+        
+        assertEquals(esc.getAction().size(), 2);
     }
 }
