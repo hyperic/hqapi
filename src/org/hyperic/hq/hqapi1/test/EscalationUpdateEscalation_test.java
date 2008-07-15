@@ -15,6 +15,7 @@ public class EscalationUpdateEscalation_test extends EscalationTestBase {
     public void testUpdateEscalation() throws Exception {
         final int maxWait = 1000;
         final String className = getClass().getName();
+        final int actionCnt = 2;        // Will add 2 actions
         
         EscalationApi escApi = getEscalationApi();
         Escalation esc = getTestEscalation();
@@ -27,11 +28,10 @@ public class EscalationUpdateEscalation_test extends EscalationTestBase {
         esc.setRepeat(true);
         
         // Add some actions
+        esc.getAction().clear();
         esc.getAction().add(escApi.createEmailAction());
         esc.getAction().add(escApi.createSuppressAction());
         
-        int actCnt = esc.getAction().size();
-
         escApi.updateEscalation(esc);
         
         // Now look it up
@@ -45,6 +45,6 @@ public class EscalationUpdateEscalation_test extends EscalationTestBase {
         assertTrue(esc.isPauseAllowed());
         assertTrue(esc.isRepeat());
         
-        assertEquals(actCnt, esc.getAction().size());
+        assertEquals(actionCnt, esc.getAction().size());
     }
 }
