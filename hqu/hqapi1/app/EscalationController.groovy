@@ -4,6 +4,7 @@ import org.hyperic.hq.authz.shared.PermissionException
 import org.hyperic.hq.bizapp.shared.action.EmailActionConfig
 import org.hyperic.hq.events.NoOpAction
 import org.hyperic.hq.hqapi1.ErrorCode
+import org.hyperic.util.config.ConfigResponse
 
 class EscalationController extends ApiController {
     private Closure getEscalationXML(e) {
@@ -17,10 +18,29 @@ class EscalationController extends ApiController {
                        repeat :       e.repeat) {
                 for (ea in e.actions) {
                     def a = ea.action
-                    Action(id : a.id,
-                           wait : ea.waitTime,
-                           actionType : (a.className  =~ /.+\.([A-Za-z]+)/) [0][1]
-                    )
+                    def actionType = (a.className  =~ /.+\.([A-Za-z]+)/) [0][1]
+                    switch (actionType) {
+                    case 'EmailAction' :
+                        EmailActionConfig cfg = new EmailActionConfig()
+                        cfg.init(ConfigResponse.decode(a.config))
+                        Action(id :         a.id,
+                               wait :       ea.waitTime,
+                               actionType : actionType,
+                               sms :        cfg.sms,
+                               notifyType : cfg.type) {
+                            for (n in cfg.names.split(',')) {
+                                if (n.length() > 0)
+                                    Notify(name : n)
+                            }
+                        }
+                        break;
+                    default :
+                        Action(id :         a.id,
+                               wait :       ea.waitTime,
+                               actionType : actionType
+                        )
+                        break;
+                    }
                 }
             }
         }
@@ -95,7 +115,7 @@ class EscalationController extends ApiController {
         def syncRequest = new XmlParser().parseText(getUpload('postdata'))
         
         for (xmlEsc in syncRequest['Escalation']) {
-            def id 			 = xmlEsc.'@id'?.toInteger()
+            def id              = xmlEsc.'@id'?.toInteger()
             def name         = xmlEsc.'@name'
             def desc         = xmlEsc.'@description'
             def pauseAllowed = xmlEsc.'@pauseAllowed'.toBoolean()
@@ -121,12 +141,11 @@ class EscalationController extends ApiController {
     def syncActions(esc, actions) {
         // Remove all actions
         while (esc.actions.size() > 0) {
-            escMan.removeAction(esc, esc.actions.get(0).action.id)
+            escalationHelper.deleteAction(esc, esc.actions.get(0).action.id)
         }
 
         for (xmlAct in actions) {
             def action = null
-
             switch (xmlAct.'@actionType') {
             case 'EmailAction' :
                 // Create Email action
@@ -150,13 +169,13 @@ class EscalationController extends ApiController {
                 def names = xmlAct['Notify'].collect { notifyDef ->
                     def name = notifyDef.'@name'
                     switch (action.getType()) {
-                        case EmailAction.TYPE_ROLES:
+                        case EmailActionConfig.TYPE_ROLES:
                             name = roleHelper.findRoleByName(name).id
                             break;
-                        case EmailAction.TYPE_USERS:
+                        case EmailActionConfig.TYPE_USERS:
                             name = userHelper.findUser(name).id
                             break;
-                        case EmailAction.TYPE_EMAILS:
+                        case EmailActionConfig.TYPE_EMAILS:
                         default:
                             break;
                     }

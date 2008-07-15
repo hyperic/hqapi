@@ -2,8 +2,9 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.EscalationApi;
 import org.hyperic.hq.hqapi1.types.CreateEscalationResponse;
-import org.hyperic.hq.hqapi1.types.EmailAction;
 import org.hyperic.hq.hqapi1.types.Escalation;
+import org.hyperic.hq.hqapi1.types.FullEscalationAction;
+import org.hyperic.hq.hqapi1.types.Who;
 
 public class EscalationTestBase extends HQApiTestBase {
     protected static final String TEST_NAME = EscalationTestBase.class.getName();
@@ -27,11 +28,16 @@ public class EscalationTestBase extends HQApiTestBase {
         Escalation esc = new Escalation();
         esc.setName(TEST_NAME);
         
-        EmailAction act = new EmailAction();
+        EscalationApi escApi = getEscalationApi();
+
+        FullEscalationAction act = escApi.createEmailAction();
+        Who who = new Who();
+        who.setName("escalation@test.com");
+        act.getNotify().add(who);
         esc.getAction().add(act);
         
         CreateEscalationResponse resp =
-            getEscalationApi().createEscalation(esc);
+            escApi.createEscalation(esc);
         _esc = resp.getEscalation();
     }
 

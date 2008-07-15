@@ -13,13 +13,15 @@ public class EscalationUpdateEscalation_test extends EscalationTestBase {
     }
 
     public void testUpdateEscalation() throws Exception {
+        final int maxWait = 1000;
+        final String className = getClass().getName();
+        
         EscalationApi escApi = getEscalationApi();
-
         Escalation esc = getTestEscalation();
         
         // Update the escalation
-        esc.setDescription(getClass().getName());
-        esc.setMaxPauseTime(1000);
+        esc.setDescription(className);
+        esc.setMaxPauseTime(maxWait);
         esc.setNotifyAll(true);
         esc.setPauseAllowed(true);
         esc.setRepeat(true);
@@ -27,6 +29,8 @@ public class EscalationUpdateEscalation_test extends EscalationTestBase {
         // Add some actions
         esc.getAction().add(escApi.createEmailAction());
         esc.getAction().add(escApi.createSuppressAction());
+        
+        int actCnt = esc.getAction().size();
 
         escApi.updateEscalation(esc);
         
@@ -35,12 +39,12 @@ public class EscalationUpdateEscalation_test extends EscalationTestBase {
         esc = resp.getEscalation();
         
         // Verify the updates
-        assertEquals(esc.getDescription(), getClass().getName());
-        assertEquals(esc.getMaxPauseTime(), 1000);
+        assertEquals(className, esc.getDescription());
+        assertEquals(maxWait, esc.getMaxPauseTime());
         assertTrue(esc.isNotifyAll());
         assertTrue(esc.isPauseAllowed());
         assertTrue(esc.isRepeat());
         
-        assertEquals(esc.getAction().size(), 2);
+        assertEquals(actCnt, esc.getAction().size());
     }
 }

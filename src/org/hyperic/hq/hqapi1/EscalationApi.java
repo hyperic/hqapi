@@ -9,6 +9,7 @@ import org.hyperic.hq.hqapi1.types.CreateEscalationResponse;
 import org.hyperic.hq.hqapi1.types.DeleteEscalationResponse;
 import org.hyperic.hq.hqapi1.types.EmailAction;
 import org.hyperic.hq.hqapi1.types.Escalation;
+import org.hyperic.hq.hqapi1.types.FullEscalationAction;
 import org.hyperic.hq.hqapi1.types.GetEscalationResponse;
 import org.hyperic.hq.hqapi1.types.ListEscalationsResponse;
 import org.hyperic.hq.hqapi1.types.SuppressAction;
@@ -222,9 +223,9 @@ public class EscalationApi {
      * Create a new EmailAction
      * @return an EmailAction
      */
-    public EmailAction createEmailAction() {
-        EmailAction ea = new EmailAction();
-        ea.setActionType(ea.getTypeName());
+    public FullEscalationAction createEmailAction() {
+        FullEscalationAction ea = new FullEscalationAction();
+        ea.setActionType(new EmailAction().getTypeName());
         return ea;
     }
     
@@ -232,9 +233,9 @@ public class EscalationApi {
      * Create a new SuppressAction
      * @return a SuppressAction
      */
-    public SuppressAction createSuppressAction() {
-        SuppressAction sa = new SuppressAction();
-        sa.setActionType(sa.getTypeName());
+    public FullEscalationAction createSuppressAction() {
+        FullEscalationAction sa = new FullEscalationAction();
+        sa.setActionType(new SuppressAction().getTypeName());
         return sa;
     }
 }
