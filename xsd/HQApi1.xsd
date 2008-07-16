@@ -5,7 +5,11 @@
     <xs:include schemaLocation="User.xsd" />
     <xs:include schemaLocation="Role.xsd"/>
     <xs:include schemaLocation="Group.xsd" />
+    <xs:include schemaLocation="DataPoint.xsd" />
     <xs:include schemaLocation="Metric.xsd" />
+    <xs:include schemaLocation="MetricTemplate.xsd" />
+
+    <!-- Escalation objects -->
     <xs:include schemaLocation="Escalation.xsd" />
     <xs:include schemaLocation="Autodiscovery.xsd"/>
 </xs:schema>

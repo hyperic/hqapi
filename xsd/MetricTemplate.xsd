@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:include schemaLocation="Response.xsd"/>
+
+    <!-- Metric objects -->
+    <xs:complexType name="MetricTemplate">
+        <xs:attribute name="id"       type="xs:positiveInteger"/>
+        <xs:attribute name="name"     type="xs:string"/>
+        <xs:attribute name="alias"    type="xs:string"/>
+        <xs:attribute name="units"    type="xs:string"/>
+        <xs:attribute name="plugin"   type="xs:string"/>
+        <xs:attribute name="enabled"   type="xs:boolean"/>
+        <xs:attribute name="indicator" type="xs:boolean"/>
+        <xs:attribute name="defaultOn" type="xs:boolean"/>
+        <xs:attribute name="collectionType"  type="xs:string"/>
+        <xs:attribute name="defaultInterval" type="xs:positiveInteger"/>
+    </xs:complexType>
+
+    <!-- MetricTemplate Responses -->
+    <xs:element name="SetMetricDefaultOnResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response"/>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="SetMetricDefaultIndicatorResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response"/>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="SetMetricDefaultIntervalResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response"/>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetMetricTemplateResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="MetricTemplate" type="MetricTemplate" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
