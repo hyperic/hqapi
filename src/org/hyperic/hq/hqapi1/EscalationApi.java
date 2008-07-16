@@ -3,6 +3,7 @@ package org.hyperic.hq.hqapi1;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.hyperic.hq.hqapi1.types.CreateEscalationResponse;
@@ -187,9 +188,10 @@ public class EscalationApi {
      */
     public SyncEscalationResponse syncEscalations(Collection<Escalation> escs)
         throws IOException {
-        Map<String, String> params = new HashMap<String, String>();
-        return _connection.doGet("/hqu/hqapi1/escalation/sync.hqu",
-                                 params, SyncEscalationResponse.class);
+        SyncEscalationsRequest req = new SyncEscalationsRequest();
+        req.getEscalation().addAll(escs);
+        return _connection.doPost("/hqu/hqapi1/escalation/sync.hqu",
+                                  req, SyncEscalationResponse.class);
     }
 
     /**
