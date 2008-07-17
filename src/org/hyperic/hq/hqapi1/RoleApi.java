@@ -107,6 +107,7 @@ public class RoleApi {
      *
      * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
      * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
+     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
      * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      *
      * @throws IOException If a network error occurs while making the request.
@@ -127,6 +128,10 @@ public class RoleApi {
      * @param id The role id to delete
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if
      * the role was successfully removed.
+     *
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
+     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      *
      * @throws IOException If a network error occurs while making the request.
      */
