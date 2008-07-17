@@ -133,7 +133,10 @@ public class RoleApi {
     public DeleteRoleResponse deleteRole(int id)
         throws IOException
     {
-        return null;
+        Map<String, String> params = new HashMap<String,String>();
+        params.put("id", String.valueOf(id));
+        return _connection.doGet("/hqu/hqapi1/role/delete.hqu", params,
+                                 DeleteRoleResponse.class);
     }
 
     /**

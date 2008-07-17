@@ -104,4 +104,32 @@ class RoleController extends ApiController {
             }
         }
     }
+
+    def delete(params) {
+        def id = params.getOne('id')?.toInteger()
+
+        def existing = roleHelper.getRoleById(id)
+        def failureXml
+
+        if (!existing) {
+            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+        } else {
+            try {
+                roleHelper.deleteRole(existing.id)
+            } catch (Exception e) {
+                log.error("UnexpectedError: " + e.getMessage(), e)
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+            }
+        }
+
+        renderXml() {
+            DeleteRoleResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                }
+            }
+        }
+    }
 }
