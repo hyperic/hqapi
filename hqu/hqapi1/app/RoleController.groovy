@@ -73,9 +73,15 @@ class RoleController extends ApiController {
             if (existing) {
                 failureXml = getFailureXML(ErrorCode.OBJECT_EXISTS)
             } else {
+                def operations = []
+                def ops = xmlIn['Operation']
+                ops.each{o ->
+                    operations << o.text()
+                }
+                
                 createdRole = roleHelper.createRole(xmlIn.'@name',
                                                     xmlIn.'@description',
-                                                    [] as String[],
+                                                    operations as String[],
                                                     [] as Integer[],
                                                     [] as Integer[])
             }
