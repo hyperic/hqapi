@@ -1,10 +1,8 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.EscalationApi;
-import org.hyperic.hq.hqapi1.types.EmailAction;
 import org.hyperic.hq.hqapi1.types.Escalation;
 import org.hyperic.hq.hqapi1.types.GetEscalationResponse;
-import org.hyperic.hq.hqapi1.types.SuppressAction;
 
 public class EscalationUpdateEscalation_test extends EscalationTestBase {
 

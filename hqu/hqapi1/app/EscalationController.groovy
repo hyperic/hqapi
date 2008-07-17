@@ -115,7 +115,7 @@ class EscalationController extends ApiController {
         def syncRequest = new XmlParser().parseText(getUpload('postdata'))
         
         for (xmlEsc in syncRequest['Escalation']) {
-            def id              = xmlEsc.'@id'?.toInteger()
+            def id           = xmlEsc.'@id'?.toInteger()
             def name         = xmlEsc.'@name'
             def desc         = xmlEsc.'@description'
             def pauseAllowed = xmlEsc.'@pauseAllowed'.toBoolean()
@@ -134,6 +134,40 @@ class EscalationController extends ApiController {
                     out << getSuccessXML()
                     out << getEscalationXML(esc)
                 }
+            }
+        }
+    }
+    
+    def sync(params) {
+        def data = getUpload('postdata')
+        def syncRequest = new XmlParser().parseText(data)
+        
+        for (xmlEsc in syncRequest['Escalation']) {
+            def id           = xmlEsc.'@id'?.toInteger()
+            def name         = xmlEsc.'@name'
+            def desc         = xmlEsc.'@description'
+            def pauseAllowed = xmlEsc.'@pauseAllowed'.toBoolean()
+            def maxWaitTime  = xmlEsc.'@maxPauseTime'.toLong()
+            def notifyAll    = xmlEsc.'@notifyAll'.toBoolean()
+            def repeat       = xmlEsc.'@repeat'.toBoolean()
+        
+            def esc = escalationHelper.getEscalation(id, name)
+            if (esc)
+                escalationHelper.updateEscalation(esc, name, desc, pauseAllowed,
+                                                  maxWaitTime, notifyAll,
+                                                  repeat)
+            else
+                esc = escalationHelper.createEscalation(name, desc,
+                                                        pauseAllowed,
+                                                        maxWaitTime, notifyAll,
+                                                        repeat)
+            syncActions(esc, xmlEsc['Action'])
+            
+        }
+
+        renderXml() {
+            out << SyncEscalationResponse() {
+                out << getSuccessXML()
             }
         }
     }
