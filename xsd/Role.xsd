@@ -109,6 +109,14 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="CreateRoleRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Role" type="Role"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="CreateRoleResponse">
         <xs:complexType>
             <xs:complexContent>

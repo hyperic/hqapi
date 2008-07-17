@@ -9,6 +9,7 @@ import org.hyperic.hq.hqapi1.types.UpdateRoleResponse;
 import org.hyperic.hq.hqapi1.types.SyncRolesResponse;
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.SetUsersResponse;
+import org.hyperic.hq.hqapi1.types.CreateRoleRequest;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -114,7 +115,10 @@ public class RoleApi {
     public CreateRoleResponse createRole(Role role)
         throws IOException
     {
-        return null;
+        CreateRoleRequest request = new CreateRoleRequest();
+        request.setRole(role);
+        return _connection.doPost("/hqu/hqapi1/role/create.hqu", request,
+                                  CreateRoleResponse.class);
     }
 
     /**
