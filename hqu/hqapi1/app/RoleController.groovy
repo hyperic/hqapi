@@ -173,7 +173,7 @@ class RoleController extends ApiController {
             failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
         } else {
             try {
-                roleHelper.deleteRole(existing.id)
+                existing.remove(user)
             } catch (Exception e) {
                 log.error("UnexpectedError: " + e.getMessage(), e)
                 failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
