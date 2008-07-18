@@ -40,6 +40,31 @@ public class RoleUpdate_test extends RoleTestBase {
         assertEquals(UPDATED_DESCRIPTION, updatedRole.getDescription());
     }
 
+    public void testUpdateNull() throws Exception {
+
+        RoleApi api = getRoleApi();
+        Role r = generateTestRole();
+
+        CreateRoleResponse createResponse = api.createRole(r);
+        hqAssertSuccess(createResponse);
+
+        Role role = createResponse.getRole();
+
+        role.setName(null);
+        role.setDescription(null);
+
+        UpdateRoleResponse updateResponse = api.updateRole(role);
+        hqAssertSuccess(updateResponse);
+
+        GetRoleResponse getResponse = api.getRole(role.getId());
+        hqAssertSuccess(getResponse);
+
+        Role updatedRole = getResponse.getRole();
+        // Setting to null should preserve the existing fields.
+        assertEquals(r.getName(), updatedRole.getName());
+        assertEquals(r.getDescription(), updatedRole.getDescription());
+    }
+
     public void testUpdateRoleAddOperations() throws Exception {
 
         RoleApi api = getRoleApi();
