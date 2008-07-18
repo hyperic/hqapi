@@ -46,12 +46,10 @@ public class UserTestBase extends HQApiTestBase {
     }
 
     /**
-     * Before each test run, clean up orphaned test users.
+     * Clean up test users after each test run.
      */
-    public void setUp() throws Exception {
+    public void tearDown() throws Exception {
 
-        super.setUp();
-        
         UserApi api = getUserApi();
         GetUsersResponse response = api.getUsers();
 
@@ -60,5 +58,7 @@ public class UserTestBase extends HQApiTestBase {
                 api.deleteUser(u.getId());
             }
         }
+
+        super.tearDown();
     }
 }
