@@ -20,8 +20,8 @@ public class RoleUpdate_test extends RoleTestBase {
         CreateRoleResponse createResponse = api.createRole(r);
         hqAssertSuccess(createResponse);
 
-        final String UPDATED_ROLENAME    = "Updated Role Name";
-        final String UPDATED_DESCRIPTION = "Updated Role Description";
+        final String UPDATED_ROLENAME    = TESTROLE_NAME_PREFIX + " (Updated)";
+        final String UPDATED_DESCRIPTION = TESTROLE_DESCRIPTION + " (Updated)";
 
         Role role = createResponse.getRole();
 

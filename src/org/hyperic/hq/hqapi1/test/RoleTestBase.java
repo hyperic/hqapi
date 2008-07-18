@@ -1,8 +1,8 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.RoleApi;
-import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.GetRolesResponse;
 
 import java.util.Random;
 
@@ -35,5 +35,22 @@ public class RoleTestBase extends HQApiTestBase {
         role.setDescription(TESTROLE_DESCRIPTION);
 
         return role;
+    }
+
+    /**
+     * Clean up test roles after each test run.
+     */
+    public void tearDown() throws Exception {
+
+        RoleApi api = getRoleApi();
+        GetRolesResponse response = api.getRoles();
+
+        for (Role r : response.getRole()) {
+            if (r.getName().startsWith(TESTROLE_NAME_PREFIX)) {
+                api.deleteRole(r.getId());
+            }
+        }
+
+        super.tearDown();
     }
 }
