@@ -10,6 +10,7 @@ import org.hyperic.hq.hqapi1.types.SyncRolesResponse;
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.SetUsersResponse;
 import org.hyperic.hq.hqapi1.types.CreateRoleRequest;
+import org.hyperic.hq.hqapi1.types.UpdateRoleRequest;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -149,14 +150,23 @@ public class RoleApi {
      *
      * @param role The role to update
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if
-     * the role was successfully removed.
+     * the role was successfully updated.
+     *
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
+     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_EXISTS
+     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED 
+     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      *
      * @throws IOException If a network error occurs while making the request.
      */
     public UpdateRoleResponse updateRole(Role role)
         throws IOException
     {
-        return null;
+        UpdateRoleRequest request = new UpdateRoleRequest();
+        request.setRole(role);
+        return _connection.doPost("/hqu/hqapi1/role/update.hqu", request,
+                                  UpdateRoleResponse.class);
     }
 
     /**

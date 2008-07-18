@@ -1,6 +1,8 @@
 import org.hyperic.hq.hqu.rendit.BaseController
 
 import org.hyperic.hq.authz.shared.PermissionException
+import org.hyperic.hq.authz.shared.AuthzDuplicateNameException
+
 import org.hyperic.hq.hqapi1.ErrorCode
 
 class RoleController extends ApiController {
@@ -100,6 +102,62 @@ class RoleController extends ApiController {
                 } else {
                     out << getSuccessXML()
                     out << getRoleXML(createdRole)
+                }
+            }
+        }
+    }
+
+    def update(params) {
+        def failureXml
+        def updatedRole
+        try {
+            def updateRequest = new XmlParser().parseText(getUpload('postdata'))
+            def xmlRole = updateRequest['Role']
+
+            if (!xmlRole || xmlRole.size() != 1) {
+                renderXml() {
+                    UpdateRoleResponse() {
+                        out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                    }
+                }
+                return
+            }
+
+            def xmlIn = xmlRole[0]
+            def id = xmlIn.'@id'.toInteger()
+            def existing = roleHelper.getRoleById(id)
+            if (!existing) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+            } else {
+                def operations = []
+                def ops = xmlIn['Operation']
+                ops.each{o ->
+                    operations << o.text()
+                }
+
+                roleHelper.updateRole(existing,
+                                      xmlIn.'@name',
+                                      xmlIn.'@description')
+
+                roleHelper.setOperations(existing, operations as String[])
+            }
+        } catch (AuthzDuplicateNameException e) {
+            log.debug("Duplicate object", e)
+            failureXml = getFailureXML(ErrorCode.OBJECT_EXISTS)
+        } catch (PermissionException e) {
+            log.debug("Permission denied [${user.name}]", e)
+            failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+        } catch (Exception e) {
+            log.error("UnexpectedError: " + e.getMessage(), e)
+            failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+        }
+
+        renderXml() {
+            UpdateRoleResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
                 }
             }
         }
