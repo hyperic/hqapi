@@ -3,6 +3,7 @@ package org.hyperic.hq.hqapi1.test;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.CreateRoleResponse;
 import org.hyperic.hq.hqapi1.types.DeleteRoleResponse;
+import org.hyperic.hq.hqapi1.types.GetRoleResponse;
 import org.hyperic.hq.hqapi1.RoleApi;
 
 public class RoleDelete_test extends RoleTestBase {
@@ -21,7 +22,10 @@ public class RoleDelete_test extends RoleTestBase {
 
         Role role = createResponse.getRole();
         DeleteRoleResponse deleteResponse = api.deleteRole(role.getId());
-        hqAssertSuccess(deleteResponse);   
+        hqAssertSuccess(deleteResponse);
+
+        GetRoleResponse getResponse = api.getRole(role.getId());
+        hqAssertFailureObjectNotFound(getResponse);
     }
 
     public void testDeleteNonExistantRole() throws Exception {
