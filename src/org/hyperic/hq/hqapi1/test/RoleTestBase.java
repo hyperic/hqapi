@@ -3,8 +3,11 @@ package org.hyperic.hq.hqapi1.test;
 import org.hyperic.hq.hqapi1.RoleApi;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.GetRolesResponse;
+import org.hyperic.hq.hqapi1.types.Operation;
 
 import java.util.Random;
+import java.util.List;
+import java.util.ArrayList;
 
 public class RoleTestBase extends HQApiTestBase {
 
@@ -13,6 +16,20 @@ public class RoleTestBase extends HQApiTestBase {
 
     static final String TESTROLE_NAME_PREFIX = "API Test Role ";
     static final String TESTROLE_DESCRIPTION = "API Test Role Description";
+
+    // Collections of Operations for test purposes.
+    static final List<Operation> VIEW_OPS;
+
+    static {
+        VIEW_OPS = new ArrayList<Operation>();
+        VIEW_OPS.add(Operation.VIEW_APPLICATION);
+        VIEW_OPS.add(Operation.VIEW_PLATFORM);
+        VIEW_OPS.add(Operation.VIEW_RESOURCE_GROUP);
+        VIEW_OPS.add(Operation.VIEW_ROLE);
+        VIEW_OPS.add(Operation.VIEW_SERVER);
+        VIEW_OPS.add(Operation.VIEW_SERVICE);
+        VIEW_OPS.add(Operation.VIEW_SUBJECT);
+    }
 
     public RoleTestBase(String name) {
         super(name);

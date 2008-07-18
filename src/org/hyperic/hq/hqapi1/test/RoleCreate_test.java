@@ -28,22 +28,13 @@ public class RoleCreate_test extends RoleTestBase {
         RoleApi api = getRoleApi();
         Role r = generateTestRole();
 
-        List<Operation> viewOps = new ArrayList<Operation>();
-        viewOps.add(Operation.VIEW_APPLICATION);
-        viewOps.add(Operation.VIEW_PLATFORM);
-        viewOps.add(Operation.VIEW_RESOURCE_GROUP);
-        viewOps.add(Operation.VIEW_ROLE);
-        viewOps.add(Operation.VIEW_SERVER);
-        viewOps.add(Operation.VIEW_SERVICE);
-        viewOps.add(Operation.VIEW_SUBJECT);
-
-        r.getOperation().addAll(viewOps);
+        r.getOperation().addAll(VIEW_OPS);
 
         CreateRoleResponse response = api.createRole(r);
         hqAssertSuccess(response);
 
         Role role = response.getRole();
-        for (Operation o : viewOps) {
+        for (Operation o : VIEW_OPS) {
             assertTrue("Created role does not contain operation " + o.value(),
                        role.getOperation().contains(o));
         }
