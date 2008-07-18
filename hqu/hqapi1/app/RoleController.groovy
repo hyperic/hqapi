@@ -129,17 +129,18 @@ class RoleController extends ApiController {
             if (!existing) {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
             } else {
+                def opMap = roleHelper.operationMap
                 def operations = []
                 def ops = xmlIn['Operation']
                 ops.each{o ->
-                    operations << o.text()
+                    operations << opMap[o.text()]
                 }
-
+                
                 roleHelper.updateRole(existing,
                                       xmlIn.'@name',
                                       xmlIn.'@description')
 
-                roleHelper.setOperations(existing, operations as String[])
+                existing.setOperations(user, operations)
             }
         } catch (AuthzDuplicateNameException e) {
             log.debug("Duplicate object", e)
