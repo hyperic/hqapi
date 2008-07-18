@@ -135,11 +135,10 @@ class RoleController extends ApiController {
                 ops.each{o ->
                     operations << opMap[o.text()]
                 }
-                
-                roleHelper.updateRole(existing,
-                                      xmlIn.'@name',
-                                      xmlIn.'@description')
 
+                existing.update(user,
+                                xmlIn.'@name',
+                                xmlIn.'@description')
                 existing.setOperations(user, operations)
             }
         } catch (AuthzDuplicateNameException e) {
