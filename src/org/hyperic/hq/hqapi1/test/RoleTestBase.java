@@ -19,6 +19,7 @@ public class RoleTestBase extends HQApiTestBase {
 
     // Collections of Operations for test purposes.
     static final List<Operation> VIEW_OPS;
+    static final List<Operation> MODIFY_OPS;
 
     static {
         VIEW_OPS = new ArrayList<Operation>();
@@ -29,6 +30,17 @@ public class RoleTestBase extends HQApiTestBase {
         VIEW_OPS.add(Operation.VIEW_SERVER);
         VIEW_OPS.add(Operation.VIEW_SERVICE);
         VIEW_OPS.add(Operation.VIEW_SUBJECT);
+
+        MODIFY_OPS = new ArrayList<Operation>();
+        MODIFY_OPS.add(Operation.MODIFY_APPLICATION);
+        MODIFY_OPS.add(Operation.MODIFY_ESCALATION);
+        MODIFY_OPS.add(Operation.MODIFY_PLATFORM);
+        MODIFY_OPS.add(Operation.MODIFY_RESOURCE_GROUP);
+        MODIFY_OPS.add(Operation.MODIFY_RESOURCE_TYPE);
+        MODIFY_OPS.add(Operation.MODIFY_ROLE);
+        MODIFY_OPS.add(Operation.MODIFY_SERVER);
+        MODIFY_OPS.add(Operation.MODIFY_SERVICE);
+        MODIFY_OPS.add(Operation.MODIFY_SUBJECT);
     }
 
     public RoleTestBase(String name) {
