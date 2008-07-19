@@ -11,6 +11,7 @@ import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.SetUsersResponse;
 import org.hyperic.hq.hqapi1.types.CreateRoleRequest;
 import org.hyperic.hq.hqapi1.types.UpdateRoleRequest;
+import org.hyperic.hq.hqapi1.types.SetUsersRequest;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -197,6 +198,10 @@ public class RoleApi {
     public SetUsersResponse setUsers(Role role, List<User> users)
         throws IOException
     {
-        return null;
+        SetUsersRequest request = new SetUsersRequest();
+        request.setRole(role);
+        request.getUser().addAll(users);
+        return _connection.doPost("/hqu/hqapi1/role/setUsers.hqu", request,
+                                  SetUsersResponse.class);
     }
 }

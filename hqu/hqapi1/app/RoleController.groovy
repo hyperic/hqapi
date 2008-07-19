@@ -109,7 +109,6 @@ class RoleController extends ApiController {
 
     def update(params) {
         def failureXml
-        def updatedRole
         try {
             def updateRequest = new XmlParser().parseText(getUpload('postdata'))
             def xmlRole = updateRequest['Role']
@@ -154,6 +153,57 @@ class RoleController extends ApiController {
 
         renderXml() {
             UpdateRoleResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                }
+            }
+        }
+    }
+
+    def setUsers(params) {
+        def failureXml
+        try {
+            def setRequest = new XmlParser().parseText(getUpload('postdata'))
+            def xmlRole = setRequest['Role']
+
+            if (!xmlRole || xmlRole.size() != 1) {
+                renderXml() {
+                    UpdateRoleResponse() {
+                        out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                    }
+                }
+                return
+            }
+
+            def xmlIn = xmlRole[0]
+            def id = xmlIn.'@id'.toInteger()
+            def role = roleHelper.getRoleById(id)
+            if (!role) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+            } else {
+                def users = []
+                for (xmlUser in setRequest['User']) {
+                    id = xmlUser.'@id'.toInteger()
+                    def u = userHelper.getUser(id)
+                    if (u) {
+                        users << u
+                    }
+                }
+
+                role.setSubjects(user, users)
+            }
+        } catch (PermissionException e) {
+            log.error("Permission denied [${user.name}]", e)
+            failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+        } catch (Exception e) {
+            log.error("UnexpectedError: " + e.getMessage(), e)
+            failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+        }
+
+        renderXml() {
+            SetUsersResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {

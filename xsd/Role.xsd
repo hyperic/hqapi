@@ -3,6 +3,7 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
     <xs:include schemaLocation="Response.xsd"/>
+    <xs:include schemaLocation="User.xsd"/>
 
     <!-- Role objects -->
     <xs:simpleType name="Operation">
@@ -158,6 +159,15 @@
             <xs:complexContent>
                 <xs:extension base="Response"/>
             </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="SetUsersRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Role" type="Role"/>
+                <xs:element name="User" maxOccurs="unbounded" type="User"/>
+            </xs:sequence>
         </xs:complexType>
     </xs:element>
 

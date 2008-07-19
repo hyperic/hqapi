@@ -9,7 +9,7 @@ import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
 
-public class RoleTestBase extends HQApiTestBase {
+public class RoleTestBase extends UserTestBase {
 
     static final String GUEST_ROLENAME = "Guest Role";
     static final String SUPER_USER_ROLENAME = "Super User Role";
