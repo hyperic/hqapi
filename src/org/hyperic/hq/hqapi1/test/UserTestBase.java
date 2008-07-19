@@ -2,9 +2,12 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.GetUsersResponse;
+import org.hyperic.hq.hqapi1.types.CreateUserResponse;
 import org.hyperic.hq.hqapi1.UserApi;
 
 import java.util.Random;
+import java.util.List;
+import java.util.ArrayList;
 
 public class UserTestBase extends HQApiTestBase {
 
@@ -43,6 +46,23 @@ public class UserTestBase extends HQApiTestBase {
         user.setEmailAddress(TESTUSER_EMAIL);
         user.setActive(TESTUSER_ACTIVE);
         return user;
+    }
+
+    /**
+     * Create a List of Users.
+     *
+     * @param num The number of users to generate
+     */
+    public List<User> createTestUsers(int num) throws Exception {
+        ArrayList<User> users = new ArrayList<User>();
+        for (int i = 0; i < num; i++) {
+            User u = generateTestUser();
+            CreateUserResponse createResponse =
+                getUserApi().createUser(u, PASSWORD);
+            hqAssertSuccess(createResponse);
+            users.add(createResponse.getUser());
+        }
+        return users;
     }
 
     /**

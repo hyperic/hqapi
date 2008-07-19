@@ -25,16 +25,36 @@ public class RoleSetUsers_test extends RoleTestBase {
         CreateRoleResponse createRoleResponse = roleApi.createRole(r);
         hqAssertSuccess(createRoleResponse);
 
-        UserApi userApi = getUserApi();
-        User user = generateTestUser();
+        Role role = createRoleResponse.getRole();
+        List<User> users = createTestUsers(1);
+        SetUsersResponse setUserResponse = roleApi.setUsers(role, users);
+        hqAssertSuccess(setUserResponse);
+    }
 
-        CreateUserResponse createUserResponse = userApi.createUser(user,
-                                                                   PASSWORD);
-        hqAssertSuccess(createUserResponse);
+    public void testSetUsers() throws Exception {
+
+        RoleApi roleApi = getRoleApi();
+        Role r = generateTestRole();
+
+        CreateRoleResponse createRoleResponse = roleApi.createRole(r);
+        hqAssertSuccess(createRoleResponse);
+
+        Role role = createRoleResponse.getRole();
+        List<User> users = createTestUsers(5);
+        SetUsersResponse setUserResponse = roleApi.setUsers(role, users);
+        hqAssertSuccess(setUserResponse);
+    }
+
+    public void testSetEmptyList() throws Exception {
+
+        RoleApi roleApi = getRoleApi();
+        Role r = generateTestRole();
+
+        CreateRoleResponse createRoleResponse = roleApi.createRole(r);
+        hqAssertSuccess(createRoleResponse);
 
         Role role = createRoleResponse.getRole();
         List<User> users = new ArrayList<User>();
-        users.add(user);
         SetUsersResponse setUserResponse = roleApi.setUsers(role, users);
         hqAssertSuccess(setUserResponse);
     }
