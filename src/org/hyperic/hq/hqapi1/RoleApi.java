@@ -193,6 +193,12 @@ public class RoleApi {
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if
      * the users were sucessfully assigned to the role.
      *
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
+     * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
+     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
+     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
+     *
      * @throws IOException If a network error occurs while making the request.
      */
     public SetUsersResponse setUsers(Role role, List<User> users)
