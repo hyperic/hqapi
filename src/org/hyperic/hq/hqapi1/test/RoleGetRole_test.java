@@ -18,7 +18,7 @@ public class RoleGetRole_test extends RoleTestBase {
         hqAssertSuccess(response);
 
         Role r = response.getRole();
-        assertEquals(2, r.getId());
+        assertEquals(2, r.getId().intValue());
     }
 
     public void testGetRoleNameInvalid() throws Exception {
