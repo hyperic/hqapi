@@ -5,6 +5,9 @@ import org.hyperic.hq.hqapi1.ErrorCode
 
 class ApiController extends BaseController {
 
+    /**
+     * Get the ResponseStatus Success XML.
+     */
     protected Closure getSuccessXML() {
         { doc -> 
             Status("Success")
@@ -12,9 +15,7 @@ class ApiController extends BaseController {
     }
 
     /**
-     * Add a failure code to a chunk of XML.
-     * 
-     * @param code  Must be a code from CODES
+     * Get the ResponseStatus Failure XML.
      */
     protected Closure getFailureXML(ErrorCode code) {
         { doc ->
@@ -23,6 +24,24 @@ class ApiController extends BaseController {
                 ErrorCode(code.getErrorCode())
                 ReasonText(code.getReasonText())
             }
+        }
+    }
+
+    /**
+     * Get the XML for a User
+     */
+    protected Closure getUserXML(u) {
+        { doc ->
+            User(id          : u.id,
+                 name        : u.name,
+                 firstName   : u.firstName,
+                 lastName    : u.lastName,
+                 department  : (u.department ? u.department : ''),
+                 emailAddress: u.emailAddress,
+                 SMSAddress  : (u.SMSAddress ? u.SMSAddress : ''),
+                 phoneNumber : (u.phoneNumber ? u.phoneNumber : ''),
+                 active      : u.active,
+                 htmlEmail   : u.htmlEmail)
         }
     }
 

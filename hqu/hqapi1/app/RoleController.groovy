@@ -213,6 +213,31 @@ class RoleController extends ApiController {
         }
     }
 
+    def getUsers(params) {
+        def id   = params.getOne("id")?.toInteger()
+        def name = params.getOne("name")
+
+        def r
+        if (id) {
+            r = roleHelper.getRoleById(id)
+        } else {
+            r = roleHelper.findRoleByName(name)
+        }
+
+        renderXml() {
+            GetUsersResponse() {
+                if (!r) {
+                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                } else {
+                    out << getSuccessXML()
+                    r.subjects.each{u ->
+                        out << getUserXML(u)
+                    }
+                }
+            }
+        }
+    }
+
     def delete(params) {
         def id = params.getOne('id')?.toInteger()
 

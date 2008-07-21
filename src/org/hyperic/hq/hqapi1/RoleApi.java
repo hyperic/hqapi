@@ -12,6 +12,7 @@ import org.hyperic.hq.hqapi1.types.SetUsersResponse;
 import org.hyperic.hq.hqapi1.types.CreateRoleRequest;
 import org.hyperic.hq.hqapi1.types.UpdateRoleRequest;
 import org.hyperic.hq.hqapi1.types.SetUsersRequest;
+import org.hyperic.hq.hqapi1.types.GetUsersResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -209,5 +210,27 @@ public class RoleApi {
         request.getUser().addAll(users);
         return _connection.doPost("/hqu/hqapi1/role/setUsers.hqu", request,
                                   SetUsersResponse.class);
+    }
+
+    /**
+     * Get the {@link User}s for the given {@link Role}.
+     *
+     * @param role The role to get users for.
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
+     * the list of users is returned via
+     * {@link org.hyperic.hq.hqapi1.types.GetUsersResponse#getUser()}
+     *
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public GetUsersResponse getUsers(Role role)
+        throws IOException
+    {
+        Map<String, String> params = new HashMap<String,String>();
+        params.put("id", String.valueOf(role.getId()));
+        return _connection.doGet("/hqu/hqapi1/role/getUsers.hqu", params,
+                                 GetUsersResponse.class);
     }
 }
