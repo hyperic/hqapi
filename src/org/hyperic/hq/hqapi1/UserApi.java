@@ -234,47 +234,4 @@ public class UserApi {
         return _connection.doGet("/hqu/hqapi1/user/changePassword.hqu",
                                  params, ChangePasswordResponse.class);
     }
-
-    /**
-     * Set a list of {@link Role}s for a {@link User}.  Any previous roles
-     * associated with this user will be removed.
-     *
-     * @param user The user to set roles for.
-     * @param roles The list of roles to set.
-     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
-     * user was updated successfully.
-     *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
-     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
-     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
-     *
-     * @throws IOException If a network error occurs while making the request.
-     */
-    public SetRolesResponse setRoles(User user, List<Role> roles)
-        throws IOException
-    {
-        return null;
-    }
-
-    /**
-     * Get the list of {@link Role}s assigned to a {@link User}.
-     *
-     * @param user The user to get roles for.
-     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
-     * a list of Roles is returned via
-     * {@link org.hyperic.hq.hqapi1.types.GetRolesResponse#getRole()}.
-     *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
-     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
-     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
-     *
-     * @throws IOException If a network error occurs while making the request.
-     */
-    public GetRolesResponse getRoles(User user)
-        throws IOException
-    {
-        return null;
-    }
 }
