@@ -154,6 +154,14 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="SyncRolesRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Role" maxOccurs="unbounded" type="Role"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="SyncRolesResponse">
         <xs:complexType>
             <xs:complexContent>
