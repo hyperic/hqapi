@@ -250,12 +250,12 @@ class UserController extends ApiController {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
 
-            def user = userHelper.getUser(id)
-            if (!user) {
+            def existing = userHelper.getUser(id)
+            if (!existing) {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
             } else {
                 try {
-                    userHelper.changeUserPassword(user, password)
+                    userHelper.changeUserPassword(existing, password)
                 } catch (Exception e) {
                     log.error("UnexpectedError: " + e.getMessage(), e)
                     failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
