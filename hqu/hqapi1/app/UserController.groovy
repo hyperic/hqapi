@@ -114,7 +114,7 @@ class UserController extends ApiController {
             failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
         } else {
             try {
-                userHelper.removeUser(existing.id)
+                existing.remove(user)
             } catch (Exception e) {
                 log.error("UnexpectedError: " + e.getMessage(), e)
                 failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
@@ -255,7 +255,7 @@ class UserController extends ApiController {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
             } else {
                 try {
-                    userHelper.changeUserPassword(existing, password)
+                    existing.changePassword(user, password)
                 } catch (Exception e) {
                     log.error("UnexpectedError: " + e.getMessage(), e)
                     failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
