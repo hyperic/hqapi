@@ -167,8 +167,15 @@ class RoleController extends ApiController {
         try {
             def syncRequest = new XmlParser().parseText(getUpload('postdata'))
             for (xmlRole in syncRequest['Role']) {
+                def id = xmlRole.'@id'?.toInteger()
                 def name = xmlRole.'@name'
-                def existing = roleHelper.findRoleByName(name)
+                def existing
+                if (id) {
+                    existing = roleHelper.getRoleById(id)
+                } else {
+                    existing = roleHelper.findRoleByName(name)
+                }
+                
                 if (existing) {
                     def opMap = roleHelper.operationMap
                     def operations = []

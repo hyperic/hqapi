@@ -3,8 +3,9 @@ package org.hyperic.hq.hqapi1.test;
 import org.hyperic.hq.hqapi1.RoleApi;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.SyncRolesResponse;
-import org.hyperic.hq.hqapi1.types.CreateRoleRequest;
 import org.hyperic.hq.hqapi1.types.CreateRoleResponse;
+import org.hyperic.hq.hqapi1.types.GetRoleResponse;
+import org.hyperic.hq.hqapi1.types.Operation;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -23,10 +24,16 @@ public class RoleSyncRoles_test extends RoleTestBase {
         for (int i = 0; i < 5; i++) {
             Role r = generateTestRole();
             r.getOperation().addAll(VIEW_OPS);
+            roles.add(r);
         }
 
         SyncRolesResponse response = api.syncRoles(roles);
         hqAssertSuccess(response);
+
+        for (Role r : roles) {
+            GetRoleResponse getResponse = api.getRole(r.getName());
+            hqAssertSuccess(getResponse);
+        }
     }
 
     public void testSyncUpdate() throws Exception {
@@ -43,17 +50,37 @@ public class RoleSyncRoles_test extends RoleTestBase {
             createdRoles.add(createResponse.getRole());
         }
 
-        final String UPDATED_ROLENAME    = TESTROLE_NAME_PREFIX + " (Updated)";
-        final String UPDATED_DESCRIPTION = TESTROLE_DESCRIPTION + " (Updated)";
+        final String UPDATE_STR = " (Updated)";
 
         for (Role r : createdRoles) {
-            r.setName(UPDATED_ROLENAME);
-            r.setDescription(UPDATED_DESCRIPTION);
+            r.setName(r.getName() + UPDATE_STR);
+            r.setDescription(r.getDescription() + UPDATE_STR);
             r.getOperation().clear();
             r.getOperation().addAll(MODIFY_OPS);
         }
 
         SyncRolesResponse response = api.syncRoles(createdRoles);
         hqAssertSuccess(response);
+
+        for (Role r : createdRoles) {
+            GetRoleResponse getResponse = api.getRole(r.getId());
+            hqAssertSuccess(getResponse);
+
+            Role updatedRole = getResponse.getRole();
+            assertTrue("Could not find " + UPDATE_STR + " in name for role " + r.getId(),
+                       updatedRole.getName().indexOf(UPDATE_STR) > 0);
+            assertTrue("Could not find " + UPDATE_STR + " in role desc for role " + r.getId(),
+                       updatedRole.getName().indexOf(UPDATE_STR) > 0);
+
+            for (Operation o : VIEW_OPS) {
+                assertTrue("Updated role contains operation " + o.value(),
+                           !updatedRole.getOperation().contains(o));
+            }
+            
+            for (Operation o : MODIFY_OPS) {
+                assertTrue("Synced role does not contain operation " + o.value(),
+                           updatedRole.getOperation().contains(o));
+            }
+        }
     }
 }
