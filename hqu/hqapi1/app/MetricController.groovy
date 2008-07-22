@@ -20,7 +20,7 @@ class MetricController extends ApiController {
                            units           : m.template.units,
                            plugin          : m.template.plugin,
                            indicator       : m.template.designate,
-                           defalutOn       : m.template.defaultOn,
+                           defaultOn       : m.template.defaultOn,
                            collectionType  : m.template.collectionType,
                            defaultInterval : m.template.defaultInterval)
             }
@@ -35,7 +35,7 @@ class MetricController extends ApiController {
                            units           : t.units,
                            plugin          : t.plugin,
                            indicator       : t.designate,
-                           defalutOn       : t.defaultOn,
+                           defaultOn       : t.defaultOn,
                            collectionType  : t.collectionType,
                            defaultInterval : t.defaultInterval)
         }
@@ -68,7 +68,6 @@ class MetricController extends ApiController {
         def failureXml
         def metrics
         def resourceId = params.getOne("resourceId")?.toInteger()
-        println(params)
         if (!resourceId) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         }
@@ -177,7 +176,6 @@ class MetricController extends ApiController {
         def failureXml
         def metric
         def metricId = params.getOne("id")?.toInteger()
-        println(params)
         if (!metricId) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         }
