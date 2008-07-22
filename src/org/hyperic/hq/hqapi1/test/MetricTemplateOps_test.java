@@ -9,13 +9,15 @@ import org.hyperic.hq.hqapi1.types.SetMetricDefaultOnResponse;
 
 public class MetricTemplateOps_test extends HQApiTestBase {
     
+    // cannot be an availability metric or setIndicator() will not work properly
     private static final Integer metricId = 10103;
 
     public MetricTemplateOps_test(String name) {
         super(name);
     }
-/*    
+    
     public void testSetDefaultInterval() throws Exception {
+/*
         MetricApi api = getApi().getMetricApi();
         GetMetricTemplateResponse resp = api.getMetricTemplate(metricId);
         MetricTemplate templ = resp.getMetricTemplate();
@@ -27,9 +29,11 @@ public class MetricTemplateOps_test extends HQApiTestBase {
         resp = api.getMetricTemplate(metricId);
         templ = resp.getMetricTemplate();
         assertTrue(templ.getDefaultInterval().equals(600000));
+*/
     }
 
     public void testSetDefaultIndicator() throws Exception {
+/*
         MetricApi api = getApi().getMetricApi();
         GetMetricTemplateResponse resp = api.getMetricTemplate(metricId);
         MetricTemplate templ = resp.getMetricTemplate();
@@ -47,9 +51,11 @@ public class MetricTemplateOps_test extends HQApiTestBase {
         resp = api.getMetricTemplate(metricId);
         templ = resp.getMetricTemplate();
         assertFalse(templ.isIndicator());
+*/
     }
 
     public void testSetDefaultOn() throws Exception {
+/*
         MetricApi api = getApi().getMetricApi();
         GetMetricTemplateResponse resp = api.getMetricTemplate(metricId);
         MetricTemplate templ = resp.getMetricTemplate();
@@ -66,6 +72,7 @@ public class MetricTemplateOps_test extends HQApiTestBase {
         resp = api.getMetricTemplate(metricId);
         templ = resp.getMetricTemplate();
         assertTrue(!templ.isDefaultOn());
-    }
 */
+    }
+
 }
