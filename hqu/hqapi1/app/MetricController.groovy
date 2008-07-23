@@ -1,12 +1,9 @@
 import org.hyperic.hq.hqu.rendit.BaseController
 
-import org.hyperic.hq.authz.server.session.ResourceManagerEJBImpl as resMan
 import org.hyperic.hq.authz.shared.PermissionException
 import org.hyperic.hq.hqapi1.ErrorCode;
 
 class MetricController extends ApiController {
-
-    private def _resMan = resMan.one
 
     private Closure getMetricXML(m) {
         { doc -> 
@@ -76,7 +73,7 @@ class MetricController extends ApiController {
         }
         else {
             try {
-                def res = _resMan.findResourcePojoById(resourceId)
+                def res = resourceHelper.findById(resourceId)
                 metrics = res.metrics
             } catch (Exception e) {
                 log.error("UnexpectedError: " + e.getMessage(), e);
