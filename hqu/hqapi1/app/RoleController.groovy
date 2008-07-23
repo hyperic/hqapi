@@ -30,17 +30,25 @@ class RoleController extends ApiController {
         }
     }
 
+    /**
+     * Get a Role by id or name
+     * @return The role by the given id.  If the passed in id is null then
+     * the Role by the given name is returned.  If no role could be found
+     * for either the id or name, null is returned.
+     */
+    private getRole(Integer id, String name) {
+        if (id) {
+            return roleHelper.getRoleById(id)
+        } else {
+            return roleHelper.findRoleByName(name)
+        }
+    }
+
     def get(params) {
         def id   = params.getOne("id")?.toInteger()
         def name = params.getOne("name")
 
-        def r
-        if (id) {
-            r = roleHelper.getRoleById(id)
-        } else {
-            r = roleHelper.findRoleByName(name)
-        }
-
+        def r = getRole(id, name)
         renderXml() {
             GetRoleResponse() {
                 if (!r) {
@@ -70,8 +78,7 @@ class RoleController extends ApiController {
             }
 
             def xmlIn = xmlRole[0]
-            def name = xmlIn.'@name'
-            def existing = roleHelper.findRoleByName(name)
+            def existing = getRole(null, xmlIn.'@name')
             if (existing) {
                 failureXml = getFailureXML(ErrorCode.OBJECT_EXISTS)
             } else {
@@ -123,8 +130,7 @@ class RoleController extends ApiController {
             }
 
             def xmlIn = xmlRole[0]
-            def id = xmlIn.'@id'.toInteger()
-            def existing = roleHelper.getRoleById(id)
+            def existing = getRole(xmlIn.'@id'?.toInteger(), xmlIn.'@name')
             if (!existing) {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
             } else {
@@ -167,15 +173,8 @@ class RoleController extends ApiController {
         try {
             def syncRequest = new XmlParser().parseText(getUpload('postdata'))
             for (xmlRole in syncRequest['Role']) {
-                def id = xmlRole.'@id'?.toInteger()
-                def name = xmlRole.'@name'
-                def existing
-                if (id) {
-                    existing = roleHelper.getRoleById(id)
-                } else {
-                    existing = roleHelper.findRoleByName(name)
-                }
-                
+                def existing = getRole(xmlRole.'@id'?.toInteger(),
+                                       xmlRole.'@name')
                 if (existing) {
                     def opMap = roleHelper.operationMap
                     def operations = []
@@ -237,14 +236,14 @@ class RoleController extends ApiController {
             }
 
             def xmlIn = xmlRole[0]
-            def id = xmlIn.'@id'.toInteger()
-            def role = roleHelper.getRoleById(id)
+            def role = getRole(xmlIn.'@id'.toInteger(),
+                               xmlIn.'@name')
             if (!role) {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
             } else {
                 def users = []
                 for (xmlUser in setRequest['User']) {
-                    id = xmlUser.'@id'.toInteger()
+                    def id = xmlUser.'@id'.toInteger()
                     def u = userHelper.getUser(id)
                     if (u) {
                         users << u
@@ -276,13 +275,7 @@ class RoleController extends ApiController {
         def id   = params.getOne("id")?.toInteger()
         def name = params.getOne("name")
 
-        def r
-        if (id) {
-            r = roleHelper.getRoleById(id)
-        } else {
-            r = roleHelper.findRoleByName(name)
-        }
-
+        def r = getRole(id, name)
         renderXml() {
             GetUsersResponse() {
                 if (!r) {
@@ -299,10 +292,10 @@ class RoleController extends ApiController {
 
     def delete(params) {
         def id = params.getOne('id')?.toInteger()
-
-        def existing = roleHelper.getRoleById(id)
+        def name = params.getOne("name")
+        
         def failureXml
-
+        def existing = getRole(id, name)
         if (!existing) {
             failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
         } else {
