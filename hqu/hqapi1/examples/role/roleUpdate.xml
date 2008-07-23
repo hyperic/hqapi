@@ -1,0 +1,12 @@
+<UpdateRoleRequest>
+	<Role id="2" name="Guest Role"
+		description="Updating for apiTest GuestRole">
+		<Operation>viewPlatform</Operation>
+		<Operation>viewServer</Operation>
+		<Operation>viewService</Operation>
+		<Operation>viewApplication</Operation>
+		<Operation>viewResourceGroup</Operation>
+		<Operation>viewRole</Operation>
+		<Operation>viewSubject</Operation>
+	</Role>
+</UpdateRoleRequest>
