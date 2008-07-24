@@ -25,13 +25,20 @@ public class ResourceApi extends BaseApi {
     /**
      * Find all {@link ResourcePrototype}s in the system.  
      *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the list of ResourcePrototypes are returned via
+     * {@link org.hyperic.hq.hqapi1.types.ListResourcePrototypesResponse#getResourcePrototype()}.
+     *
      * @see ResponseStatus#SUCCESS
      * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
      */    
     public ListResourcePrototypesResponse listResourcePrototypes() 
         throws IOException
     {   
-        return doGet("resource/listResourcePrototypes.hqu", new HashMap(),
+        return doGet("resource/listResourcePrototypes.hqu",
+                     new HashMap<String,String>(),
                      ListResourcePrototypesResponse.class);
     }
 }
