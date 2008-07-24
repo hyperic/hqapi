@@ -236,15 +236,15 @@ class RoleController extends ApiController {
             }
 
             def xmlIn = xmlRole[0]
-            def role = getRole(xmlIn.'@id'.toInteger(),
+            def role = getRole(xmlIn.'@id'?.toInteger(),
                                xmlIn.'@name')
             if (!role) {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
             } else {
                 def users = []
                 for (xmlUser in setRequest['User']) {
-                    def id = xmlUser.'@id'.toInteger()
-                    def u = userHelper.getUser(id)
+                    def u = getUser(xmlUser.'@id'?.toInteger(),
+                                    xmlUser.'@name')
                     if (u) {
                         users << u
                     }

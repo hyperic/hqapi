@@ -34,13 +34,7 @@ class UserController extends ApiController {
     def get(params) {
         def id   = params.getOne("id")?.toInteger()
         def name = params.getOne("name")
-
-        def u
-        if (id) {
-            u = userHelper.getUser(id)
-        } else {
-            u = userHelper.findUser(name)
-        }
+        def u = getUser(id, name)
         
         renderXml() {
             GetUserResponse() {
@@ -78,7 +72,7 @@ class UserController extends ApiController {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             try {
-                def existing = userHelper.findUser(name)
+                def existing = getUser(null, name)
                 if (existing) {
                     failureXml = getFailureXML(ErrorCode.OBJECT_EXISTS)
                 } else {
@@ -105,9 +99,9 @@ class UserController extends ApiController {
     }
 
     def delete(params) {
-        def id = params.getOne('id')?.toInteger()
-
-        def existing = userHelper.getUser(id)
+        def id = params.getOne("id")?.toInteger()
+        def name = params.getOne("name")
+        def existing = getUser(id, name)
         def failureXml
         
         if (!existing) {
@@ -148,9 +142,7 @@ class UserController extends ApiController {
             }
             
             def xmlIn = xmlUser[0]
-
-            def name = xmlIn.'@name'
-            def existing = userHelper.findUser(name)
+            def existing = getUser(xmlIn.'@id'?.toInteger(), xmlIn.'@name')
             if (!existing) {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
             } else {
@@ -189,8 +181,8 @@ class UserController extends ApiController {
         try {
             def syncRequest = new XmlParser().parseText(getUpload('postdata'))
             for (xmlUser in syncRequest['User']) {
-                def name = xmlUser.'@name'
-                def existing = userHelper.findUser(name)
+                def existing = getUser(xmlUser.'@id'?.toInteger(),
+                                       xmlUser.'@name')
                 if (existing) {
                     userHelper.updateUser(existing,
                                           xmlUser.'@active'?.toBoolean(),
@@ -241,8 +233,9 @@ class UserController extends ApiController {
     }
 
     def changePassword(params) {
-        def id = params.getOne('id')?.toInteger()
-        def password = params.getOne('password')
+        def id = params.getOne("id")?.toInteger()
+        def name = params.getOne("name")
+        def password = params.getOne("password")
 
         def failureXml
 
@@ -250,7 +243,7 @@ class UserController extends ApiController {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
 
-            def existing = userHelper.getUser(id)
+            def existing = getUser(id, name)
             if (!existing) {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
             } else {

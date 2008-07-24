@@ -45,6 +45,20 @@ class ApiController extends BaseController {
         }
     }
 
+    /**
+     * Get a User by id or name
+     * @return The user by the given id.  If the passed in id is null then
+     * the user by the given name is returned.  If no user could be found
+     * for either the id or name, null is returned.
+     */
+    protected getUser(Integer id, String name) {
+        if (id) {
+            return userHelper.getUser(id)
+        } else {
+            return userHelper.findUser(name)
+        }
+    }
+    
     def index(params) {
         render(locals:[plugin: getPlugin()])
     }
