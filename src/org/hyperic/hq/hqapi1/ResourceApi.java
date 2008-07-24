@@ -9,6 +9,7 @@ import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.CreateResourceResponse;
 
 /**
  * The ResourceApi deals with {@link ResourcePrototype}s and {@link Resource}s.
@@ -65,5 +66,30 @@ public class ResourceApi extends BaseApi {
         params.put("name", name);
         return doGet("resource/getResourcePrototype.hqu",
                      params, GetResourcePrototypeResponse.class);
+    }
+
+    /**
+     * Create a {@link Resource} with the given name.
+     *
+     * @param type The resource prototype for the resource to be created.
+     * @param parent The parent resource for the created resource.  This is
+     * only applicable for Servers and Services.
+     * @param name The name of the resource to create.
+     * @param config A configuration map to use in creation of the resource
+     * based on the given resource prototype.
+     * 
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the created Resource is returned via
+     * {@link org.hyperic.hq.hqapi1.types.CreateResourceResponse#getResource()}.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public CreateResourceResponse createResource(ResourcePrototype type,
+                                                 Resource parent,
+                                                 String name,
+                                                 Map config)
+        throws IOException
+    {
+        return null;
     }
 }
