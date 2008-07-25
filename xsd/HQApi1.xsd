@@ -8,8 +8,7 @@
     <xs:include schemaLocation="DataPoint.xsd" />
     <xs:include schemaLocation="Metric.xsd" />
     <xs:include schemaLocation="MetricTemplate.xsd" />
-
-    <!-- Escalation objects -->
     <xs:include schemaLocation="Escalation.xsd" />
     <xs:include schemaLocation="Autodiscovery.xsd"/>
+    <xs:include schemaLocation="Agent.xsd"/>
 </xs:schema>
