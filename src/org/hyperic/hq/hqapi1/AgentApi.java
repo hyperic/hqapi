@@ -3,6 +3,7 @@ package org.hyperic.hq.hqapi1;
 import org.hyperic.hq.hqapi1.types.GetAgentResponse;
 import org.hyperic.hq.hqapi1.types.PingAgentResponse;
 import org.hyperic.hq.hqapi1.types.Agent;
+import org.hyperic.hq.hqapi1.types.GetAgentsResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -50,6 +51,25 @@ public class AgentApi {
         params.put("port", String.valueOf(port));
         return _connection.doGet("/hqu/hqapi1/agent/getAgent.hqu",
                                  params, GetAgentResponse.class);
+    }
+
+    /**
+     * Get a list of all {@link Agent}s.
+     *
+     * @return  On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * a list of agents is returned via 
+     * {@link org.hyperic.hq.hqapi1.types.GetAgentsResponse#getAgent()}.
+     *
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public GetAgentsResponse getAgents()
+        throws IOException
+    {
+        return _connection.doGet("/hqu/hqapi1/agent/list.hqu",
+                                 new HashMap<String,String>(),
+                                 GetAgentsResponse.class);
     }
 
     /**

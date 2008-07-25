@@ -48,6 +48,17 @@ class AgentController extends ApiController {
         }
     }
 
+    def list(params) {
+        renderXml() {
+            out << GetAgentsResponse() {
+                out << getSuccessXML()
+                for (agent in agentHelper.allAgents.sort {a, b -> a.address <=> b.address}) {
+                    out << getAgentXML(agent)
+                }
+            }
+        }
+    }
+
     def pingAgent(params) {
         def id = params.getOne('id')?.toInteger()
 
