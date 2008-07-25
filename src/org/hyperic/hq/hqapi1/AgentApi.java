@@ -27,6 +27,21 @@ public class AgentApi {
         _connection = connection;
     }
 
+    /**
+     * Get an {@link Agent} by address and port.
+     *
+     * @param address The address of the requested agent.  This can be a hostname
+     * or IP address.
+     * @param port The port of the requested Agent.
+     * @return  On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * a the requested agent is returned via
+     * {@link org.hyperic.hq.hqapi1.types.GetAgentResponse#getAgent()}.
+     *
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
     public GetAgentResponse getAgent(String address, int port)
         throws IOException
     {
@@ -37,6 +52,20 @@ public class AgentApi {
                                  params, GetAgentResponse.class);
     }
 
+    /**
+     * Ping an {@link Agent}.
+     *
+     * @param agent The agent to ping
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * a the requested agent status is returned via
+     * {@link org.hyperic.hq.hqapi1.types.PingAgentResponse#isUp()}.
+     *
+     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
+     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
+     * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
+     * 
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
     public PingAgentResponse pingAgent(Agent agent)
         throws IOException
     {
