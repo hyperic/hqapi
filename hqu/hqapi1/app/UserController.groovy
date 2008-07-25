@@ -249,6 +249,9 @@ class UserController extends ApiController {
             } else {
                 try {
                     existing.changePassword(user, password)
+                } catch (PermissionException e) {
+                    log.debug("Permission denied [${user.name}]");
+                    failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
                 } catch (Exception e) {
                     log.error("UnexpectedError: " + e.getMessage(), e)
                     failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
