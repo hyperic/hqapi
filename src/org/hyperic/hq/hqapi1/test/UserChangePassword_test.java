@@ -49,4 +49,17 @@ public class UserChangePassword_test extends UserTestBase {
         ChangePasswordResponse response = api.changePassword(u, null);
         hqAssertFailureInvalidParameters(response);
     }
+
+    public void testChangePasswordNoPermission() throws Exception {
+
+        User u = createTestUsers(1).get(0);
+        UserApi api = getUserApi(u.getName(), PASSWORD);
+
+        User admin = new User();
+        admin.setId(1);
+        admin.setName("hqadmin");
+
+        ChangePasswordResponse response = api.changePassword(admin, "NEWPASS");
+        hqAssertFailurePermissionDenied(response);
+    }
 }
