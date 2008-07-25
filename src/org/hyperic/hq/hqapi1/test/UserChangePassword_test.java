@@ -62,4 +62,16 @@ public class UserChangePassword_test extends UserTestBase {
         ChangePasswordResponse response = api.changePassword(admin, "NEWPASS");
         hqAssertFailurePermissionDenied(response);
     }
+
+    public void testChangePasswordInvalidUser() throws Exception {
+
+        User nonexistant = new User();
+        nonexistant.setId(Integer.MAX_VALUE);
+        nonexistant.setName("non-existant");
+
+        UserApi api = getUserApi();
+        ChangePasswordResponse response = api.changePassword(nonexistant,
+                                                             PASSWORD);
+        hqAssertFailureObjectNotFound(response);
+    }
 }
