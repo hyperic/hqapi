@@ -3,8 +3,12 @@ package org.hyperic.hq.hqapi1.test;
 import junit.framework.TestCase;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.ErrorCode;
+import org.hyperic.hq.hqapi1.AgentApi;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.Response;
+import org.hyperic.hq.hqapi1.types.GetAgentResponse;
+import org.hyperic.hq.hqapi1.types.Agent;
+import org.hyperic.hq.hqapi1.types.PingAgentResponse;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -78,6 +82,39 @@ public class HQApiTestBase  extends TestCase {
 
     HQApi getApi(String user, String password) {
         return new HQApi(HOST, PORT, IS_SECURE, user, password);
+    }
+
+    /**
+     * Get the locally running agent.
+     *
+     * @return The locally running agent or null if one does not exist.
+     */
+    protected Agent getLocalAgent() throws Exception {
+
+        AgentApi api = getApi().getAgentApi();
+
+        Agent agent = null;
+        GetAgentResponse response = api.getAgent("localhost", 2144);
+        if (response.getStatus().equals(ResponseStatus.SUCCESS)) {
+            agent = response.getAgent();
+        } else {
+            response = api.getAgent("127.0.0.1", 2144);
+            if (response.getStatus().equals(ResponseStatus.SUCCESS)) {
+                agent = response.getAgent();
+            }
+
+        }
+
+        if (agent != null) {
+            PingAgentResponse pingResponse = api.pingAgent(agent);
+            if (pingResponse.getStatus().equals(ResponseStatus.SUCCESS)) {
+                if (pingResponse.isUp()) {
+                    return agent;
+                }
+            }
+        }
+
+        return null;
     }
 
     // Assert SUCCESS
