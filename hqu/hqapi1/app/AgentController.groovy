@@ -6,7 +6,7 @@ class AgentController extends ApiController {
     private Closure getAgentXML(a) {
         { doc ->
             Agent(id             : a.id,
-                  address        : a.name,
+                  address        : a.address,
                   port           : a.port,
                   version        : a.version,
                   unidirectional : a.unidirectional)
