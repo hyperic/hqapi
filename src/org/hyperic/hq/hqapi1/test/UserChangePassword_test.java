@@ -4,12 +4,14 @@ import org.hyperic.hq.hqapi1.UserApi;
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.CreateUserResponse;
 import org.hyperic.hq.hqapi1.types.ChangePasswordResponse;
+import org.hyperic.hq.hqapi1.types.GetUsersResponse;
 
 public class UserChangePassword_test extends UserTestBase {
 
     public UserChangePassword_test(String name) {
         super(name);
     }
+
 
     public void testChangePassword() throws Exception {
 
@@ -20,11 +22,17 @@ public class UserChangePassword_test extends UserTestBase {
         CreateUserResponse createResponse = api.createUser(u, PASSWORD);
         hqAssertSuccess(createResponse);
 
+        final String NEWPASS = "NEWPASSWORD";
         // Change that users password.
         User createdUser = createResponse.getUser();
         ChangePasswordResponse response = api.changePassword(createdUser,
-                                                             "NEWPASSWORD");
+                                                             NEWPASS);
         hqAssertSuccess(response);
+
+        // Log in as the new user and list the users.
+        UserApi api2 = getUserApi(createdUser.getName(), NEWPASS);
+        GetUsersResponse getResponse = api2.getUsers();
+        hqAssertSuccess(getResponse);
     }
 
     public void testChangePasswordEmpty() throws Exception {
