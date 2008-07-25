@@ -29,7 +29,7 @@
             <xs:complexContent>
                 <xs:extension base="Response">
                     <xs:sequence>
-                        <xs:element name="up" type="xs:boolean"/>
+                        <xs:element name="Up" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:extension>
             </xs:complexContent>

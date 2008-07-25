@@ -4,9 +4,10 @@ import junit.framework.TestCase;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.ErrorCode;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
-import org.hyperic.hq.hqapi1.types.ServiceError;
 import org.hyperic.hq.hqapi1.types.Response;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.Properties;
 
@@ -20,6 +21,8 @@ public class HQApiTestBase  extends TestCase {
     private static final boolean IS_SECURE   = false;
     private static final String  USER        = "hqadmin";
     private static final String  PASSWORD    = "hqadmin";
+
+    private Log _log = LogFactory.getLog(HQApiTestBase.class);
 
     public HQApiTestBase(String name) {
         super(name);
@@ -45,6 +48,10 @@ public class HQApiTestBase  extends TestCase {
 
         props.putAll(System.getProperties());
         PropertyConfigurator.configure(props);
+    }
+
+    protected Log getLog() {
+        return _log;
     }
 
     public void setUp() throws Exception {

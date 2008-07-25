@@ -1,11 +1,12 @@
 package org.hyperic.hq.hqapi1;
 
-import org.hyperic.hq.hqapi1.types.GetRolesResponse;
 import org.hyperic.hq.hqapi1.types.GetAgentResponse;
 import org.hyperic.hq.hqapi1.types.PingAgentResponse;
+import org.hyperic.hq.hqapi1.types.Agent;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The Hyperic HQ Agent API.
@@ -26,15 +27,22 @@ public class AgentApi {
         _connection = connection;
     }
 
-    public GetAgentResponse getAgent(String ip, int port)
+    public GetAgentResponse getAgent(String address, int port)
         throws IOException
     {
-        return null;
+        Map<String,String> params = new HashMap<String,String>();
+        params.put("address", address);
+        params.put("port", String.valueOf(port));
+        return _connection.doGet("/hqu/hqapi1/agent/getAgent.hqu",
+                                 params, GetAgentResponse.class);
     }
 
-    public PingAgentResponse pingAgent()
+    public PingAgentResponse pingAgent(Agent agent)
         throws IOException
     {
-        return null;
+        Map <String,String> params = new HashMap<String,String>();
+        params.put("id", String.valueOf(agent.getId()));
+        return _connection.doGet("/hqu/hqapi1/agent/pingAgent.hqu",
+                                 params, PingAgentResponse.class);
     }
 }

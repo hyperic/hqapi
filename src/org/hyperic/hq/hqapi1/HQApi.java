@@ -14,6 +14,7 @@ public class HQApi {
     private final EscalationApi    _escalationApi;
     private final AutodiscoveryApi _autodiscoveryApi;
     private final ResourceApi      _resourceApi;
+    private final AgentApi         _agentApi;
     
     /**
      * @param host The hostname of the HQ Server to connect to.
@@ -33,6 +34,7 @@ public class HQApi {
         _escalationApi    = new EscalationApi(connection);
         _autodiscoveryApi = new AutodiscoveryApi(connection);
         _resourceApi      = new ResourceApi(connection);
+        _agentApi         = new AgentApi(connection);
     }
 
     /**
@@ -96,5 +98,14 @@ public class HQApi {
      */
     public AutodiscoveryApi getAutodiscoveryApi() {
         return _autodiscoveryApi;
+    }
+
+    /**
+     * Get and ping agents.
+     *
+     * @return The API for operating on agent resources.
+     */
+    public AgentApi getAgentApi() {
+        return _agentApi;
     }
 }
