@@ -34,7 +34,6 @@ public class AutodiscoveryApi {
      *
      * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
      * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
-     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
@@ -56,7 +55,6 @@ public class AutodiscoveryApi {
      *
      * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
      * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
-     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */

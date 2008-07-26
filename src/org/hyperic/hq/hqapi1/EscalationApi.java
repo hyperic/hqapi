@@ -51,7 +51,6 @@ public class EscalationApi {
      * <ul>
      *   <li>LoginFailure - The given username and password could not be validated.
      *   <li>ObjectNotFound - The given escalation was not found.
-     *   <li>UnexpectedError - Any other internal server error.
      * </ul>
      * </p>
      * @throws IOException If a network error occurs while making the request.
@@ -104,7 +103,6 @@ public class EscalationApi {
      * <p>
      * <ul>
      *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>UnexpectedError - Any other internal server error.
      * </ul>
      * </p>
      * @throws IOException If a network error occurs while making the request.
@@ -131,7 +129,6 @@ public class EscalationApi {
      * <p>
      * <ul>
      *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>UnexpectedError - Any other internal server error.
      * </ul>
      * </p>
      * @throws IOException If a network error occurs while making the request.
@@ -181,7 +178,6 @@ public class EscalationApi {
      * <p>
      * <ul>
      *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>UnexpectedError - Any other internal server error.
      * </ul>
      * </p>
      * @throws IOException If a network error occurs while making the request.
@@ -208,7 +204,6 @@ public class EscalationApi {
      * <ul>
      *   <li>LoginFailure - The given username and password could not be validated.
      *   <li>ObjectNotFound - The given escalation was not found in the system.
-     *   <li>UnexpectedError - Any other internal server error.
      * </ul>
      * </p>
      * @throws IOException If a network error occurs while making the request.

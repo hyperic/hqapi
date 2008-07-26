@@ -46,7 +46,6 @@ public class MetricApi {
      * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
      * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
      * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
-     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      * @throws IOException If a network error occurs while making the request.
      */
     public ListMetricResponse listMetrics(Integer resourceId)
@@ -71,7 +70,6 @@ public class MetricApi {
      * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
      * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
      * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
-     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      * @throws IOException If a network error occurs while making the request.
      */
     public DisableMetricResponse disableMetric(Integer metricId)
@@ -96,7 +94,6 @@ public class MetricApi {
      * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
      * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
      * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
-     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      * @throws IOException If a network error occurs while making the request.
      */
     public EnableMetricResponse enableMetric(Integer metricId, Long interval)
@@ -123,7 +120,6 @@ public class MetricApi {
      * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
      * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
      * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
-     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      * @throws IOException If a network error occurs while making the request.
      */
     public SetMetricIntervalResponse setInterval(Integer metricId,
@@ -153,7 +149,6 @@ public class MetricApi {
      * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
      * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
      * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
-     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      * @throws IOException If a network error occurs while making the request.
      */
     public GetMetricResponse getMetric(Integer metricId)
@@ -181,7 +176,6 @@ public class MetricApi {
      * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
      * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
      * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
-     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      * @throws IOException If a network error occurs while making the request.
      */
     public GetMetricTemplateResponse getMetricTemplate(Integer metricId)
@@ -208,7 +202,6 @@ public class MetricApi {
      * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
      * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
      * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
-     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      * @throws IOException If a network error occurs while making the request.
      */
     public SetMetricDefaultOnResponse setDefaultOn(Integer templateId,
@@ -238,7 +231,6 @@ public class MetricApi {
      * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
      * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
      * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
-     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      * @throws IOException If a network error occurs while making the request.
      */
     public SetMetricDefaultIndicatorResponse setDefaultIndicator(Integer templateId,
@@ -265,7 +257,6 @@ public class MetricApi {
      * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
      * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
      * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
-     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      * @throws IOException If a network error occurs while making the request.
      */
     public SetMetricDefaultIntervalResponse setDefaultInterval(Integer templateId,
@@ -291,7 +282,6 @@ public class MetricApi {
      * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
      * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
      * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
-     * @see org.hyperic.hq.hqapi1.ErrorCode#UNEXPECTED_ERROR
      * @throws IOException If a network error occurs while making the request.
     public PumpDataResponse pumpData(List<DataPoint> pts) {
         return null;

@@ -36,12 +36,13 @@ public class GroupApi {
      *   <li>LoginFailure - The given username and password could not be validated.
      *   <li>InvalidParameters - All the required parameters in the Group object were not supplied.
      *   <li>ObjectExists - The group by the given name already exists.
-     *   <li>UnexpectedError - Any other internal server error.
      * </ul>
      * </p>
      * @throws IOException If a network error occurs while making the request.
      */
-    public CreateGroupResponse createGroup(Group group) {
+    public CreateGroupResponse createGroup(Group group)
+        throws IOException
+    {
         return null;
     }
     
@@ -59,12 +60,13 @@ public class GroupApi {
      * <ul>
      *   <li>LoginFailure - The given username and password could not be validated.
      *   <li>ObjectNotFound - The given group was not found in the system.
-     *   <li>UnexpectedError - Any other internal server error.
      * </ul>
      * </p>
      * @throws IOException If a network error occurs while making the request.
      */
-    public DeleteGroupResponse deleteGroup(Group group) {
+    public DeleteGroupResponse deleteGroup(Group group)
+        throws IOException
+    {
         return null;
     }
     
@@ -82,13 +84,14 @@ public class GroupApi {
      * <ul>
      *   <li>LoginFailure - The given username and password could not be validated.
      *   <li>ObjectNotFound - The given group or resource was not found in the system.
-     *   <li>UnexpectedError - Any other internal server error.
      * </ul>
      * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public RemoveResourceFromGroupResponse removeResource(Group group,
-                                                          Resource res) {
+                                                          Resource res)
+        throws IOException
+    {
         return null;
     }
 
@@ -104,12 +107,13 @@ public class GroupApi {
      * <p>
      * <ul>
      *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>UnexpectedError - Any other internal server error.
      * </ul>
      * </p>
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetGroupsResponse listGroups() {
+    public GetGroupsResponse listGroups()
+        throws IOException
+    {
         return null;
     }
 
@@ -126,12 +130,13 @@ public class GroupApi {
      * <ul>
      *   <li>LoginFailure - The given username and password could not be validated.
      *   <li>ObjectNotFound - The given group was not found in the system.
-     *   <li>UnexpectedError - Any other internal server error.
      * </ul>
      * </p>
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetResourcesInGroupResponse listResources(Group group) {
+    public GetResourcesInGroupResponse listResources(Group group)
+        throws IOException
+    {
         return null;
     }
 
@@ -148,12 +153,13 @@ public class GroupApi {
      * <ul>
      *   <li>LoginFailure - The given username and password could not be validated.
      *   <li>ObjectNotFound - The given group or resource was not found in the system.
-     *   <li>UnexpectedError - Any other internal server error.
      * </ul>
      * </p>
      * @throws IOException If a network error occurs while making the request.
      */
-    public AddResourceToGroupResponse addResource(Group group, Resource res) {
+    public AddResourceToGroupResponse addResource(Group group, Resource res)
+        throws IOException
+    {
         return null;
     }
 
