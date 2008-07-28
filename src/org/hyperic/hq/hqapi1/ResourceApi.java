@@ -10,6 +10,7 @@ import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.CreateResourceResponse;
+import org.hyperic.hq.hqapi1.types.Agent;
 
 /**
  * The ResourceApi deals with {@link ResourcePrototype}s and {@link Resource}s.
@@ -69,14 +70,62 @@ public class ResourceApi extends BaseApi {
     }
 
     /**
-     * Create a {@link Resource} with the given name.
+     * Create a Platform {@link Resource} with the given name.
+     *
+     * @param agent The agent which will service this platform.
+     * @param type The resource prototype for the resource to be created.
+     * @param name The name of the resource to create.
+     * @param fqdn The FQDN for the platform.
+     * @param config The configuration for the platform.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the created Resource is returned via
+     * {@link org.hyperic.hq.hqapi1.types.CreateResourceResponse#getResource()}.
+     * 
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public CreateResourceResponse createPlatform(Agent agent,
+                                                 ResourcePrototype type,
+                                                 String name,
+                                                 String fqdn,
+                                                 Map config)
+        throws IOException
+    {
+        return null;
+    }
+
+    /**
+     * Create a Server {@link Resource} with the given name.
      *
      * @param type The resource prototype for the resource to be created.
-     * @param parent The parent resource for the created resource.  This is
-     * only applicable for Servers and Services.
+     * @param parent The parent resource for the created resource.
      * @param name The name of the resource to create.
-     * @param config A configuration map to use in creation of the resource
-     * based on the given resource prototype.
+     * @param installPath The install path for the server.
+     * @param config The configuration for the server.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the created Resource is returned via
+     * {@link org.hyperic.hq.hqapi1.types.CreateResourceResponse#getResource()}.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public CreateResourceResponse createServer(ResourcePrototype type,
+                                               Resource parent,
+                                               String name,
+                                               String installPath,
+                                               Map config)
+        throws IOException
+    {
+        return null;
+    }
+
+    /**
+     * Create a Service {@link Resource} with the given name.
+     *
+     * @param type The resource prototype for the resource to be created.
+     * @param parent The parent resource for the created resource.
+     * @param name The name of the resource to create.
+     * @param config The configuration for the service.
      * 
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the created Resource is returned via
@@ -84,10 +133,10 @@ public class ResourceApi extends BaseApi {
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public CreateResourceResponse createResource(ResourcePrototype type,
-                                                 Resource parent,
-                                                 String name,
-                                                 Map config)
+    public CreateResourceResponse createService(ResourcePrototype type,
+                                                Resource parent,
+                                                String name,
+                                                Map config)
         throws IOException
     {
         return null;
