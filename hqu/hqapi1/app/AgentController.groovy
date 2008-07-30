@@ -4,12 +4,20 @@ import org.hyperic.hq.hqapi1.ErrorCode;
 class AgentController extends ApiController {
 
     private Closure getAgentXML(a) {
+        def uni
+        if (a.metaClass.respondsTo(a, "isUnidirectional")) {
+            uni = a.unidirectional
+        } else {
+            // Legacy agent
+            uni = false
+        }
+
         { doc ->
             Agent(id             : a.id,
                   address        : a.address,
                   port           : a.port,
                   version        : a.version,
-                  unidirectional : a.unidirectional)
+                  unidirectional : uni)
         }
     }
 
