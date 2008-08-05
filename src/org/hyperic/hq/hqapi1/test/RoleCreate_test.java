@@ -1,12 +1,11 @@
 package org.hyperic.hq.hqapi1.test;
 
-import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.RoleApi;
+import org.hyperic.hq.hqapi1.UserApi;
 import org.hyperic.hq.hqapi1.types.CreateRoleResponse;
 import org.hyperic.hq.hqapi1.types.Operation;
-import org.hyperic.hq.hqapi1.RoleApi;
-
-import java.util.List;
-import java.util.ArrayList;
+import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.User;
 
 public class RoleCreate_test extends RoleTestBase {
 
@@ -51,4 +50,21 @@ public class RoleCreate_test extends RoleTestBase {
         CreateRoleResponse existsResponse = api.createRole(r);
         hqAssertFailureObjectExists(existsResponse);
     }
+    
+    public void testRoleCreateNoPermission() throws Exception {
+
+    	//Create an underprivileged user
+    	UserApi userapi = getUserApi();
+
+        User user = generateTestUser();
+
+        userapi.createUser(user, PASSWORD);
+        
+        RoleApi api = getRoleApi(user.getName(), PASSWORD);
+        Role r = generateTestRole();
+
+        CreateRoleResponse roleResponse = api.createRole(r);
+        hqAssertFailurePermissionDenied(roleResponse);
+    }
+    
 }

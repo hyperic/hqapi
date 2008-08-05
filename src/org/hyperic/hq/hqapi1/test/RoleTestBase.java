@@ -51,6 +51,9 @@ public class RoleTestBase extends UserTestBase {
         return getApi().getRoleApi();
     }
 
+    public RoleApi getRoleApi(String name, String password){
+    	return getApi(name, password).getRoleApi();
+    }
     /**
      * Generate a valid Role object that's guaranteed to have a unique Name
      * @return A valid Role object.
