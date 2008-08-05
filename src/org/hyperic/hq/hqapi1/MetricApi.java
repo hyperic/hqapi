@@ -52,7 +52,7 @@ public class MetricApi {
         throws IOException
     {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("reosurceId", resourceId.toString());
+        params.put("resourceId", resourceId.toString());
         return _conn.doGet(HQU_URI+"/listMetrics.hqu", params,
             ListMetricResponse.class);
     }
