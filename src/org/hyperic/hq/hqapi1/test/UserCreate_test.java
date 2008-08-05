@@ -101,4 +101,23 @@ public class UserCreate_test extends UserTestBase {
 
         hqAssertFailureInvalidParameters(response);
     }
+    
+    public void testCreateValidNoPermission() throws Exception {
+    	UserApi api = getUserApi();
+
+        User user = generateTestUser();
+
+        CreateUserResponse response = api.createUser(user, PASSWORD);
+
+        hqAssertSuccess(response);
+        
+        UserApi api1 = getUserApi(user.getName(), PASSWORD);
+        
+        User user1 = generateTestUser();
+        
+        CreateUserResponse response1 = api1.createUser(user1, PASSWORD);        
+        
+        hqAssertFailurePermissionDenied(response1);
+        
+    }
 }
