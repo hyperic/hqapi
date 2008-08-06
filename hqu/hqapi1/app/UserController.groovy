@@ -80,7 +80,10 @@ class UserController extends ApiController {
                                                     dsn, dept, email, first,
                                                     last, phone, sms, htmlEmail)
                 }
-            } catch (Exception e) {
+            }catch (PermissionException e) {
+                log.debug("Permission denied [${user.name}]", e)
+                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+            }catch (Exception e) {
                 log.error("UnexpectedError: " + e.getMessage(), e);
                 failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
             }
