@@ -1,11 +1,14 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.RoleApi;
+import org.hyperic.hq.hqapi1.UserApi;
+import org.hyperic.hq.hqapi1.types.CreateUserResponse;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.CreateRoleResponse;
 import org.hyperic.hq.hqapi1.types.UpdateRoleResponse;
 import org.hyperic.hq.hqapi1.types.GetRoleResponse;
 import org.hyperic.hq.hqapi1.types.Operation;
+import org.hyperic.hq.hqapi1.types.User;
 
 public class RoleUpdate_test extends RoleTestBase {
 
@@ -121,5 +124,57 @@ public class RoleUpdate_test extends RoleTestBase {
             assertTrue("Updated role does not contain operation " + o.value(),
                        updatedRole.getOperation().contains(o));
         }
+    }
+    
+    public void testUpdateRoleDuplicate() throws Exception {
+
+        RoleApi api = getRoleApi();
+        Role r = generateTestRole();
+
+        CreateRoleResponse createResponse = api.createRole(r);
+        hqAssertSuccess(createResponse);
+
+        Role r1 = generateTestRole();
+
+        api.createRole(r1);
+        //For the update role use the existing role
+        final String UPDATED_ROLENAME    = r1.getName();       
+
+        Role role = createResponse.getRole();
+
+        role.setName(UPDATED_ROLENAME);        
+
+        UpdateRoleResponse updateResponse = api.updateRole(role);
+        
+        hqAssertFailureObjectExists(updateResponse);
+    }
+    
+    public void testUpdateRoleNoPermission() throws Exception {
+
+        RoleApi api = getRoleApi();
+        Role r = generateTestRole();
+
+        CreateRoleResponse createResponse = api.createRole(r);
+        hqAssertSuccess(createResponse);
+        
+        //Create an underprivileged user
+    	UserApi userapi = getUserApi();
+
+        User user = generateTestUser();
+
+        userapi.createUser(user, PASSWORD);
+        
+        RoleApi roleapi = getRoleApi(user.getName(), PASSWORD);
+
+        //For the update role use the existing role
+        final String UPDATED_ROLENAME    = TESTROLE_NAME_PREFIX + " (Updated)";      
+
+        Role role = createResponse.getRole();
+
+        role.setName(UPDATED_ROLENAME);        
+
+        UpdateRoleResponse updateResponse = roleapi.updateRole(role);
+        
+        hqAssertFailurePermissionDenied(updateResponse);
     }
 }
