@@ -1,11 +1,13 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.RoleApi;
+import org.hyperic.hq.hqapi1.UserApi;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.SyncRolesResponse;
 import org.hyperic.hq.hqapi1.types.CreateRoleResponse;
 import org.hyperic.hq.hqapi1.types.GetRoleResponse;
 import org.hyperic.hq.hqapi1.types.Operation;
+import org.hyperic.hq.hqapi1.types.User;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -83,4 +85,61 @@ public class RoleSyncRoles_test extends RoleTestBase {
             }
         }
     }
+    
+    public void testSyncCreateNoPermission() throws Exception {
+
+    	//Create an underprivileged user
+    	UserApi userapi = getUserApi();
+
+        User user = generateTestUser();
+
+        userapi.createUser(user, PASSWORD);
+        
+        RoleApi api = getRoleApi(user.getName(), PASSWORD);
+
+        List<Role> roles = new ArrayList<Role>();
+        for (int i = 0; i < 5; i++) {
+            Role r = generateTestRole();
+            r.getOperation().addAll(VIEW_OPS);
+            roles.add(r);
+        }
+
+        SyncRolesResponse response = api.syncRoles(roles);
+        hqAssertFailurePermissionDenied(response);
+    }
+    
+    public void testSyncUpdateNoPermission() throws Exception {
+
+        RoleApi api = getRoleApi();
+
+        List<Role> createdRoles = new ArrayList<Role>();
+        for (int i = 0; i < 5; i++) {
+            Role r = generateTestRole();
+            r.getOperation().addAll(VIEW_OPS);
+
+            CreateRoleResponse createResponse = api.createRole(r);
+            hqAssertSuccess(createResponse);
+            createdRoles.add(createResponse.getRole());
+        }
+
+        //Create an underprivileged user
+    	UserApi userapi = getUserApi();
+
+        User user = generateTestUser();
+
+        userapi.createUser(user, PASSWORD);
+        
+        RoleApi roleapi = getRoleApi(user.getName(), PASSWORD);
+        final String UPDATE_STR = " (Updated)";
+
+        for (Role r : createdRoles) {
+            r.setName(r.getName() + UPDATE_STR);
+            r.setDescription(r.getDescription() + UPDATE_STR);
+            r.getOperation().clear();
+            r.getOperation().addAll(MODIFY_OPS);
+        }
+
+        SyncRolesResponse response = roleapi.syncRoles(createdRoles);
+        hqAssertFailurePermissionDenied(response);
+        }
 }
