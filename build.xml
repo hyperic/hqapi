@@ -172,7 +172,7 @@
             </classpath>
             <doctitle><![CDATA[Hyperic HQ API Specification]]></doctitle>
             <bottom>
-                <![CDATA[Copyright &#169; 2008 <a href="http://www.hyperic.com>Hyperic, Inc.</a>, All Rights Reserved.]]>
+                <![CDATA[Copyright &#169; 2008 <a href="http://www.hyperic.com">Hyperic, Inc.</a>, All Rights Reserved.]]>
             </bottom>
         </javadoc>
         
