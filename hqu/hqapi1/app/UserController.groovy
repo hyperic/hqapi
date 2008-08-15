@@ -16,7 +16,8 @@ class UserController extends ApiController {
                  SMSAddress  : (u.SMSAddress ? u.SMSAddress : ''),
                  phoneNumber : (u.phoneNumber ? u.phoneNumber : ''),
                  active      : u.active,
-                 htmlEmail   : u.htmlEmail)
+                 htmlEmail   : u.htmlEmail,
+                 passwordHash: u.password)
         }
     }
 
@@ -159,6 +160,10 @@ class UserController extends ApiController {
                                       xmlIn.'@phoneNumber',
                                       xmlIn.'@SMSAddress',
                                       xmlIn.'@htmlEmail'?.toBoolean())
+                def hash = xmlIn.'@passwordHash'
+                if (hash) {                       
+            		existing.updatePassword(user, hash)
+            	}
             }
         } catch (PermissionException e) {
             log.debug("Permission denied [${user.name}]", e)
@@ -197,22 +202,30 @@ class UserController extends ApiController {
                                           xmlUser.'@phoneNumber',
                                           xmlUser.'@SMSAddress',
                                           xmlUser.'@htmlEmail'?.toBoolean())
+                    def hash = xmlUser.'@passwordHash'
+                    if (hash) {
+                    	existing.updatePassword(user, hash)
+                    }     	
                 } else {
                     if (!xmlUser.'@name' || !xmlUser.'@firstName' ||
                         !xmlUser.'@lastName' || !xmlUser.'@emailAddress') {
                         failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
                     } else {
-                        // XXX: This needs to handle the password hash                        
-                        userHelper.createUser(xmlUser.'@name',
-                                              xmlUser.'@active'?.toBoolean(),
-                                              "CAM", // Dsn
-                                              xmlUser.'@department',
-                                              xmlUser.'@emailAddress',
-                                              xmlUser.'@firstName',
-                                              xmlUser.'@lastName',
-                                              xmlUser.'@phoneNumber',
-                                              xmlUser.'@SMSAddress',
-                                              xmlUser.'@htmlEmail'?.toBoolean())
+                        def newUser = 
+                            userHelper.createUser(xmlUser.'@name',
+                                                  xmlUser.'@active'?.toBoolean(),
+                                                  "CAM", // Dsn
+                                                  xmlUser.'@department',
+                                                  xmlUser.'@emailAddress',
+                                                  xmlUser.'@firstName',
+                                                  xmlUser.'@lastName',
+                                                  xmlUser.'@phoneNumber',
+                                                  xmlUser.'@SMSAddress',
+                                                  xmlUser.'@htmlEmail'?.toBoolean())
+                        def hash = xmlUser.'@passwordHash'
+                        if (hash) {
+                            newUser.updatePassword(user, hash)
+                        }     	
                     }
                 }
             }

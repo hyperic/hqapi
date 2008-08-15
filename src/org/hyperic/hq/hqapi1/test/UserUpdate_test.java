@@ -30,7 +30,8 @@ public class UserUpdate_test extends UserTestBase {
         String PHONE   = "Updated Phone";
         boolean ACTIVE = !user.isActive();
         boolean HTML   = !user.isHtmlEmail();
-
+        String HASHED_PWD = "UpdatedPassword";
+        
         user.setFirstName(FIRST);
         user.setLastName(LAST);
         user.setEmailAddress(EMAIL);
@@ -39,6 +40,7 @@ public class UserUpdate_test extends UserTestBase {
         user.setPhoneNumber(PHONE);
         user.setActive(ACTIVE);
         user.setHtmlEmail(HTML);
+        user.setPasswordHash(HASHED_PWD);
         UpdateUserResponse updateResponse = api.updateUser(user);
         // Assert update success
         hqAssertSuccess(updateResponse);
@@ -55,6 +57,7 @@ public class UserUpdate_test extends UserTestBase {
         assertEquals(PHONE,  u.getPhoneNumber());
         assertEquals(ACTIVE, u.isActive());
         assertEquals(HTML,   u.isHtmlEmail());
+        assertEquals(HASHED_PWD, u.getPasswordHash());
     }
 
     public void testUpdateNoPermission() throws Exception {

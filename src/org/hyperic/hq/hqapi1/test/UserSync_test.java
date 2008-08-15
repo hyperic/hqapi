@@ -51,7 +51,8 @@ public class UserSync_test extends UserTestBase {
         String PHONE   = "Updated Phone";
         boolean ACTIVE = !newUser.isActive();
         boolean HTML   = !newUser.isHtmlEmail();
-
+        String HASHED_PWD = "UpdatedPassword";
+        
         newUser.setFirstName(FIRST);
         newUser.setLastName(LAST);
         newUser.setEmailAddress(EMAIL);
@@ -60,7 +61,8 @@ public class UserSync_test extends UserTestBase {
         newUser.setPhoneNumber(PHONE);
         newUser.setActive(ACTIVE);
         newUser.setHtmlEmail(HTML);
-
+        newUser.setPasswordHash(HASHED_PWD);
+        
         List<User> users = new ArrayList<User>();
         users.add(newUser);
         SyncUsersResponse syncResponse = api.syncUsers(users);
@@ -79,6 +81,7 @@ public class UserSync_test extends UserTestBase {
         assertEquals(PHONE,  syncedUser.getPhoneNumber());
         assertEquals(ACTIVE, syncedUser.isActive());
         assertEquals(HTML,   syncedUser.isHtmlEmail());
+        assertEquals(HASHED_PWD, syncedUser.getPasswordHash());
     }
 
     public void testMultiSyncCreateAndUpdate() throws Exception {

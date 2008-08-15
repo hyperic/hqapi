@@ -16,6 +16,7 @@
         <xs:attribute name="phoneNumber"  type="xs:string"  use="required"/>
         <xs:attribute name="active"       type="xs:boolean" use="required"/>
         <xs:attribute name="htmlEmail"    type="xs:boolean" use="required"/>
+        <xs:attribute name="passwordHash" type="xs:string"  use="required"/>
     </xs:complexType>
 
     <!-- User Responses -->
