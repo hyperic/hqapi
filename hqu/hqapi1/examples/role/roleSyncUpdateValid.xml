@@ -1,0 +1,11 @@
+<SyncRolesRequest>
+    <Role name="apiTest-roleSyncUpdate" description="apiTest Role- viewOnly">
+		<Operation>modifyPlatform</Operation>
+		<Operation>modifyServer</Operation>
+		<Operation>modifyService</Operation>
+		<Operation>modifyApplication</Operation>
+		<Operation>modifyResourceGroup</Operation>
+		<Operation>modifyRole</Operation>
+		<Operation>modifySubject</Operation>				
+	</Role>	
+</SyncRolesRequest>

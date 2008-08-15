@@ -1,0 +1,3 @@
+<SyncUsersRequest>
+    <User name="syncUpdateuser" firstName="Sync" lastName="Update" departement="" emailAddress="localhost" SMSAddress="" active="true" htmlEmail="false"/>
+</SyncUsersRequest>

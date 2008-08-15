@@ -1,0 +1,9 @@
+<SyncEscalationsRequest>
+	<Escalation name="Escalation SuppressAction - ApiTest"
+		description="ApiTest example with SuppressAction" pauseAllowed="true" maxPauseTime="3000"
+		notifyAll="true" repeat="false">
+		<Action wait="10" actionType="NoOpAction">
+			<SuppressAction typeName="suppressAction"/>			
+		</Action>		
+	</Escalation>
+</SyncEscalationsRequest>
