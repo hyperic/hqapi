@@ -253,7 +253,7 @@ class RoleController extends ApiController {
                 role.setSubjects(user, users)
             }
         } catch (PermissionException e) {
-            log.error("Permission denied [${user.name}]", e)
+            log.debug("Permission denied [${user.name}]", e)
             failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
         } catch (Exception e) {
             log.error("UnexpectedError: " + e.getMessage(), e)
