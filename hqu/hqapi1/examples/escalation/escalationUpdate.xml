@@ -1,0 +1,13 @@
+<SyncEscalationsRequest>
+	<!-- Escalation with Email Action -->
+	<Escalation name="Escalation EmailAction - CreateUpdate"
+		description="Escalation EmailAction Update" pauseAllowed="true" maxPauseTime="3000"
+		notifyAll="true" repeat="false">
+		<Action wait="72000" actionType="EmailAction" notifyType="notifyRoles" sms="true">
+			<Notify name="Super User Role"></Notify>						
+		</Action>
+		<Action wait="72000" actionType="EmailAction" notifyType="notifyUsers" sms="false">
+			<Notify name="hqadmin"></Notify>						
+		</Action>		
+	</Escalation>	
+</SyncEscalationsRequest>

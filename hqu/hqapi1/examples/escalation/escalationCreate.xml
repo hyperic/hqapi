@@ -1,17 +1,24 @@
 <SyncEscalationsRequest>
+	<!-- Escalation with Email Action -->
+	<Escalation name="Escalation EmailAction NotifyRoles - ApiTest"
+		description="ApiTest example with EmailAction NotifyRoles" pauseAllowed="true" maxPauseTime="3000"
+		notifyAll="true" repeat="false">
+		<Action wait="72000" actionType="EmailAction" notifyType="notifyRoles" sms="false">
+			<Notify name="Super User Role"></Notify>						
+		</Action>		
+	</Escalation>
+	<Escalation name="Escalation EmailAction NotifyUsers- ApiTest"
+		description="ApiTest example with EmailAction notifyUsers" pauseAllowed="true" maxPauseTime="3000"
+		notifyAll="true" repeat="false">
+		<Action wait="72000" actionType="EmailAction" notifyType="notifyUsers" sms="true">
+			<Notify name="hqadmin"></Notify>						
+		</Action>		
+	</Escalation>
+	<!-- Escalation with Suppress action -->
 	<Escalation name="Escalation SuppressAction - ApiTest"
 		description="ApiTest example with SuppressAction" pauseAllowed="true" maxPauseTime="3000"
 		notifyAll="true" repeat="false">
-		<Action wait="36000" actionType="NoOpAction">
-			<SuppressAction typeName="suppressAction"/>			
-		</Action>		
-	</Escalation>
-	<Escalation name="Escalation EmailAction - ApiTest"
-		description="ApiTest example with EmailAction" pauseAllowed="true" maxPauseTime="3000"
-		notifyAll="true" repeat="false">
-		<Action wait="72000" actionType="EmailAction" notifyType="notifyRoles" sms="false">
-			<Notify name="Super User Role"></Notify>
-			<EmailAction typeName="EmailAction"/>			
-		</Action>		
-	</Escalation>
+		<Action wait="36000" actionType="NoOpAction">		
+		</Action>				
+	</Escalation>	
 </SyncEscalationsRequest>
