@@ -1,3 +1,6 @@
+<script type="text/javascript">
+    document.navTabCat = "Admin";
+</script>
 <html>
     <head>
         <script type="text/javascript">
