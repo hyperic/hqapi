@@ -27,4 +27,19 @@ public abstract class BaseApi {
     {
         return _conn.doGet(BASE_URI + action, params, resultClass);
     }
+    
+    /**
+     * Call {@link HQConnection#doPost(String, Object, Class) for the specified
+     * controller/action via Post
+     *
+     * @param action  The name of the controller/action to POST to.  This is
+     *                tacked on to the BASE_URI and results in a path
+     *                like:  '/hqu/hqapi1/user/syncUsers.hqu'
+     *                ex:  'resource/syncResources.hqu'
+     */
+    protected <T> T doPost(String action, Object o, Class<T> resultClass)
+        throws IOException
+    {
+        return _conn.doPost(action, o, resultClass);
+    }
 }

@@ -2,15 +2,21 @@ package org.hyperic.hq.hqapi1;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
+import org.hyperic.hq.hqapi1.types.Agent;
+import org.hyperic.hq.hqapi1.types.Config;
+import org.hyperic.hq.hqapi1.types.CreateResourceResponse;
+import org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ListResourcePrototypesResponse;
+import org.hyperic.hq.hqapi1.types.Platform;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
-import org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse;
-import org.hyperic.hq.hqapi1.types.CreateResourceResponse;
-import org.hyperic.hq.hqapi1.types.Agent;
+import org.hyperic.hq.hqapi1.types.SyncEscalationResponse;
+import org.hyperic.hq.hqapi1.types.SyncPlatformRequest;
+import org.hyperic.hq.hqapi1.types.SyncPlatformResponse;
 
 /**
  * The ResourceApi deals with {@link ResourcePrototype}s and {@link Resource}s.
@@ -76,7 +82,7 @@ public class ResourceApi extends BaseApi {
      * @param type The resource prototype for the resource to be created.
      * @param name The name of the resource to create.
      * @param fqdn The FQDN for the platform.
-     * @param config The configuration for the platform.
+     * @param configs The configuration for the platform.
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the created Resource is returned via
@@ -88,10 +94,26 @@ public class ResourceApi extends BaseApi {
                                                  ResourcePrototype type,
                                                  String name,
                                                  String fqdn,
-                                                 Map config)
+                                                 Map configs)
         throws IOException
-    {
-        return null;
+    {        
+        Platform plat = new Platform();
+        plat.setResourceType(type.getName());
+        plat.setAgent(agent);
+        plat.setName(name);
+        plat.setFqdn(fqdn);
+        
+        for (Iterator it = configs.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry entry = (Map.Entry) it.next();
+            Config config = new Config();
+            config.setKey(entry.getKey().toString());
+            config.setValue(entry.getValue().toString());
+        }
+        
+        SyncPlatformRequest req = new SyncPlatformRequest();
+        req.setPlatform(plat);
+        return doPost("/hqu/hqapi1/resource/syncPlatform.hqu", req,
+                      CreateResourceResponse.class);
     }
 
     /**

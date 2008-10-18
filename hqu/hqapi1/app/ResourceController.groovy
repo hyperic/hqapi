@@ -40,4 +40,11 @@ class ResourceController extends ApiController {
             }
         }
     }
+
+    def syncPlatform(params) {
+        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+
+        for (xmlEsc in syncRequest['Platform']) {
+        }
+    }
 }

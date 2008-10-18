@@ -11,4 +11,5 @@
     <xs:include schemaLocation="Escalation.xsd" />
     <xs:include schemaLocation="Autodiscovery.xsd"/>
     <xs:include schemaLocation="Agent.xsd"/>
+    <xs:include schemaLocation="Platform.xsd"/>
 </xs:schema>
