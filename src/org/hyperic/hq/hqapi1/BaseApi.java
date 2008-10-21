@@ -29,7 +29,7 @@ public abstract class BaseApi {
     }
     
     /**
-     * Call {@link HQConnection#doPost(String, Object, Class) for the specified
+     * Call {@link HQConnection#doPost(String, Object, Class)} for the specified
      * controller/action via Post
      *
      * @param action  The name of the controller/action to POST to.  This is
