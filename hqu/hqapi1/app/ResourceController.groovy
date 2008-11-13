@@ -82,13 +82,24 @@ class ResourceController extends ApiController {
 
     def get(params) {
         def id = params.getOne("id")?.toInteger()
+        def platformId = params.getOne("platformId")?.toInteger()
+        def serverId = params.getOne("serverId")?.toInteger()
+        def serviceId = params.getOne("serviceId")?.toInteger()
 
-        def resource
+        def resource = null
         def failureXml
-        if (!id) {
+        if (!id && !platformId && !serverId && !serviceId) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
-            resource = resourceHelper.findById(id)
+            if (id) {
+                resource = resourceHelper.findById(id)
+            } else if (platformId) {
+                resource = resourceHelper.find('platform':platformId)
+            } else if (serverId) {
+                resource = resourceHelper.find('server':serverId)
+            } else if (serviceId) {
+                resource = resourceHelper.find('service':serviceId)
+            }
 
             if (!resource) {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
@@ -136,7 +147,7 @@ class ResourceController extends ApiController {
             } else if (prototype) {
                 resources = resourceHelper.find('byPrototype': prototype)
             } else {
-                // Shouldn't hapen
+                // Shouldn't happen
                 failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
             }
         }

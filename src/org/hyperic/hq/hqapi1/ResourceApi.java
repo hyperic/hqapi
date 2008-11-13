@@ -157,7 +157,7 @@ public class ResourceApi extends BaseApi {
     }
 
     /**
-     * Find a {@link Resource} by id.
+     * Get a {@link Resource} by id.
      *
      * @param id The resource id to look up.
      *
@@ -173,6 +173,66 @@ public class ResourceApi extends BaseApi {
         Map<String, String> params = new HashMap<String, String>();
         params.put("id", id.toString());
         return doGet("/hqu/hqapi1/resource/get.hqu", params, 
+                     GetResourceResponse.class);
+    }
+
+    /**
+     * Get a {@link Resource} by it's platform id.
+     *
+     * @param id The platform id to look up.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the Resource is returned via
+     * {@link org.hyperic.hq.hqapi1.types.GetResourceResponse#getResource()}.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public GetResourceResponse getResourceByPlatform(Integer id)
+        throws IOException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("platformId", id.toString());
+        return doGet("/hqu/hqapi1/resource/get.hqu", params,
+                     GetResourceResponse.class);
+    }
+
+    /**
+     * Get a {@link Resource} by it's server id.
+     *
+     * @param id The platform id to look up.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the Resource is returned via
+     * {@link org.hyperic.hq.hqapi1.types.GetResourceResponse#getResource()}.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public GetResourceResponse getResourceByServer(Integer id)
+        throws IOException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("serverId", id.toString());
+        return doGet("/hqu/hqapi1/resource/get.hqu", params,
+                     GetResourceResponse.class);
+    }
+
+    /**
+     * Get a {@link Resource} by it's service id.
+     *
+     * @param id The platform id to look up.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the Resource is returned via
+     * {@link org.hyperic.hq.hqapi1.types.GetResourceResponse#getResource()}.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public GetResourceResponse getResourceByService(Integer id)
+        throws IOException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("serviceId", id.toString());
+        return doGet("/hqu/hqapi1/resource/get.hqu", params,
                      GetResourceResponse.class);
     }
 

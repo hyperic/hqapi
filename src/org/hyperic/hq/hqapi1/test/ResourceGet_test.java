@@ -40,7 +40,6 @@ public class ResourceGet_test extends HQApiTestBase {
                    findResponse.getResource().size() > 0);
         for (Resource r : findResponse.getResource()) {
             // Now that we have valid resource ids, query each
-
             Integer rid = r.getId();
 
             GetResourceResponse getResponse = api.getResource(rid);
@@ -51,5 +50,57 @@ public class ResourceGet_test extends HQApiTestBase {
                        r.getId() > 0);
             assertNotNull(resource.getName());
         }
+    }
+
+    //XXX: Fix me
+
+    final Integer ID_10001 = 10001;
+
+    public void testGetResourceByPlatform() throws Exception {
+
+        ResourceApi api = getApi().getResourceApi();
+
+        GetResourceResponse resp = api.getResourceByPlatform(ID_10001);
+        hqAssertSuccess(resp);
+    }
+
+    public void testGetResourceByInvalidPlatform() throws Exception {
+
+        ResourceApi api = getApi().getResourceApi();
+
+        GetResourceResponse resp = api.getResourceByPlatform(Integer.MAX_VALUE);
+        hqAssertFailureObjectNotFound(resp);
+    }
+
+    public void testGetResourceByServer() throws Exception {
+
+        ResourceApi api = getApi().getResourceApi();
+
+        GetResourceResponse resp = api.getResourceByServer(ID_10001);
+        hqAssertSuccess(resp);
+    }
+
+    public void testGetResourceByInvalidServer() throws Exception {
+
+        ResourceApi api = getApi().getResourceApi();
+
+        GetResourceResponse resp = api.getResourceByServer(Integer.MAX_VALUE);
+        hqAssertFailureObjectNotFound(resp);
+    }
+
+    public void testGetResourceByService() throws Exception {
+
+        ResourceApi api = getApi().getResourceApi();
+
+        GetResourceResponse resp = api.getResourceByService(ID_10001);
+        hqAssertSuccess(resp);
+    }
+
+    public void testGetResourceByInvalidService() throws Exception {
+
+        ResourceApi api = getApi().getResourceApi();
+
+        GetResourceResponse resp = api.getResourceByService(Integer.MAX_VALUE);
+        hqAssertFailureObjectNotFound(resp);
     }
 }
