@@ -5,18 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.hyperic.hq.hqapi1.types.Agent;
-import org.hyperic.hq.hqapi1.types.Config;
-import org.hyperic.hq.hqapi1.types.CreateResourceResponse;
-import org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse;
-import org.hyperic.hq.hqapi1.types.ListResourcePrototypesResponse;
-import org.hyperic.hq.hqapi1.types.Platform;
-import org.hyperic.hq.hqapi1.types.Resource;
-import org.hyperic.hq.hqapi1.types.ResourcePrototype;
-import org.hyperic.hq.hqapi1.types.ResponseStatus;
-import org.hyperic.hq.hqapi1.types.SyncEscalationResponse;
-import org.hyperic.hq.hqapi1.types.SyncPlatformRequest;
-import org.hyperic.hq.hqapi1.types.SyncPlatformResponse;
+import org.hyperic.hq.hqapi1.types.*;
 
 /**
  * The ResourceApi deals with {@link ResourcePrototype}s and {@link Resource}s.
@@ -165,5 +154,25 @@ public class ResourceApi extends BaseApi {
     {
         return doPost("/hqu/hqapi1/resource/syncService.hqu", null,
                       CreateResourceResponse.class);
+    }
+
+    /**
+     * Find a {@link Resource} by id.
+     *
+     * @param id The resource id to look up.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the created Resource is returned via
+     * {@link org.hyperic.hq.hqapi1.types.GetResourceResponse#getResource()}.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public GetResourceResponse getResource(Integer id)
+        throws IOException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("id", id.toString());
+        return doGet("/hqu/hqapi1/resource/get.hqu", params, 
+                     GetResourceResponse.class);
     }
 }

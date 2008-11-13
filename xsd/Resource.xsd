@@ -60,4 +60,28 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="GetResourceResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="Resource" type="Resource" maxOccurs="1"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetResourcesResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="Resource" type="Resource" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
 </xs:schema>

@@ -4,6 +4,15 @@ import org.hyperic.hq.authz.shared.PermissionException
 import org.hyperic.hq.hqapi1.ErrorCode;
 
 class ResourceController extends ApiController {
+
+    private Closure getResourceXML(r) {
+        { doc ->
+            Resource(id : r.id,
+                     name : r.name,
+                     description : r.description)
+        }
+    }
+
     private Closure getPrototypeXML(p) {
         { doc -> 
             ResourcePrototype(id   : p.id,
@@ -64,6 +73,35 @@ class ResourceController extends ApiController {
         renderXml() {
             out << CreateResourceResponse() {
                 out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
+            }
+        }
+    }
+
+    def get(params) {
+        def id = params.getOne("id")?.toInteger()
+        def resource = resourceHelper.findById(id)
+
+        def failureXml
+        if (!resource) {
+            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+        } else {
+            //XXX: Need to add get() to ResourceHelper. Catch lazy initialization
+            //     errors.
+            try {
+                resource.name
+            } catch (Throwable t) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+            }
+        }
+
+        renderXml() {
+            out << GetResourceResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    out << getResourceXML(resource)
+                }
             }
         }
     }
