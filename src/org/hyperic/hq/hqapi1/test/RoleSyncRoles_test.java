@@ -141,5 +141,5 @@ public class RoleSyncRoles_test extends RoleTestBase {
 
         SyncRolesResponse response = roleapi.syncRoles(createdRoles);
         hqAssertFailurePermissionDenied(response);
-        }
+    }
 }
