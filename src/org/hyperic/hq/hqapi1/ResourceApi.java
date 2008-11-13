@@ -185,7 +185,7 @@ public class ResourceApi extends BaseApi {
      * the list of Resources are returned via
      * {@link org.hyperic.hq.hqapi1.types.FindResourcesResponse#getResource()}.
      *
-     * @throws java.io.IOException If a network error occurs while making the request.     *
+     * @throws java.io.IOException If a network error occurs while making the request.
      *
      */
     public FindResourcesResponse findResources(Agent agent)
@@ -193,6 +193,26 @@ public class ResourceApi extends BaseApi {
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("agentId", Integer.toString(agent.getId()));
+        return doGet("/hqu/hqapi1/resource/find.hqu", params,
+                     FindResourcesResponse.class);
+    }
+
+    /**
+     * Find @{link Resources}s of the given {@link org.hyperic.hq.hqapi1.types.ResourcePrototype}.
+     *
+     * @param pt The {@link ResourcePrototype} to search for.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the list of Resources are returned via
+     * {@link org.hyperic.hq.hqapi1.types.FindResourcesResponse#getResource()}.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public FindResourcesResponse findResources(ResourcePrototype pt)
+        throws IOException
+    {
+        Map<String,String> params = new HashMap<String, String>();
+        params.put("prototype", pt.getName());
         return doGet("/hqu/hqapi1/resource/find.hqu", params,
                      FindResourcesResponse.class);
     }

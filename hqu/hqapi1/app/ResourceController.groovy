@@ -117,19 +117,27 @@ class ResourceController extends ApiController {
 
     def find(params) {
         def agentId = params.getOne("agentId")?.toInteger()
+        def prototype = params.getOne("prototype")
 
         def resources = []
         def failureXml
         
-        if (!agentId) {
+        if (!agentId && !prototype) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
-            def agent = agentHelper.getAgent(agentId)
-            if (!agent) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+            if (agentId) {
+                def agent = agentHelper.getAgent(agentId)
+                if (!agent) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                } else {
+                    def platforms = agent.platforms
+                    resources = platforms*.resource
+                }
+            } else if (prototype) {
+                resources = resourceHelper.find('byPrototype': prototype)
             } else {
-                def platforms = agent.platforms
-                resources = platforms*.resource
+                // Shouldn't hapen
+                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
             }
         }
 
