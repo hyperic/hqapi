@@ -77,8 +77,19 @@ public class ResourceFind_test extends ResourceTestBase {
             hqAssertSuccess(childrenResponse);
 
             for (Resource child : childrenResponse.getResource()) {
-                validateResource(r);
+                validateResource(child);
             }
         }
+    }
+
+    public void testFindChildrenInvalidResource() throws Exception {
+
+        Resource r = new Resource();
+        r.setId(Integer.MAX_VALUE);
+        r.setName("Invalid resource");
+
+        ResourceApi api = getApi().getResourceApi();
+        FindResourcesResponse resp = api.findResourceChildren(r);
+        hqAssertFailureObjectNotFound(resp);
     }
 }

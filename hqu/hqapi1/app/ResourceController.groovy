@@ -157,11 +157,10 @@ class ResourceController extends ApiController {
                     try {
                         resource.name // Check the object really exists
                         resource.entityId // Check the object is an appdef object
+                        resources = resource.getViewableChildren(user)
                     } catch (Throwable t) {
                         failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
                     }
-
-                    resources = resource.getViewableChildren(user)
                 }
             } else {
                 // Shouldn't happen
