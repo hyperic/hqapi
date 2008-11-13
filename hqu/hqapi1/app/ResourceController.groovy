@@ -10,6 +10,12 @@ class ResourceController extends ApiController {
             Resource(id : r.id,
                      name : r.name,
                      description : r.description)
+
+            r.getConfig().each { k, v ->
+                if (v.type.equals("configResponse")) {
+                    ResourceConfig(key: k, value: v.value)
+                }
+            }
         }
     }
 
@@ -90,16 +96,15 @@ class ResourceController extends ApiController {
             if (!resource) {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
             } else {
-                //XXX: Need to add get() to ResourceHelper. Catch lazy initialization
-                //     errors.
+                //XXX: ResourceHelper needs some work here..
                 try {
-                    resource.name
+                    resource.name // Check the object really exists
+
                 } catch (Throwable t) {
                     failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
                 }
             }
         }
-
 
         renderXml() {
             out << GetResourceResponse() {
