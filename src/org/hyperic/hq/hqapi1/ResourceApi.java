@@ -68,7 +68,7 @@ public class ResourceApi extends BaseApi {
     /**
      * Create a Platform {@link Resource} with the given name.
      *
-     * @param agent The agent which will service this platform.
+     * @param agent The {@link org.hyperic.hq.hqapi1.types.Agent} which will service this platform.
      * @param type The resource prototype for the resource to be created.
      * @param name The name of the resource to create.
      * @param fqdn The FQDN for the platform.
@@ -197,6 +197,27 @@ public class ResourceApi extends BaseApi {
     }
 
     /**
+     * Get a {@link Resource} by it's platform name.
+     *
+     * @param name The platform name to look up.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the Resource is returned via
+     * {@link org.hyperic.hq.hqapi1.types.GetResourceResponse#getResource()}.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public GetResourceResponse getResourceByPlatform(String name)
+        throws IOException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("platformName", name);
+        return doGet("/hqu/hqapi1/resource/get.hqu", params,
+                     GetResourceResponse.class);
+    }
+
+
+    /**
      * Get a {@link Resource} by it's server id.
      *
      * @param id The platform id to look up.
@@ -237,9 +258,10 @@ public class ResourceApi extends BaseApi {
     }
 
     /**
-     * Find the platform {@link Resource}s serviced by the given @{link Agent}.
+     * Find the platform {@link Resource}s serviced by the given
+     * {@link org.hyperic.hq.hqapi1.types.Agent}.
      *
-     * @param agent The {@link Agent} to query.
+     * @param agent The {@link org.hyperic.hq.hqapi1.types.Agent} to query.
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the list of Resources are returned via

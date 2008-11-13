@@ -53,7 +53,7 @@ public class ResourceGet_test extends ResourceTestBase {
 
     final Integer ID_10001 = 10001;
 
-    public void testGetResourceByPlatform() throws Exception {
+    public void testGetResourceByPlatformId() throws Exception {
 
         ResourceApi api = getApi().getResourceApi();
 
@@ -62,11 +62,39 @@ public class ResourceGet_test extends ResourceTestBase {
         validateResource(resp.getResource());
     }
 
-    public void testGetResourceByInvalidPlatform() throws Exception {
+    public void testGetResourceByInvalidPlatformId() throws Exception {
 
         ResourceApi api = getApi().getResourceApi();
 
         GetResourceResponse resp = api.getResourceByPlatform(Integer.MAX_VALUE);
+        hqAssertFailureObjectNotFound(resp);
+    }
+
+    public void testGetResourceByPlatformName() throws Exception {
+
+        ResourceApi api = getApi().getResourceApi();
+
+        GetResourceResponse resp = api.getResourceByPlatform(ID_10001);
+        hqAssertSuccess(resp);
+        Resource r1 = resp.getResource();
+        validateResource(r1);
+
+        String name = resp.getResource().getName();
+        GetResourceResponse respByName = api.getResourceByPlatform(name);
+        hqAssertSuccess(respByName);
+        Resource r2 = resp.getResource();
+        validateResource(r2);
+
+        assertEquals(r1.getId(), r2.getId());
+        assertEquals(r1.getDescription(), r2.getDescription());
+        assertEquals(r1.getName(), r2.getName());
+    }
+
+    public void testGetResourceByInvalidPlatformName() throws Exception {
+
+        final String name = "Non-existant platform name";
+        ResourceApi api = getApi().getResourceApi();
+        GetResourceResponse resp = api.getResourceByPlatform(name);
         hqAssertFailureObjectNotFound(resp);
     }
 

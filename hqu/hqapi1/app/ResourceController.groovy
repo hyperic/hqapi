@@ -83,18 +83,21 @@ class ResourceController extends ApiController {
     def get(params) {
         def id = params.getOne("id")?.toInteger()
         def platformId = params.getOne("platformId")?.toInteger()
+        def platformName = params.getOne("platformName")
         def serverId = params.getOne("serverId")?.toInteger()
         def serviceId = params.getOne("serviceId")?.toInteger()
 
         def resource = null
         def failureXml
-        if (!id && !platformId && !serverId && !serviceId) {
+        if (!id && !platformId && !platformName && !serverId && !serviceId) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             if (id) {
                 resource = resourceHelper.findById(id)
             } else if (platformId) {
                 resource = resourceHelper.find('platform':platformId)
+            } else if (platformName) {
+                resource = resourceHelper.find('platform':platformName)
             } else if (serverId) {
                 resource = resourceHelper.find('server':serverId)
             } else if (serviceId) {
