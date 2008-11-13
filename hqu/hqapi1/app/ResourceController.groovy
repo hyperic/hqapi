@@ -41,10 +41,30 @@ class ResourceController extends ApiController {
         }
     }
 
+    // TODO: Implement
     def syncPlatform(params) {
-        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+        renderXml() {
+            out << SyncPlatformResponse() {
+                out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
+            }
+        }
+    }
 
-        for (xmlEsc in syncRequest['Platform']) {
+    // TODO: Implement
+    def syncServer(params) {
+        renderXml() {
+            out << CreateResourceResponse() {
+                out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
+            }
+        }
+    }
+
+    // TODO: Implement
+    def syncService(params) {
+        renderXml() {
+            out << CreateResourceResponse() {
+                out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
+            }
         }
     }
 }

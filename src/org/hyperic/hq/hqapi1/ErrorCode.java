@@ -30,7 +30,13 @@ public enum ErrorCode {
      * The current user does not have permission for this operation.
      */
     PERMISSION_DENIED("PermissionDenied",
-                      "The current user does not have permission for this operation");
+                      "The current user does not have permission for this operation"),
+
+    /**
+     * The requested API is not implemented.
+     */
+    NOT_IMPLEMENTED("NotImplemented",
+                    "The requested API is not available");
 
     private final String _errorCode;
     private final String _reasonText;

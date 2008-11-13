@@ -27,7 +27,8 @@ import org.hyperic.hq.hqapi1.types.SyncPlatformResponse;
  * A Resource is an instance of a prototype:
  *    ex:  google.com port 80 check,  Local Tomcat Instance   
  */
-public class ResourceApi extends BaseApi { 
+public class ResourceApi extends BaseApi {
+    
     ResourceApi(HQConnection conn) {
         super(conn);
     }
@@ -90,11 +91,11 @@ public class ResourceApi extends BaseApi {
      * 
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public CreateResourceResponse createPlatform(Agent agent,
-                                                 ResourcePrototype type,
-                                                 String name,
-                                                 String fqdn,
-                                                 Map configs)
+    public SyncPlatformResponse createPlatform(Agent agent,
+                                               ResourcePrototype type,
+                                               String name,
+                                               String fqdn,
+                                               Map configs)
         throws IOException
     {        
         Platform plat = new Platform();
@@ -102,9 +103,9 @@ public class ResourceApi extends BaseApi {
         plat.setAgent(agent);
         plat.setName(name);
         plat.setFqdn(fqdn);
-        
-        for (Iterator it = configs.entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) it.next();
+
+        for (Object o : configs.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
             Config config = new Config();
             config.setKey(entry.getKey().toString());
             config.setValue(entry.getValue().toString());
@@ -113,7 +114,7 @@ public class ResourceApi extends BaseApi {
         SyncPlatformRequest req = new SyncPlatformRequest();
         req.setPlatform(plat);
         return doPost("/hqu/hqapi1/resource/syncPlatform.hqu", req,
-                      CreateResourceResponse.class);
+                      SyncPlatformResponse.class);
     }
 
     /**
@@ -138,7 +139,8 @@ public class ResourceApi extends BaseApi {
                                                Map config)
         throws IOException
     {
-        return null;
+        return doPost("/hqu/hqapi1/resource/syncServer.hqu", null,
+                      CreateResourceResponse.class);
     }
 
     /**
@@ -161,6 +163,7 @@ public class ResourceApi extends BaseApi {
                                                 Map config)
         throws IOException
     {
-        return null;
+        return doPost("/hqu/hqapi1/resource/syncService.hqu", null,
+                      CreateResourceResponse.class);
     }
 }
