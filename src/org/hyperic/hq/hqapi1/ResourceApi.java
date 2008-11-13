@@ -162,7 +162,7 @@ public class ResourceApi extends BaseApi {
      * @param id The resource id to look up.
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
-     * the created Resource is returned via
+     * the Resource is returned via
      * {@link org.hyperic.hq.hqapi1.types.GetResourceResponse#getResource()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
@@ -174,5 +174,26 @@ public class ResourceApi extends BaseApi {
         params.put("id", id.toString());
         return doGet("/hqu/hqapi1/resource/get.hqu", params, 
                      GetResourceResponse.class);
+    }
+
+    /**
+     * Find the platform {@link Resource}s serviced by the given @{link Agent}.
+     *
+     * @param agent The {@link Agent} to query.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the list of Resources are returned via
+     * {@link org.hyperic.hq.hqapi1.types.FindResourcesResponse#getResource()}.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.     *
+     *
+     */
+    public FindResourcesResponse findResources(Agent agent)
+        throws IOException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("agentId", Integer.toString(agent.getId()));
+        return doGet("/hqu/hqapi1/resource/find.hqu", params,
+                     FindResourcesResponse.class);
     }
 }

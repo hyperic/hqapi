@@ -72,7 +72,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="GetResourcesResponse">
+    <xs:element name="FindResourcesResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">

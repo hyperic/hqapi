@@ -1,6 +1,3 @@
-import org.hyperic.hq.hqu.rendit.BaseController
-
-import org.hyperic.hq.authz.shared.PermissionException
 import org.hyperic.hq.hqapi1.ErrorCode;
 
 class ResourceController extends ApiController {
@@ -9,12 +6,12 @@ class ResourceController extends ApiController {
         { doc ->
             Resource(id : r.id,
                      name : r.name,
-                     description : r.description)
-
-            r.getConfig().each { k, v ->
-                if (v.type.equals("configResponse")) {
-                    ResourceConfig(key: k, value: v.value)
-                }
+                     description : r.description) {
+                r.getConfig().each { k, v ->
+                    if (v.type.equals("configResponse")) {
+                        ResourceConfig(key: k, value: v.value)
+                    }
+                }                
             }
         }
     }
@@ -99,7 +96,7 @@ class ResourceController extends ApiController {
                 //XXX: ResourceHelper needs some work here..
                 try {
                     resource.name // Check the object really exists
-
+                    resource.entityId // Check the object is an appdef object
                 } catch (Throwable t) {
                     failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
                 }
@@ -113,6 +110,38 @@ class ResourceController extends ApiController {
                 } else {
                     out << getSuccessXML()
                     out << getResourceXML(resource)
+                }
+            }
+        }
+    }
+
+    def find(params) {
+        def agentId = params.getOne("agentId")?.toInteger()
+
+        def resources = []
+        def failureXml
+        
+        if (!agentId) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+        } else {
+            def agent = agentHelper.getAgent(agentId)
+            if (!agent) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+            } else {
+                def platforms = agent.platforms
+                resources = platforms*.resource
+            }
+        }
+
+        renderXml() {
+            out << FindResourcesResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    for (resource in resources) {
+                        out << getResourceXML(resource)
+                    }
                 }
             }
         }
