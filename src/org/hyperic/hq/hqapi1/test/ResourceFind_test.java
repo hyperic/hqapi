@@ -3,16 +3,10 @@ package org.hyperic.hq.hqapi1.test;
 import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.types.*;
 
-public class ResourceFind_test extends HQApiTestBase {
+public class ResourceFind_test extends ResourceTestBase {
 
     public ResourceFind_test(String name) {
         super(name);
-    }
-
-    private void validateResource(Resource r) {
-        assertNotNull(r);
-        assertNotNull(r.getId());
-        assertNotNull(r.getName());
     }
 
     public void testFindByAgent() throws Exception {

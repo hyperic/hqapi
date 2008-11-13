@@ -6,7 +6,7 @@ import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 
-public class ResourceGet_test extends HQApiTestBase {
+public class ResourceGet_test extends ResourceTestBase {
 
     public ResourceGet_test(String name) {
         super(name);
@@ -45,10 +45,7 @@ public class ResourceGet_test extends HQApiTestBase {
             GetResourceResponse getResponse = api.getResource(rid);
             hqAssertSuccess(getResponse);
             Resource resource = getResponse.getResource();
-            assertNotNull(resource);
-            assertTrue("Invalid resource id " + r.getId(),
-                       r.getId() > 0);
-            assertNotNull(resource.getName());
+            validateResource(resource);
         }
     }
 
@@ -62,6 +59,7 @@ public class ResourceGet_test extends HQApiTestBase {
 
         GetResourceResponse resp = api.getResourceByPlatform(ID_10001);
         hqAssertSuccess(resp);
+        validateResource(resp.getResource());
     }
 
     public void testGetResourceByInvalidPlatform() throws Exception {
@@ -78,6 +76,7 @@ public class ResourceGet_test extends HQApiTestBase {
 
         GetResourceResponse resp = api.getResourceByServer(ID_10001);
         hqAssertSuccess(resp);
+        validateResource(resp.getResource());
     }
 
     public void testGetResourceByInvalidServer() throws Exception {
@@ -94,6 +93,7 @@ public class ResourceGet_test extends HQApiTestBase {
 
         GetResourceResponse resp = api.getResourceByService(ID_10001);
         hqAssertSuccess(resp);
+        validateResource(resp.getResource());
     }
 
     public void testGetResourceByInvalidService() throws Exception {
