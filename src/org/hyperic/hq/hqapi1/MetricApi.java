@@ -269,23 +269,4 @@ public class MetricApi {
         return _conn.doGet(HQU_URI+"/setDefaultInterval.hqu", params,
             SetMetricDefaultIntervalResponse.class);
     }
-    
-    /**
-     * Set a {@link org.hyperic.hq.hqapi1.types.Metric} collection interval.
-     *
-     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
-     * metric's collection interval was successfully updated.
-     *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes may be returned:
-     *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
-     * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
-     * @throws IOException If a network error occurs while making the request.
-    public PumpDataResponse pumpData(List<DataPoint> pts) {
-        return null;
-    }
-     */
-    
 }
