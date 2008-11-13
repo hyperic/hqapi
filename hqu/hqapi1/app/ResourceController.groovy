@@ -79,20 +79,27 @@ class ResourceController extends ApiController {
 
     def get(params) {
         def id = params.getOne("id")?.toInteger()
-        def resource = resourceHelper.findById(id)
 
+        def resource
         def failureXml
-        if (!resource) {
-            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+        if (!id) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
-            //XXX: Need to add get() to ResourceHelper. Catch lazy initialization
-            //     errors.
-            try {
-                resource.name
-            } catch (Throwable t) {
+            resource = resourceHelper.findById(id)
+
+            if (!resource) {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+            } else {
+                //XXX: Need to add get() to ResourceHelper. Catch lazy initialization
+                //     errors.
+                try {
+                    resource.name
+                } catch (Throwable t) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                }
             }
         }
+
 
         renderXml() {
             out << GetResourceResponse() {
