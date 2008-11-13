@@ -302,7 +302,7 @@ class RoleController extends ApiController {
             try {
                 existing.remove(user)
             } catch (PermissionException e) {
-                log.error("Permission denied [${user.name}]", e)
+                log.debug("Permission denied [${user.name}]", e)
                 failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
             } catch (Exception e) {
                 log.error("UnexpectedError: " + e.getMessage(), e)
