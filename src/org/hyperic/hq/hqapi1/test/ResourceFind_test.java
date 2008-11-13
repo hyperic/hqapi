@@ -30,6 +30,19 @@ public class ResourceFind_test extends ResourceTestBase {
         }
     }
 
+    public void testFindByInvalidAgent() throws Exception {
+
+        Agent a = new Agent();
+        a.setId(Integer.MAX_VALUE);
+        a.setAddress("1.2.3.4");
+        a.setPort(80);
+        a.setVersion("4.0");
+
+        ResourceApi api = getApi().getResourceApi();
+        FindResourcesResponse resp = api.findResources(a);
+        hqAssertFailureObjectNotFound(resp);
+    }
+
     public void testFindByPrototype() throws Exception {
         final String TYPE = "CPU";
         ResourceApi api = getApi().getResourceApi();
@@ -51,6 +64,16 @@ public class ResourceFind_test extends ResourceTestBase {
         for (Resource r : resp.getResource()) {
             validateResource(r);
         }
+    }
+
+    public void testFindByInvalidPrototype() throws Exception {
+        final String INVALID_TYPE = "Non-existant type";
+
+        ResourceApi api = getApi().getResourceApi();
+
+        GetResourcePrototypeResponse protoResponse =
+            api.getResourcePrototype(INVALID_TYPE);
+        hqAssertFailureObjectNotFound(protoResponse);
     }
 
     public void testFindChildren() throws Exception {
