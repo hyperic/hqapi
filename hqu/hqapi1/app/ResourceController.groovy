@@ -129,11 +129,12 @@ class ResourceController extends ApiController {
     def find(params) {
         def agentId = params.getOne("agentId")?.toInteger()
         def prototype = params.getOne("prototype")
+        def childrenOfId = params.getOne("childrenOfId")?.toInteger()
 
         def resources = []
         def failureXml
         
-        if (!agentId && !prototype) {
+        if (!agentId && !prototype && !childrenOfId) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             if (agentId) {
@@ -146,6 +147,22 @@ class ResourceController extends ApiController {
                 }
             } else if (prototype) {
                 resources = resourceHelper.find('byPrototype': prototype)
+            } else if (childrenOfId) {
+                def resource = resourceHelper.findById(childrenOfId)
+
+                if (!resource) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                } else {
+                    //XXX: ResourceHelper needs some work here..
+                    try {
+                        resource.name // Check the object really exists
+                        resource.entityId // Check the object is an appdef object
+                    } catch (Throwable t) {
+                        failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                    }
+
+                    resources = resource.getViewableChildren(user)
+                }
             } else {
                 // Shouldn't happen
                 failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)

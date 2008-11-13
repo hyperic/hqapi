@@ -11,14 +11,13 @@ public class ResourceFind_test extends ResourceTestBase {
 
     public void testFindByAgent() throws Exception {
 
-        ResourceApi api = getApi().getResourceApi();
-
         Agent a = getLocalAgent();
         if (a == null) {
             getLog().warn("No local agent found, skipping test.");
             return;
         }
-
+        
+        ResourceApi api = getApi().getResourceApi();
         FindResourcesResponse resp = api.findResources(a);
         hqAssertSuccess(resp);
 
@@ -51,6 +50,35 @@ public class ResourceFind_test extends ResourceTestBase {
 
         for (Resource r : resp.getResource()) {
             validateResource(r);
+        }
+    }
+
+    public void testFindChildren() throws Exception {
+
+        Agent a = getLocalAgent();
+        if (a == null) {
+            getLog().warn("No local agent found, skipping test.");
+            return;
+        }
+
+        ResourceApi api = getApi().getResourceApi();
+        FindResourcesResponse resp = api.findResources(a);
+        hqAssertSuccess(resp);
+
+        // This test assumes if you have a local agent that is pingable that
+        // there will be at least one platform servicing it.
+        assertTrue("Found 0 platform resources for agent " + a.getId(),
+                   resp.getResource().size() > 0);
+        for (Resource r : resp.getResource()) {
+            // For each platform resource, loop through it's viewable children.
+            validateResource(r);
+
+            FindResourcesResponse childrenResponse = api.findResourceChildren(r);
+            hqAssertSuccess(childrenResponse);
+
+            for (Resource child : childrenResponse.getResource()) {
+                validateResource(r);
+            }
         }
     }
 }

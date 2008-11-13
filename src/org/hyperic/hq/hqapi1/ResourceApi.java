@@ -258,7 +258,8 @@ public class ResourceApi extends BaseApi {
     }
 
     /**
-     * Find @{link Resources}s of the given {@link org.hyperic.hq.hqapi1.types.ResourcePrototype}.
+     * Find {@link org.hyperic.hq.hqapi1.types.Resource}s of the
+     * given {@link org.hyperic.hq.hqapi1.types.ResourcePrototype}.
      *
      * @param pt The {@link ResourcePrototype} to search for.
      *
@@ -273,6 +274,27 @@ public class ResourceApi extends BaseApi {
     {
         Map<String,String> params = new HashMap<String, String>();
         params.put("prototype", pt.getName());
+        return doGet("/hqu/hqapi1/resource/find.hqu", params,
+                     FindResourcesResponse.class);
+    }
+
+    /**
+     * Find the child {@link org.hyperic.hq.hqapi1.types.Resource}s for the
+     * given {@link org.hyperic.hq.hqapi1.types.Resource}.
+     *
+     * @param r The {@link org.hyperic.hq.hqapi1.types.Resource} to search for children.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the list of Resources are returned via
+     * {@link org.hyperic.hq.hqapi1.types.FindResourcesResponse#getResource()}.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public FindResourcesResponse findResourceChildren(Resource r)
+        throws IOException
+    {
+        Map<String,String> params = new HashMap<String, String>();
+        params.put("childrenOfId", Integer.toString(r.getId()));
         return doGet("/hqu/hqapi1/resource/find.hqu", params,
                      FindResourcesResponse.class);
     }
