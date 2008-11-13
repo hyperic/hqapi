@@ -15,24 +15,5 @@ public class MetricEnable_test extends HQApiTestBase {
     }
     
     public void testEnableMetric() throws Exception {
-/**
-        MetricApi api = getApi().getMetricApi();
-        EnableMetricResponse eResp = api.enableMetric(_metricId, 10l);
-        hqAssertSuccess(eResp);
-
-        GetMetricResponse gResp = api.getMetric(_metricId);
-        hqAssertSuccess(gResp);
-        Metric metric = gResp.getMetric();
-        assertTrue(metric.isEnabled());
-
-        DisableMetricResponse dResp = api.disableMetric(_metricId);
-        hqAssertSuccess(dResp);
-
-        gResp = api.getMetric(_metricId);
-        hqAssertSuccess(gResp);
-        metric = gResp.getMetric();
-        assertTrue(!metric.isEnabled());
-*/
     }
-
 }
