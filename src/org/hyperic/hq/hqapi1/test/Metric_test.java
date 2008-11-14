@@ -38,6 +38,9 @@ public class Metric_test extends MetricTestBase {
         ListMetricResponse resp = api.listMetrics(r);
         hqAssertSuccess(resp);
 
+        assertFalse("Resource " + r.getName() + " has no metrics",
+                   resp.getMetric().size() == 0);
+
         for (Metric m : resp.getMetric()) {
             GetMetricResponse metricResponse = api.getMetric(m.getId());
             hqAssertSuccess(metricResponse);
@@ -56,33 +59,31 @@ public class Metric_test extends MetricTestBase {
         ListMetricResponse resp = api.listMetrics(r);
         hqAssertSuccess(resp);
 
-        // Disable all
-        for (Metric m : resp.getMetric()) {
-            DisableMetricResponse disableMetricResponse = api.disableMetric(m);
-            hqAssertSuccess(disableMetricResponse);
-        }
+        assertFalse("Resource " + r.getName() + " has no metrics",
+                   resp.getMetric().size() == 0);
+
+        Metric m = resp.getMetric().get(0);
+
+        // Disable
+        DisableMetricResponse disableMetricResponse = api.disableMetric(m);
+        hqAssertSuccess(disableMetricResponse);
 
         // Verify
-        for (Metric m : resp.getMetric()) {
-            GetMetricResponse metricResponse = api.getMetric(m.getId());
-            hqAssertSuccess(metricResponse);
-            assertFalse("Metric id " + m.getId() + " not disabled",
-                        metricResponse.getMetric().isEnabled());
-        }
+        GetMetricResponse metricResponse = api.getMetric(m.getId());
+        hqAssertSuccess(metricResponse);
+        assertFalse("Metric id " + m.getId() + " not disabled",
+                     metricResponse.getMetric().isEnabled());
 
-        // Enable all
-        for (Metric m : resp.getMetric()) {
-            EnableMetricResponse enableResponse =
-                    api.enableMetric(m, m.getMetricTemplate().getDefaultInterval());
-            hqAssertSuccess(enableResponse);
-        }
+        // Enable
+        EnableMetricResponse enableResponse =
+                api.enableMetric(m, m.getMetricTemplate().getDefaultInterval());
+        hqAssertSuccess(enableResponse);
 
-        for (Metric m : resp.getMetric()) {
-            GetMetricResponse metricResponse = api.getMetric(m.getId());
-            hqAssertSuccess(metricResponse);
-            assertTrue("Metric id " + m.getId() + " not enabled",
-                       metricResponse.getMetric().isEnabled());
-        }
+        // Verify
+        metricResponse = api.getMetric(m.getId());
+        hqAssertSuccess(metricResponse);
+        assertTrue("Metric id " + m.getId() + " not enabled",
+                   metricResponse.getMetric().isEnabled());
     }
 
     public void testMetricSetInterval() throws Exception {
@@ -96,35 +97,32 @@ public class Metric_test extends MetricTestBase {
         MetricApi api = getApi().getMetricApi();
         ListMetricResponse resp = api.listMetrics(r);
         hqAssertSuccess(resp);
+        assertFalse("Resource " + r.getName() + " has no metrics",
+                   resp.getMetric().size() == 0);
+
+        Metric m = resp.getMetric().get(0);
 
         final long INTERVAL = 60000;
+
         // Set new interval
-        for (Metric m : resp.getMetric()) {
-            SetMetricIntervalResponse intervalResp = api.setInterval(m, INTERVAL);
-            hqAssertSuccess(intervalResp);
-        }
+        SetMetricIntervalResponse intervalResp = api.setInterval(m, INTERVAL);
+        hqAssertSuccess(intervalResp);
+
 
         // Validate
-        for (Metric m : resp.getMetric()) {
-            GetMetricResponse metricResponse = api.getMetric(m.getId());
-            hqAssertSuccess(metricResponse);
-            assertEquals(INTERVAL, metricResponse.getMetric().getInterval());
-        }
+        GetMetricResponse metricResponse = api.getMetric(m.getId());
+        hqAssertSuccess(metricResponse);
+        assertEquals(INTERVAL, metricResponse.getMetric().getInterval());
 
         // Reset
-        for (Metric m : resp.getMetric()) {
-            SetMetricIntervalResponse intervalResponse =
-                    api.setInterval(m, m.getMetricTemplate().getDefaultInterval());
-            hqAssertSuccess(intervalResponse);
-        }
+        intervalResp = api.setInterval(m, m.getMetricTemplate().getDefaultInterval());
+        hqAssertSuccess(intervalResp);
 
         // Validate
-        for (Metric m : resp.getMetric()) {
-            GetMetricResponse metricResponse = api.getMetric(m.getId());
-            hqAssertSuccess(metricResponse);
-            assertEquals(metricResponse.getMetric().getInterval(),
-                         metricResponse.getMetric().getMetricTemplate().getDefaultInterval());
-        }
+        metricResponse = api.getMetric(m.getId());
+        hqAssertSuccess(metricResponse);
+        assertEquals(metricResponse.getMetric().getInterval(),
+                     metricResponse.getMetric().getMetricTemplate().getDefaultInterval());
     }
 
     public void testMetricSetInvalidInterval() throws Exception {
