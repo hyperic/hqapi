@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 /**
  * The Hyperic HQ Autodiscovery API.
- *
+ * <br><br>
  * This class provides access to the auto discovery queue.  Each of the
  * methods in this class return {@link org.hyperic.hq.hqapi1.types.Response}
  * objects that wrap the result of the method with a

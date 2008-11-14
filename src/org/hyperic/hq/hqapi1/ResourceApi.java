@@ -19,13 +19,24 @@ import org.hyperic.hq.hqapi1.types.SyncPlatformRequest;
 import org.hyperic.hq.hqapi1.types.SyncPlatformResponse;
 
 /**
- * The ResourceApi deals with {@link ResourcePrototype}s and {@link Resource}s.
- *
- * A ResourcePrototype is a class of Resource
- *    ex:  Linux, OS X, FileServer File, Nagios Check
- *
- * A Resource is an instance of a prototype:
- *    ex:  google.com port 80 check,  Local Tomcat Instance   
+ * The Hyperic HQ Resource API.
+ * <br><br>
+ * This class provides access to the {@link org.hyperic.hq.hqapi1.types.Resource}s
+ * and {@link ResourcePrototype}s within the HQ system.  Each of the methods in
+ * this class return
+ * {@link org.hyperic.hq.hqapi1.types.Response} objects that wrap the result
+ * of the method with a
+ * {@link org.hyperic.hq.hqapi1.types.ResponseStatus} and a
+ * {@link org.hyperic.hq.hqapi1.types.ServiceError} that indicates the error
+ * if the response status is {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE}.
+ * <br><br>
+ * A {@link org.hyperic.hq.hqapi1.types.ResourcePrototype} is a class of
+ * {@link org.hyperic.hq.hqapi1.types.Resource}.  For example, Linux, OS X,
+ * FileServer File, Nagios Check
+ * <br><br>
+ * A {@link org.hyperic.hq.hqapi1.types.Resource} is an instance of a
+ * {@link org.hyperic.hq.hqapi1.types.ResourcePrototype}.  For example,
+ * google.com port 80 check, Local Tomcat Instance   
  */
 public class ResourceApi extends BaseApi {
     

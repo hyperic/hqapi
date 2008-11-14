@@ -18,14 +18,14 @@ import java.util.List;
 
 /**
  * The Hyperic HQ User API.
- *
- * This class provides access to the users within the HQ system.  Each of the
- * methods in this class return {@link org.hyperic.hq.hqapi1.types.Response}
- * objects that wrap the result of the method with a
+ * <br><br>
+ * This class provides access to the {@link org.hyperic.hq.hqapi1.types.User}s
+ * within the HQ system.  Each of the methods in this class return
+ * {@link org.hyperic.hq.hqapi1.types.Response} objects that wrap the result
+ * of the method with a
  * {@link org.hyperic.hq.hqapi1.types.ResponseStatus} and a
  * {@link org.hyperic.hq.hqapi1.types.ServiceError} that indicates the error
  * if the response status is {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE}.
- *
  */
 public class UserApi {
 

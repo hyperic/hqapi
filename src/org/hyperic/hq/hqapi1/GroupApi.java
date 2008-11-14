@@ -11,9 +11,18 @@ import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.RemoveResourceFromGroupResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 
+/**
+ * The Hyperic HQ Group API.
+ * <br><br>
+ * This class provides access to the {@link org.hyperic.hq.hqapi1.types.Group}s
+ * within the HQ system.  Each of the methods in this class return
+ * {@link org.hyperic.hq.hqapi1.types.Response} objects that wrap the result
+ * of the method with a
+ * {@link org.hyperic.hq.hqapi1.types.ResponseStatus} and a
+ * {@link org.hyperic.hq.hqapi1.types.ServiceError} that indicates the error
+ * if the response status is {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE}.
+ */
 public class GroupApi {
-    
-    private static final String HQU_URI = "/hqu/hqapi1/group";
 
     private final HQConnection _conn;
 
@@ -28,16 +37,6 @@ public class GroupApi {
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * group was created successfully.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
-     *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>InvalidParameters - All the required parameters in the Group object were not supplied.
-     *   <li>ObjectExists - The group by the given name already exists.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public CreateGroupResponse createGroup(Group group)
@@ -53,15 +52,6 @@ public class GroupApi {
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * group was deleted successfully.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
-     *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>ObjectNotFound - The given group was not found in the system.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public DeleteGroupResponse deleteGroup(Group group)
@@ -73,23 +63,16 @@ public class GroupApi {
     /**
      * Delete a {@link Resource} from a {@link Group}
      *
-     * @param group The group to delete the resource from.
+     * @param group The {@link Group} to delete the resource from.
+     * @param resource The {@link Resource} to remove.
+     *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * resource was successfully removed from the group.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
-     *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>ObjectNotFound - The given group or resource was not found in the system.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public RemoveResourceFromGroupResponse removeResource(Group group,
-                                                          Resource res)
+                                                          Resource resource)
         throws IOException
     {
         return null;
@@ -101,14 +84,6 @@ public class GroupApi {
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if 
      * all the groups were successfully retrieved from the server.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
-     *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public GetGroupsResponse listGroups()
@@ -120,18 +95,11 @@ public class GroupApi {
     /**
      * List all the Resources associated with a {@link Group}
      *
+     * @param group The {@link org.hyperic.hq.hqapi1.types.Group} to query.
+     *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if all
-     * the resources were successfully retrieved from the server
+     * the resources were successfully retrieved.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
-     *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>ObjectNotFound - The given group was not found in the system.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public GetResourcesInGroupResponse listResources(Group group)
@@ -143,21 +111,15 @@ public class GroupApi {
     /**
      * Add the specified {@link Resource} to the {@link Group}
      *
+     * @param group The {@link org.hyperic.hq.hqapi1.types.Group} to operate on.
+     * @param resource The {@link org.hyperic.hq.hqapi1.types.Resource} to add.
+     *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * resource was successfully added to the group.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
-     *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>ObjectNotFound - The given group or resource was not found in the system.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
-    public AddResourceToGroupResponse addResource(Group group, Resource res)
+    public AddResourceToGroupResponse addResource(Group group, Resource resource)
         throws IOException
     {
         return null;

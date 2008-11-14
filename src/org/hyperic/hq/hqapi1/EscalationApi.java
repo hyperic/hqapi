@@ -20,13 +20,12 @@ import org.hyperic.hq.hqapi1.types.UpdateEscalationResponse;
 
 /**
  * The Hyperic HQ Escalation API.
- *
+ * <br><br>
  * This class provides access to the escalations within the HQ system.  Each of
  * the methods in this class return response objects that wrap the result of the
  * method with a {@link org.hyperic.hq.hqapi1.types.ResponseStatus} and a
  * {@link org.hyperic.hq.hqapi1.types.ServiceError} that indicates the error
  * if the response status is {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE}.
- *
  */
 public class EscalationApi {
 
