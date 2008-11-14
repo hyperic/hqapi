@@ -41,6 +41,10 @@ class MetricController extends ApiController {
         }
     }
 
+    private validInterval(long interval) {
+        return interval > 0 && interval%60000 == 0
+    }
+
     def disableMetric(params) {
         def failureXml
         def metricId = params.getOne("id")?.toInteger()
@@ -67,11 +71,11 @@ class MetricController extends ApiController {
     def listMetrics(params) {
         def failureXml
         def metrics
-        def resourceId = params.getOne("resourceId")?.toInteger()
+        def resourceId = params.getOne("resourceId")?.toInteger()\
+
         if (!resourceId) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
-        }
-        else {
+        } else {
             try {
                 def res = resourceHelper.findById(resourceId)
                 metrics = res.metrics
@@ -98,6 +102,7 @@ class MetricController extends ApiController {
         def failureXml
         def metric
         def metricId = params.getOne("id")?.toInteger()
+
         if (!metricId) {
             log.error("Invalid Params: no metric id")
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
@@ -108,6 +113,7 @@ class MetricController extends ApiController {
             log.error("UnexpectedError: " + e.getMessage(), e);
             failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
         }
+
         renderXml() {
             GetMetricResponse() {
                 if (failureXml) {
@@ -121,19 +127,26 @@ class MetricController extends ApiController {
     }
 
     def enableMetric(params) {
-        def failureXml
+        def failureXml = null
         def metricId = params.getOne("id")?.toInteger()
-        def interval = params.getOne("interval")?.toInteger()
+        def interval = params.getOne("interval")?.toLong()
         if (!metricId || !interval) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         }
 
-        try {
-            metricHelper.enableMeasurement(metricId, interval);
-        } catch (Exception e) {
-            log.error("UnexpectedError: " + e.getMessage(), e);
-            failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+        if (!validInterval(interval)) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS);
         }
+
+        if (!failureXml) {
+            try {
+                metricHelper.enableMeasurement(metricId, interval);
+            } catch (Exception e) {
+                log.error("UnexpectedError: " + e.getMessage(), e);
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+            }
+        }
+
         renderXml() {
             EnableMetricResponse() {
                 if (failureXml) {
@@ -146,19 +159,27 @@ class MetricController extends ApiController {
     }
 
     def setInterval(params) {
-        def failureXml
+        def failureXml = null
         def metricId = params.getOne("id")?.toInteger()
         def interval = params.getOne("interval")?.toInteger()
+
         if (!metricId || !interval) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         }
 
-        try {
-            metricHelper.updateMeasurementInterval(metricId, interval);
-        } catch (Exception e) {
-            log.error("UnexpectedError: " + e.getMessage(), e);
-            failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+        if (!validInterval(interval)) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS);
         }
+
+        if (!failureXml) {
+            try {
+                metricHelper.updateMeasurementInterval(metricId, interval);
+            } catch (Exception e) {
+                log.error("UnexpectedError: " + e.getMessage(), e);
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+            }
+        }
+
         renderXml() {
             SetMetricIntervalResponse() {
                 if (failureXml) {
@@ -246,19 +267,26 @@ class MetricController extends ApiController {
     }
 
     def setDefaultInterval(params) {
-        def failureXml
+        def failureXml = null
         def templateId = params.getOne("templateId")?.toInteger()
         def interval = params.getOne("interval")?.toInteger()
         if (!templateId || !interval) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         }
 
-        try {
-            metricHelper.setDefaultInterval(templateId, interval);
-        } catch (Exception e) {
-            log.error("UnexpectedError: " + e.getMessage(), e);
-            failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+        if (!validInterval(interval)) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS);
         }
+
+        if (!failureXml) {
+            try {
+                metricHelper.setDefaultInterval(templateId, interval);
+            } catch (Exception e) {
+                log.error("UnexpectedError: " + e.getMessage(), e);
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+            }
+        }
+        
         renderXml() {
             SetMetricDefaultIntervalResponse() {
                 if (failureXml) {

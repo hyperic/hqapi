@@ -39,7 +39,6 @@ public class Metric_test extends MetricTestBase {
         hqAssertSuccess(resp);
 
         for (Metric m : resp.getMetric()) {
-
             GetMetricResponse metricResponse = api.getMetric(m.getId());
             hqAssertSuccess(metricResponse);
             validateMetric(metricResponse.getMetric());  
@@ -73,8 +72,8 @@ public class Metric_test extends MetricTestBase {
 
         // Enable all
         for (Metric m : resp.getMetric()) {
-            EnableMetricResponse enableResponse = api.enableMetric(m,
-                                                                   m.getMetricTemplate().getDefaultInterval()/60000);
+            EnableMetricResponse enableResponse =
+                    api.enableMetric(m, m.getMetricTemplate().getDefaultInterval());
             hqAssertSuccess(enableResponse);
         }
 
@@ -114,7 +113,8 @@ public class Metric_test extends MetricTestBase {
 
         // Reset
         for (Metric m : resp.getMetric()) {
-            SetMetricIntervalResponse intervalResponse = api.setInterval(m, m.getMetricTemplate().getDefaultInterval());
+            SetMetricIntervalResponse intervalResponse =
+                    api.setInterval(m, m.getMetricTemplate().getDefaultInterval());
             hqAssertSuccess(intervalResponse);
         }
 
@@ -124,6 +124,31 @@ public class Metric_test extends MetricTestBase {
             hqAssertSuccess(metricResponse);
             assertEquals(metricResponse.getMetric().getInterval(),
                          metricResponse.getMetric().getMetricTemplate().getDefaultInterval());
+        }
+    }
+
+    public void testMetricSetInvalidInterval() throws Exception {
+
+        Resource r = getResource();
+        if (r == null) {
+            getLog().error("Unable to find the local platform, skipping test");
+            return;
+        }
+
+        MetricApi api = getApi().getMetricApi();
+        ListMetricResponse resp = api.listMetrics(r);
+        hqAssertSuccess(resp);
+        assertFalse("Resource " + r.getName() + " has no metrics",
+                   resp.getMetric().size() == 0);
+        
+        Metric m = resp.getMetric().get(0);
+
+        final long[] BAD_INTERVALS = { -1, 0, 1, 60, 60001 };
+
+        for (long interval : BAD_INTERVALS) {
+            SetMetricIntervalResponse intervalResponse =
+                    api.setInterval(m, interval);
+            hqAssertFailureInvalidParameters(intervalResponse);
         }
     }
 }

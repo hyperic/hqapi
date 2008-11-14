@@ -79,7 +79,9 @@ public class MetricApi {
      * Enable a {@link org.hyperic.hq.hqapi1.types.Metric}.
      *
      * @param m The metric to enable.
-     * @param interval The interval for collection, in minutes.
+     * @param interval The interval for collection in milliseconds.  The
+     * interval must be set on 1 minute increments otherwise an invalid
+     * arguments error will be returned.
      * 
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * metric was successfully enabled.
@@ -100,7 +102,9 @@ public class MetricApi {
      * Set a {@link org.hyperic.hq.hqapi1.types.Metric} collection interval.
      *
      * @param m The metric to change the collection interval.
-     * @param interval The interval for collection in minutes.
+     * @param interval The interval for collection in milliseconds.  The
+     * interval must be set on 1 minute increments otherwise an invalid
+     * arguments error will be returned.
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * {@link org.hyperic.hq.hqapi1.types.Metric}s collection interval was
@@ -193,7 +197,9 @@ public class MetricApi {
      * Set a {@link org.hyperic.hq.hqapi1.types.Metric} collection interval.
      *
      * @param template The {@link org.hyperic.hq.hqapi1.types.MetricTemplate} to operate on
-     * @param interval The new interval, in minutes.
+     * @param interval The interval for collection in milliseconds.  The
+     * interval must be set on 1 minute increments otherwise an invalid
+     * arguments error will be returned.
      * 
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * metric template's default collection interval was successfully updated.
