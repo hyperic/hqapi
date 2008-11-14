@@ -43,8 +43,6 @@ public class RoleApi extends BaseApi {
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * a list of roles is returned.
      *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
     public GetRolesResponse getRoles()
@@ -62,9 +60,6 @@ public class RoleApi extends BaseApi {
      * the Role by the given name is returned via
      * {@link org.hyperic.hq.hqapi1.types.GetRoleResponse#getRole()}.
      *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
-     *
      * @throws IOException If a network error occurs while making the request.
      */
     public GetRoleResponse getRole(String name)
@@ -79,12 +74,10 @@ public class RoleApi extends BaseApi {
      * Get a {@link Role} by id.
      *
      * @param id The role id to look up.
+     *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the Role by the given id is returned via
      * {@link org.hyperic.hq.hqapi1.types.GetRoleResponse#getRole()}.
-     *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
      *
      * @throws IOException If a network error occurs while making the request.
      */
@@ -99,14 +92,11 @@ public class RoleApi extends BaseApi {
     /**
      * Create a {@link Role}.
      *
-     * @param role The role to create
+     * @param role The {@link org.hyperic.hq.hqapi1.types.Role} to create.
+     *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the Role by the given id is returned via
      * {@link org.hyperic.hq.hqapi1.types.CreateRoleResponse#getRole()}.
-     *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
-     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
      *
      * @throws IOException If a network error occurs while making the request.
      */
@@ -123,11 +113,9 @@ public class RoleApi extends BaseApi {
      * Delete a {@link Role}.
      *
      * @param id The role id to delete
+     *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if
      * the role was successfully removed.
-     *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
      *
      * @throws IOException If a network error occurs while making the request.
      */
@@ -143,13 +131,9 @@ public class RoleApi extends BaseApi {
      * Update a {@link Role}.
      *
      * @param role The role to update
+     *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if
      * the role was successfully updated.
-     *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
-     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_EXISTS
-     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED 
      *
      * @throws IOException If a network error occurs while making the request.
      */
@@ -165,6 +149,7 @@ public class RoleApi extends BaseApi {
      * Sync a List of {@link Role}s.
      *
      * @param roles The List of roles to sync.
+     *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if
      * the roles were successuflly synced.
      *
@@ -183,13 +168,9 @@ public class RoleApi extends BaseApi {
      *
      * @param role The role to add users for.
      * @param users The list of Users to add to the Role.
+     *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if
      * the users were sucessfully assigned to the role.
-     *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
-     * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
-     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
      *
      * @throws IOException If a network error occurs while making the request.
      */
@@ -206,12 +187,10 @@ public class RoleApi extends BaseApi {
      * Get the {@link User}s for the given {@link Role}.
      *
      * @param role The role to get users for.
+     * 
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
      * the list of users is returned via
      * {@link org.hyperic.hq.hqapi1.types.GetUsersResponse#getUser()}
-     *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
      *
      * @throws IOException If a network error occurs while making the request.
      */

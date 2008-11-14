@@ -37,12 +37,10 @@ public class UserApi extends BaseApi {
      * Get a {@link User} by name.
      *
      * @param name The user name to search for.
+     *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the User by the given name is returned via
      * {@link org.hyperic.hq.hqapi1.types.GetUserResponse#getUser()}.
-     *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
      *
      * @throws IOException If a network error occurs while making the request.
      */
@@ -58,12 +56,10 @@ public class UserApi extends BaseApi {
      * Get a {@link User} by id.
      *
      * @param id The user id to look up.
+     *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the User by the given id is returned via
      * {@link org.hyperic.hq.hqapi1.types.GetUserResponse#getUser()}.
-     *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
      *
      * @throws IOException If a network error occurs while making the request.
      */
@@ -81,8 +77,6 @@ public class UserApi extends BaseApi {
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * a list of Users is returned.
      *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     *
      * @throws IOException If a network error occurs while making the request.
      */
     public GetUsersResponse getUsers()
@@ -97,13 +91,10 @@ public class UserApi extends BaseApi {
      *
      * @param user The user to create.
      * @param password The password for this user.
+     *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
      * the created user is returned via
      * {@link org.hyperic.hq.hqapi1.types.CreateUserResponse#getUser()}.
-     *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
-     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_EXISTS
      *
      * @throws IOException If a network error occurs while making the request.
      */
@@ -132,9 +123,6 @@ public class UserApi extends BaseApi {
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * user was deleted successfully.
      *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
-     *
      * @throws IOException If a network error occurs while making the request.
      */
     public DeleteUserResponse deleteUser(Integer id)
@@ -151,12 +139,9 @@ public class UserApi extends BaseApi {
      * Update a {@link User}
      *
      * @param user The user to update.
+     *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * user was updated successfully.
-     *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
-     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
      *
      * @throws IOException If a network error occurs while making the request.
      */
@@ -173,12 +158,9 @@ public class UserApi extends BaseApi {
      * Sync a list of {@link User}s.
      *
      * @param users The list of users to sync.
+     *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * users were updated successfully.
-     *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
-     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
      *
      * @throws IOException If a network error occurs while making the request.
      */
@@ -199,11 +181,6 @@ public class UserApi extends BaseApi {
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * user's password was changed successfully.
-     *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
-     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
-     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
      *
      * @throws IOException If a network error occurs while making the request.
      */

@@ -30,9 +30,6 @@ public class AutodiscoveryApi extends BaseApi {
      * a list of {@link org.hyperic.hq.hqapi1.types.AIPlatform} objects is
      * returned via {@link org.hyperic.hq.hqapi1.types.GetQueueResponse#getAIPlatform()}
      *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
-     *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
     public GetQueueResponse getQueue()
@@ -50,9 +47,6 @@ public class AutodiscoveryApi extends BaseApi {
      * to approve.
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
      * if the platform was approved into the inventory.
-     *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#PERMISSION_DENIED
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */

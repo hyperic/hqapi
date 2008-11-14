@@ -39,19 +39,11 @@ public class EscalationApi {
      * Find a {@link org.hyperic.hq.hqapi1.types.Escalation} by ID.
      *
      * @param id The escalation ID to search for.
+     *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the Escalation by the given name is returned via
      * {@link org.hyperic.hq.hqapi1.types.GetEscalationResponse#getEscalation()}.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
-     *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>ObjectNotFound - The given escalation was not found.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public GetEscalationResponse getEscalation(Integer id)
@@ -66,19 +58,11 @@ public class EscalationApi {
      * Find a {@link org.hyperic.hq.hqapi1.types.Escalation} by name.
      *
      * @param name The escalation name to search for.
+     *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the Escalation by the given name is returned via
      * {@link org.hyperic.hq.hqapi1.types.GetEscalationResponse#getEscalation()}.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
-     *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>ObjectNotFound - The given escalation was not found.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public GetEscalationResponse getEscalation(String name)
@@ -93,17 +77,10 @@ public class EscalationApi {
      * Create an {@link Escalation}
      *
      * @param esc The escalation to create.
+     *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * escalation was created successfully.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
-     *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public CreateEscalationResponse createEscalation(Escalation esc)
@@ -119,17 +96,10 @@ public class EscalationApi {
      * Update the properties of an {@link Escalation}
      *
      * @param esc The escalation to update.
+     *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * escalation was updated successfully.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
-     *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public UpdateEscalationResponse updateEscalation(Escalation esc)
@@ -147,15 +117,6 @@ public class EscalationApi {
      * a collection of Escalations is returned via
      * {@link org.hyperic.hq.hqapi1.types.ListEscalationsResponse#getEscalation()}.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
-     *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>ObjectNotFound - The given escalation was not found.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public ListEscalationsResponse listEscalations()
@@ -168,17 +129,10 @@ public class EscalationApi {
      * Sync a collection of {@link Escalation}s by creating or updating
      *
      * @param escs The collections of escalations to sync.
+     *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * escalation was synchronized successfully.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
-     *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public SyncEscalationResponse syncEscalations(Collection<Escalation> escs)
@@ -192,19 +146,11 @@ public class EscalationApi {
     /**
      * Delete an {@link Escalation}
      *
-     * @param id The ID of the escalation to delete.
+     * @param id The id of the escalation to delete.
+     *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * escalation was deleted successfully.
      *
-     * On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE} the
-     * following error codes can be returned:
-     *
-     * <p>
-     * <ul>
-     *   <li>LoginFailure - The given username and password could not be validated.
-     *   <li>ObjectNotFound - The given escalation was not found in the system.
-     * </ul>
-     * </p>
      * @throws IOException If a network error occurs while making the request.
      */
     public DeleteEscalationResponse deleteEscalation(Integer id)
@@ -217,6 +163,7 @@ public class EscalationApi {
 
     /**
      * Create a new EmailAction
+     * 
      * @return an EmailAction
      */
     public FullEscalationAction createEmailAction() {
@@ -227,6 +174,7 @@ public class EscalationApi {
     
     /**
      * Create a new SuppressAction
+     *
      * @return a SuppressAction
      */
     public FullEscalationAction createSuppressAction() {
