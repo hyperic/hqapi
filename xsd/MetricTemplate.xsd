@@ -6,16 +6,16 @@
 
     <!-- Metric objects -->
     <xs:complexType name="MetricTemplate">
-        <xs:attribute name="id"       type="xs:int"/>
-        <xs:attribute name="name"     type="xs:string"/>
-        <xs:attribute name="alias"    type="xs:string"/>
-        <xs:attribute name="units"    type="xs:string"/>
-        <xs:attribute name="plugin"   type="xs:string"/>
-        <xs:attribute name="enabled"   type="xs:boolean"/>
-        <xs:attribute name="indicator" type="xs:boolean"/>
-        <xs:attribute name="defaultOn" type="xs:boolean"/>
-        <xs:attribute name="collectionType"  type="xs:string"/>
-        <xs:attribute name="defaultInterval" type="xs:int"/>
+        <xs:attribute name="id"              type="xs:int"     use="required"/>
+        <xs:attribute name="name"            type="xs:string"  use="required"/>
+        <xs:attribute name="alias"           type="xs:string"  use="required"/>
+        <xs:attribute name="units"           type="xs:string"  use="required"/>
+        <xs:attribute name="plugin"          type="xs:string"  use="required"/>
+        <xs:attribute name="enabled"         type="xs:boolean" use="required"/>
+        <xs:attribute name="indicator"       type="xs:boolean" use="required"/>
+        <xs:attribute name="defaultOn"       type="xs:boolean" use="required"/>
+        <xs:attribute name="collectionType"  type="xs:string"  use="required"/>
+        <xs:attribute name="defaultInterval" type="xs:long"    use="required"/>
     </xs:complexType>
 
     <!-- MetricTemplate Responses -->
