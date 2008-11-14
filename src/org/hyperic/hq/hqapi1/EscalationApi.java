@@ -27,12 +27,10 @@ import org.hyperic.hq.hqapi1.types.UpdateEscalationResponse;
  * {@link org.hyperic.hq.hqapi1.types.ServiceError} that indicates the error
  * if the response status is {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE}.
  */
-public class EscalationApi {
-
-    private HQConnection _connection;
+public class EscalationApi extends BaseApi {
 
     EscalationApi(HQConnection connection) {
-        _connection = connection;
+        super(connection);
     }
     
     /**
@@ -50,8 +48,7 @@ public class EscalationApi {
         throws IOException {
         Map<String, String> params = new HashMap<String, String>();
         params.put("id", String.valueOf(id));
-        return _connection.doGet("/hqu/hqapi1/escalation/get.hqu",
-                                 params, GetEscalationResponse.class);
+        return doGet("escalation/get.hqu", params, GetEscalationResponse.class);
     }
 
     /**
@@ -69,8 +66,8 @@ public class EscalationApi {
         throws IOException {
         Map<String, String> params = new HashMap<String, String>();
         params.put("name", name);
-        return _connection.doGet("/hqu/hqapi1/escalation/get.hqu",
-                                 params, GetEscalationResponse.class);
+        return doGet("escalation/get.hqu",
+                     params, GetEscalationResponse.class);
     }
     
     /**
@@ -88,8 +85,8 @@ public class EscalationApi {
         
         SyncEscalationsRequest req = new SyncEscalationsRequest();
         req.getEscalation().add(esc);
-        return _connection.doPost("/hqu/hqapi1/escalation/create.hqu", req,
-                                  CreateEscalationResponse.class);
+        return doPost("escalation/create.hqu", req,
+                      CreateEscalationResponse.class);
     }
 
     /**
@@ -106,8 +103,8 @@ public class EscalationApi {
         throws IOException {
         SyncEscalationsRequest req = new SyncEscalationsRequest();
         req.getEscalation().add(esc);
-        return _connection.doPost("/hqu/hqapi1/escalation/update.hqu",
-                                  req, UpdateEscalationResponse.class);
+        return doPost("escalation/update.hqu",
+                      req, UpdateEscalationResponse.class);
     }
 
     /**
@@ -121,8 +118,8 @@ public class EscalationApi {
      */
     public ListEscalationsResponse listEscalations()
         throws IOException {
-        return _connection.doGet("/hqu/hqapi1/escalation/list.hqu",
-                                 new HashMap(), ListEscalationsResponse.class);
+        return doGet("escalation/list.hqu", new HashMap<String,String>(),
+                     ListEscalationsResponse.class);
     }
     
     /**
@@ -139,8 +136,7 @@ public class EscalationApi {
         throws IOException {
         SyncEscalationsRequest req = new SyncEscalationsRequest();
         req.getEscalation().addAll(escs);
-        return _connection.doPost("/hqu/hqapi1/escalation/sync.hqu",
-                                  req, SyncEscalationResponse.class);
+        return doPost("escalation/sync.hqu", req, SyncEscalationResponse.class);
     }
 
     /**
@@ -157,8 +153,8 @@ public class EscalationApi {
         throws IOException {
         Map<String, String> params = new HashMap<String, String>();
         params.put("id", String.valueOf(id));
-        return _connection.doGet("/hqu/hqapi1/escalation/delete.hqu",
-                                 params, DeleteEscalationResponse.class);
+        return doGet("escalation/delete.hqu",
+                     params, DeleteEscalationResponse.class);
     }
 
     /**
