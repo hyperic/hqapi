@@ -106,8 +106,6 @@ public class HQApiTestBase  extends TestCase {
         }
 
         if (agent != null) {
-            _log.info("Found agent at " + agent.getAddress() + ":" +
-                      agent.getPort());
             PingAgentResponse pingResponse = api.pingAgent(agent);
             if (pingResponse.getStatus().equals(ResponseStatus.SUCCESS)) {
                 if (pingResponse.isUp()) {

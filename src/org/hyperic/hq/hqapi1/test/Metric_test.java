@@ -21,8 +21,6 @@ public class Metric_test extends MetricTestBase {
         ListMetricResponse resp = api.listMetrics(r);
         hqAssertSuccess(resp);
 
-        getLog().info("Found " + resp.getMetric().size() + " metrics for " +
-                      r.getName());
         for (Metric m : resp.getMetric()) {
             validateMetric(m);
         }
@@ -40,8 +38,6 @@ public class Metric_test extends MetricTestBase {
         ListMetricResponse resp = api.listMetrics(r);
         hqAssertSuccess(resp);
 
-        getLog().info("Found " + resp.getMetric().size() + " metrics for " +
-                      r.getName());
         for (Metric m : resp.getMetric()) {
 
             GetMetricResponse metricResponse = api.getMetric(m.getId());
@@ -60,9 +56,6 @@ public class Metric_test extends MetricTestBase {
         MetricApi api = getApi().getMetricApi();
         ListMetricResponse resp = api.listMetrics(r);
         hqAssertSuccess(resp);
-
-        getLog().info("Found " + resp.getMetric().size() + " metrics for " +
-                      r.getName());
 
         // Disable all
         for (Metric m : resp.getMetric()) {
@@ -104,9 +97,6 @@ public class Metric_test extends MetricTestBase {
         MetricApi api = getApi().getMetricApi();
         ListMetricResponse resp = api.listMetrics(r);
         hqAssertSuccess(resp);
-
-        getLog().info("Found " + resp.getMetric().size() + " metrics for " +
-                      r.getName());
 
         final long INTERVAL = 60000;
         // Set new interval
