@@ -1,6 +1,8 @@
 package org.hyperic.hq.hqapi1.test;
 
-import org.hyperic.hq.hqapi1.types.*;
+import org.hyperic.hq.hqapi1.types.Agent;
+import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.ResourceApi;
 
 import java.util.List;

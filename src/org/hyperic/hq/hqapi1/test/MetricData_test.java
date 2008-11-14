@@ -1,6 +1,10 @@
 package org.hyperic.hq.hqapi1.test;
 
-import org.hyperic.hq.hqapi1.types.*;
+import org.hyperic.hq.hqapi1.types.GetMetricDataResponse;
+import org.hyperic.hq.hqapi1.types.ListMetricResponse;
+import org.hyperic.hq.hqapi1.types.Metric;
+import org.hyperic.hq.hqapi1.types.MetricData;
+import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.MetricApi;
 
 public class MetricData_test extends MetricTestBase {

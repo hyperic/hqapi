@@ -8,9 +8,6 @@ import org.hyperic.hq.hqapi1.types.DeleteUserResponse;
 import org.hyperic.hq.hqapi1.types.UpdateUserResponse;
 import org.hyperic.hq.hqapi1.types.UpdateUserRequest;
 import org.hyperic.hq.hqapi1.types.SyncUsersResponse;
-import org.hyperic.hq.hqapi1.types.Role;
-import org.hyperic.hq.hqapi1.types.SetRolesResponse;
-import org.hyperic.hq.hqapi1.types.GetRolesResponse;
 import org.hyperic.hq.hqapi1.types.SyncUsersRequest;
 import org.hyperic.hq.hqapi1.types.ChangePasswordResponse;
 

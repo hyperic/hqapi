@@ -1,7 +1,11 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.ResourceApi;
-import org.hyperic.hq.hqapi1.types.*;
+import org.hyperic.hq.hqapi1.types.Agent;
+import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
+import org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 
 public class ResourceFind_test extends ResourceTestBase {
 

@@ -2,10 +2,21 @@ package org.hyperic.hq.hqapi1;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
-import org.hyperic.hq.hqapi1.types.*;
+import org.hyperic.hq.hqapi1.types.Agent;
+import org.hyperic.hq.hqapi1.types.Config;
+import org.hyperic.hq.hqapi1.types.CreateResourceResponse;
+import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
+import org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.GetResourceResponse;
+import org.hyperic.hq.hqapi1.types.ListResourcePrototypesResponse;
+import org.hyperic.hq.hqapi1.types.Platform;
+import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourcePrototype;
+import org.hyperic.hq.hqapi1.types.ResponseStatus;
+import org.hyperic.hq.hqapi1.types.SyncPlatformRequest;
+import org.hyperic.hq.hqapi1.types.SyncPlatformResponse;
 
 /**
  * The ResourceApi deals with {@link ResourcePrototype}s and {@link Resource}s.

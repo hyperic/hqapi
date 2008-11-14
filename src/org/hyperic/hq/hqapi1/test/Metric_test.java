@@ -1,7 +1,13 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.MetricApi;
-import org.hyperic.hq.hqapi1.types.*;
+import org.hyperic.hq.hqapi1.types.DisableMetricResponse;
+import org.hyperic.hq.hqapi1.types.EnableMetricResponse;
+import org.hyperic.hq.hqapi1.types.GetMetricResponse;
+import org.hyperic.hq.hqapi1.types.ListMetricResponse;
+import org.hyperic.hq.hqapi1.types.Metric;
+import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.SetMetricIntervalResponse;
 
 public class Metric_test extends MetricTestBase {
 

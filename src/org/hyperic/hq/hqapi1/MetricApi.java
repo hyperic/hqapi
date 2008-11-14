@@ -4,7 +4,19 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hyperic.hq.hqapi1.types.*;
+import org.hyperic.hq.hqapi1.types.DisableMetricResponse;
+import org.hyperic.hq.hqapi1.types.EnableMetricResponse;
+import org.hyperic.hq.hqapi1.types.GetMetricDataResponse;
+import org.hyperic.hq.hqapi1.types.GetMetricResponse;
+import org.hyperic.hq.hqapi1.types.GetMetricTemplateResponse;
+import org.hyperic.hq.hqapi1.types.ListMetricResponse;
+import org.hyperic.hq.hqapi1.types.Metric;
+import org.hyperic.hq.hqapi1.types.MetricTemplate;
+import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.SetMetricDefaultIndicatorResponse;
+import org.hyperic.hq.hqapi1.types.SetMetricDefaultIntervalResponse;
+import org.hyperic.hq.hqapi1.types.SetMetricDefaultOnResponse;
+import org.hyperic.hq.hqapi1.types.SetMetricIntervalResponse;
 
 public class MetricApi {
 
@@ -225,14 +237,15 @@ public class MetricApi {
      * @param start The start time to query, in epoch-millis.
      * @param end The end time to query, in epoch-millis.
      *
-     * @return {@link {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
-     * if the data was succesfully queried.
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
+     * if the data was succesfully queried.  The returned data can be retrieved
+     * via {@link org.hyperic.hq.hqapi1.types.GetMetricDataResponse#getMetricData()}.
      *
-     * @throws IOException If a network error occurs while making the request.     * 
+     * @throws IOException If a network error occurs while making the request.
      */
     public GetMetricDataResponse getMetricData(Metric m, long start, long end)
-        throws IOException {
-
+        throws IOException
+    {
         Map<String, String> params = new HashMap<String, String>();
         params.put("metricId", Integer.toString(m.getId()));
         params.put("start", Long.toString(start));
