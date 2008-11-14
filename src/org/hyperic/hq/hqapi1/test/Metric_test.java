@@ -22,7 +22,7 @@ public class Metric_test extends MetricTestBase {
         assertNotNull(m.isEnabled());
         assertTrue(m.getName().length() > 0);
         assertNotNull(m.isDefaultOn());
-        assertNotNull(m.isIndictor());
+        assertNotNull(m.isIndicator());
         assertTrue(m.getCollectionType().length() > 0);
     }
         

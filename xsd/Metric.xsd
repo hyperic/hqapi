@@ -15,7 +15,7 @@
         <xs:attribute name="interval"       type="xs:long"    use="required"/>
         <xs:attribute name="enabled"        type="xs:boolean" use="required"/>
         <xs:attribute name="defaultOn"      type="xs:boolean" use="required"/>
-        <xs:attribute name="indictor"       type="xs:boolean" use="required"/>
+        <xs:attribute name="indicator"      type="xs:boolean" use="required"/>
         <xs:attribute name="collectionType" type="xs:string"  use="required"/>
     </xs:complexType>
 
