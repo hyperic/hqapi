@@ -4,10 +4,10 @@ import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.types.DisableMetricResponse;
 import org.hyperic.hq.hqapi1.types.EnableMetricResponse;
 import org.hyperic.hq.hqapi1.types.GetMetricResponse;
-import org.hyperic.hq.hqapi1.types.ListMetricResponse;
 import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.SetMetricIntervalResponse;
+import org.hyperic.hq.hqapi1.types.ListMetricsResponse;
 
 public class Metric_test extends MetricTestBase {
 
@@ -35,7 +35,7 @@ public class Metric_test extends MetricTestBase {
         }
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricResponse resp = api.listMetrics(r);
+        ListMetricsResponse resp = api.listMetrics(r);
         hqAssertSuccess(resp);
 
         for (Metric m : resp.getMetric()) {
@@ -52,7 +52,7 @@ public class Metric_test extends MetricTestBase {
         }
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricResponse resp = api.listMetrics(r);
+        ListMetricsResponse resp = api.listMetrics(r);
         hqAssertSuccess(resp);
 
         assertFalse("Resource " + r.getName() + " has no metrics",
@@ -73,7 +73,7 @@ public class Metric_test extends MetricTestBase {
         }
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricResponse resp = api.listMetrics(r);
+        ListMetricsResponse resp = api.listMetrics(r);
         hqAssertSuccess(resp);
 
         assertFalse("Resource " + r.getName() + " has no metrics",
@@ -112,7 +112,7 @@ public class Metric_test extends MetricTestBase {
         }
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricResponse resp = api.listMetrics(r);
+        ListMetricsResponse resp = api.listMetrics(r);
         hqAssertSuccess(resp);
         assertFalse("Resource " + r.getName() + " has no metrics",
                    resp.getMetric().size() == 0);
@@ -151,7 +151,7 @@ public class Metric_test extends MetricTestBase {
         }
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricResponse resp = api.listMetrics(r);
+        ListMetricsResponse resp = api.listMetrics(r);
         hqAssertSuccess(resp);
         assertFalse("Resource " + r.getName() + " has no metrics",
                    resp.getMetric().size() == 0);

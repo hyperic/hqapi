@@ -92,7 +92,7 @@ class MetricController extends ApiController {
             }
         }
         renderXml() {
-            ListMetricResponse() {
+            ListMetricsResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {

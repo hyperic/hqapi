@@ -62,7 +62,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="ListMetricResponse">
+    <xs:element name="ListMetricsResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">

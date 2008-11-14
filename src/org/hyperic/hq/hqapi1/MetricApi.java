@@ -9,7 +9,6 @@ import org.hyperic.hq.hqapi1.types.EnableMetricResponse;
 import org.hyperic.hq.hqapi1.types.GetMetricDataResponse;
 import org.hyperic.hq.hqapi1.types.GetMetricResponse;
 import org.hyperic.hq.hqapi1.types.GetMetricTemplateResponse;
-import org.hyperic.hq.hqapi1.types.ListMetricResponse;
 import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.MetricTemplate;
 import org.hyperic.hq.hqapi1.types.Resource;
@@ -17,6 +16,7 @@ import org.hyperic.hq.hqapi1.types.SetMetricDefaultIndicatorResponse;
 import org.hyperic.hq.hqapi1.types.SetMetricDefaultIntervalResponse;
 import org.hyperic.hq.hqapi1.types.SetMetricDefaultOnResponse;
 import org.hyperic.hq.hqapi1.types.SetMetricIntervalResponse;
+import org.hyperic.hq.hqapi1.types.ListMetricsResponse;
 
 /**
  * The Hyperic HQ Metric API.
@@ -41,20 +41,20 @@ public class MetricApi extends BaseApi {
      * List {@link org.hyperic.hq.hqapi1.types.Metric}s associated with a
      * {@link org.hyperic.hq.hqapi1.types.Resource}
      *
-     * @param resource The associated {@link Resource} which the metrics belong.
+     * @param resource The associated {@link org.hyperic.hq.hqapi1.types.Resource} which the metrics belong.
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * metrics were successfully retrieved.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public ListMetricResponse listMetrics(Resource resource)
+    public ListMetricsResponse listMetrics(Resource resource)
         throws IOException
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("resourceId", Integer.toString(resource.getId()));
         return doGet("metric/listMetrics.hqu", params,
-                     ListMetricResponse.class);
+                     ListMetricsResponse.class);
     }
 
     /**

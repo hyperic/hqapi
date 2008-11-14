@@ -1,10 +1,10 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.types.GetMetricDataResponse;
-import org.hyperic.hq.hqapi1.types.ListMetricResponse;
 import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.MetricData;
 import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ListMetricsResponse;
 import org.hyperic.hq.hqapi1.MetricApi;
 
 public class MetricData_test extends MetricTestBase {
@@ -22,7 +22,7 @@ public class MetricData_test extends MetricTestBase {
         }
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricResponse resp = api.listMetrics(r);
+        ListMetricsResponse resp = api.listMetrics(r);
         hqAssertSuccess(resp);
 
         assertTrue("No metrics found for " + r.getName(),
@@ -57,7 +57,7 @@ public class MetricData_test extends MetricTestBase {
         }
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricResponse resp = api.listMetrics(r);
+        ListMetricsResponse resp = api.listMetrics(r);
         hqAssertSuccess(resp);
 
         long end = System.currentTimeMillis();
