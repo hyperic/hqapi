@@ -17,12 +17,10 @@ import java.util.HashMap;
  * if the response status is {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE}.
  *
  */
-public class AutodiscoveryApi {
-
-    private HQConnection _connection;
+public class AutodiscoveryApi extends BaseApi {
 
     public AutodiscoveryApi(HQConnection connection) {
-        _connection = connection;
+        super(connection);
     }
 
     /**
@@ -40,8 +38,8 @@ public class AutodiscoveryApi {
     public GetQueueResponse getQueue()
         throws IOException
     {
-        return _connection.doGet("/hqu/hqapi1/autodiscovery/getQueue.hqu",
-                                 new HashMap(), GetQueueResponse.class);
+        return doGet("autodiscovery/getQueue.hqu", new HashMap<String,String>(),
+                     GetQueueResponse.class);
     }
 
     /**
@@ -65,7 +63,6 @@ public class AutodiscoveryApi {
 
         params.put("id", String.valueOf(id));
 
-        return _connection.doGet("/hqu/hqapi1/autodiscovery/approve.hqu",
-                                 params, ApproveResponse.class);
+        return doGet("autodiscovery/approve.hqu", params, ApproveResponse.class);
     }
 }

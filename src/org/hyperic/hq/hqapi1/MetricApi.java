@@ -31,12 +31,10 @@ import org.hyperic.hq.hqapi1.types.SetMetricIntervalResponse;
  * {@link org.hyperic.hq.hqapi1.types.ServiceError} that indicates the error
  * if the response status is {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE}.
  */
-public class MetricApi {
-
-    private final HQConnection _conn;
+public class MetricApi extends BaseApi {
 
     MetricApi(HQConnection conn) {
-        _conn = conn;
+        super(conn);
     }
     
     /**
@@ -55,8 +53,8 @@ public class MetricApi {
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("resourceId", Integer.toString(resource.getId()));
-        return _conn.doGet("/hqu/hqapi1/metric/listMetrics.hqu", params,
-                           ListMetricResponse.class);
+        return doGet("metric/listMetrics.hqu", params,
+                     ListMetricResponse.class);
     }
 
     /**
@@ -77,8 +75,8 @@ public class MetricApi {
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("id", Integer.toString(id));
-        return _conn.doGet("/hqu/hqapi1/metric/getMetric.hqu", params,
-                           GetMetricResponse.class);
+        return doGet("metric/getMetric.hqu", params,
+                     GetMetricResponse.class);
     }
     
     /**
@@ -96,8 +94,8 @@ public class MetricApi {
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("id", Integer.toString(m.getId()));
-        return _conn.doGet("/hqu/hqapi1/metric/disableMetric.hqu", params,
-                           DisableMetricResponse.class);
+        return doGet("metric/disableMetric.hqu", params,
+                     DisableMetricResponse.class);
     }
 
     /**
@@ -119,8 +117,8 @@ public class MetricApi {
         Map<String, String> params = new HashMap<String, String>();
         params.put("id", Integer.toString(m.getId()));
         params.put("interval", Long.toString(interval));
-        return _conn.doGet("/hqu/hqapi1/metric/enableMetric.hqu", params,
-                           EnableMetricResponse.class);
+        return doGet("metric/enableMetric.hqu", params,
+                     EnableMetricResponse.class);
     }
 
     /**
@@ -143,8 +141,8 @@ public class MetricApi {
         Map<String, String> params = new HashMap<String, String>();
         params.put("id", Integer.toString(m.getId()));
         params.put("interval", Long.toString(interval));
-        return _conn.doGet("/hqu/hqapi1/metric/setInterval.hqu", params,
-                           SetMetricIntervalResponse.class);
+        return doGet("metric/setInterval.hqu", params,
+                     SetMetricIntervalResponse.class);
     }
 
     /**
@@ -165,8 +163,8 @@ public class MetricApi {
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("id", Integer.toString(id));
-        return _conn.doGet("/hqu/hqapi1/metric/getMetricTemplate.hqu", params,
-                           GetMetricTemplateResponse.class);
+        return doGet("metric/getMetricTemplate.hqu", params,
+                     GetMetricTemplateResponse.class);
     }
     
     /**
@@ -190,8 +188,8 @@ public class MetricApi {
         Map<String, String> params = new HashMap<String, String>();
         params.put("templateId", Integer.toString(template.getId()));
         params.put("on", Boolean.toString(on));
-        return _conn.doGet("/hqu/hqapi1/metric/setDefaultOn.hqu", params,
-                           SetMetricDefaultOnResponse.class);
+        return doGet("metric/setDefaultOn.hqu", params,
+                     SetMetricDefaultOnResponse.class);
     }
     
     /**
@@ -214,8 +212,8 @@ public class MetricApi {
         Map<String, String> params = new HashMap<String, String>();
         params.put("templateId", Integer.toString(template.getId()));
         params.put("on", Boolean.toString(on));
-        return _conn.doGet("/hqu/hqapi1/metric/setDefaultIndicator.hqu", params,
-                           SetMetricDefaultIndicatorResponse.class);
+        return doGet("metric/setDefaultIndicator.hqu", params,
+                     SetMetricDefaultIndicatorResponse.class);
     }
     
     /**
@@ -238,8 +236,8 @@ public class MetricApi {
         Map<String, String> params = new HashMap<String, String>();
         params.put("templateId", Integer.toString(template.getId()));
         params.put("interval", Long.toString(interval));
-        return _conn.doGet("/hqu/hqapi1/metric/setDefaultInterval.hqu", params,
-                           SetMetricDefaultIntervalResponse.class);
+        return doGet("metric/setDefaultInterval.hqu", params,
+                     SetMetricDefaultIntervalResponse.class);
     }
 
     /**
@@ -264,7 +262,7 @@ public class MetricApi {
         params.put("start", Long.toString(start));
         params.put("end", Long.toString(end));
 
-        return _conn.doGet("/hqu/hqapi1/metric/getData.hqu", params,
-                           GetMetricDataResponse.class);
+        return doGet("metric/getData.hqu", params,
+                     GetMetricDataResponse.class);
     }
 }

@@ -40,6 +40,6 @@ public abstract class BaseApi {
     protected <T> T doPost(String action, Object o, Class<T> resultClass)
         throws IOException
     {
-        return _conn.doPost(action, o, resultClass);
+        return _conn.doPost(BASE_URI + action, o, resultClass);
     }
 }

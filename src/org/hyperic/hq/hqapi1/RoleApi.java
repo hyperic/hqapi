@@ -31,12 +31,10 @@ import java.util.List;
  * if the response status is {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE}.
  *
  */
-public class RoleApi {
-
-    private HQConnection _connection;
+public class RoleApi extends BaseApi {
 
     public RoleApi(HQConnection connection) {
-        _connection = connection;
+        super(connection);
     }
 
     /**
@@ -52,9 +50,8 @@ public class RoleApi {
     public GetRolesResponse getRoles()
         throws IOException
     {
-        return _connection.doGet("/hqu/hqapi1/role/list.hqu",
-                                 new HashMap<String, String>(),
-                                 GetRolesResponse.class);
+        return doGet("role/list.hqu", new HashMap<String, String>(),
+                     GetRolesResponse.class);
     }
 
     /**
@@ -75,8 +72,7 @@ public class RoleApi {
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("name", name);
-        return _connection.doGet("/hqu/hqapi1/role/get.hqu",
-                                 params, GetRoleResponse.class);
+        return doGet("role/get.hqu", params, GetRoleResponse.class);
     }
 
     /**
@@ -97,8 +93,7 @@ public class RoleApi {
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("id", String.valueOf(id));
-        return _connection.doGet("/hqu/hqapi1/role/get.hqu",
-                                 params, GetRoleResponse.class);
+        return doGet("role/get.hqu", params, GetRoleResponse.class);
     }
 
     /**
@@ -121,8 +116,7 @@ public class RoleApi {
     {
         CreateRoleRequest request = new CreateRoleRequest();
         request.setRole(role);
-        return _connection.doPost("/hqu/hqapi1/role/create.hqu", request,
-                                  CreateRoleResponse.class);
+        return doPost("role/create.hqu", request, CreateRoleResponse.class);
     }
 
     /**
@@ -142,8 +136,7 @@ public class RoleApi {
     {
         Map<String, String> params = new HashMap<String,String>();
         params.put("id", String.valueOf(id));
-        return _connection.doGet("/hqu/hqapi1/role/delete.hqu", params,
-                                 DeleteRoleResponse.class);
+        return doGet("role/delete.hqu", params, DeleteRoleResponse.class);
     }
 
     /**
@@ -165,8 +158,7 @@ public class RoleApi {
     {
         UpdateRoleRequest request = new UpdateRoleRequest();
         request.setRole(role);
-        return _connection.doPost("/hqu/hqapi1/role/update.hqu", request,
-                                  UpdateRoleResponse.class);
+        return doPost("role/update.hqu", request, UpdateRoleResponse.class);
     }
 
     /**
@@ -183,8 +175,7 @@ public class RoleApi {
     {
         SyncRolesRequest request = new SyncRolesRequest();
         request.getRole().addAll(roles);
-        return _connection.doPost("/hqu/hqapi1/role/sync.hqu", request,
-                                  SyncRolesResponse.class);
+        return doPost("role/sync.hqu", request, SyncRolesResponse.class);
     }
 
     /**
@@ -208,8 +199,7 @@ public class RoleApi {
         SetUsersRequest request = new SetUsersRequest();
         request.setRole(role);
         request.getUser().addAll(users);
-        return _connection.doPost("/hqu/hqapi1/role/setUsers.hqu", request,
-                                  SetUsersResponse.class);
+        return doPost("role/setUsers.hqu", request, SetUsersResponse.class);
     }
 
     /**
@@ -230,7 +220,6 @@ public class RoleApi {
     {
         Map<String, String> params = new HashMap<String,String>();
         params.put("id", String.valueOf(role.getId()));
-        return _connection.doGet("/hqu/hqapi1/role/getUsers.hqu", params,
-                                 GetUsersResponse.class);
+        return doGet("role/getUsers.hqu", params, GetUsersResponse.class);
     }
 }

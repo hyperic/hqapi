@@ -19,12 +19,10 @@ import java.util.Map;
  * {@link org.hyperic.hq.hqapi1.types.ServiceError} that indicates the error
  * if the response status is {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE}.
  */
-public class AgentApi {
-
-   private HQConnection _connection;
+public class AgentApi extends BaseApi {
 
     public AgentApi(HQConnection connection) {
-        _connection = connection;
+        super(connection);
     }
 
     /**
@@ -48,8 +46,7 @@ public class AgentApi {
         Map<String,String> params = new HashMap<String,String>();
         params.put("address", address);
         params.put("port", String.valueOf(port));
-        return _connection.doGet("/hqu/hqapi1/agent/getAgent.hqu",
-                                 params, GetAgentResponse.class);
+        return doGet("agent/getAgent.hqu", params, GetAgentResponse.class);
     }
 
     /**
@@ -66,9 +63,8 @@ public class AgentApi {
     public GetAgentsResponse getAgents()
         throws IOException
     {
-        return _connection.doGet("/hqu/hqapi1/agent/list.hqu",
-                                 new HashMap<String,String>(),
-                                 GetAgentsResponse.class);
+        return doGet("agent/list.hqu", new HashMap<String,String>(),
+                     GetAgentsResponse.class);
     }
 
     /**
@@ -90,7 +86,6 @@ public class AgentApi {
     {
         Map <String,String> params = new HashMap<String,String>();
         params.put("id", String.valueOf(agent.getId()));
-        return _connection.doGet("/hqu/hqapi1/agent/pingAgent.hqu",
-                                 params, PingAgentResponse.class);
+        return doGet("agent/pingAgent.hqu", params, PingAgentResponse.class);
     }
 }

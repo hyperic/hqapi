@@ -124,7 +124,7 @@ public class ResourceApi extends BaseApi {
         
         SyncPlatformRequest req = new SyncPlatformRequest();
         req.setPlatform(plat);
-        return doPost("/hqu/hqapi1/resource/syncPlatform.hqu", req,
+        return doPost("resource/syncPlatform.hqu", req,
                       SyncPlatformResponse.class);
     }
 
@@ -150,7 +150,7 @@ public class ResourceApi extends BaseApi {
                                                Map config)
         throws IOException
     {
-        return doPost("/hqu/hqapi1/resource/syncServer.hqu", null,
+        return doPost("resource/syncServer.hqu", null,
                       CreateResourceResponse.class);
     }
 
@@ -174,7 +174,7 @@ public class ResourceApi extends BaseApi {
                                                 Map config)
         throws IOException
     {
-        return doPost("/hqu/hqapi1/resource/syncService.hqu", null,
+        return doPost("resource/syncService.hqu", null,
                       CreateResourceResponse.class);
     }
 
@@ -194,7 +194,7 @@ public class ResourceApi extends BaseApi {
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("id", id.toString());
-        return doGet("/hqu/hqapi1/resource/get.hqu", params, 
+        return doGet("resource/get.hqu", params,
                      GetResourceResponse.class);
     }
 
@@ -214,7 +214,7 @@ public class ResourceApi extends BaseApi {
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("platformId", id.toString());
-        return doGet("/hqu/hqapi1/resource/get.hqu", params,
+        return doGet("resource/get.hqu", params,
                      GetResourceResponse.class);
     }
 
@@ -234,7 +234,7 @@ public class ResourceApi extends BaseApi {
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("platformName", name);
-        return doGet("/hqu/hqapi1/resource/get.hqu", params,
+        return doGet("resource/get.hqu", params,
                      GetResourceResponse.class);
     }
 
@@ -255,7 +255,7 @@ public class ResourceApi extends BaseApi {
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("serverId", id.toString());
-        return doGet("/hqu/hqapi1/resource/get.hqu", params,
+        return doGet("resource/get.hqu", params,
                      GetResourceResponse.class);
     }
 
@@ -275,7 +275,7 @@ public class ResourceApi extends BaseApi {
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("serviceId", id.toString());
-        return doGet("/hqu/hqapi1/resource/get.hqu", params,
+        return doGet("resource/get.hqu", params,
                      GetResourceResponse.class);
     }
 
@@ -297,7 +297,7 @@ public class ResourceApi extends BaseApi {
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("agentId", Integer.toString(agent.getId()));
-        return doGet("/hqu/hqapi1/resource/find.hqu", params,
+        return doGet("resource/find.hqu", params,
                      FindResourcesResponse.class);
     }
 
@@ -318,7 +318,7 @@ public class ResourceApi extends BaseApi {
     {
         Map<String,String> params = new HashMap<String, String>();
         params.put("prototype", pt.getName());
-        return doGet("/hqu/hqapi1/resource/find.hqu", params,
+        return doGet("resource/find.hqu", params,
                      FindResourcesResponse.class);
     }
 
@@ -339,7 +339,7 @@ public class ResourceApi extends BaseApi {
     {
         Map<String,String> params = new HashMap<String, String>();
         params.put("childrenOfId", Integer.toString(r.getId()));
-        return doGet("/hqu/hqapi1/resource/find.hqu", params,
+        return doGet("resource/find.hqu", params,
                      FindResourcesResponse.class);
     }
 }

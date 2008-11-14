@@ -27,12 +27,10 @@ import java.util.List;
  * {@link org.hyperic.hq.hqapi1.types.ServiceError} that indicates the error
  * if the response status is {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE}.
  */
-public class UserApi {
-
-    private HQConnection _connection;
+public class UserApi extends BaseApi {
 
     UserApi(HQConnection connection) {
-        _connection = connection;
+        super(connection);
     }
 
     /**
@@ -53,8 +51,7 @@ public class UserApi {
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("name", name);
-        return _connection.doGet("/hqu/hqapi1/user/get.hqu",
-                                 params, GetUserResponse.class);
+        return doGet("user/get.hqu", params, GetUserResponse.class);
     }
 
     /**
@@ -75,8 +72,7 @@ public class UserApi {
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("id", id.toString());
-        return _connection.doGet("/hqu/hqapi1/user/get.hqu",
-                                 params, GetUserResponse.class);
+        return doGet("user/get.hqu", params, GetUserResponse.class);
     }
 
     /**
@@ -92,9 +88,8 @@ public class UserApi {
     public GetUsersResponse getUsers()
         throws IOException
     {
-        return _connection.doGet("/hqu/hqapi1/user/list.hqu",
-                                 new HashMap<String,String>(),
-                                 GetUsersResponse.class);
+        return doGet("user/list.hqu", new HashMap<String,String>(),
+                     GetUsersResponse.class);
     }
 
     /**
@@ -127,8 +122,7 @@ public class UserApi {
         params.put("htmlEmail", Boolean.valueOf(user.isActive()).toString());
         params.put("SMSAddress", user.getSMSAddress());
 
-        return _connection.doGet("/hqu/hqapi1/user/create.hqu",
-                                 params, CreateUserResponse.class);
+        return doGet("user/create.hqu", params, CreateUserResponse.class);
     }
 
     /**
@@ -150,8 +144,7 @@ public class UserApi {
 
         params.put("id", id.toString());
 
-        return _connection.doGet("/hqu/hqapi1/user/delete.hqu",
-                                 params, DeleteUserResponse.class);
+        return doGet("user/delete.hqu", params, DeleteUserResponse.class);
     }
 
     /**
@@ -173,8 +166,7 @@ public class UserApi {
         UpdateUserRequest req = new UpdateUserRequest();
         req.setUser(user);
 
-        return _connection.doPost("/hqu/hqapi1/user/update.hqu",
-                                  req, UpdateUserResponse.class);
+        return doPost("user/update.hqu", req, UpdateUserResponse.class);
     }
 
     /**
@@ -196,8 +188,7 @@ public class UserApi {
         SyncUsersRequest request = new SyncUsersRequest();
         request.getUser().addAll(users);
 
-        return _connection.doPost("/hqu/hqapi1/user/sync.hqu", request,
-                                  SyncUsersResponse.class);
+        return doPost("user/sync.hqu", request, SyncUsersResponse.class);
     }
 
     /**
@@ -224,7 +215,7 @@ public class UserApi {
         params.put("id", String.valueOf(user.getId()));
         params.put("password", password);
 
-        return _connection.doGet("/hqu/hqapi1/user/changePassword.hqu",
-                                 params, ChangePasswordResponse.class);
+        return doGet("user/changePassword.hqu", params,
+                     ChangePasswordResponse.class);
     }
 }
