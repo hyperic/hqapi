@@ -306,7 +306,7 @@ class MetricController extends ApiController {
     }
 
     def getData(params) {
-        def metricId = params.getOne("metricId").toInteger()
+        def metricId = params.getOne("metricId")?.toInteger()
         def start = params.getOne("start")?.toLong()
         def end = params.getOne("end")?.toLong()
 
@@ -319,17 +319,15 @@ class MetricController extends ApiController {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         }
 
-        def metric;
-        try {
-            metric = metricHelper.findMeasurementById(metricId);
-        } catch (Exception e) {
-            log.error("UnexpectedError: " + e.getMessage(), e);
-            failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
-        }
-
-        def data
+        def data;
         if (!failureXml) {
-            data = metric.getData(start, end)
+            try {
+                def metric = metricHelper.findMeasurementById(metricId);
+                data = metric.getData(start, end)
+            } catch (Exception e) {
+                log.error("UnexpectedError: " + e.getMessage(), e);
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+            }
         }
 
         renderXml() {
