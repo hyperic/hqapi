@@ -216,4 +216,29 @@ public class MetricApi {
         return _conn.doGet("/hqu/hqapi1/metric/setDefaultInterval.hqu", params,
                            SetMetricDefaultIntervalResponse.class);
     }
+
+    /**
+     * Get the {@link org.hyperic.hq.hqapi1.types.MetricData} for the
+     * given {@link org.hyperic.hq.hqapi1.types.Metric}
+     *
+     * @param m The {@link org.hyperic.hq.hqapi1.types.Metric} to query.
+     * @param start The start time to query, in epoch-millis.
+     * @param end The end time to query, in epoch-millis.
+     *
+     * @return {@link {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
+     * if the data was succesfully queried.
+     *
+     * @throws IOException If a network error occurs while making the request.     * 
+     */
+    public GetMetricDataResponse getMetricData(Metric m, long start, long end)
+        throws IOException {
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("metricId", Integer.toString(m.getId()));
+        params.put("start", Long.toString(start));
+        params.put("end", Long.toString(end));
+
+        return _conn.doGet("/hqu/hqapi1/metric/getData.hqu", params,
+                           GetMetricDataResponse.class);
+    }
 }

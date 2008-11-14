@@ -19,7 +19,13 @@
         <xs:attribute name="collectionType" type="xs:string"  use="required"/>
     </xs:complexType>
 
+    <xs:complexType name="MetricData">
+        <xs:attribute name="timestamp" type="xs:long"    use="required"/>
+        <xs:attribute name="value"     type="xs:double"  use="required"/>
+    </xs:complexType>
+
     <!-- Metric Responses -->
+
     <xs:element name="EnableMetricResponse">
         <xs:complexType>
             <xs:complexContent>
@@ -62,6 +68,20 @@
                 <xs:extension base="Response">
                     <xs:sequence>
                         <xs:element name="Metric" type="Metric" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- MetricData Responses -->
+    
+    <xs:element name="GetMetricDataResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="MetricData" type="MetricData" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:extension>
             </xs:complexContent>

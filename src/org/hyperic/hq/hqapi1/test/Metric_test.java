@@ -9,6 +9,17 @@ public class Metric_test extends MetricTestBase {
         super(name);
     }
 
+    protected void validateMetric(Metric m) throws Exception {
+        assertNotNull(m);
+        assertTrue(m.getId() > 0);
+        assertNotNull(m.getInterval());
+        assertNotNull(m.isEnabled());
+        assertTrue(m.getName().length() > 0);
+        assertNotNull(m.isDefaultOn());
+        assertNotNull(m.isIndictor());
+        assertTrue(m.getCollectionType().length() > 0);
+    }
+        
     public void testMetricList() throws Exception {
 
         Resource r = getResource();

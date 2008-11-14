@@ -41,6 +41,13 @@ class MetricController extends ApiController {
         }
     }
 
+    private Closure getMetricDataXML(d) {
+        { doc ->
+            MetricData(timestamp : d.timestamp,
+                       value     : d.value)
+        }
+    }
+
     private validInterval(long interval) {
         return interval > 0 && interval%60000 == 0
     }
@@ -293,6 +300,47 @@ class MetricController extends ApiController {
                     out << failureXml
                 } else {
                     out << getSuccessXML()
+                }
+            }
+        }
+    }
+
+    def getData(params) {
+        def metricId = params.getOne("metricId").toInteger()
+        def start = params.getOne("start")?.toLong()
+        def end = params.getOne("end")?.toLong()
+
+        def failureXml = null
+        if (!metricId || !start || !end) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+        }
+
+        if (end < start) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+        }
+
+        def metric;
+        try {
+            metric = metricHelper.findMeasurementById(metricId);
+        } catch (Exception e) {
+            log.error("UnexpectedError: " + e.getMessage(), e);
+            failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+        }
+
+        def data
+        if (!failureXml) {
+            data = metric.getData(start, end)
+        }
+
+        renderXml() {
+            GetMetricDataResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    for (dp in data) {
+                        out << getMetricDataXML(dp) 
+                    }
                 }
             }
         }
