@@ -1,15 +1,18 @@
 package org.hyperic.hq.hqapi1;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.hyperic.hq.hqapi1.types.AddResourceToGroupResponse;
 import org.hyperic.hq.hqapi1.types.CreateGroupResponse;
 import org.hyperic.hq.hqapi1.types.DeleteGroupResponse;
 import org.hyperic.hq.hqapi1.types.GetGroupsResponse;
-import org.hyperic.hq.hqapi1.types.GetResourcesInGroupResponse;
 import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.RemoveResourceFromGroupResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.CreateGroupRequest;
+import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
 
 /**
  * The Hyperic HQ Group API.
@@ -22,12 +25,10 @@ import org.hyperic.hq.hqapi1.types.Resource;
  * {@link org.hyperic.hq.hqapi1.types.ServiceError} that indicates the error
  * if the response status is {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE}.
  */
-public class GroupApi {
-
-    private final HQConnection _conn;
+public class GroupApi extends BaseApi {
 
     GroupApi(HQConnection conn) {
-        _conn = conn;
+        super(conn);
     }
     
     /**
@@ -42,40 +43,48 @@ public class GroupApi {
     public CreateGroupResponse createGroup(Group group)
         throws IOException
     {
-        return null;
+        CreateGroupRequest req = new CreateGroupRequest();
+        req.setGroup(group);
+        return doPost("group/create.hqu", req, CreateGroupResponse.class);
     }
     
     /**
      * Delete a {@link Group}
      *
-     * @param group The group to delete.
+     * @param id The {@link org.hyperic.hq.hqapi1.types.Group} id to delete.
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * group was deleted successfully.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public DeleteGroupResponse deleteGroup(Group group)
+    public DeleteGroupResponse deleteGroup(Integer id)
         throws IOException
     {
-        return null;
+        Map<String,String> params = new HashMap<String,String>();
+        params.put("id", Integer.toString(id));
+        return doGet("group/delete.hqu", params, DeleteGroupResponse.class);
     }
     
     /**
      * Delete a {@link Resource} from a {@link Group}
      *
-     * @param group The {@link Group} to delete the resource from.
-     * @param resource The {@link Resource} to remove.
+     * @param groupId The {@link Group} id to operate on.
+     * @param resourceId The {@link Resource} id to remove.
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * resource was successfully removed from the group.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public RemoveResourceFromGroupResponse removeResource(Group group,
-                                                          Resource resource)
+    public RemoveResourceFromGroupResponse removeResource(int groupId,
+                                                          int resourceId)
         throws IOException
     {
-        return null;
+        Map<String,String> params = new HashMap<String,String>();
+        params.put("groupId", Integer.toString(groupId));
+        params.put("resourceId", Integer.toString(resourceId));
+        return doGet("group/removeResource.hqu", params,
+                     RemoveResourceFromGroupResponse.class);
     }
 
     /**
@@ -89,40 +98,47 @@ public class GroupApi {
     public GetGroupsResponse listGroups()
         throws IOException
     {
-        return null;
+        return doGet("group/list.hqu", new HashMap<String,String>(),
+                     GetGroupsResponse.class);
     }
 
     /**
      * List all the Resources associated with a {@link Group}
      *
-     * @param group The {@link org.hyperic.hq.hqapi1.types.Group} to query.
+     * @param groupId The {@link org.hyperic.hq.hqapi1.types.Group} id to query.
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if all
      * the resources were successfully retrieved.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetResourcesInGroupResponse listResources(Group group)
+    public FindResourcesResponse listResources(int groupId)
         throws IOException
     {
-        return null;
+        Map<String,String> params = new HashMap<String,String>();
+        params.put("groupId", Integer.toString(groupId));
+        return doGet("group/listResources.hqu", params,
+                     FindResourcesResponse.class);
     }
 
     /**
      * Add the specified {@link Resource} to the {@link Group}
      *
-     * @param group The {@link org.hyperic.hq.hqapi1.types.Group} to operate on.
-     * @param resource The {@link org.hyperic.hq.hqapi1.types.Resource} to add.
+     * @param groupId The {@link org.hyperic.hq.hqapi1.types.Group} id to operate on.
+     * @param resourceId The {@link org.hyperic.hq.hqapi1.types.Resource} id to add.
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * resource was successfully added to the group.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public AddResourceToGroupResponse addResource(Group group, Resource resource)
+    public AddResourceToGroupResponse addResource(int groupId, int resourceId)
         throws IOException
     {
-        return null;
+        Map<String,String> params = new HashMap<String,String>();
+        params.put("groupId", Integer.toString(groupId));
+        params.put("resourceId", Integer.toString(resourceId));
+        return doGet("group/addResource.hqu", params,
+                     AddResourceToGroupResponse.class);
     }
-
 }
