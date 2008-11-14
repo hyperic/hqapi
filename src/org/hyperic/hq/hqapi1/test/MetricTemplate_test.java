@@ -7,12 +7,12 @@ import org.hyperic.hq.hqapi1.types.SetMetricDefaultIndicatorResponse;
 import org.hyperic.hq.hqapi1.types.SetMetricDefaultIntervalResponse;
 import org.hyperic.hq.hqapi1.types.SetMetricDefaultOnResponse;
 
-public class MetricTemplateOps_test extends HQApiTestBase {
+public class MetricTemplate_test extends HQApiTestBase {
 
-    public MetricTemplateOps_test(String name) {
+    public MetricTemplate_test(String name) {
         super(name);
     }
-    
+
     public void testSetDefaultInterval() throws Exception {
     }
 

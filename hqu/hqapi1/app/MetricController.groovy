@@ -127,8 +127,7 @@ class MetricController extends ApiController {
         if (!metricId || !interval) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         }
-        //want to make sure users can't set the interval < 1 min
-        interval = interval*60000
+
         try {
             metricHelper.enableMeasurement(metricId, interval);
         } catch (Exception e) {
@@ -153,8 +152,7 @@ class MetricController extends ApiController {
         if (!metricId || !interval) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         }
-        //want to make sure users can't set the interval < 1 min
-        interval = interval*60000
+
         try {
             metricHelper.updateMeasurementInterval(metricId, interval);
         } catch (Exception e) {
@@ -254,8 +252,7 @@ class MetricController extends ApiController {
         if (!templateId || !interval) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         }
-        //want to make sure users can't set the interval < 1 min
-        interval = interval*60000
+
         try {
             metricHelper.setDefaultInterval(templateId, interval);
         } catch (Exception e) {
@@ -271,9 +268,5 @@ class MetricController extends ApiController {
                 }
             }
         }
-    }
-
-    def pumpData(params) {
-        //TODO: fill in method
     }
 }

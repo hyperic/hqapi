@@ -33,6 +33,28 @@ public class MetricApi {
         return _conn.doGet("/hqu/hqapi1/metric/listMetrics.hqu", params,
                            ListMetricResponse.class);
     }
+
+    /**
+     * Get the {@link org.hyperic.hq.hqapi1.types.Metric} associated
+     * with the metricId
+     *
+     * @param id The id used to retrieve the associated
+     *  {@link org.hyperic.hq.hqapi1.types.Metric}.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * {@link org.hyperic.hq.hqapi1.types.Metric} was retrieved
+     * successfully.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public GetMetricResponse getMetric(int id)
+        throws IOException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("id", Integer.toString(id));
+        return _conn.doGet("/hqu/hqapi1/metric/getMetric.hqu", params,
+                           GetMetricResponse.class);
+    }
     
     /**
      * Disable a {@link org.hyperic.hq.hqapi1.types.Metric}.
@@ -97,28 +119,6 @@ public class MetricApi {
     }
 
     /**
-     * Get the {@link org.hyperic.hq.hqapi1.types.Metric} associated
-     * with the metricId
-     *
-     * @param id The id used to retrieve the associated
-     *  {@link org.hyperic.hq.hqapi1.types.Metric}.
-     *
-     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
-     * {@link org.hyperic.hq.hqapi1.types.Metric} was retrieved
-     * successfully
-     *
-     * @throws IOException If a network error occurs while making the request.
-     */
-    public GetMetricResponse getMetric(Integer id)
-        throws IOException
-    {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("id", id.toString());
-        return _conn.doGet("/hqu/hqapi1/metric/getMetric.hqu", params,
-                           GetMetricResponse.class);
-    }
-
-    /**
      * Get the {@link org.hyperic.hq.hqapi1.types.MetricTemplate} associated
      * with the metric id.
      *
@@ -131,21 +131,22 @@ public class MetricApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetMetricTemplateResponse getMetricTemplate(Integer id)
+    public GetMetricTemplateResponse getMetricTemplate(int id)
         throws IOException
     {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("id", id.toString());
+        params.put("id", Integer.toString(id));
         return _conn.doGet("/hqu/hqapi1/metric/getMetricTemplate.hqu", params,
                            GetMetricTemplateResponse.class);
     }
     
     /**
-     * Sets the defaultOn behavior for all
+     * Sets the default on behavior for all
      *  {@link org.hyperic.hq.hqapi1.types.Metric}s associated with this
      *  {@link org.hyperic.hq.hqapi1.types.MetricTemplate}
      *
-     * @param templateId Sets the associated metric template's defaultOn
+     * @param template The {@link org.hyperic.hq.hqapi1.types.MetricTemplate} to operate on.
+     * @param on The flag to set for default on.
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * {@link org.hyperic.hq.hqapi1.types.Metric}s collection interval was
@@ -154,13 +155,12 @@ public class MetricApi {
      * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
      * @throws IOException If a network error occurs while making the request.
      */
-    public SetMetricDefaultOnResponse setDefaultOn(Integer templateId,
-                                                   Boolean on)
+    public SetMetricDefaultOnResponse setDefaultOn(MetricTemplate template, boolean on)
         throws IOException
     {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("templateId", templateId.toString());
-        params.put("on", on.toString());
+        params.put("templateId", Integer.toString(template.getId()));
+        params.put("on", Boolean.toString(on));
         return _conn.doGet("/hqu/hqapi1/metric/setDefaultOn.hqu", params,
                            SetMetricDefaultOnResponse.class);
     }
@@ -170,8 +170,8 @@ public class MetricApi {
      *  {@link org.hyperic.hq.hqapi1.types.Metric}s associated with this
      *  {@link org.hyperic.hq.hqapi1.types.MetricTemplate}
      *
-     * @param template The {@link org.hyperic.hq.hqapi1.types.MetricTemplate} to operate on
-     * @param on Flag t
+     * @param template The {@link org.hyperic.hq.hqapi1.types.MetricTemplate} to operate on.
+     * @param on The flag to set for default indicator.
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * metric's collection interval was successfully updated.
