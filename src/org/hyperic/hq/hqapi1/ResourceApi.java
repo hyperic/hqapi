@@ -220,7 +220,7 @@ public class ResourceApi extends BaseApi {
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public GetResourceResponse getResourceByPlatform(Integer id)
+    public GetResourceResponse getResourceForPlatform(Integer id)
         throws IOException
     {
         Map<String, String> params = new HashMap<String, String>();
@@ -240,7 +240,7 @@ public class ResourceApi extends BaseApi {
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public GetResourceResponse getResourceByPlatform(String name)
+    public GetResourceResponse getResourceForPlatform(String name)
         throws IOException
     {
         Map<String, String> params = new HashMap<String, String>();
@@ -261,7 +261,7 @@ public class ResourceApi extends BaseApi {
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public GetResourceResponse getResourceByServer(Integer id)
+    public GetResourceResponse getResourceForServer(Integer id)
         throws IOException
     {
         Map<String, String> params = new HashMap<String, String>();
@@ -281,7 +281,7 @@ public class ResourceApi extends BaseApi {
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public GetResourceResponse getResourceByService(Integer id)
+    public GetResourceResponse getResourceForService(Integer id)
         throws IOException
     {
         Map<String, String> params = new HashMap<String, String>();

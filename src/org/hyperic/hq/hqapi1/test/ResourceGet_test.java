@@ -57,7 +57,7 @@ public class ResourceGet_test extends ResourceTestBase {
 
         ResourceApi api = getApi().getResourceApi();
 
-        GetResourceResponse resp = api.getResourceByPlatform(ID_10001);
+        GetResourceResponse resp = api.getResourceForPlatform(ID_10001);
         hqAssertSuccess(resp);
         validateResource(resp.getResource());
     }
@@ -66,7 +66,7 @@ public class ResourceGet_test extends ResourceTestBase {
 
         ResourceApi api = getApi().getResourceApi();
 
-        GetResourceResponse resp = api.getResourceByPlatform(Integer.MAX_VALUE);
+        GetResourceResponse resp = api.getResourceForPlatform(Integer.MAX_VALUE);
         hqAssertFailureObjectNotFound(resp);
     }
 
@@ -74,13 +74,13 @@ public class ResourceGet_test extends ResourceTestBase {
 
         ResourceApi api = getApi().getResourceApi();
 
-        GetResourceResponse resp = api.getResourceByPlatform(ID_10001);
+        GetResourceResponse resp = api.getResourceForPlatform(ID_10001);
         hqAssertSuccess(resp);
         Resource r1 = resp.getResource();
         validateResource(r1);
 
         String name = resp.getResource().getName();
-        GetResourceResponse respByName = api.getResourceByPlatform(name);
+        GetResourceResponse respByName = api.getResourceForPlatform(name);
         hqAssertSuccess(respByName);
         Resource r2 = resp.getResource();
         validateResource(r2);
@@ -94,7 +94,7 @@ public class ResourceGet_test extends ResourceTestBase {
 
         final String name = "Non-existant platform name";
         ResourceApi api = getApi().getResourceApi();
-        GetResourceResponse resp = api.getResourceByPlatform(name);
+        GetResourceResponse resp = api.getResourceForPlatform(name);
         hqAssertFailureObjectNotFound(resp);
     }
 
@@ -102,7 +102,7 @@ public class ResourceGet_test extends ResourceTestBase {
 
         ResourceApi api = getApi().getResourceApi();
 
-        GetResourceResponse resp = api.getResourceByServer(ID_10001);
+        GetResourceResponse resp = api.getResourceForServer(ID_10001);
         hqAssertSuccess(resp);
         validateResource(resp.getResource());
     }
@@ -111,7 +111,7 @@ public class ResourceGet_test extends ResourceTestBase {
 
         ResourceApi api = getApi().getResourceApi();
 
-        GetResourceResponse resp = api.getResourceByServer(Integer.MAX_VALUE);
+        GetResourceResponse resp = api.getResourceForServer(Integer.MAX_VALUE);
         hqAssertFailureObjectNotFound(resp);
     }
 
@@ -119,7 +119,7 @@ public class ResourceGet_test extends ResourceTestBase {
 
         ResourceApi api = getApi().getResourceApi();
 
-        GetResourceResponse resp = api.getResourceByService(ID_10001);
+        GetResourceResponse resp = api.getResourceForService(ID_10001);
         hqAssertSuccess(resp);
         validateResource(resp.getResource());
     }
@@ -128,7 +128,7 @@ public class ResourceGet_test extends ResourceTestBase {
 
         ResourceApi api = getApi().getResourceApi();
 
-        GetResourceResponse resp = api.getResourceByService(Integer.MAX_VALUE);
+        GetResourceResponse resp = api.getResourceForService(Integer.MAX_VALUE);
         hqAssertFailureObjectNotFound(resp);
     }
 }
