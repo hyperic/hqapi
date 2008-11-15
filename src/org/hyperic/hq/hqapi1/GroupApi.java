@@ -32,7 +32,8 @@ public class GroupApi extends BaseApi {
     }
     
     /**
-     * Create a {@link org.hyperic.hq.hqapi1.types.Group}.
+     * Create a {@link org.hyperic.hq.hqapi1.types.Group}.<br><b>This API is
+     * not yet availabile.  It will return an not implemented error.</b>
      *
      * @param group The group to create.
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
@@ -49,7 +50,8 @@ public class GroupApi extends BaseApi {
     }
     
     /**
-     * Delete a {@link Group}
+     * Delete a {@link Group}.<br><b>This API is
+     * not yet availabile.  It will return an not implemented error.</b>
      *
      * @param id The {@link org.hyperic.hq.hqapi1.types.Group} id to delete.
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
@@ -66,7 +68,8 @@ public class GroupApi extends BaseApi {
     }
     
     /**
-     * Delete a {@link Resource} from a {@link Group}
+     * Delete a {@link Resource} from a {@link Group}.<br><b>This API is
+     * not yet availabile.  It will return an not implemented error.</b>
      *
      * @param groupId The {@link Group} id to operate on.
      * @param resourceId The {@link Resource} id to remove.
@@ -88,7 +91,8 @@ public class GroupApi extends BaseApi {
     }
 
     /**
-     * List all the Groups in HQ visible by the login
+     * List all the Groups in HQ visible by the login.<br><b>This API is
+     * not yet availabile.  It will return an not implemented error.</b>
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if 
      * all the groups were successfully retrieved from the server.
@@ -103,7 +107,8 @@ public class GroupApi extends BaseApi {
     }
 
     /**
-     * List all the Resources associated with a {@link Group}
+     * List all the Resources associated with a {@link Group}.<br><b>This API is
+     * not yet availabile.  It will return an not implemented error.</b>
      *
      * @param groupId The {@link org.hyperic.hq.hqapi1.types.Group} id to query.
      *
@@ -122,7 +127,8 @@ public class GroupApi extends BaseApi {
     }
 
     /**
-     * Add the specified {@link Resource} to the {@link Group}
+     * Add the specified {@link Resource} to the {@link Group}.<br><b>This API is
+     * not yet availabile.  It will return an not implemented error.</b>
      *
      * @param groupId The {@link org.hyperic.hq.hqapi1.types.Group} id to operate on.
      * @param resourceId The {@link org.hyperic.hq.hqapi1.types.Resource} id to add.

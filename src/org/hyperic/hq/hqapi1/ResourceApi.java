@@ -88,7 +88,8 @@ public class ResourceApi extends BaseApi {
     }
 
     /**
-     * Create a Platform {@link Resource} with the given name.
+     * Create a Platform {@link Resource} with the given name.<br><b>This API is
+     * not yet availabile.  It will return an not implemented error.</b>
      *
      * @param agent The {@link org.hyperic.hq.hqapi1.types.Agent} which will service this platform.
      * @param type The resource prototype for the resource to be created.
@@ -119,7 +120,8 @@ public class ResourceApi extends BaseApi {
     }
 
     /**
-     * Create a Server {@link Resource} with the given name.
+     * Create a Server {@link Resource} with the given name.<br><b>This API is
+     * not yet availabile.  It will return an not implemented error.</b>
      *
      * @param type The resource prototype for the resource to be created.
      * @param parent The parent resource for the created resource.
