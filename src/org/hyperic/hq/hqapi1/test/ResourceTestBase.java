@@ -15,5 +15,10 @@ public class ResourceTestBase extends HQApiTestBase {
 
         assertTrue("No configuration properties found for resource id " +
                   r.getId(), r.getResourceConfig().size() > 0);
+
+        assertNotNull("No resource prototype found for resource id " + r.getId(),
+                      r.getResourcePrototype());
+        assertTrue(r.getResourcePrototype().getId() > 0);
+        assertTrue(r.getResourcePrototype().getName().length() > 0);
     }    
 }

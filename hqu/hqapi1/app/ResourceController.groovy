@@ -11,7 +11,9 @@ class ResourceController extends ApiController {
                     if (v.type.equals("configResponse")) {
                         ResourceConfig(key: k, value: v.value)
                     }
-                }                
+                }
+                ResourcePrototype(id : r.prototype.id,
+                                  name : r.prototype.name)
             }
         }
     }
