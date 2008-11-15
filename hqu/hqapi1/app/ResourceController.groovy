@@ -249,4 +249,34 @@ class ResourceController extends ApiController {
             }
         }
     }
+
+    def delete(params) {
+        def id = params.getOne("id")?.toInteger()
+        def resource = getResource(id)
+
+        if (!resource) {
+            renderXml() {
+                DeleteResorceResponse() {
+                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                }
+            }
+        }
+
+        try {
+            resource.remove(user)
+        } catch (Exception e) {
+            renderXml() {
+                log.error("Error removing resource", e)
+                DeleteResourceResponse() {
+                    out << getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+                }
+            }
+        }
+
+        renderXml() {
+            DeleteResourceResponse() {
+                out << getSuccessXML()
+            }
+        }
+    }
 }

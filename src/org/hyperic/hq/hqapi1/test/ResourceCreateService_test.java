@@ -7,6 +7,7 @@ import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
 import org.hyperic.hq.hqapi1.types.CreateResourceResponse;
+import org.hyperic.hq.hqapi1.types.DeleteResourceResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,5 +57,10 @@ public class ResourceCreateService_test extends ResourceTestBase {
         hqAssertSuccess(resp);
         Resource createdResource = resp.getResource();
         assertEquals(createdResource.getName(), name);
+
+        // Clean up
+        DeleteResourceResponse deleteResponse =
+                api.deleteResource(createdResource.getId());
+        hqAssertSuccess(deleteResponse);
     }
 }

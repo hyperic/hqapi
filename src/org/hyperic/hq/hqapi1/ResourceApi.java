@@ -17,6 +17,7 @@ import org.hyperic.hq.hqapi1.types.CreateServiceRequest;
 import org.hyperic.hq.hqapi1.types.ResourceConfig;
 import org.hyperic.hq.hqapi1.types.CreatePlatformRequest;
 import org.hyperic.hq.hqapi1.types.CreateServerRequest;
+import org.hyperic.hq.hqapi1.types.DeleteResourceResponse;
 
 /**
  * The Hyperic HQ Resource API.
@@ -351,5 +352,25 @@ public class ResourceApi extends BaseApi {
         params.put("childrenOfId", Integer.toString(r.getId()));
         return doGet("resource/find.hqu", params,
                      FindResourcesResponse.class);
+    }
+
+    /**
+     * Delete the given {@link Resource}.
+     *
+     * @param id The id of the {@link org.hyperic.hq.hqapi1.types.Resource} to delete.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the list of Resources are returned via
+     * {@link org.hyperic.hq.hqapi1.types.FindResourcesResponse#getResource()}.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public DeleteResourceResponse deleteResource(int id)
+        throws IOException
+    {
+        Map<String,String> params = new HashMap<String, String>();
+        params.put("id", Integer.toString(id));
+        return doGet("resource/delete.hqu", params,
+                     DeleteResourceResponse.class);
     }
 }
