@@ -33,9 +33,16 @@ public class ResourceCreateService_test extends ResourceTestBase {
 
         FindResourcesResponse resourcesResponse = api.findResources(a);
         hqAssertSuccess(resourcesResponse);
+        assertTrue("Did not find a single platform for " + a.getAddress() + ":" +
+                   a.getPort(), resourcesResponse.getResource().size() == 1);
+        Resource platform = resourcesResponse.getResource().get(0);
+
+        FindResourcesResponse childResourcesResponse = api.findResourceChildren(platform);
+        hqAssertSuccess(childResourcesResponse);
+
         String PARENT_TYPE = "Net Services";
         Resource parent = null;
-        for (Resource r : resourcesResponse.getResource()) {
+        for (Resource r : childResourcesResponse.getResource()) {
             if (r.getResourcePrototype().getName().equals("Net Services")) {
                 parent = r;
                 break;
