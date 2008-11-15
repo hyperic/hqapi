@@ -256,10 +256,11 @@ class ResourceController extends ApiController {
 
         if (!resource) {
             renderXml() {
-                DeleteResorceResponse() {
+                DeleteResourceResponse() {
                     out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
                 }
             }
+            return
         }
 
         try {
@@ -271,6 +272,7 @@ class ResourceController extends ApiController {
                     out << getFailureXML(ErrorCode.UNEXPECTED_ERROR)
                 }
             }
+            return
         }
 
         renderXml() {
