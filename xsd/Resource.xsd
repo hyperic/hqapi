@@ -1,7 +1,14 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
     <xs:include schemaLocation="Response.xsd"/>
+    <xs:include schemaLocation="Agent.xsd"/>
 
+    <xs:complexType name="IP">
+        <xs:attribute name="address" type="xs:string" use="required"/>
+        <xs:attribute name="netmask" type="xs:string" use="optional"/>
+        <xs:attribute name="mac"     type="xs:string" use="optional"/>
+    </xs:complexType>
+    
     <xs:complexType name="ResourcePrototype">
         <xs:attribute name="id"     type="xs:int"    use="required"/>
         <xs:attribute name="name"   type="xs:string" use="required"/>
@@ -45,6 +52,37 @@
                     </xs:sequence>
                 </xs:extension>
             </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+
+    <xs:element name="CreatePlatformRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Agent" type="Agent"/>
+                <xs:element name="PlatformPrototype" type="ResourcePrototype"/>
+                <!-- XXX: More to do here.. -->
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateServerRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Parent" type="Resource"/>
+                <xs:element name="ServerPrototype" type="ResourcePrototype"/>
+                <!-- XXX: More to do here.. -->
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateServiceRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Parent" type="Resource"/>
+                <xs:element name="Service" type="Resource"/>
+                <xs:element name="ServicePrototype" type="ResourcePrototype"/>
+            </xs:sequence>
         </xs:complexType>
     </xs:element>
 

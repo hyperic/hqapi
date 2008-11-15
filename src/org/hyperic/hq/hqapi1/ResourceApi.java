@@ -5,18 +5,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.hyperic.hq.hqapi1.types.Agent;
-import org.hyperic.hq.hqapi1.types.Config;
 import org.hyperic.hq.hqapi1.types.CreateResourceResponse;
 import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
 import org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.GetResourceResponse;
 import org.hyperic.hq.hqapi1.types.ListResourcePrototypesResponse;
-import org.hyperic.hq.hqapi1.types.Platform;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
-import org.hyperic.hq.hqapi1.types.SyncPlatformRequest;
-import org.hyperic.hq.hqapi1.types.SyncPlatformResponse;
+import org.hyperic.hq.hqapi1.types.CreateServiceRequest;
+import org.hyperic.hq.hqapi1.types.ResourceConfig;
+import org.hyperic.hq.hqapi1.types.CreatePlatformRequest;
+import org.hyperic.hq.hqapi1.types.CreateServerRequest;
 
 /**
  * The Hyperic HQ Resource API.
@@ -102,30 +102,20 @@ public class ResourceApi extends BaseApi {
      * 
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public SyncPlatformResponse createPlatform(Agent agent,
-                                               ResourcePrototype type,
-                                               String name,
-                                               String fqdn,
-                                               Map configs)
+    public CreateResourceResponse createPlatform(Agent agent,
+                                                 ResourcePrototype type,
+                                                 String name,
+                                                 String fqdn,
+                                                 Map configs)
         throws IOException
-    {        
-        Platform plat = new Platform();
-        plat.setResourceType(type.getName());
-        plat.setAgent(agent);
-        plat.setName(name);
-        plat.setFqdn(fqdn);
+    {
 
-        for (Object o : configs.entrySet()) {
-            Map.Entry entry = (Map.Entry) o;
-            Config config = new Config();
-            config.setKey(entry.getKey().toString());
-            config.setValue(entry.getValue().toString());
-        }
-        
-        SyncPlatformRequest req = new SyncPlatformRequest();
-        req.setPlatform(plat);
-        return doPost("resource/syncPlatform.hqu", req,
-                      SyncPlatformResponse.class);
+        CreatePlatformRequest request = new CreatePlatformRequest();
+        request.setAgent(agent);
+        request.setPlatformPrototype(type);
+
+        return doPost("resource/createPlatform.hqu", request,
+                      CreateResourceResponse.class);
     }
 
     /**
@@ -150,16 +140,21 @@ public class ResourceApi extends BaseApi {
                                                Map config)
         throws IOException
     {
-        return doPost("resource/syncServer.hqu", null,
+        CreateServerRequest request = new CreateServerRequest();
+        request.setParent(parent);
+        request.setServerPrototype(type);
+
+        return doPost("resource/createServer.hqu", request,
                       CreateResourceResponse.class);
     }
 
     /**
      * Create a Service {@link Resource} with the given name.
      *
-     * @param type The resource prototype for the resource to be created.
-     * @param parent The parent resource for the created resource.
+     * @param type The {@link ResourcePrototype} for the resource to be created.
+     * @param parent The parent {@link Resource} for the created resource.
      * @param name The name of the resource to create.
+     * @param description The description of the resource to create.
      * @param config The configuration for the service.
      * 
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
@@ -171,10 +166,26 @@ public class ResourceApi extends BaseApi {
     public CreateResourceResponse createService(ResourcePrototype type,
                                                 Resource parent,
                                                 String name,
-                                                Map config)
+                                                String description,
+                                                Map<String,String> config)
         throws IOException
     {
-        return doPost("resource/syncService.hqu", null,
+        Resource service = new Resource();
+        service.setName(name);
+        service.setDescription(description);
+        for (String k : config.keySet()) {
+            ResourceConfig c = new ResourceConfig();
+            c.setKey(k);
+            c.setValue(config.get(k));
+            service.getResourceConfig().add(c);
+        }
+
+        CreateServiceRequest request = new CreateServiceRequest();
+        request.setParent(parent);
+        request.setService(service);
+        request.setServicePrototype(type);
+
+        return doPost("resource/createService.hqu", request,
                       CreateResourceResponse.class);
     }
 

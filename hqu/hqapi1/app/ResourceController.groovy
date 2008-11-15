@@ -54,16 +54,7 @@ class ResourceController extends ApiController {
     }
 
     // TODO: Implement
-    def syncPlatform(params) {
-        renderXml() {
-            out << SyncPlatformResponse() {
-                out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
-            }
-        }
-    }
-
-    // TODO: Implement
-    def syncServer(params) {
+    def createPlatform(params) {
         renderXml() {
             out << CreateResourceResponse() {
                 out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
@@ -72,7 +63,38 @@ class ResourceController extends ApiController {
     }
 
     // TODO: Implement
-    def syncService(params) {
+    def createServer(params) {
+        renderXml() {
+            out << CreateResourceResponse() {
+                out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
+            }
+        }
+    }
+
+    def createService(params) {
+        def createRequest = new XmlParser().parseText(getUpload('postdata'))
+        def xmlParent = createRequest['Parent']
+        def xmlService = createRequest['Service']
+        def xmlServicePrototype = createRequest['ServicePrototype']
+
+        if (!xmlParent || xmlParent.size() != 1 ||
+            !xmlService || xmlService.size() != 1 ||
+            !xmlServicePrototype || xmlServicePrototype.size() != 1) {
+            renderXml() {
+                CreateRoleResponse() {
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                }
+            }
+            return
+        }
+
+        def parent = xmlParent[0]
+        def service = xmlService[0]
+        def servicePrototype = xmlServicePrototype[0]
+
+        log.info("Found parent=" + parent.'@name' + " service=" +
+                 service.'@name' + " type=" + servicePrototype.'@name')
+
         renderXml() {
             out << CreateResourceResponse() {
                 out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
