@@ -25,6 +25,27 @@ class ResourceController extends ApiController {
         }
     }
 
+    /**
+     * Get the resource based on the given id.  If the resource is not found,
+     * null is returned.
+     */
+    private getResource(id) {
+        def resource = resourceHelper.findById(id)
+
+        if (!resource) {
+            return null
+        } else {
+            //XXX: ResourceHelper needs some work here..
+            try {
+                resource.name // Check the object really exists
+                resource.entityId // Check the object is an appdef object
+                return resource
+            } catch (Throwable t) {
+                return null
+            }
+        }
+    }
+
     def listResourcePrototypes(params) {
         def prototypes = resourceHelper.findAllAppdefPrototypes()
         
@@ -83,23 +104,51 @@ class ResourceController extends ApiController {
             !xmlService || xmlService.size() != 1 ||
             !xmlServicePrototype || xmlServicePrototype.size() != 1) {
             renderXml() {
-                CreateRoleResponse() {
+                CreateResourceResponse() {
                     out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
                 }
             }
             return
         }
 
-        def parent = xmlParent[0]
-        def service = xmlService[0]
-        def servicePrototype = xmlServicePrototype[0]
+        def parent = getResource(xmlParent[0].'@id'.toInteger())
+        def prototype = resourceHelper.find(prototype: xmlServicePrototype[0].'@name')
 
-        log.info("Found parent=" + parent.'@name' + " service=" +
-                 service.'@name' + " type=" + servicePrototype.'@name')
+        if (!parent || !prototype) {
+            renderXml() {
+                CreateResourceResponse() {
+                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                }
+            }
+        }
 
+        def serviceXml = xmlService[0]
+        def cfgXml = serviceXml['ResourceConfig']
+        def cfg = [:]
+        cfgXml.each { c ->
+            cfg.put(c.'@key', c.'@value')
+        }
+
+        def service
+        try {
+            service = prototype.createInstance(parent, serviceXml.'@name',
+                                               user, cfg)
+        } catch (Exception e) {
+            // XXX: duplicate service not handled properly, but assume that's
+            //      the case.
+            renderXml() {
+                CreateResourceResponse() {
+                    out << getFailureXML(ErrorCode.OBJECT_EXISTS);
+                }
+            }
+            log.debug("Error creating service", e)
+            return
+        }
+        
         renderXml() {
-            out << CreateResourceResponse() {
-                out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
+            CreateResourceResponse() {
+                out << getSuccessXML()                
+                out << getResourceXML(service)
             }
         }
     }
@@ -175,19 +224,11 @@ class ResourceController extends ApiController {
             } else if (prototype) {
                 resources = resourceHelper.find('byPrototype': prototype)
             } else if (childrenOfId) {
-                def resource = resourceHelper.findById(childrenOfId)
-
+                def resource = getResource(childrenOfId)
                 if (!resource) {
                     failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
                 } else {
-                    //XXX: ResourceHelper needs some work here..
-                    try {
-                        resource.name // Check the object really exists
-                        resource.entityId // Check the object is an appdef object
-                        resources = resource.getViewableChildren(user)
-                    } catch (Throwable t) {
-                        failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
-                    }
+                    resources = resource.getViewableChildren(user)
                 }
             } else {
                 // Shouldn't happen

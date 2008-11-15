@@ -10,6 +10,7 @@ import org.hyperic.hq.hqapi1.types.CreateResourceResponse;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class ResourceCreateService_test extends ResourceTestBase {
 
@@ -27,34 +28,19 @@ public class ResourceCreateService_test extends ResourceTestBase {
 
         ResourceApi api = getApi().getResourceApi();
 
+        // Find HTTP resource type
         GetResourcePrototypeResponse protoResponse = api.getResourcePrototype("HTTP");
         hqAssertSuccess(protoResponse);
         ResourcePrototype pt = protoResponse.getResourcePrototype();
 
+        // Find local platform
         FindResourcesResponse resourcesResponse = api.findResources(a);
         hqAssertSuccess(resourcesResponse);
         assertTrue("Did not find a single platform for " + a.getAddress() + ":" +
                    a.getPort(), resourcesResponse.getResource().size() == 1);
         Resource platform = resourcesResponse.getResource().get(0);
 
-        FindResourcesResponse childResourcesResponse = api.findResourceChildren(platform);
-        hqAssertSuccess(childResourcesResponse);
-
-        String PARENT_TYPE = "Net Services";
-        Resource parent = null;
-        for (Resource r : childResourcesResponse.getResource()) {
-            if (r.getResourcePrototype().getName().equals("Net Services")) {
-                parent = r;
-                break;
-            }
-        }
-
-        if (parent == null) {
-            getLog().error("Unable to find server of type " + PARENT_TYPE +
-                           " skipping test.");
-            return;
-        }
-
+        // Configure service
         Map<String,String> params = new HashMap<String,String>();
         params.put("hostname", "www.hyperic.com");
         params.put("port", "80");
@@ -62,10 +48,13 @@ public class ResourceCreateService_test extends ResourceTestBase {
         params.put("path", "/");
         params.put("method", "GET");
 
-        CreateResourceResponse resp =
-                api.createService(pt, parent, "My HTTP Check",
-                                  "A test service created by the test suite",
-                                  params);
-        hqAssertFailureNotImplemented(resp);
+        Random r = new Random();
+        String name = "My HTTP Check " + r.nextInt();
+
+        CreateResourceResponse resp = api.createService(pt, platform, name,
+                                                        params);
+        hqAssertSuccess(resp);
+        Resource createdResource = resp.getResource();
+        assertEquals(createdResource.getName(), name);
     }
 }

@@ -154,7 +154,6 @@ public class ResourceApi extends BaseApi {
      * @param type The {@link ResourcePrototype} for the resource to be created.
      * @param parent The parent {@link Resource} for the created resource.
      * @param name The name of the resource to create.
-     * @param description The description of the resource to create.
      * @param config The configuration for the service.
      * 
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
@@ -166,13 +165,11 @@ public class ResourceApi extends BaseApi {
     public CreateResourceResponse createService(ResourcePrototype type,
                                                 Resource parent,
                                                 String name,
-                                                String description,
                                                 Map<String,String> config)
         throws IOException
     {
         Resource service = new Resource();
         service.setName(name);
-        service.setDescription(description);
         for (String k : config.keySet()) {
             ResourceConfig c = new ResourceConfig();
             c.setKey(k);
