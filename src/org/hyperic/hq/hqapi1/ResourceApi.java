@@ -200,11 +200,11 @@ public class ResourceApi extends BaseApi {
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public GetResourceResponse getResource(Integer id)
+    public GetResourceResponse getResource(int id)
         throws IOException
     {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("id", id.toString());
+        params.put("id", Integer.toString(id));
         return doGet("resource/get.hqu", params,
                      GetResourceResponse.class);
     }
@@ -220,11 +220,11 @@ public class ResourceApi extends BaseApi {
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public GetResourceResponse getResourceForPlatform(Integer id)
+    public GetResourceResponse getResourceForPlatform(int id)
         throws IOException
     {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("platformId", id.toString());
+        params.put("platformId", Integer.toString(id));
         return doGet("resource/get.hqu", params,
                      GetResourceResponse.class);
     }
@@ -261,11 +261,11 @@ public class ResourceApi extends BaseApi {
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public GetResourceResponse getResourceForServer(Integer id)
+    public GetResourceResponse getResourceForServer(int id)
         throws IOException
     {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("serverId", id.toString());
+        params.put("serverId", Integer.toString(id));
         return doGet("resource/get.hqu", params,
                      GetResourceResponse.class);
     }
@@ -281,11 +281,11 @@ public class ResourceApi extends BaseApi {
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public GetResourceResponse getResourceForService(Integer id)
+    public GetResourceResponse getResourceForService(int id)
         throws IOException
     {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("serviceId", id.toString());
+        params.put("serviceId", Integer.toString(id));
         return doGet("resource/get.hqu", params,
                      GetResourceResponse.class);
     }
