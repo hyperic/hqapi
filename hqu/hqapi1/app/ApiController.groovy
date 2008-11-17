@@ -45,6 +45,22 @@ class ApiController extends BaseController {
         }
     }
 
+    protected Closure getResourceXML(r) {
+        { doc ->
+            Resource(id : r.id,
+                     name : r.name,
+                     description : r.description) {
+                r.getConfig().each { k, v ->
+                    if (v.type.equals("configResponse")) {
+                        ResourceConfig(key: k, value: v.value)
+                    }
+                }
+                ResourcePrototype(id : r.prototype.id,
+                                  name : r.prototype.name)
+            }
+        }
+    }
+    
     /**
      * Get a User by id or name
      * @return The user by the given id.  If the passed in id is null then

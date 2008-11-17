@@ -2,22 +2,6 @@ import org.hyperic.hq.hqapi1.ErrorCode;
 
 class ResourceController extends ApiController {
 
-    private Closure getResourceXML(r) {
-        { doc ->
-            Resource(id : r.id,
-                     name : r.name,
-                     description : r.description) {
-                r.getConfig().each { k, v ->
-                    if (v.type.equals("configResponse")) {
-                        ResourceConfig(key: k, value: v.value)
-                    }
-                }
-                ResourcePrototype(id : r.prototype.id,
-                                  name : r.prototype.name)
-            }
-        }
-    }
-
     private Closure getPrototypeXML(p) {
         { doc -> 
             ResourcePrototype(id   : p.id,
@@ -242,7 +226,7 @@ class ResourceController extends ApiController {
                     out << failureXml
                 } else {
                     out << getSuccessXML()
-                    for (resource in resources) {
+                    for (resource in resources.sort {a, b -> a.name <=> b.name}) {
                         out << getResourceXML(resource)
                     }
                 }
