@@ -59,7 +59,7 @@ public class GroupApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public DeleteGroupResponse deleteGroup(Integer id)
+    public DeleteGroupResponse deleteGroup(int id)
         throws IOException
     {
         Map<String,String> params = new HashMap<String,String>();
@@ -91,8 +91,7 @@ public class GroupApi extends BaseApi {
     }
 
     /**
-     * List all the Groups in HQ visible by the login.<br><b>This API is
-     * not yet availabile.  It will return an not implemented error.</b>
+     * List all {@link org.hyperic.hq.hqapi1.types.Group}s.
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if 
      * all the groups were successfully retrieved from the server.
@@ -107,8 +106,7 @@ public class GroupApi extends BaseApi {
     }
 
     /**
-     * List all the Resources associated with a {@link Group}.<br><b>This API is
-     * not yet availabile.  It will return an not implemented error.</b>
+     * List all the Resources associated with a {@link Group}.
      *
      * @param groupId The {@link org.hyperic.hq.hqapi1.types.Group} id to query.
      *
