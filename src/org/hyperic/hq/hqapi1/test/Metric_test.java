@@ -44,9 +44,14 @@ public class Metric_test extends MetricTestBase {
         ListMetricsResponse resp = api.listMetrics(_r);
         hqAssertSuccess(resp);
 
+        int numNotDefaultOn = 0;
         for (Metric m : resp.getMetric()) {
             validateMetric(m);
+            if (!m.isDefaultOn()) {
+                numNotDefaultOn++;
+            }
         }
+        assertTrue("All metrics are defaultOn", numNotDefaultOn > 0);
     }
 
     public void testMetricById() throws Exception {
