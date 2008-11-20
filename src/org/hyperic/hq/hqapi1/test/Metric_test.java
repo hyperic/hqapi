@@ -11,8 +11,14 @@ import org.hyperic.hq.hqapi1.types.ListMetricsResponse;
 
 public class Metric_test extends MetricTestBase {
 
+    private Resource _r;
+
     public Metric_test(String name) {
         super(name);
+    }
+
+    public void setUp() throws Exception {
+        _r = getResource();
     }
 
     protected void validateMetric(Metric m) throws Exception {
@@ -28,14 +34,13 @@ public class Metric_test extends MetricTestBase {
         
     public void testMetricList() throws Exception {
 
-        Resource r = getResource();
-        if (r == null) {
+        if (_r == null) {
             getLog().error("Unable to find the local platform, skipping test");
             return;
         }
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricsResponse resp = api.listMetrics(r);
+        ListMetricsResponse resp = api.listMetrics(_r);
         hqAssertSuccess(resp);
 
         for (Metric m : resp.getMetric()) {
@@ -45,17 +50,16 @@ public class Metric_test extends MetricTestBase {
 
     public void testMetricById() throws Exception {
 
-        Resource r = getResource();
-        if (r == null) {
+        if (_r == null) {
             getLog().error("Unable to find the local platform, skipping test");
             return;
         }
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricsResponse resp = api.listMetrics(r);
+        ListMetricsResponse resp = api.listMetrics(_r);
         hqAssertSuccess(resp);
 
-        assertFalse("Resource " + r.getName() + " has no metrics",
+        assertFalse("Resource " + _r.getName() + " has no metrics",
                    resp.getMetric().size() == 0);
 
         for (Metric m : resp.getMetric()) {
@@ -66,17 +70,17 @@ public class Metric_test extends MetricTestBase {
     }
 
     public void testMetricDisableEnable() throws Exception {
-        Resource r = getResource();
-        if (r == null) {
+
+        if (_r == null) {
             getLog().error("Unable to find the local platform, skipping test");
             return;
         }
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricsResponse resp = api.listMetrics(r);
+        ListMetricsResponse resp = api.listMetrics(_r);
         hqAssertSuccess(resp);
 
-        assertFalse("Resource " + r.getName() + " has no metrics",
+        assertFalse("Resource " + _r.getName() + " has no metrics",
                    resp.getMetric().size() == 0);
 
         Metric m = resp.getMetric().get(0);
@@ -105,16 +109,15 @@ public class Metric_test extends MetricTestBase {
 
     public void testMetricSetInterval() throws Exception {
 
-        Resource r = getResource();
-        if (r == null) {
+        if (_r == null) {
             getLog().error("Unable to find the local platform, skipping test");
             return;
         }
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricsResponse resp = api.listMetrics(r);
+        ListMetricsResponse resp = api.listMetrics(_r);
         hqAssertSuccess(resp);
-        assertFalse("Resource " + r.getName() + " has no metrics",
+        assertFalse("Resource " + _r.getName() + " has no metrics",
                    resp.getMetric().size() == 0);
 
         Metric m = resp.getMetric().get(0);
@@ -144,16 +147,15 @@ public class Metric_test extends MetricTestBase {
 
     public void testMetricSetInvalidInterval() throws Exception {
 
-        Resource r = getResource();
-        if (r == null) {
+        if (_r == null) {
             getLog().error("Unable to find the local platform, skipping test");
             return;
         }
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricsResponse resp = api.listMetrics(r);
+        ListMetricsResponse resp = api.listMetrics(_r);
         hqAssertSuccess(resp);
-        assertFalse("Resource " + r.getName() + " has no metrics",
+        assertFalse("Resource " + _r.getName() + " has no metrics",
                    resp.getMetric().size() == 0);
         
         Metric m = resp.getMetric().get(0);
