@@ -68,11 +68,10 @@ public class Metric_test extends MetricTestBase {
         assertFalse("Resource " + _r.getName() + " has no metrics",
                    resp.getMetric().size() == 0);
 
-        for (Metric m : resp.getMetric()) {
-            GetMetricResponse metricResponse = api.getMetric(m.getId());
-            hqAssertSuccess(metricResponse);
-            validateMetric(metricResponse.getMetric());  
-        }
+        Metric m = resp.getMetric().get(0);
+        GetMetricResponse metricResponse = api.getMetric(m.getId());
+        hqAssertSuccess(metricResponse);
+        validateMetric(metricResponse.getMetric());  
     }
 
     public void testMetricDisableEnable() throws Exception {
