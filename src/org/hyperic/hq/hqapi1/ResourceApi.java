@@ -155,7 +155,9 @@ public class ResourceApi extends BaseApi {
      * Create a Service {@link Resource} with the given name.
      *
      * @param type The {@link ResourcePrototype} for the resource to be created.
-     * @param parent The parent {@link Resource} for the created resource.
+     * @param parent The parent {@link Resource} for the created resource. In
+     * the case of platform service checks like HTTP, the parent resource
+     * will be the platform Resource.
      * @param name The name of the resource to create.
      * @param config The configuration for the service.
      * 
