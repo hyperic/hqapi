@@ -69,6 +69,7 @@ class GroupController extends ApiController {
                     out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND);
                 }
             }
+            return
         }
 
         def resources = group.resources
