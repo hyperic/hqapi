@@ -1,6 +1,5 @@
 import org.hyperic.hq.hqu.rendit.BaseController
 
-import org.hyperic.hq.authz.shared.PermissionException
 import org.hyperic.hq.hqapi1.ErrorCode;
 
 class MetricController extends ApiController {
@@ -54,16 +53,24 @@ class MetricController extends ApiController {
 
     def disableMetric(params) {
         def failureXml
+        def metric
         def metricId = params.getOne("id")?.toInteger()
         if (!metricId) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+        } else {
+            metric = metricHelper.findMeasurementById(metricId)
+            if (!metric) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+            } else {
+                try {
+                    metric.disableMeasurement(user)
+                } catch (Exception e) {
+                    log.error("UnexpectedError: " + e.getMessage(), e)
+                    failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+                }
+            }
         }
-        try {
-            metricHelper.disableMeasurement(metricId);
-        } catch (Exception e) {
-            log.error("UnexpectedError: " + e.getMessage(), e);
-            failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
-        }
+
         renderXml() {
             DisableMetricResponse() {
                 if (failureXml) {
@@ -83,14 +90,19 @@ class MetricController extends ApiController {
         if (!resourceId) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
-            try {
-                def res = resourceHelper.findById(resourceId)
-                metrics = res.metrics
-            } catch (Exception e) {
-                log.error("UnexpectedError: " + e.getMessage(), e);
-                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+            def res = getResource(resourceId)
+            if (!res) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+            } else {
+                try {
+                    metrics = res.metrics
+                } catch (Exception e) {
+                    log.error("UnexpectedError: " + e.getMessage(), e)
+                    failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+                }
             }
         }
+
         renderXml() {
             ListMetricsResponse() {
                 if (failureXml) {
@@ -111,16 +123,19 @@ class MetricController extends ApiController {
         def metricId = params.getOne("id")?.toInteger()
 
         if (!metricId) {
-            log.error("Invalid Params: no metric id")
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+        } else {
+            try {
+                metric = metricHelper.findMeasurementById(metricId);
+                if (!metric) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                }
+            } catch (Exception e) {
+                log.error("UnexpectedError: " + e.getMessage(), e)
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+            }
         }
-        try {
-            metric = metricHelper.findMeasurementById(metricId);
-        } catch (Exception e) {
-            log.error("UnexpectedError: " + e.getMessage(), e);
-            failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
-        }
-
+        
         renderXml() {
             GetMetricResponse() {
                 if (failureXml) {
@@ -137,20 +152,24 @@ class MetricController extends ApiController {
         def failureXml = null
         def metricId = params.getOne("id")?.toInteger()
         def interval = params.getOne("interval")?.toLong()
+
         if (!metricId || !interval) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
-        }
-
-        if (!validInterval(interval)) {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS);
-        }
-
-        if (!failureXml) {
-            try {
-                metricHelper.enableMeasurement(metricId, interval);
-            } catch (Exception e) {
-                log.error("UnexpectedError: " + e.getMessage(), e);
-                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+        } else {
+            if (!validInterval(interval)) {
+                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+            } else {
+                def metric = metricHelper.findMeasurementById(metricId)
+                if (!metric) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                } else {
+                    try {
+                        metric.enableMeasurement(user, interval)
+                    } catch (Exception e) {
+                        log.error("UnexpectedError: " + e.getMessage(), e)
+                        failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+                    }
+                }
             }
         }
 
@@ -172,18 +191,21 @@ class MetricController extends ApiController {
 
         if (!metricId || !interval) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
-        }
-
-        if (!validInterval(interval)) {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS);
-        }
-
-        if (!failureXml) {
-            try {
-                metricHelper.updateMeasurementInterval(metricId, interval);
-            } catch (Exception e) {
-                log.error("UnexpectedError: " + e.getMessage(), e);
-                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+        } else {
+            if (!validInterval(interval)) {
+                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+           } else {
+                def metric = metricHelper.findMeasurementById(metricId)
+                if (!metric) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                } else {
+                    try {
+                        metric.updateMeasurementInterval(user, interval)
+                    } catch (Exception e) {
+                        log.error("UnexpectedError: " + e.getMessage(), e)
+                        failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+                    }
+                }
             }
         }
 
@@ -202,15 +224,23 @@ class MetricController extends ApiController {
         def failureXml
         def templateId = params.getOne("templateId")?.toInteger()
         def on = params.getOne("on")?.toBoolean()
+
         if (!templateId) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+        } else {
+            def template = metricHelper.findTemplateById(templateId)
+            if (!template) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+            } else {
+                try {
+                    template.setDefaultOn(user, on)
+                } catch (Exception e) {
+                    log.error("UnexpectedError: " + e.getMessage(), e)
+                    failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+                }
+            }
         }
-        try {
-            metricHelper.setDefaultOn(templateId, on);
-        } catch (Exception e) {
-            log.error("UnexpectedError: " + e.getMessage(), e);
-            failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
-        }
+        
         renderXml() {
             SetMetricDefaultOnResponse() {
                 if (failureXml) {
@@ -226,15 +256,23 @@ class MetricController extends ApiController {
         def failureXml
         def templateId = params.getOne("templateId")?.toInteger()
         def on = params.getOne("on")?.toBoolean()
+
         if (!templateId) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+        } else {
+            def template = metricHelper.findTemplateById(templateId)
+            if (!template) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+            } else {
+                try {
+                    template.setDefaultIndicator(user, on)
+                } catch (Exception e) {
+                    log.error("UnexpectedError: " + e.getMessage(), e)
+                    failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+                }
+            }
         }
-        try {
-            metricHelper.setDefaultIndicator(templateId, on);
-        } catch (Exception e) {
-            log.error("UnexpectedError: " + e.getMessage(), e);
-            failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
-        }
+
         renderXml() {
             SetMetricDefaultIndicatorResponse() {
                 if (failureXml) {
@@ -250,20 +288,24 @@ class MetricController extends ApiController {
         def failureXml = null
         def templateId = params.getOne("templateId")?.toInteger()
         def interval = params.getOne("interval")?.toInteger()
+
         if (!templateId || !interval) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
-        }
-
-        if (!validInterval(interval)) {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS);
-        }
-
-        if (!failureXml) {
-            try {
-                metricHelper.setDefaultInterval(templateId, interval);
-            } catch (Exception e) {
-                log.error("UnexpectedError: " + e.getMessage(), e);
-                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+        } else {
+            if (!validInterval(interval)) {
+                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+            } else {
+                def template = metricHelper.findTemplateById(templateId)
+                if (!template) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                } else {
+                    try {
+                        template.setDefaultInterval(user, interval)
+                    } catch (Exception e) {
+                        log.error("UnexpectedError: " + e.getMessage(), e)
+                        failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+                    }
+                }
             }
         }
         
@@ -292,10 +334,14 @@ class MetricController extends ApiController {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         }
 
+        def metric = metricHelper.findMeasurementById(metricId)
+        if (!metric) {
+            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+        }
+
         def data;
         if (!failureXml) {
             try {
-                def metric = metricHelper.findMeasurementById(metricId);
                 data = metric.getData(start, end)
             } catch (Exception e) {
                 log.error("UnexpectedError: " + e.getMessage(), e);
