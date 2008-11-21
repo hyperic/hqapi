@@ -54,6 +54,14 @@ public class Metric_test extends MetricTestBase {
         assertTrue("All metrics are defaultOn", numNotDefaultOn > 0);
     }
 
+    public void testMetricListBadResourceId() throws Exception {
+        MetricApi api = getApi().getMetricApi();
+        Resource r = new Resource();
+        r.setId(Integer.MAX_VALUE);
+        ListMetricsResponse resp = api.listMetrics(r);
+        hqAssertFailureObjectNotFound(resp);
+    }
+
     public void testMetricById() throws Exception {
 
         if (_r == null) {
@@ -72,6 +80,13 @@ public class Metric_test extends MetricTestBase {
         GetMetricResponse metricResponse = api.getMetric(m.getId());
         hqAssertSuccess(metricResponse);
         validateMetric(metricResponse.getMetric());  
+    }
+
+    public void testMetricByBadId() throws Exception {
+
+        MetricApi api = getApi().getMetricApi();
+        GetMetricResponse metricResponse = api.getMetric(Integer.MAX_VALUE);
+        hqAssertFailureObjectNotFound(metricResponse);
     }
 
     public void testMetricDisableEnable() throws Exception {
@@ -112,6 +127,22 @@ public class Metric_test extends MetricTestBase {
                    metricResponse.getMetric().isEnabled());
     }
 
+    public void testMetricDisableBadId() throws Exception {
+        MetricApi api = getApi().getMetricApi();
+        Metric m = new Metric();
+        m.setId(Integer.MAX_VALUE);
+        DisableMetricResponse disableMetricResponse = api.disableMetric(m);
+        hqAssertFailureObjectNotFound(disableMetricResponse);
+    }
+
+    public void testMetricEnableBadId() throws Exception {
+        MetricApi api = getApi().getMetricApi();
+        Metric m = new Metric();
+        m.setId(Integer.MAX_VALUE);
+        EnableMetricResponse enableResponse = api.enableMetric(m, 60000);
+        hqAssertFailureObjectNotFound(enableResponse);
+    }
+
     public void testMetricSetInterval() throws Exception {
 
         if (_r == null) {
@@ -148,6 +179,14 @@ public class Metric_test extends MetricTestBase {
         hqAssertSuccess(metricResponse);
         assertEquals(metricResponse.getMetric().getInterval(),
                      metricResponse.getMetric().getMetricTemplate().getDefaultInterval());
+    }
+
+    public void testMetricSetIntervalBadId() throws Exception {
+        MetricApi api = getApi().getMetricApi();
+        Metric m = new Metric();
+        m.setId(Integer.MAX_VALUE);
+        SetMetricIntervalResponse intervalResp = api.setInterval(m, 60000);
+        hqAssertFailureObjectNotFound(intervalResp);
     }
 
     public void testMetricSetInvalidInterval() throws Exception {

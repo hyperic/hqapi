@@ -22,14 +22,15 @@ public class MetricTemplate_test extends MetricTestBase {
         super.setUp();
         
         Resource r = getResource();
+        if (r != null) {
+            MetricApi api = getApi().getMetricApi();
+            ListMetricsResponse resp = api.listMetrics(r);
+            hqAssertSuccess(resp);
 
-        MetricApi api = getApi().getMetricApi();
-        ListMetricsResponse resp = api.listMetrics(r);
-        hqAssertSuccess(resp);
-
-        assertTrue("No metrics found for " + r.getName(),
-                   resp.getMetric().size() > 0);
-        _m = resp.getMetric().get(0);
+            assertTrue("No metrics found for " + r.getName(),
+                       resp.getMetric().size() > 0);
+            _m = resp.getMetric().get(0);
+        }
     }
 
     public void testSetDefaultIndicator() throws Exception {
@@ -67,6 +68,17 @@ public class MetricTemplate_test extends MetricTestBase {
         //           m.getMetricTemplate().isIndicator() == isIndicator);
     }
 
+    public void testSetDefaultIndicatorBadId() throws Exception {
+
+        MetricTemplate t = new MetricTemplate();
+        t.setId(Integer.MAX_VALUE);
+        
+        MetricApi api = getApi().getMetricApi();
+        SetMetricDefaultIndicatorResponse indicatorResponse =
+                api.setDefaultIndicator(t, true);
+        hqAssertFailureObjectNotFound(indicatorResponse);
+    }
+
     public void testSetDefaultInterval() throws Exception {
 
         if (_m == null) {
@@ -102,8 +114,18 @@ public class MetricTemplate_test extends MetricTestBase {
                    m.getMetricTemplate().getDefaultInterval() == interval);
     }
 
-    public void testSetDefaultOn() throws Exception {
+    public void testSetDefaultIntervalBadId() throws Exception {
 
+        MetricTemplate t = new MetricTemplate();
+        t.setId(Integer.MAX_VALUE);
+
+        MetricApi api = getApi().getMetricApi();
+        SetMetricDefaultIntervalResponse intervalResponse =
+                api.setDefaultInterval(t, 60000);
+        hqAssertFailureObjectNotFound(intervalResponse);
+    }
+
+    public void testSetDefaultOn() throws Exception {
 
         if (_m == null) {
             getLog().error("Unable to find local platform Metric, skipping test");
@@ -135,5 +157,16 @@ public class MetricTemplate_test extends MetricTestBase {
         assertTrue("Default on not set correctly expected=" + defaultOn +
                    " was=" + m.getMetricTemplate().isDefaultOn(),
                    m.getMetricTemplate().isDefaultOn() == defaultOn);
+    }
+
+    public void testSetDefaultOnBadId() throws Exception {
+
+        MetricTemplate t = new MetricTemplate();
+        t.setId(Integer.MAX_VALUE);
+
+        MetricApi api = getApi().getMetricApi();
+        SetMetricDefaultOnResponse defaultOnResponse =
+                api.setDefaultOn(t, true);
+        hqAssertFailureObjectNotFound(defaultOnResponse);
     }
 }
