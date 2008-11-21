@@ -54,6 +54,17 @@ public class MetricData_test extends MetricTestBase {
         }
     }
 
+    public void testGetMetricDataInvalidId() throws Exception {
+
+        MetricApi api = getApi().getMetricApi();
+        long end = System.currentTimeMillis();
+        long start = end - (8 * 60 * 60 * 1000);
+        Metric m = new Metric();
+        m.setId(Integer.MAX_VALUE);
+        GetMetricDataResponse dataResponse = api.getMetricData(m, start, end);
+        hqAssertFailureObjectNotFound(dataResponse);
+    }
+
     public void testGetMetricDataInvalidRange() throws Exception {
 
         if (_r == null) {
