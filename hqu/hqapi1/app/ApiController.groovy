@@ -60,7 +60,28 @@ class ApiController extends BaseController {
             }
         }
     }
-    
+
+    /**
+     * Get the resource based on the given id.  If the resource is not found,
+     * null is returned.
+     */
+    protected getResource(id) {
+        def resource = resourceHelper.findById(id)
+
+        if (!resource) {
+            return null
+        } else {
+            //XXX: ResourceHelper needs some work here..
+            try {
+                resource.name // Check the object really exists
+                resource.entityId // Check the object is an appdef object
+                return resource
+            } catch (Throwable t) {
+                return null
+            }
+        }
+    }
+
     /**
      * Get a User by id or name
      * @return The user by the given id.  If the passed in id is null then

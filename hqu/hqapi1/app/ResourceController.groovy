@@ -9,27 +9,6 @@ class ResourceController extends ApiController {
         }
     }
 
-    /**
-     * Get the resource based on the given id.  If the resource is not found,
-     * null is returned.
-     */
-    private getResource(id) {
-        def resource = resourceHelper.findById(id)
-
-        if (!resource) {
-            return null
-        } else {
-            //XXX: ResourceHelper needs some work here..
-            try {
-                resource.name // Check the object really exists
-                resource.entityId // Check the object is an appdef object
-                return resource
-            } catch (Throwable t) {
-                return null
-            }
-        }
-    }
-
     def listResourcePrototypes(params) {
         def prototypes = resourceHelper.findAllAppdefPrototypes()
         
