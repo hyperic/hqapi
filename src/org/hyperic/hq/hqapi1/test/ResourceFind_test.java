@@ -16,10 +16,6 @@ public class ResourceFind_test extends ResourceTestBase {
     public void testFindByAgent() throws Exception {
 
         Agent a = getRunningAgent();
-        if (a == null) {
-            getLog().warn("No local agent found, skipping test.");
-            return;
-        }
         
         ResourceApi api = getApi().getResourceApi();
         FindResourcesResponse resp = api.findResources(a);
@@ -83,10 +79,6 @@ public class ResourceFind_test extends ResourceTestBase {
     public void testFindChildren() throws Exception {
 
         Agent a = getRunningAgent();
-        if (a == null) {
-            getLog().warn("No local agent found, skipping test.");
-            return;
-        }
 
         ResourceApi api = getApi().getResourceApi();
         FindResourcesResponse resp = api.findResources(a);

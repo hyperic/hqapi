@@ -22,11 +22,6 @@ public class AgentGet_test extends HQApiTestBase {
 
         Agent agent = getRunningAgent();
 
-        if (agent == null) {
-            getLog().warn("No local agent found, skipping test.");
-            return;
-        }
-
         AgentApi api = getApi().getAgentApi();
 
         GetAgentResponse response = api.getAgent(agent.getAddress(),

@@ -89,6 +89,7 @@ public class HQApiTestBase  extends TestCase {
      * Get the locally running agent.
      *
      * @return The locally running agent or null if one does not exist.
+     * @throws Exception If a running agent could not be found.
      */
     protected Agent getRunningAgent() throws Exception {
 
@@ -96,7 +97,10 @@ public class HQApiTestBase  extends TestCase {
 
         GetAgentsResponse response = api.getAgents();
         if (response.getStatus().equals(ResponseStatus.FAILURE)) {
-            return null;
+            String err = "Error querying agents: " +
+                    response.getError().getReasonText();
+            _log.error(err);
+            throw new Exception(err);
         }
 
         for (Agent a : response.getAgent()) {
@@ -107,7 +111,9 @@ public class HQApiTestBase  extends TestCase {
             }
         }
 
-        return null;
+        String err = "No running agents found.";
+        _log.error(err);
+        throw new Exception(err);
     }
 
     // Assert SUCCESS

@@ -24,11 +24,6 @@ public class ResourceGet_test extends ResourceTestBase {
 
         Agent a = getRunningAgent();
 
-        if (a == null) {
-            getLog().warn("No local agent found, skipping test.");
-            return;
-        }
-
         ResourceApi api = getApi().getResourceApi();
 
         FindResourcesResponse findResponse = api.findResources(a);
