@@ -15,7 +15,7 @@ public class ResourceCreatePlatform_test extends ResourceTestBase {
 
     public void testCreatePlatform() throws Exception {
 
-        Agent a = getLocalAgent();
+        Agent a = getRunningAgent();
         if (a == null) {
             getLog().warn("No local agent found, skipping test.");
             return;

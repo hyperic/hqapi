@@ -20,7 +20,7 @@ public class AgentGet_test extends HQApiTestBase {
 
     public void testGetAgentValid() throws Exception {
 
-        Agent agent = getLocalAgent();
+        Agent agent = getRunningAgent();
 
         if (agent == null) {
             getLog().warn("No local agent found, skipping test.");

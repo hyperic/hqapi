@@ -15,7 +15,7 @@ public class MetricTestBase extends HQApiTestBase {
 
     protected Resource getResource() throws Exception {
 
-        Agent a = getLocalAgent();
+        Agent a = getRunningAgent();
 
         if (a == null) {
             getLog().warn("No local agent found.");

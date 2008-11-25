@@ -9,6 +9,7 @@ import org.hyperic.hq.hqapi1.types.Response;
 import org.hyperic.hq.hqapi1.types.GetAgentResponse;
 import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.PingAgentResponse;
+import org.hyperic.hq.hqapi1.types.GetAgentsResponse;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -89,30 +90,20 @@ public class HQApiTestBase  extends TestCase {
      *
      * @return The locally running agent or null if one does not exist.
      */
-    protected Agent getLocalAgent() throws Exception {
+    protected Agent getRunningAgent() throws Exception {
 
         AgentApi api = getApi().getAgentApi();
 
-        Agent agent = null;
-        GetAgentResponse response = api.getAgent("localhost", 2144);
-        if (response.getStatus().equals(ResponseStatus.SUCCESS)) {
-            agent = response.getAgent();
-        } else {
-            response = api.getAgent("127.0.0.1", 2144);
-            if (response.getStatus().equals(ResponseStatus.SUCCESS)) {
-                agent = response.getAgent();
-            }
-
+        GetAgentsResponse response = api.getAgents();
+        if (response.getStatus().equals(ResponseStatus.FAILURE)) {
+            return null;
         }
 
-        if (agent != null) {
-            PingAgentResponse pingResponse = api.pingAgent(agent);
-            if (pingResponse.getStatus().equals(ResponseStatus.SUCCESS)) {
-                if (pingResponse.isUp()) {
-                    return agent;
-                } else {
-                    _log.warn("Agent not running?");
-                }
+        for (Agent a : response.getAgent()) {
+            PingAgentResponse pingRespnse = api.pingAgent(a);
+            if (pingRespnse.getStatus().equals(ResponseStatus.SUCCESS) &&
+                pingRespnse.isUp()) {
+                return a;
             }
         }
 
