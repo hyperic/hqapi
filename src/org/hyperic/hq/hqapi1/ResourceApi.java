@@ -52,9 +52,6 @@ public class ResourceApi extends BaseApi {
      * the list of ResourcePrototypes are returned via
      * {@link org.hyperic.hq.hqapi1.types.ListResourcePrototypesResponse#getResourcePrototype()}.
      *
-     * @see ResponseStatus#SUCCESS
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     *
      * @throws java.io.IOException If a network error occurs while making the request.
      */    
     public ListResourcePrototypesResponse listResourcePrototypes() 
@@ -72,10 +69,6 @@ public class ResourceApi extends BaseApi {
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the ResourcePrototypes is returned via
      * {@link org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse#getResourcePrototype()}.
-     *
-     * @see ResponseStatus#SUCCESS
-     * @see org.hyperic.hq.hqapi1.ErrorCode#LOGIN_FAILURE
-     * @see org.hyperic.hq.hqapi1.ErrorCode#OBJECT_NOT_FOUND
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
