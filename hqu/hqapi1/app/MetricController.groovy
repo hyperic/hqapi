@@ -26,7 +26,7 @@ class MetricController extends ApiController {
         }
     }
 
-        private Closure getMetricTemplateXML(t) {
+    private Closure getMetricTemplateXML(t) {
         { doc -> 
             MetricTemplate(id              : t.id,
                            name            : t.name,
@@ -44,6 +44,20 @@ class MetricController extends ApiController {
         { doc ->
             MetricData(timestamp : d.timestamp,
                        value     : d.value)
+        }
+    }
+
+    private Closure getResourceDataXML(r) {
+        { doc ->
+            ResourceMetric(resourceId: r.resource.id,
+                           resourceName: r.resource.name,
+                           metricId: r.metric.id,
+                           metricName: r.metric.template.name) {
+                for (dp in r.data) {
+                    MetricData(timestamp : dp.timestamp,
+                               value     : dp.value)
+                }
+            }
         }
     }
 
@@ -432,18 +446,43 @@ class MetricController extends ApiController {
         def start = params.getOne("start")?.toLong()
         def end = params.getOne("end")?.toLong()
 
-        def failureXml = null
+        if ((!groupId || !templateId || !start || !end) ||
+            (end < start)) {
+            renderXml() {
+                GetMetricsDataResponse() {
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                }
+            }
+            return
+        }
 
-        if (!groupId || !templateId || !start || !end) {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+        def group = resourceHelper.findGroup(groupId)
+        def template = metricHelper.findTemplateById(templateId)
+        if (!group || !template) {
+            renderXml() {
+                GetMetricsDataResponse() {
+                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                }
+            }
+            return
+        }
+
+        def results = []
+        def members = group.resources
+        members.each { resource ->
+            def m = resource.enabledMetrics.find { it.template.id == templateId }
+            def data = []
+            if (m) {
+                data = m.getData(start, end)
+            }
+            results << [resource: resource, metric: m, data: data]
         }
 
         renderXml() {
             GetMetricsDataResponse() {
-                if (failureXml) {
-                    out << failureXml
-                } else {
-                    out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
+                out << getSuccessXML()
+                for (result in results) {
+                    out << getResourceDataXML(result)
                 }
             }
         }

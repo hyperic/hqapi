@@ -9,9 +9,14 @@ import org.hyperic.hq.hqapi1.types.GetGroupsResponse;
 import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.GetMetricsDataResponse;
 import org.hyperic.hq.hqapi1.types.MetricTemplate;
+import org.hyperic.hq.hqapi1.types.ResourcePrototype;
+import org.hyperic.hq.hqapi1.types.ListMetricTemplatesResponse;
+import org.hyperic.hq.hqapi1.types.ResourceMetric;
+import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
 import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.HQApi;
+import org.hyperic.hq.hqapi1.ResourceApi;
 
 import java.util.List;
 
@@ -101,15 +106,168 @@ public class MetricData_test extends MetricTestBase {
 
         HQApi api = getApi();
 
-        MetricTemplate t = new MetricTemplate();
-        t.setId(1);
-        Group g = new Group();
-        g.setId(1);
+        GroupApi groupApi = api.getGroupApi();
+
+        GetGroupsResponse groupsResponse = groupApi.listCompatibleGroups();
+        hqAssertSuccess(groupsResponse);
+        List<Group> compatGroups = groupsResponse.getGroup();
+        assertTrue("No compatible groups found", compatGroups.size() > 0);
+        Group g = compatGroups.get(0);
+
+        FindResourcesResponse resourcesResponse = groupApi.listResources(g.getId());
+        hqAssertSuccess(resourcesResponse);
+
+        ResourcePrototype pt = g.getResourcePrototype();
+        MetricApi metricApi = api.getMetricApi();
+        ListMetricTemplatesResponse templatesResponse = metricApi.listMetricTemplates(pt);
+        hqAssertSuccess(templatesResponse);
+        List<MetricTemplate> templates = templatesResponse.getMetricTemplate();
+        assertTrue("No templates found for " + pt.getName(), templates.size() > 0);
+
+        // Make sure the template we query is default-on
+        MetricTemplate template = null;
+        for (MetricTemplate t : templates) {
+            if (t.isDefaultOn()) {
+                template = t;
+                break;
+            }
+        }
+
+        if (template == null) {
+            throw new Exception("Could not find default on template for " +
+                                pt.getName());
+        }
+
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
 
+        GetMetricsDataResponse response = metricApi.getMetricData(g.getId(),
+                                                                  template.getId(),
+                                                                  start, end);
+        hqAssertSuccess(response);
+
+        List<ResourceMetric> metrics = response.getResourceMetric();
+        assertTrue("Number of Resources in Group does not match the number " +
+                   "of ResourceMetrics",
+                   resourcesResponse.getResource().size() == metrics.size());
+
+        for (ResourceMetric m : metrics) {
+            assertTrue(m.getMetricId() > 0);
+            assertTrue(m.getMetricName().length() > 0);
+            assertTrue(m.getResourceId() > 0);
+            assertTrue(m.getResourceName().length() > 0);
+            assertTrue(m.getMetricData().size() > 0);
+        }
+    }
+
+    public void testGetMetricGroupDataInvalidRange() throws Exception {
+
+        HQApi api = getApi();
+
+        GroupApi groupApi = api.getGroupApi();
+
+        GetGroupsResponse groupsResponse = groupApi.listCompatibleGroups();
+        hqAssertSuccess(groupsResponse);
+        List<Group> compatGroups = groupsResponse.getGroup();
+        assertTrue("No compatible groups found", compatGroups.size() > 0);
+        Group g = compatGroups.get(0);
+
+        FindResourcesResponse resourcesResponse = groupApi.listResources(g.getId());
+        hqAssertSuccess(resourcesResponse);
+
+        ResourcePrototype pt = g.getResourcePrototype();
         MetricApi metricApi = api.getMetricApi();
-        GetMetricsDataResponse response = metricApi.getMetricData(g, t, start, end);
-        hqAssertFailureNotImplemented(response);
+        ListMetricTemplatesResponse templatesResponse = metricApi.listMetricTemplates(pt);
+        hqAssertSuccess(templatesResponse);
+        List<MetricTemplate> templates = templatesResponse.getMetricTemplate();
+        assertTrue("No templates found for " + pt.getName(), templates.size() > 0);
+
+        // Make sure the template we query is default-on
+        MetricTemplate template = null;
+        for (MetricTemplate t : templates) {
+            if (t.isDefaultOn()) {
+                template = t;
+                break;
+            }
+        }
+
+        if (template == null) {
+            throw new Exception("Could not find default on template for " +
+                                pt.getName());
+        }
+
+        long end = System.currentTimeMillis();
+        long start = end - (8 * 60 * 60 * 1000);
+        // Start < End
+        GetMetricsDataResponse response = metricApi.getMetricData(g.getId(),
+                                                                  template.getId(),
+                                                                  end, start);
+        hqAssertFailureInvalidParameters(response);      
+    }
+
+    public void testGetMetricGroupDataInvalidTemplate() throws Exception {
+
+        HQApi api = getApi();
+
+        GroupApi groupApi = api.getGroupApi();
+
+        GetGroupsResponse groupsResponse = groupApi.listCompatibleGroups();
+        hqAssertSuccess(groupsResponse);
+        List<Group> compatGroups = groupsResponse.getGroup();
+        assertTrue("No compatible groups found", compatGroups.size() > 0);
+        Group g = compatGroups.get(0);
+
+        MetricApi metricApi = api.getMetricApi();
+        long end = System.currentTimeMillis();
+        long start = end - (8 * 60 * 60 * 1000);
+        GetMetricsDataResponse response = metricApi.getMetricData(g.getId(),
+                                                                  Integer.MAX_VALUE,
+                                                                  start, end);
+        hqAssertFailureObjectNotFound(response);
+    }
+
+    public void testGetMetricGroupDataInvalidGroup() throws Exception {
+
+        HQApi api = getApi();
+
+        GroupApi groupApi = api.getGroupApi();
+
+        GetGroupsResponse groupsResponse = groupApi.listCompatibleGroups();
+        hqAssertSuccess(groupsResponse);
+        List<Group> compatGroups = groupsResponse.getGroup();
+        assertTrue("No compatible groups found", compatGroups.size() > 0);
+        Group g = compatGroups.get(0);
+
+        FindResourcesResponse resourcesResponse = groupApi.listResources(g.getId());
+        hqAssertSuccess(resourcesResponse);
+
+        ResourcePrototype pt = g.getResourcePrototype();
+        MetricApi metricApi = api.getMetricApi();
+        ListMetricTemplatesResponse templatesResponse = metricApi.listMetricTemplates(pt);
+        hqAssertSuccess(templatesResponse);
+        List<MetricTemplate> templates = templatesResponse.getMetricTemplate();
+        assertTrue("No templates found for " + pt.getName(), templates.size() > 0);
+
+        // Make sure the template we query is default-on
+        MetricTemplate template = null;
+        for (MetricTemplate t : templates) {
+            if (t.isDefaultOn()) {
+                template = t;
+                break;
+            }
+        }
+
+        if (template == null) {
+            throw new Exception("Could not find default on template for " +
+                                pt.getName());
+        }
+
+        long end = System.currentTimeMillis();
+        long start = end - (8 * 60 * 60 * 1000);
+        // Start < End
+        GetMetricsDataResponse response = metricApi.getMetricData(Integer.MAX_VALUE,
+                                                                  template.getId(),
+                                                                  end, start);
+        hqAssertFailureInvalidParameters(response);
     }
 }
