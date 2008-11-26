@@ -362,4 +362,27 @@ class MetricController extends ApiController {
             }
         }
     }
+
+    def getGroupData(params) {
+        def groupId = params.getOne("groupId")?.toInteger()
+        def templateId = params.getOne("templateId")?.toInteger()
+        def start = params.getOne("start")?.toLong()
+        def end = params.getOne("end")?.toLong()
+
+        def failureXml = null
+
+        if (!groupId || !templateId || !start || !end) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+        }
+
+        renderXml() {
+            GetMetricsDataResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
+                }
+            }
+        }
+    }
 }

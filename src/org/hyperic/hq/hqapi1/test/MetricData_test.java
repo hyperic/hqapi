@@ -5,7 +5,15 @@ import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.MetricData;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ListMetricsResponse;
+import org.hyperic.hq.hqapi1.types.GetGroupsResponse;
+import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.GetMetricsDataResponse;
+import org.hyperic.hq.hqapi1.types.MetricTemplate;
 import org.hyperic.hq.hqapi1.MetricApi;
+import org.hyperic.hq.hqapi1.GroupApi;
+import org.hyperic.hq.hqapi1.HQApi;
+
+import java.util.List;
 
 public class MetricData_test extends MetricTestBase {
 
@@ -86,5 +94,21 @@ public class MetricData_test extends MetricTestBase {
         // Test end > start.
         GetMetricDataResponse dataResponse = api.getMetricData(m, end, start);
         hqAssertFailureInvalidParameters(dataResponse);
+    }
+
+    public void testGetMetricGroupData() throws Exception {
+
+        HQApi api = getApi();
+
+        MetricTemplate t = new MetricTemplate();
+        t.setId(1);
+        Group g = new Group();
+        g.setId(1);
+        long end = System.currentTimeMillis();
+        long start = end - (8 * 60 * 60 * 1000);
+
+        MetricApi metricApi = api.getMetricApi();
+        GetMetricsDataResponse response = metricApi.getMetricData(g, t, start, end);
+        hqAssertFailureNotImplemented(response);
     }
 }

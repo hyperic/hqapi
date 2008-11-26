@@ -17,6 +17,8 @@ import org.hyperic.hq.hqapi1.types.SetMetricDefaultIntervalResponse;
 import org.hyperic.hq.hqapi1.types.SetMetricDefaultOnResponse;
 import org.hyperic.hq.hqapi1.types.SetMetricIntervalResponse;
 import org.hyperic.hq.hqapi1.types.ListMetricsResponse;
+import org.hyperic.hq.hqapi1.types.GetMetricsDataResponse;
+import org.hyperic.hq.hqapi1.types.Group;
 
 /**
  * The Hyperic HQ Metric API.
@@ -264,5 +266,35 @@ public class MetricApi extends BaseApi {
 
         return doGet("metric/getData.hqu", params,
                      GetMetricDataResponse.class);
+    }
+
+
+    /**
+     * Get the {@link org.hyperic.hq.hqapi1.types.MetricData} for the given
+     * {@link org.hyperic.hq.hqapi1.types.Group} and {@link org.hyperic.hq.hqapi1.types.MetricTemplate}.
+     *
+     * @param g The Group to query.
+     * @param t The MetricTemplate to query for data.
+     * @param start The start time to query, in epoch-millis.
+     * @param end The end time to query, in epoch-millis.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
+     * if the data was succesfully queried.  The returned data can be retrieved
+     * via {@link org.hyperic.hq.hqapi1.types.GetMetricsDataResponse#getResourceMetrics()}.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public GetMetricsDataResponse getMetricData(Group g, MetricTemplate t,
+                                                long start, long end)
+        throws IOException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("groupId", Integer.toString(g.getId()));
+        params.put("templateId", Integer.toString(t.getId()));
+        params.put("start", Long.toString(start));
+        params.put("end", Long.toString(end));
+
+        return doGet("metric/getGroupData.hqu", params,
+                     GetMetricsDataResponse.class);
     }
 }
