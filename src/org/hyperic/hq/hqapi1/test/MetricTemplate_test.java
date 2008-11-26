@@ -22,23 +22,18 @@ public class MetricTemplate_test extends MetricTestBase {
         super.setUp();
         
         Resource r = getResource();
-        if (r != null) {
-            MetricApi api = getApi().getMetricApi();
-            ListMetricsResponse resp = api.listMetrics(r);
-            hqAssertSuccess(resp);
 
-            assertTrue("No metrics found for " + r.getName(),
-                       resp.getMetric().size() > 0);
-            _m = resp.getMetric().get(0);
-        }
+        MetricApi api = getApi().getMetricApi();
+        ListMetricsResponse resp = api.listMetrics(r);
+        hqAssertSuccess(resp);
+
+        assertTrue("No metrics found for " + r.getName(),
+                   resp.getMetric().size() > 0);
+        _m = resp.getMetric().get(0);
     }
 
     public void testSetDefaultIndicator() throws Exception {
 
-        if (_m == null) {
-            getLog().error("Unable to find local platform Metric, skipping test");
-            return;
-        }
         MetricTemplate t = _m.getMetricTemplate();
         boolean isIndicator = t.isIndicator();
 
@@ -78,11 +73,6 @@ public class MetricTemplate_test extends MetricTestBase {
     }
 
     public void testSetDefaultInterval() throws Exception {
-
-        if (_m == null) {
-            getLog().error("Unable to find local platform Metric, skipping test");
-            return;
-        }
 
         MetricTemplate t = _m.getMetricTemplate();
         long interval = t.getDefaultInterval();
@@ -124,11 +114,6 @@ public class MetricTemplate_test extends MetricTestBase {
     }
 
     public void testSetDefaultOn() throws Exception {
-
-        if (_m == null) {
-            getLog().error("Unable to find local platform Metric, skipping test");
-            return;
-        }
 
         MetricTemplate t = _m.getMetricTemplate();
         boolean defaultOn = t.isDefaultOn();

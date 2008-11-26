@@ -24,9 +24,10 @@ public class MetricTestBase extends HQApiTestBase {
 
         List<Resource> localPlatforms = resourceResponse.getResource();
         if (localPlatforms.size() == 0) {
-            getLog().warn("Unable to find the local platform for agent " +
-                          a.getAddress() + ":" + a.getPort());
-            return null;
+            String err = "Unable to find platform associated with agent " +
+                         a.getAddress() + ":" + a.getPort();
+            getLog().error(err);
+            throw new Exception(err);
         }
         return localPlatforms.get(0);
     }

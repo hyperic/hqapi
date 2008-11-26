@@ -35,11 +35,6 @@ public class Metric_test extends MetricTestBase {
         
     public void testMetricList() throws Exception {
 
-        if (_r == null) {
-            getLog().error("Unable to find the local platform, skipping test");
-            return;
-        }
-
         MetricApi api = getApi().getMetricApi();
         ListMetricsResponse resp = api.listMetrics(_r);
         hqAssertSuccess(resp);
@@ -55,6 +50,7 @@ public class Metric_test extends MetricTestBase {
     }
 
     public void testMetricListBadResourceId() throws Exception {
+        
         MetricApi api = getApi().getMetricApi();
         Resource r = new Resource();
         r.setId(Integer.MAX_VALUE);
@@ -63,11 +59,6 @@ public class Metric_test extends MetricTestBase {
     }
 
     public void testMetricById() throws Exception {
-
-        if (_r == null) {
-            getLog().error("Unable to find the local platform, skipping test");
-            return;
-        }
 
         MetricApi api = getApi().getMetricApi();
         ListMetricsResponse resp = api.listMetrics(_r);
@@ -90,11 +81,6 @@ public class Metric_test extends MetricTestBase {
     }
 
     public void testMetricDisableEnable() throws Exception {
-
-        if (_r == null) {
-            getLog().error("Unable to find the local platform, skipping test");
-            return;
-        }
 
         MetricApi api = getApi().getMetricApi();
         ListMetricsResponse resp = api.listMetrics(_r);
@@ -128,6 +114,7 @@ public class Metric_test extends MetricTestBase {
     }
 
     public void testMetricDisableBadId() throws Exception {
+
         MetricApi api = getApi().getMetricApi();
         Metric m = new Metric();
         m.setId(Integer.MAX_VALUE);
@@ -136,6 +123,7 @@ public class Metric_test extends MetricTestBase {
     }
 
     public void testMetricEnableBadId() throws Exception {
+
         MetricApi api = getApi().getMetricApi();
         Metric m = new Metric();
         m.setId(Integer.MAX_VALUE);
@@ -144,11 +132,6 @@ public class Metric_test extends MetricTestBase {
     }
 
     public void testMetricSetInterval() throws Exception {
-
-        if (_r == null) {
-            getLog().error("Unable to find the local platform, skipping test");
-            return;
-        }
 
         MetricApi api = getApi().getMetricApi();
         ListMetricsResponse resp = api.listMetrics(_r);
@@ -182,6 +165,7 @@ public class Metric_test extends MetricTestBase {
     }
 
     public void testMetricSetIntervalBadId() throws Exception {
+
         MetricApi api = getApi().getMetricApi();
         Metric m = new Metric();
         m.setId(Integer.MAX_VALUE);
@@ -190,11 +174,6 @@ public class Metric_test extends MetricTestBase {
     }
 
     public void testMetricSetInvalidInterval() throws Exception {
-
-        if (_r == null) {
-            getLog().error("Unable to find the local platform, skipping test");
-            return;
-        }
 
         MetricApi api = getApi().getMetricApi();
         ListMetricsResponse resp = api.listMetrics(_r);
