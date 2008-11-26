@@ -22,14 +22,14 @@
 
     <!-- Metric data -->
     
-    <xs:complexType name="MetricData">
+    <xs:complexType name="DataPoint">
         <xs:attribute name="timestamp" type="xs:long"    use="required"/>
         <xs:attribute name="value"     type="xs:double"  use="required"/>
     </xs:complexType>
 
-    <xs:complexType name="ResourceMetric">
+    <xs:complexType name="MetricData">
         <xs:sequence>
-             <xs:element name="MetricData" type="MetricData" minOccurs="0" maxOccurs="unbounded"/>
+             <xs:element name="DataPoint" type="DataPoint" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
         <xs:attribute name="resourceId"   type="xs:int" use="required"/>
         <xs:attribute name="resourceName" type="xs:string" use="required"/>
@@ -94,7 +94,7 @@
             <xs:complexContent>
                 <xs:extension base="Response">
                     <xs:sequence>
-                        <xs:element name="MetricData" type="MetricData" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element name="MetricData" type="MetricData" maxOccurs="1"/>
                     </xs:sequence>
                 </xs:extension>
             </xs:complexContent>
@@ -106,7 +106,7 @@
             <xs:complexContent>
                 <xs:extension base="Response">
                     <xs:sequence>
-                        <xs:element name="ResourceMetric" type="ResourceMetric" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element name="MetricData" type="MetricData" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:extension>
             </xs:complexContent>

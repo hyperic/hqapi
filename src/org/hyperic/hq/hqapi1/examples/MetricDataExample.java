@@ -11,6 +11,7 @@ import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.GetMetricDataResponse;
 import org.hyperic.hq.hqapi1.types.MetricData;
 import org.hyperic.hq.hqapi1.types.ListMetricsResponse;
+import org.hyperic.hq.hqapi1.types.DataPoint;
 
 import java.util.Date;
 
@@ -65,9 +66,11 @@ public class MetricDataExample {
                     return;
                 }
 
-                System.out.println("Resource: " + r.getName());
-                System.out.println("Metric: " + m.getName());
-                for (MetricData d : dataResponse.getMetricData()) {
+                MetricData data = dataResponse.getMetricData();
+
+                System.out.println("Resource: " + data.getResourceName());
+                System.out.println("Metric: " + data.getMetricName());
+                for (DataPoint d : dataResponse.getMetricData().getDataPoint()) {
                     System.out.println("  time=" + new Date(d.getTimestamp()).toString() + " data=" + d.getValue());
                 }
             }

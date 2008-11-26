@@ -40,22 +40,15 @@ class MetricController extends ApiController {
         }
     }
 
-    private Closure getMetricDataXML(d) {
+    private Closure getMetricDataXML(r) {
         { doc ->
-            MetricData(timestamp : d.timestamp,
-                       value     : d.value)
-        }
-    }
-
-    private Closure getResourceDataXML(r) {
-        { doc ->
-            ResourceMetric(resourceId: r.resource.id,
-                           resourceName: r.resource.name,
-                           metricId: r.metric.id,
-                           metricName: r.metric.template.name) {
+            MetricData(resourceId: r.resource.id,
+                       resourceName: r.resource.name,
+                       metricId: r.metric.id,
+                       metricName: r.metric.template.name) {
                 for (dp in r.data) {
-                    MetricData(timestamp : dp.timestamp,
-                               value     : dp.value)
+                    DataPoint(timestamp : dp.timestamp,
+                              value     : dp.value)
                 }
             }
         }
@@ -431,9 +424,11 @@ class MetricController extends ApiController {
                 if (failureXml) {
                     out << failureXml
                 } else {
+                    def result = [resource: metric.resource, metric: metric,
+                                  data: data]
                     out << getSuccessXML()
                     for (dp in data) {
-                        out << getMetricDataXML(dp) 
+                        out << getMetricDataXML(result)
                     }
                 }
             }
@@ -482,7 +477,7 @@ class MetricController extends ApiController {
             GetMetricsDataResponse() {
                 out << getSuccessXML()
                 for (result in results) {
-                    out << getResourceDataXML(result)
+                    out << getMetricDataXML(result)
                 }
             }
         }

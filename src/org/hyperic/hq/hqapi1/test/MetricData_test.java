@@ -11,12 +11,11 @@ import org.hyperic.hq.hqapi1.types.GetMetricsDataResponse;
 import org.hyperic.hq.hqapi1.types.MetricTemplate;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.ListMetricTemplatesResponse;
-import org.hyperic.hq.hqapi1.types.ResourceMetric;
 import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
+import org.hyperic.hq.hqapi1.types.DataPoint;
 import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.HQApi;
-import org.hyperic.hq.hqapi1.ResourceApi;
 
 import java.util.List;
 
@@ -55,8 +54,9 @@ public class MetricData_test extends MetricTestBase {
                                                                start, end);
         hqAssertSuccess(dataResponse);
         assertTrue("No metric data found for " + m.getName(),
-                   dataResponse.getMetricData().size() > 0);
-        for (MetricData d : dataResponse.getMetricData()) {
+                   dataResponse.getMetricData().getDataPoint().size() > 0);
+        for (DataPoint d : dataResponse.getMetricData().getDataPoint()) {
+
             assertTrue("Metric point timestamp greater than end time. ts=" +
                        d.getTimestamp() + " end=" + end,
                        d.getTimestamp() <= end);
@@ -146,17 +146,17 @@ public class MetricData_test extends MetricTestBase {
                                                                   start, end);
         hqAssertSuccess(response);
 
-        List<ResourceMetric> metrics = response.getResourceMetric();
+        List<MetricData> metricData = response.getMetricData();
         assertTrue("Number of Resources in Group does not match the number " +
                    "of ResourceMetrics",
-                   resourcesResponse.getResource().size() == metrics.size());
+                   resourcesResponse.getResource().size() == metricData.size());
 
-        for (ResourceMetric m : metrics) {
+        for (MetricData m : metricData) {
             assertTrue(m.getMetricId() > 0);
             assertTrue(m.getMetricName().length() > 0);
             assertTrue(m.getResourceId() > 0);
             assertTrue(m.getResourceName().length() > 0);
-            assertTrue(m.getMetricData().size() > 0);
+            assertTrue(m.getDataPoint().size() > 0);
         }
     }
 
