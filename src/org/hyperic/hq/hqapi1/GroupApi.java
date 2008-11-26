@@ -164,6 +164,24 @@ public class GroupApi extends BaseApi {
     }
 
     /**
+     * List all mixed {@link org.hyperic.hq.hqapi1.types.Group}s.  A
+     * mixed group is a group where the members will have different
+     * {@link org.hyperic.hq.hqapi1.types.ResourcePrototype}s.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if
+     * all the groups were successfully retrieved from the server.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public GetGroupsResponse listMixedGroups()
+        throws IOException
+    {
+        Map<String,String> params = new HashMap<String,String>();
+        params.put("compatible", Boolean.toString(false));
+        return doGet("group/list.hqu", params, GetGroupsResponse.class);
+    }
+
+    /**
      * List all the Resources associated with a {@link Group}.
      *
      * @param groupId The {@link org.hyperic.hq.hqapi1.types.Group} id to query.

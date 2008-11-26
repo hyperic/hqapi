@@ -186,4 +186,23 @@ public class Group_test extends HQApiTestBase {
             validateGroup(g);
         }
     }
+
+    public void testGetMixedGroups() throws Exception {
+
+        GroupApi api = getApi().getGroupApi();
+
+        GetGroupsResponse response = api.listMixedGroups();
+        hqAssertSuccess(response);
+
+        List<Group> groups = response.getGroup();
+        if (groups.size() == 0) {
+            throw new Exception("No mixed groups found in inventory.");
+        }
+
+        for (Group g : groups) {
+            // All mixed groups will not have a prototype.
+            assertNull(g.getResourcePrototype());
+            validateGroup(g);
+        }
+    }
 }
