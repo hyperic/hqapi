@@ -246,7 +246,7 @@ public class MetricApi extends BaseApi {
      * Get the {@link org.hyperic.hq.hqapi1.types.MetricData} for the
      * given {@link org.hyperic.hq.hqapi1.types.Metric}
      *
-     * @param m The {@link org.hyperic.hq.hqapi1.types.Metric} to query.
+     * @param metricId The id of the {@link org.hyperic.hq.hqapi1.types.Metric} to query.
      * @param start The start time to query, in epoch-millis.
      * @param end The end time to query, in epoch-millis.
      *
@@ -256,16 +256,15 @@ public class MetricApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetMetricDataResponse getMetricData(Metric m, long start, long end)
+    public GetMetricDataResponse getMetricData(int metricId, long start, long end)
         throws IOException
     {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("metricId", Integer.toString(m.getId()));
+        params.put("metricId", Integer.toString(metricId));
         params.put("start", Long.toString(start));
         params.put("end", Long.toString(end));
 
-        return doGet("metric/getData.hqu", params,
-                     GetMetricDataResponse.class);
+        return doGet("metric/getData.hqu", params, GetMetricDataResponse.class);
     }
 
 

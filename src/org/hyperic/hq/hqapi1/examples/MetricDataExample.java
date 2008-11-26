@@ -56,7 +56,7 @@ public class MetricDataExample {
 
             for (Metric m : metricsResponse.getMetric()) {
                 GetMetricDataResponse dataResponse =
-                        metricApi.getMetricData(m, start, end);
+                        metricApi.getMetricData(m.getId(), start, end);
                 if (dataResponse.getStatus() != ResponseStatus.SUCCESS) {
                     System.err.println("Error getting data for metric " +
                                        m.getName() + " on resource " +
