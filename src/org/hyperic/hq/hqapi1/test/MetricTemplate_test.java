@@ -11,6 +11,7 @@ import org.hyperic.hq.hqapi1.types.SetMetricDefaultOnResponse;
 import org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.ListMetricTemplatesResponse;
+import org.hyperic.hq.hqapi1.types.GetMetricTemplateResponse;
 import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.HQApi;
@@ -212,5 +213,40 @@ public class MetricTemplate_test extends MetricTestBase {
         pt.setName("Non-existant resource prototype");
         ListMetricTemplatesResponse response = api.listMetricTemplates(pt);
         hqAssertFailureObjectNotFound(response);
+    }
+
+    public void testGetTemplate() throws Exception {
+
+        HQApi api = getApi();
+        ResourceApi resourceApi = api.getResourceApi();
+
+        final String TYPE = "Linux";
+        GetResourcePrototypeResponse response = resourceApi.getResourcePrototype(TYPE);
+        hqAssertSuccess(response);
+
+        ResourcePrototype pt = response.getResourcePrototype();
+
+        MetricApi metricApi = api.getMetricApi();
+        ListMetricTemplatesResponse metricTemplates =
+                metricApi.listMetricTemplates(pt);
+        hqAssertSuccess(metricTemplates);
+
+        List<MetricTemplate> templates = metricTemplates.getMetricTemplate();
+        assertTrue("No metrics found for type " + pt.getName(),
+                   templates.size() > 0);
+
+        MetricTemplate t = templates.get(0);
+
+        GetMetricTemplateResponse getResponse = metricApi.getMetricTemplate(t.getId());
+        hqAssertSuccess(getResponse);
+        validateTemplate(getResponse.getMetricTemplate());
+    }
+
+    public void testGetTemplateInvalidId() throws Exception {
+
+        MetricApi api = getApi().getMetricApi();
+
+        GetMetricTemplateResponse getResponse = api.getMetricTemplate(Integer.MAX_VALUE);
+        hqAssertFailureObjectNotFound(getResponse);
     }
 }
