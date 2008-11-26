@@ -19,6 +19,8 @@ import org.hyperic.hq.hqapi1.types.SetMetricIntervalResponse;
 import org.hyperic.hq.hqapi1.types.ListMetricsResponse;
 import org.hyperic.hq.hqapi1.types.GetMetricsDataResponse;
 import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.ResourcePrototype;
+import org.hyperic.hq.hqapi1.types.ListMetricTemplatesResponse;
 
 /**
  * The Hyperic HQ Metric API.
@@ -79,6 +81,27 @@ public class MetricApi extends BaseApi {
         params.put("enabled", Boolean.toString(true));
         return doGet("metric/listMetrics.hqu", params,
                      ListMetricsResponse.class);
+    }
+
+    /**
+     * List all {@link org.hyperic.hq.hqapi1.types.MetricTemplate}s associated
+     * with the given {@link org.hyperic.hq.hqapi1.types.ResourcePrototype}.
+     *
+     * @param prototype The associated {@link org.hyperic.hq.hqapi1.types.ResourcePrototype}
+     * to query.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * metric templates were successfully retrieved.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public ListMetricTemplatesResponse listMetricTemplates(ResourcePrototype prototype)
+        throws IOException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("prototype", prototype.getName());
+        return doGet("metric/listTemplates.hqu", params,
+                     ListMetricTemplatesResponse.class);
     }
 
     /**

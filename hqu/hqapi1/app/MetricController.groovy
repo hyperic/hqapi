@@ -26,7 +26,7 @@ class MetricController extends ApiController {
         }
     }
 
-    private Closure getMetricTemplateXML(t) {
+        private Closure getMetricTemplateXML(t) {
         { doc -> 
             MetricTemplate(id              : t.id,
                            name            : t.name,
@@ -77,6 +77,38 @@ class MetricController extends ApiController {
                     out << failureXml
                 } else {
                     out << getSuccessXML()
+                }
+            }
+        }
+    }
+
+    def listTemplates(params) {
+        def prototype = params.getOne("prototype")
+
+        def failureXml = null
+        def templates
+        if (!prototype) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+        } else {
+            // Make sure the prototype exists.
+            def proto = resourceHelper.find(prototype: prototype)
+            if (!proto) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+            } else {
+                templates = metricHelper.find(all:'templates',
+                                              resourceType: prototype)
+            }
+        }
+
+        renderXml() {
+            ListMetricTemplatesResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    for (t in templates) {
+                        out << getMetricTemplateXML(t)
+                    }
                 }
             }
         }
