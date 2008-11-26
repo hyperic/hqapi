@@ -17,6 +17,41 @@ class GroupController extends ApiController {
         }
     }
 
+    private getGroup(Integer id, String name) {
+        if (id) {
+            return resourceHelper.findGroup(id)
+        } else {
+            return resourceHelper.findGroupByName(name)
+        }
+    }
+
+    def get(params) {
+        def id = params.getOne('id')?.toInteger()
+        def name = params.getOne('name')
+
+        def group
+        def failureXml = null
+        if (!id && !name) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+        } else {
+            group = getGroup(id, name)
+            if (!group) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+            }
+        }
+
+        renderXml() {
+            GetGroupResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    out << getGroupXML(group)
+                }
+            }
+        }
+    }
+
     def create(params) {
         renderXml() {
             CreateGroupResponse() {
@@ -66,7 +101,7 @@ class GroupController extends ApiController {
             return
         }
 
-        def group = resourceHelper.findGroup(id)
+        def group = getGroup(id, null)
         if (!group) {
             renderXml() {
                 FindResourcesResponse() {

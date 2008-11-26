@@ -9,6 +9,8 @@ import org.hyperic.hq.hqapi1.types.GetGroupsResponse;
 import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
 import org.hyperic.hq.hqapi1.types.AddResourceToGroupResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourcePrototype;
+import org.hyperic.hq.hqapi1.types.GetGroupResponse;
 
 import java.util.List;
 
@@ -22,6 +24,13 @@ public class Group_test extends HQApiTestBase {
         assertTrue("Invalid id for Group.", g.getId() > 0);
         assertTrue("Found invalid name for Group with id=" + g.getId(),
                    g.getName().length() > 0);
+
+        if (g.getResourcePrototype() != null) {
+            ResourcePrototype pt = g.getResourcePrototype();
+            assertTrue("Invalid prototype id", pt.getId() > 0);
+            assertTrue("Invalid prototype name for group " + g.getName(),
+                       pt.getName().length() > 0);
+        }
     }
 
     public void testCreate() throws Exception {
@@ -46,6 +55,14 @@ public class Group_test extends HQApiTestBase {
         hqAssertFailureNotImplemented(resp);
     }
 
+    public void testAddResource() throws Exception {
+
+        GroupApi api = getApi().getGroupApi();
+
+        AddResourceToGroupResponse resp = api.addResource(1,2);
+        hqAssertFailureNotImplemented(resp);
+    }
+    
     public void testList() throws Exception {
         GroupApi api = getApi().getGroupApi();
 
@@ -71,8 +88,7 @@ public class Group_test extends HQApiTestBase {
 
         List<Group> groups = resp.getGroup();
         if (groups.size() == 0) {
-            getLog().warn("No groups found, skipping test");
-            return;
+            throw new Exception("No groups found.");
         }
 
         for (Group g : resp.getGroup()) {
@@ -99,11 +115,56 @@ public class Group_test extends HQApiTestBase {
         hqAssertFailureObjectNotFound(resp);
     }
 
-    public void testAddResource() throws Exception {
+    public void testGetGroupById() throws Exception {
+        GroupApi api = getApi().getGroupApi();
+
+        GetGroupsResponse resp = api.listGroups();
+        hqAssertSuccess(resp);
+
+        List<Group> groups = resp.getGroup();
+        if (groups.size() == 0) {
+            throw new Exception("No groups found.");
+        }
+
+        Group g = resp.getGroup().get(0);
+
+        GetGroupResponse groupResponse = api.getGroup(g.getId());
+        hqAssertSuccess(groupResponse);
+        validateGroup(groupResponse.getGroup());
+    }
+
+    public void testGetGroupInvalidId() throws Exception {
 
         GroupApi api = getApi().getGroupApi();
 
-        AddResourceToGroupResponse resp = api.addResource(1,2);
-        hqAssertFailureNotImplemented(resp);
+        GetGroupResponse groupResponse = api.getGroup(Integer.MAX_VALUE);
+        hqAssertFailureObjectNotFound(groupResponse);
+    }
+
+    public void testGetGroupByName() throws Exception {
+
+        GroupApi api = getApi().getGroupApi();
+
+        GetGroupsResponse resp = api.listGroups();
+        hqAssertSuccess(resp);
+
+        List<Group> groups = resp.getGroup();
+        if (groups.size() == 0) {
+            throw new Exception("No groups found.");
+        }
+
+        Group g = resp.getGroup().get(0);
+
+        GetGroupResponse groupResponse = api.getGroup(g.getName());
+        hqAssertSuccess(groupResponse);
+        validateGroup(groupResponse.getGroup());
+    }
+
+    public void getGetGroupByInvalidName() throws Exception {
+
+        GroupApi api = getApi().getGroupApi();
+
+        GetGroupResponse groupResponse = api.getGroup("Non-existant group");
+        hqAssertFailureObjectNotFound(groupResponse);
     }
 }

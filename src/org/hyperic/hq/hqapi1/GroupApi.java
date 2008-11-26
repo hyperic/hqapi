@@ -13,6 +13,8 @@ import org.hyperic.hq.hqapi1.types.RemoveResourceFromGroupResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.CreateGroupRequest;
 import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
+import org.hyperic.hq.hqapi1.types.GetUserResponse;
+import org.hyperic.hq.hqapi1.types.GetGroupResponse;
 
 /**
  * The Hyperic HQ Group API.
@@ -30,7 +32,45 @@ public class GroupApi extends BaseApi {
     GroupApi(HQConnection conn) {
         super(conn);
     }
-    
+
+    /**
+     * Get a {@link org.hyperic.hq.hqapi1.types.Group} by name.
+     *
+     * @param name The group name to search for.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the User by the given name is returned via
+     * {@link org.hyperic.hq.hqapi1.types.GetGroupResponse#getGroup()}.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public GetGroupResponse getGroup(String name)
+        throws IOException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("name", name);
+        return doGet("group/get.hqu", params, GetGroupResponse.class);
+    }
+
+    /**
+     * Get a {@link org.hyperic.hq.hqapi1.types.Group} by id.
+     *
+     * @param id The group id to look up.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the User by the given id is returned via
+     * {@link org.hyperic.hq.hqapi1.types.GetGroupResponse#getGroup()}.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public GetGroupResponse getGroup(int id)
+        throws IOException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("id", Integer.toString(id));
+        return doGet("group/get.hqu", params, GetGroupResponse.class);
+    }
+
     /**
      * Create a {@link org.hyperic.hq.hqapi1.types.Group}.<br><b>This API is
      * not yet availabile.  It will return an not implemented error.</b>
