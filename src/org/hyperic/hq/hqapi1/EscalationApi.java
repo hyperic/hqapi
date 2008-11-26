@@ -44,10 +44,10 @@ public class EscalationApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetEscalationResponse getEscalation(Integer id)
+    public GetEscalationResponse getEscalation(int id)
         throws IOException {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("id", String.valueOf(id));
+        params.put("id", Integer.toString(id));
         return doGet("escalation/get.hqu", params, GetEscalationResponse.class);
     }
 
@@ -149,10 +149,10 @@ public class EscalationApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public DeleteEscalationResponse deleteEscalation(Integer id)
+    public DeleteEscalationResponse deleteEscalation(int id)
         throws IOException {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("id", String.valueOf(id));
+        params.put("id", Integer.toString(id));
         return doGet("escalation/delete.hqu",
                      params, DeleteEscalationResponse.class);
     }
