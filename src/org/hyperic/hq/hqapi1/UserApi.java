@@ -63,11 +63,11 @@ public class UserApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetUserResponse getUser(Integer id)
+    public GetUserResponse getUser(int id)
         throws IOException
     {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("id", id.toString());
+        params.put("id", Integer.toString(id));
         return doGet("user/get.hqu", params, GetUserResponse.class);
     }
 
@@ -125,12 +125,12 @@ public class UserApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public DeleteUserResponse deleteUser(Integer id)
+    public DeleteUserResponse deleteUser(int id)
         throws IOException
     {
         Map<String, String> params = new HashMap<String, String>();
 
-        params.put("id", id.toString());
+        params.put("id", Integer.toString(id));
 
         return doGet("user/delete.hqu", params, DeleteUserResponse.class);
     }
