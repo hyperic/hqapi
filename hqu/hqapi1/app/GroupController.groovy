@@ -8,7 +8,11 @@ class GroupController extends ApiController {
                   name        : g.name,
                   description : g.description,
                   location    : g.location) {
-                // TODO: Roles, Criteria, Prototype
+                if (g.resourcePrototype) {
+                    ResourcePrototype(id   : g.resourcePrototype.id,
+                                      name : g.resourcePrototype.name)
+                }
+                // TODO: Roles, Criteria
             }
         }
     }
