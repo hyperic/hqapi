@@ -33,7 +33,7 @@ public class Metric_test extends MetricTestBase {
         assertTrue(m.getCollectionType().length() > 0);
     }
         
-    public void testMetricList() throws Exception {
+    public void testListMetrics() throws Exception {
 
         MetricApi api = getApi().getMetricApi();
         ListMetricsResponse resp = api.listMetrics(_r);
@@ -47,6 +47,19 @@ public class Metric_test extends MetricTestBase {
             }
         }
         assertTrue("All metrics are defaultOn", numNotDefaultOn > 0);
+    }
+
+    public void testListEnabledMetrics() throws Exception {
+
+        MetricApi api = getApi().getMetricApi();
+        ListMetricsResponse resp = api.listEnabledMetrics(_r);
+        hqAssertSuccess(resp);
+
+        for (Metric m : resp.getMetric()) {
+            validateMetric(m);
+            assertTrue("Metric " + m.getName() + " is not enabled",
+                       m.isEnabled());
+        }
     }
 
     public void testMetricListBadResourceId() throws Exception {

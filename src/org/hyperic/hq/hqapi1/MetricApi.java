@@ -40,7 +40,7 @@ public class MetricApi extends BaseApi {
     }
     
     /**
-     * List {@link org.hyperic.hq.hqapi1.types.Metric}s associated with a
+     * List all {@link org.hyperic.hq.hqapi1.types.Metric}s associated with a
      * {@link org.hyperic.hq.hqapi1.types.Resource}
      *
      * @param resource The associated {@link org.hyperic.hq.hqapi1.types.Resource} which the metrics belong.
@@ -55,6 +55,28 @@ public class MetricApi extends BaseApi {
     {
         Map<String, String> params = new HashMap<String, String>();
         params.put("resourceId", Integer.toString(resource.getId()));
+        return doGet("metric/listMetrics.hqu", params,
+                     ListMetricsResponse.class);
+    }
+
+    /**
+     * List all enabled {@link org.hyperic.hq.hqapi1.types.Metric}s associated with a
+     * {@link org.hyperic.hq.hqapi1.types.Resource}
+     *
+     * @param resource The associated {@link org.hyperic.hq.hqapi1.types.Resource}
+     * which the metrics belong.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * metrics were successfully retrieved.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public ListMetricsResponse listEnabledMetrics(Resource resource)
+        throws IOException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("resourceId", Integer.toString(resource.getId()));
+        params.put("enabled", Boolean.toString(true));
         return doGet("metric/listMetrics.hqu", params,
                      ListMetricsResponse.class);
     }

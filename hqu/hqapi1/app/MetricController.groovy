@@ -86,6 +86,7 @@ class MetricController extends ApiController {
         def failureXml
         def metrics
         def resourceId = params.getOne("resourceId")?.toInteger()
+        def enabled = params.getOne("enabled")?.toBoolean()
 
         if (!resourceId) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
@@ -95,7 +96,11 @@ class MetricController extends ApiController {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
             } else {
                 try {
-                    metrics = res.metrics
+                    if (enabled != null && enabled) {
+                        metrics = res.enabledMetrics
+                    } else {
+                        metrics = res.metrics
+                    }                    
                 } catch (Exception e) {
                     log.error("UnexpectedError: " + e.getMessage(), e)
                     failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
