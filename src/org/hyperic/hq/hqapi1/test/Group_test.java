@@ -167,4 +167,23 @@ public class Group_test extends HQApiTestBase {
         GetGroupResponse groupResponse = api.getGroup("Non-existant group");
         hqAssertFailureObjectNotFound(groupResponse);
     }
+
+    public void testGetCompatibleGroups() throws Exception {
+
+        GroupApi api = getApi().getGroupApi();
+
+        GetGroupsResponse response = api.listCompatibleGroups();
+        hqAssertSuccess(response);
+
+        List<Group> groups = response.getGroup();
+        if (groups.size() == 0) {
+            throw new Exception("No compatible groups found in inventory.");
+        }
+
+        for (Group g : groups) {
+            // All compatible groups will have a prototype.
+            assertNotNull(g.getResourcePrototype());
+            validateGroup(g);
+        }
+    }
 }

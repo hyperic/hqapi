@@ -146,6 +146,24 @@ public class GroupApi extends BaseApi {
     }
 
     /**
+     * List all compatible {@link org.hyperic.hq.hqapi1.types.Group}s.  A
+     * compatible group is a group where all members of the group have the
+     * same {@link org.hyperic.hq.hqapi1.types.ResourcePrototype}.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if
+     * all the groups were successfully retrieved from the server.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public GetGroupsResponse listCompatibleGroups()
+        throws IOException
+    {
+        Map<String,String> params = new HashMap<String,String>();
+        params.put("compatible", Boolean.toString(true));
+        return doGet("group/list.hqu", params, GetGroupsResponse.class);
+    }
+
+    /**
      * List all the Resources associated with a {@link Group}.
      *
      * @param groupId The {@link org.hyperic.hq.hqapi1.types.Group} id to query.

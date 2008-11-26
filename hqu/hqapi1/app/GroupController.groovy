@@ -77,9 +77,15 @@ class GroupController extends ApiController {
     }
 
     def list(params) {
+        def compatible = params.getOne('compatible')?.toBoolean()
+
         def groups = resourceHelper.findViewableGroups()
 
-         renderXml() {
+        if (compatible) {
+            groups = groups.grep { it.resourcePrototype != null }
+        }
+
+        renderXml() {
             out << GetGroupsResponse() {
                 out << getSuccessXML()
                 for (g in  groups.sort {a, b -> a.name <=> b.name}) {
