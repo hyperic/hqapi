@@ -51,10 +51,9 @@ public class MetricTemplate_test extends MetricTestBase {
         hqAssertSuccess(getResponse);
         Metric m = getResponse.getMetric();
 
-        // TODO: Broken!
-        //assertTrue("Indicator not set correctly expected=" + !isIndicator +
-        //           " was=" + m.getMetricTemplate().isIndicator(),
-        //           m.getMetricTemplate().isIndicator() == !isIndicator);
+        assertTrue("Indicator not set correctly expected=" + !isIndicator +
+                   " was=" + m.getMetricTemplate().isIndicator(),
+                   m.getMetricTemplate().isIndicator() == !isIndicator);
 
         // Reset back to original value
         indicatorResponse = api.setDefaultIndicator(t, isIndicator);
@@ -62,10 +61,9 @@ public class MetricTemplate_test extends MetricTestBase {
         getResponse = api.getMetric(_m.getId());
         hqAssertSuccess(getResponse);
         m = getResponse.getMetric();
-        // TODO: Broken!
-        //assertTrue("Indicator not set correctly expected=" + isIndicator +
-        //           " was=" + m.getMetricTemplate().isIndicator(),
-        //           m.getMetricTemplate().isIndicator() == isIndicator);
+        assertTrue("Indicator not set correctly expected=" + isIndicator +
+                   " was=" + m.getMetricTemplate().isIndicator(),
+                   m.getMetricTemplate().isIndicator() == isIndicator);
     }
 
     public void testSetDefaultIndicatorBadId() throws Exception {
