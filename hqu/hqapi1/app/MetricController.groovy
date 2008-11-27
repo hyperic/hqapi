@@ -427,9 +427,7 @@ class MetricController extends ApiController {
                     def result = [resource: metric.resource, metric: metric,
                                   data: data]
                     out << getSuccessXML()
-                    for (dp in data) {
-                        out << getMetricDataXML(result)
-                    }
+                    out << getMetricDataXML(result)
                 }
             }
         }
