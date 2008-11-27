@@ -10,7 +10,14 @@ class ResourceController extends ApiController {
     }
 
     def listResourcePrototypes(params) {
-        def prototypes = resourceHelper.findAllAppdefPrototypes()
+        def existing = params.getOne('existing')?.toBoolean()
+
+        def prototypes
+        if (existing) {
+            prototypes = resourceHelper.findAppdefPrototypes()
+        } else {
+            prototypes = resourceHelper.findAllAppdefPrototypes()
+        }
         
         renderXml() {
             out << ListResourcePrototypesResponse() {

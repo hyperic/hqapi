@@ -54,11 +54,30 @@ public class ResourceApi extends BaseApi {
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */    
-    public ListResourcePrototypesResponse listResourcePrototypes() 
+    public ListResourcePrototypesResponse listAllResourcePrototypes()
         throws IOException
     {   
         return doGet("resource/listResourcePrototypes.hqu",
                      new HashMap<String,String>(),
+                     ListResourcePrototypesResponse.class);
+    }
+
+    /**
+     * Find {@link ResourcePrototype}s in the system that have at least 1
+     * {@link Resource} of that type.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the list of ResourcePrototypes are returned via
+     * {@link org.hyperic.hq.hqapi1.types.ListResourcePrototypesResponse#getResourcePrototype()}.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public ListResourcePrototypesResponse listResourcePrototypes() 
+        throws IOException
+    {
+        Map<String,String> params = new HashMap<String,String>();
+        params.put("existing", Boolean.toString(Boolean.TRUE));
+        return doGet("resource/listResourcePrototypes.hqu", params,
                      ListResourcePrototypesResponse.class);
     }
 

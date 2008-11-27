@@ -10,10 +10,10 @@ public class ResourceListPrototypes_test extends HQApiTestBase {
         super(name);
     }
 
-    public void testListPrototypes() throws Exception {
+    public void testListAllPrototypes() throws Exception {
         ResourceApi api = getApi().getResourceApi();
         
-        ListResourcePrototypesResponse resp = api.listResourcePrototypes(); 
+        ListResourcePrototypesResponse resp = api.listAllResourcePrototypes(); 
         
         hqAssertSuccess(resp);
         assertTrue(resp.getResourcePrototype().size() != 0);
@@ -22,5 +22,19 @@ public class ResourceListPrototypes_test extends HQApiTestBase {
             assertTrue(pt.getId() > 0);
             assertTrue(pt.getName() != null && pt.getName().length() > 0);
         }
+    }
+
+    public void testListPrototypes() throws Exception {
+        ResourceApi api = getApi().getResourceApi();
+
+        ListResourcePrototypesResponse allResponse = api.listAllResourcePrototypes();
+        hqAssertSuccess(allResponse);
+
+        ListResourcePrototypesResponse response = api.listResourcePrototypes();
+        hqAssertSuccess(response);
+
+        assertTrue("All prototypes not greater than existing prototypes",
+                   allResponse.getResourcePrototype().size() >
+                   response.getResourcePrototype().size());
     }
 }
