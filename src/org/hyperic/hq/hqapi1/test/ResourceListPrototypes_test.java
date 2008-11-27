@@ -3,6 +3,7 @@ package org.hyperic.hq.hqapi1.test;
 import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.types.ListResourcePrototypesResponse;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
+import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
 
 public class ResourceListPrototypes_test extends HQApiTestBase {
 
@@ -36,5 +37,8 @@ public class ResourceListPrototypes_test extends HQApiTestBase {
         assertTrue("All prototypes not greater than existing prototypes",
                    allResponse.getResourcePrototype().size() >
                    response.getResourcePrototype().size());
+
+        assertTrue("Existing prototypes not > 1",
+                   response.getResourcePrototype().size() > 1);
     }
 }
