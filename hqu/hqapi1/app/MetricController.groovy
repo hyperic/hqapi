@@ -465,7 +465,7 @@ class MetricController extends ApiController {
         def results = []
         def members = group.resources
         members.each { resource ->
-            def m = resource.enabledMetrics.find { it.template.id == templateId }
+            def m = resource.metrics.find { it.template.id == templateId }
             def data = []
             if (m) {
                 data = m.getData(start, end)
