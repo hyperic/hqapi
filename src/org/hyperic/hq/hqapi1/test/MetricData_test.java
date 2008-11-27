@@ -32,13 +32,13 @@ public class MetricData_test extends MetricTestBase {
         _r = getResource();
     }
 
-    public void testGetMetricData() throws Exception {
+    public void testGetEnabledMetricData() throws Exception {
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricsResponse resp = api.listMetrics(_r);
+        ListMetricsResponse resp = api.listEnabledMetrics(_r);
         hqAssertSuccess(resp);
 
-        assertTrue("No metrics found for " + _r.getName(),
+        assertTrue("No enabled metrics found for " + _r.getName(),
                    resp.getMetric().size() > 0);
         Metric m = resp.getMetric().get(0);
 
@@ -61,6 +61,33 @@ public class MetricData_test extends MetricTestBase {
             assertTrue("Metric value less than zero",
                        d.getValue() >= 0);
         }
+    }
+
+    public void testGetDisabledMetricData() throws Exception {
+
+        MetricApi api = getApi().getMetricApi();
+        ListMetricsResponse resp = api.listMetrics(_r);
+        hqAssertSuccess(resp);
+
+        assertTrue("No metrics found for " + _r.getName(),
+                   resp.getMetric().size() > 0);
+
+        Metric m = null;
+        for (Metric metric : resp.getMetric()) {
+            if (!metric.isEnabled()) {
+                m = metric;
+            }
+        }
+        assertNotNull("No disabled metric could be found", m);
+        
+        long end = System.currentTimeMillis();
+        long start = end - (8 * 60 * 60 * 1000);
+
+        GetMetricDataResponse dataResponse = api.getMetricData(m.getId(),
+                                                               start, end);
+        hqAssertSuccess(dataResponse);
+        assertTrue("Metric data found for " + m.getName(),
+                   dataResponse.getMetricData().getDataPoint().size() == 0);
     }
 
     public void testGetMetricDataInvalidId() throws Exception {
