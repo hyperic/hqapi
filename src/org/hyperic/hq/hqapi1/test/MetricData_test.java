@@ -34,11 +34,6 @@ public class MetricData_test extends MetricTestBase {
 
     public void testGetMetricData() throws Exception {
 
-        if (_r == null) {
-            getLog().error("Unable to find the local platform, skipping test");
-            return;
-        }
-
         MetricApi api = getApi().getMetricApi();
         ListMetricsResponse resp = api.listMetrics(_r);
         hqAssertSuccess(resp);
@@ -79,11 +74,6 @@ public class MetricData_test extends MetricTestBase {
     }
 
     public void testGetMetricDataInvalidRange() throws Exception {
-
-        if (_r == null) {
-            getLog().error("Unable to find the local platform, skipping test");
-            return;
-        }
 
         MetricApi api = getApi().getMetricApi();
         ListMetricsResponse resp = api.listMetrics(_r);
@@ -243,7 +233,8 @@ public class MetricData_test extends MetricTestBase {
 
         ResourcePrototype pt = g.getResourcePrototype();
         MetricApi metricApi = api.getMetricApi();
-        ListMetricTemplatesResponse templatesResponse = metricApi.listMetricTemplates(pt);
+        ListMetricTemplatesResponse templatesResponse =
+                metricApi.listMetricTemplates(pt);
         hqAssertSuccess(templatesResponse);
         List<MetricTemplate> templates = templatesResponse.getMetricTemplate();
         assertTrue("No templates found for " + pt.getName(), templates.size() > 0);
@@ -264,10 +255,67 @@ public class MetricData_test extends MetricTestBase {
 
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
-        // Start < End
         GetMetricsDataResponse response = metricApi.getMetricData(Integer.MAX_VALUE,
                                                                   template.getId(),
-                                                                  end, start);
-        hqAssertFailureInvalidParameters(response);
+                                                                  start, end);
+        hqAssertFailureObjectNotFound(response);
+    }
+
+    public void testGetMetricGroupDataDefaultOffTemplate() throws Exception {
+
+        HQApi api = getApi();
+
+        GroupApi groupApi = api.getGroupApi();
+
+        GetGroupsResponse groupsResponse = groupApi.listCompatibleGroups();
+        hqAssertSuccess(groupsResponse);
+        List<Group> compatGroups = groupsResponse.getGroup();
+        assertTrue("No compatible groups found", compatGroups.size() > 0);
+        Group g = compatGroups.get(0);
+
+        FindResourcesResponse resourcesResponse = groupApi.listResources(g.getId());
+        hqAssertSuccess(resourcesResponse);
+
+        ResourcePrototype pt = g.getResourcePrototype();
+        MetricApi metricApi = api.getMetricApi();
+        ListMetricTemplatesResponse templatesResponse = metricApi.listMetricTemplates(pt);
+        hqAssertSuccess(templatesResponse);
+        List<MetricTemplate> templates = templatesResponse.getMetricTemplate();
+        assertTrue("No templates found for " + pt.getName(), templates.size() > 0);
+
+        // Make sure the template we query is default-on
+        MetricTemplate template = null;
+        for (MetricTemplate t : templates) {
+            if (!t.isDefaultOn()) {
+                template = t;
+                break;
+            }
+        }
+
+        if (template == null) {
+            throw new Exception("Could not find default off template for " +
+                                pt.getName());
+        }
+
+        long end = System.currentTimeMillis();
+        long start = end - (8 * 60 * 60 * 1000);
+
+        GetMetricsDataResponse response = metricApi.getMetricData(g.getId(),
+                                                                  template.getId(),
+                                                                  start, end);
+        hqAssertSuccess(response);
+
+        List<MetricData> metricData = response.getMetricData();
+        assertTrue("Number of Resources in Group does not match the number " +
+                   "of ResourceMetrics",
+                   resourcesResponse.getResource().size() == metricData.size());
+
+        for (MetricData m : metricData) {
+            assertTrue(m.getMetricId() > 0);
+            assertTrue(m.getMetricName().length() > 0);
+            assertTrue(m.getResourceId() > 0);
+            assertTrue(m.getResourceName().length() > 0);
+            assertTrue(m.getDataPoint().size() == 0);
+        }
     }
 }
