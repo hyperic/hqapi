@@ -323,7 +323,7 @@ public class MetricApi extends BaseApi {
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
      * if the data was succesfully queried.  The returned data can be retrieved
-     * via {@link org.hyperic.hq.hqapi1.types.GetMetricsDataResponse#getResourceMetric()}.
+     * via {@link org.hyperic.hq.hqapi1.types.GetMetricsDataResponse#getMetricData()}.
      *
      * @throws IOException If a network error occurs while making the request.
      */
