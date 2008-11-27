@@ -46,7 +46,7 @@ public class MetricDataExample {
         long end = System.currentTimeMillis();
         long start = end - RANGE;
         for (Resource r : resourcesResponse.getResource()) {
-            ListMetricsResponse metricsResponse = metricApi.listMetrics(r);
+            ListMetricsResponse metricsResponse = metricApi.listEnabledMetrics(r);
 
             if (metricsResponse.getStatus() != ResponseStatus.SUCCESS) {
                 System.err.println("Error finding metrics for resoruce " +
