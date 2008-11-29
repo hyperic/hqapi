@@ -316,8 +316,11 @@ public class MetricApi extends BaseApi {
      * Get the {@link org.hyperic.hq.hqapi1.types.MetricData} for the given
      * {@link org.hyperic.hq.hqapi1.types.Group} and {@link org.hyperic.hq.hqapi1.types.MetricTemplate}.
      *
-     * @param groupId The id of the {@link org.hyperic.hq.hqapi1.types.Group} to query.
-     * @param templateId The id of the {@link org.hyperic.hq.hqapi1.types.MetricTemplate} to query for data.
+     * @param groupId The id of the compatible {@link org.hyperic.hq.hqapi1.types.Group} to query.
+     * @param templateId The id of the {@link org.hyperic.hq.hqapi1.types.MetricTemplate}
+     * to query for data.  The template must belong to the
+     * {@link org.hyperic.hq.hqapi1.types.ResourcePrototype} for the passed in
+     * compatible group.
      * @param start The start time to query, in epoch-millis.
      * @param end The end time to query, in epoch-millis.
      *
