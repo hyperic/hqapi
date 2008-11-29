@@ -13,6 +13,7 @@ import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.ListMetricTemplatesResponse;
 import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
 import org.hyperic.hq.hqapi1.types.DataPoint;
+import org.hyperic.hq.hqapi1.types.GetMetricTemplateResponse;
 import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.HQApi;
@@ -242,6 +243,61 @@ public class MetricData_test extends MetricTestBase {
                                                                   start, end);
         hqAssertFailureObjectNotFound(response);
     }
+
+    public void testGetMetricGroupDataWrongTemplate() throws Exception {
+
+        HQApi api = getApi();
+
+        GroupApi groupApi = api.getGroupApi();
+
+        GetGroupsResponse groupsResponse = groupApi.listCompatibleGroups();
+        hqAssertSuccess(groupsResponse);
+        List<Group> compatGroups = groupsResponse.getGroup();
+        assertTrue("No compatible groups found", compatGroups.size() > 0);
+        Group g = compatGroups.get(0);
+
+        MetricApi metricApi = api.getMetricApi();
+
+        GetMetricTemplateResponse getTemplateResponse =
+                metricApi.getMetricTemplate(10001);
+        hqAssertSuccess(getTemplateResponse);
+        MetricTemplate t = getTemplateResponse.getMetricTemplate();
+
+        long end = System.currentTimeMillis();
+        long start = end - (8 * 60 * 60 * 1000);
+        GetMetricsDataResponse response = metricApi.getMetricData(g.getId(),
+                                                                  t.getId(),
+                                                                  start, end);
+        hqAssertFailureInvalidParameters(response);
+    }
+
+    public void testGetMetricGroupDataMixedGroup() throws Exception {
+
+        HQApi api = getApi();
+
+        GroupApi groupApi = api.getGroupApi();
+
+        GetGroupsResponse groupsResponse = groupApi.listMixedGroups();
+        hqAssertSuccess(groupsResponse);
+        List<Group> mixedGroups = groupsResponse.getGroup();
+        assertTrue("No mixed groups found", mixedGroups.size() > 0);
+        Group g = mixedGroups.get(0);
+
+        MetricApi metricApi = api.getMetricApi();
+
+        GetMetricTemplateResponse getTemplateResponse =
+                metricApi.getMetricTemplate(10001);
+        hqAssertSuccess(getTemplateResponse);
+        MetricTemplate t = getTemplateResponse.getMetricTemplate();
+
+        long end = System.currentTimeMillis();
+        long start = end - (8 * 60 * 60 * 1000);
+        GetMetricsDataResponse response = metricApi.getMetricData(g.getId(),
+                                                                  t.getId(),
+                                                                  start, end);
+        hqAssertFailureInvalidParameters(response);
+    }
+
 
     public void testGetMetricGroupDataInvalidGroup() throws Exception {
 

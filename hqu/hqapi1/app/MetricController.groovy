@@ -449,6 +449,7 @@ class MetricController extends ApiController {
             return
         }
 
+        // Ensure passed group id and template id exist.
         def group = resourceHelper.findGroup(groupId)
         def template = metricHelper.findTemplateById(templateId)
         if (!group || !template) {
@@ -460,6 +461,30 @@ class MetricController extends ApiController {
             return
         }
 
+        // Make sure group is compatible
+        def prototype = group.resourcePrototype
+        if (!prototype) {
+            renderXml() {
+                GetMetricsDataResponse() {
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                }
+            }
+            return
+        }
+
+        // Ensure compatible group type has the template given
+        def templates = metricHelper.find(all:'templates',
+                                          resourceType: prototype.name)
+        def foundTemplate = templates.find { it.id == templateId }
+        if (!foundTemplate) {
+            renderXml() {
+                GetMetricsDataResponse() {
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                }
+            }
+            return
+        }
+        
         def results = []
         def members = group.resources
         members.each { resource ->
