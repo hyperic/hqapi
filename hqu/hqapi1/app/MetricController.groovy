@@ -196,7 +196,8 @@ class MetricController extends ApiController {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             if (!validInterval(interval)) {
-                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                           "Interval " + interval + " is not valid")
             } else {
                 def metric = metricHelper.findMeasurementById(metricId)
                 if (!metric) {
@@ -263,7 +264,8 @@ class MetricController extends ApiController {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             if (!validInterval(interval)) {
-                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                           "Interval " + interval + " is not valid")
            } else {
                 def metric = metricHelper.findMeasurementById(metricId)
                 if (!metric) {
@@ -363,7 +365,8 @@ class MetricController extends ApiController {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             if (!validInterval(interval)) {
-                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                           "Interval " + interval + " is not valid")
             } else {
                 def template = metricHelper.findTemplateById(templateId)
                 if (!template) {
@@ -466,7 +469,9 @@ class MetricController extends ApiController {
         if (!prototype) {
             renderXml() {
                 GetMetricsDataResponse() {
-                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         "Group " + group.name + " is not a " +
+                                         "compatible group")
                 }
             }
             return
@@ -479,7 +484,11 @@ class MetricController extends ApiController {
         if (!foundTemplate) {
             renderXml() {
                 GetMetricsDataResponse() {
-                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         "Unable to find metric template " +
+                                         template.name + " for group " +
+                                         group.name + " with compatible type " +
+                                         prototype.name)
                 }
             }
             return

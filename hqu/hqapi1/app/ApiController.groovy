@@ -18,6 +18,13 @@ class ApiController extends BaseController {
      * Get the ResponseStatus Failure XML.
      */
     protected Closure getFailureXML(ErrorCode code) {
+        return getFailureXML(code, code.getReasonText())
+    }
+
+    /**
+     * Get the ResponseStatus Failure XML with the specified reason text.
+     */
+    protected Closure getFailureXML(ErrorCode code, String reason) {
         { doc ->
             Status("Failure")
             Error() {
