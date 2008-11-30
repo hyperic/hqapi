@@ -58,16 +58,6 @@ public class HQConnection {
         }
     }
 
-    private HttpClient getHttpClient() {
-        HttpClient client = new HttpClient();
-
-        client.getParams().setAuthenticationPreemptive(true);
-        Credentials defaultcreds = new UsernamePasswordCredentials(_user,
-                                                                   _password);
-        client.getState().setCredentials(AuthScope.ANY, defaultcreds);
-        return client;
-    }
-
     /**
      * Generate an response object with the given Error.  In some cases the
      * HQ server will not give us a result, so we generate one ourselves.
@@ -216,40 +206,48 @@ public class HQConnection {
         URL url = new URL(protocol, _host, _port, uri);
         method.setURI(new URI(url.toString(), true));
 
-        int code;
         try {
-            code = getHttpClient().executeMethod(method);
+            HttpClient client = new HttpClient();
+
+            client.getParams().setAuthenticationPreemptive(true);
+            Credentials defaultcreds = new UsernamePasswordCredentials(_user,
+                                                                       _password);
+            client.getState().setCredentials(AuthScope.ANY, defaultcreds);
+
+            ServiceError error;
+            switch (client.executeMethod(method)) {
+                case 200:
+                    // We only deal with HTTP_OK responses
+                    InputStream is = method.getResponseBodyAsStream();
+                    try {
+                        return deserialize(resultClass, is);
+                    } catch (JAXBException e) {
+                        error = new ServiceError();
+                        error.setErrorCode("UnexpectedError");
+                        error.setReasonText("Unable to deserialize result");
+                        if (_log.isDebugEnabled()) {
+                            _log.debug("Unable to deserialize result", e);
+                        }
+                        return getErrorResponse(resultClass, error);
+                    }
+                case 401:
+                    // Unauthorized
+                    error = new ServiceError();
+                    error.setErrorCode("LoginFailure");
+                    error.setReasonText("The given username and password could " +
+                                        "not be validated");
+                    return getErrorResponse(resultClass, error);
+                default:
+                    // Some other server blow up.
+                    error = new ServiceError();
+                    error.setErrorCode("UnexpectedError");
+                    error.setReasonText("An unexpected error occured");
+                    return getErrorResponse(resultClass, error);
+            }
         } catch (SocketException e) {
             throw new HttpException("Error issuing request", e);
+        } finally {
+            method.releaseConnection();
         }
-
-        if (code == 200) {
-            // We only deal with HTTP_OK responses
-            InputStream is = method.getResponseBodyAsStream();
-            try {
-                return deserialize(resultClass, is);
-            } catch (JAXBException e) {
-                ServiceError error = new ServiceError();
-                error.setErrorCode("UnexpectedError");
-                error.setReasonText("Unable to deserialize result");
-                if (_log.isDebugEnabled()) {
-                    _log.debug("Unable to deserialize result", e);
-                }
-                return getErrorResponse(resultClass, error);
-            }
-        } else if (code == 401) {
-            // Unauthorized
-            ServiceError error = new  ServiceError();
-            error.setErrorCode("LoginFailure");
-            error.setReasonText("The given username and password could " +
-                                "not be validated");
-            return getErrorResponse(resultClass, error);
-        } else {
-            // Some other server blow up.
-            ServiceError error = new ServiceError();
-            error.setErrorCode("UnexpectedError");
-            error.setReasonText("An unexpected error occured");
-            return getErrorResponse(resultClass, error);
-        } 
     }
 }
