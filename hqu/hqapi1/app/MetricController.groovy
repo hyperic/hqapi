@@ -514,4 +514,75 @@ class MetricController extends ApiController {
             }
         }
     }
+
+    def getResourceData(params) {
+        
+        def ids = params["ids"]
+        def templateId = params.getOne("templateId")?.toInteger()
+        def start = params.getOne("start")?.toLong()
+        def end = params.getOne("end")?.toLong()
+
+        if ((!ids || !ids.length == 0 || !templateId || !start || !end) ||
+            (end < start)) {
+            renderXml() {
+                GetMetricsDataResponse() {
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                }
+            }
+            return
+        }
+
+        // Make sure the passed in template exists.
+        def template = metricHelper.findTemplateById(templateId)
+        if (!template) {
+            renderXml() {
+                GetMetricsDataResponse() {
+                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                         "Template with id " + templateId +
+                                         " not found")
+                }
+            }
+            return
+        }
+
+        // Validate the resources exist.
+        def results = []
+        for (String id : ids) {
+            def resource = getResource(id.toInteger())
+            if (!resource) {
+                renderXml() {
+                    GetMetricsDataResponse() {
+                        out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                             "Resource with id " + id + 
+                                             " not found")
+                    }
+                }
+                return
+            }
+            def m = resource.metrics.find { it.template.id == templateId }
+            if (!m) {
+                renderXml() {
+                    GetMetricsDataResponse() {
+                        out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                             "Unable to find metric " +
+                                             template.name + " for resource " +
+                                             resource.name)
+                    }
+                }
+                return
+            }
+
+            def data = m.getData(start, end)
+            results << [resource: resource, metric: m, data: data]
+        }
+
+        renderXml() {
+            GetMetricsDataResponse() {
+                out << getSuccessXML()
+                for (result in results) {
+                    out << getMetricDataXML(result)
+                }
+            }
+        }
+    }
 }

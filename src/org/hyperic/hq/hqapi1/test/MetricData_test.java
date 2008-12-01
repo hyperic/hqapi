@@ -14,9 +14,11 @@ import org.hyperic.hq.hqapi1.types.ListMetricTemplatesResponse;
 import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
 import org.hyperic.hq.hqapi1.types.DataPoint;
 import org.hyperic.hq.hqapi1.types.GetMetricTemplateResponse;
+import org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.HQApi;
+import org.hyperic.hq.hqapi1.ResourceApi;
 
 import java.util.List;
 
@@ -400,5 +402,92 @@ public class MetricData_test extends MetricTestBase {
             assertTrue(m.getResourceName().length() > 0);
             assertTrue(m.getDataPoint().size() == 0);
         }
+    }
+
+    public void testResourceMetrics() throws Exception {
+
+        HQApi api = getApi();
+        ResourceApi resourceApi = api.getResourceApi();
+        MetricApi metricApi = api.getMetricApi();
+
+        // Find prototype
+        GetResourcePrototypeResponse prototypeResponse =
+            resourceApi.getResourcePrototype("FileServer Mount");
+        hqAssertSuccess(prototypeResponse);
+
+        // Find resources to query
+        FindResourcesResponse findResponse =
+                resourceApi.findResources(prototypeResponse.getResourcePrototype());
+        hqAssertSuccess(findResponse);
+        assertTrue("No resources found to query",
+                   findResponse.getResource().size() > 0);
+
+        // Get template
+        ListMetricTemplatesResponse listTemplatesResponse =
+                metricApi.listMetricTemplates(prototypeResponse.getResourcePrototype());
+        hqAssertSuccess(listTemplatesResponse);
+
+        int templateId = 0;
+        for (MetricTemplate t : listTemplatesResponse.getMetricTemplate()) {
+            if (t.isDefaultOn()) {
+                templateId = t.getId();
+            }
+        }
+
+        assertTrue("No default on templates found", templateId > 0);
+
+        List<Resource> resources = findResponse.getResource();
+        int resourceIds[] = new int[resources.size()];
+
+        for (int i = 0; i < resources.size(); i++) {
+            resourceIds[i] = resources.get(i).getId();
+        }
+
+        long end = System.currentTimeMillis();
+        long start = end - (8 * 60 * 60 * 1000);
+
+        GetMetricsDataResponse goodResponse = metricApi.getMetricData(resourceIds,
+                                                                      templateId,
+                                                                      start, end);
+        hqAssertSuccess(goodResponse);
+
+        List<MetricData> metricData = goodResponse.getMetricData();
+
+        assertTrue("Number of Resources in Group does not match the number " +
+                   "of ResourceMetrics",
+                   metricData.size() == resourceIds.length);
+        for (MetricData m : metricData) {
+            assertTrue(m.getMetricId() > 0);
+            assertTrue(m.getMetricName().length() > 0);
+            assertTrue(m.getResourceId() > 0);
+            assertTrue(m.getResourceName().length() > 0);
+            assertTrue(m.getDataPoint().size() >= 0);
+        }
+
+        // Retry with start > end.
+        GetMetricsDataResponse invalidIntervalResponse =
+                metricApi.getMetricData(resourceIds, templateId, end, start);
+        hqAssertFailureInvalidParameters(invalidIntervalResponse);
+
+        // Retry with invalid template id.
+        GetMetricsDataResponse invalidTemplateResponse =
+                metricApi.getMetricData(resourceIds, 1, start, end);
+        hqAssertFailureObjectNotFound(invalidTemplateResponse);
+
+        // Retry with valid template, but belonging to this type
+        GetMetricsDataResponse wrongTemplateResponse =
+                metricApi.getMetricData(resourceIds, 10001, start, end);
+        hqAssertFailureInvalidParameters(wrongTemplateResponse);
+
+        // Retry with empty resources array
+        GetMetricsDataResponse emptyResourcesResponse =
+                metricApi.getMetricData(new int[] {}, templateId, start, end);
+        hqAssertFailureInvalidParameters(emptyResourcesResponse);
+
+        // Retry with invalid resource ids.
+        GetMetricsDataResponse invalidResourceResponse =
+                metricApi.getMetricData(new int[] { Integer.MAX_VALUE },
+                                        templateId, start, end);
+        hqAssertFailureObjectNotFound(invalidResourceResponse);
     }
 }

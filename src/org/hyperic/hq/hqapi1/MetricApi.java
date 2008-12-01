@@ -343,4 +343,40 @@ public class MetricApi extends BaseApi {
         return doGet("metric/getGroupData.hqu", params,
                      GetMetricsDataResponse.class);
     }
+
+    /**
+     * Get the {@link org.hyperic.hq.hqapi1.types.MetricData} for the given
+     * list of @{link Resource}s and {@link org.hyperic.hq.hqapi1.types.MetricTemplate}.
+     *
+     * @param resourceIds The list of {@link org.hyperic.hq.hqapi1.types.Resource}s to
+     * query.  It is required that all Resources in this list are of the same
+     * {@link org.hyperic.hq.hqapi1.types.ResourcePrototype}.
+     * @param templateId The id of the {@link org.hyperic.hq.hqapi1.types.MetricTemplate}
+     * to query for data.  The template must belong to the
+     * {@link org.hyperic.hq.hqapi1.types.ResourcePrototype} for the passed in
+     * resources.
+     * @param start The start time to query, in epoch-millis.
+     * @param end The end time to query, in epoch-millis.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
+     * if the data was succesfully queried.  The returned data can be retrieved
+     * via {@link org.hyperic.hq.hqapi1.types.GetMetricsDataResponse#getMetricData()}.
+     */
+    public GetMetricsDataResponse getMetricData(int[] resourceIds, int templateId,
+                                                long start, long end)
+        throws IOException {
+
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        String[] ids = new String[resourceIds.length];
+        for (int i = 0; i < resourceIds.length; i++) {
+            ids[i] = Integer.toString(resourceIds[i]);
+        }
+        params.put("ids", ids);
+        params.put("templateId", new String[] { Integer.toString(templateId) });
+        params.put("start", new String[] { Long.toString(start) });
+        params.put("end", new String[] { Long.toString(end) });
+
+        return doGet("metric/getResourceData.hqu", params,
+                     GetMetricsDataResponse.class);
+    }
 }
