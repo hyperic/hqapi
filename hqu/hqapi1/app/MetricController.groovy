@@ -21,7 +21,8 @@ class MetricController extends ApiController {
                            indicator       : m.template.designate,
                            defaultOn       : m.template.defaultOn,
                            collectionType  : m.template.collectionType,
-                           defaultInterval : m.template.defaultInterval)
+                           defaultInterval : m.template.defaultInterval,
+                           category        : m.template.category.name)
             }
         }
     }
@@ -36,7 +37,8 @@ class MetricController extends ApiController {
                            indicator       : t.designate,
                            defaultOn       : t.defaultOn,
                            collectionType  : t.collectionType,
-                           defaultInterval : t.defaultInterval)
+                           defaultInterval : t.defaultInterval,
+                           category        : t.category.name)
         }
     }
 
@@ -336,11 +338,17 @@ class MetricController extends ApiController {
             if (!template) {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
             } else {
-                try {
-                    template.setDefaultIndicator(user, on)
-                } catch (Exception e) {
-                    log.error("UnexpectedError: " + e.getMessage(), e)
-                    failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+                if (template.isAvailability()) {
+                    failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                               "Availability indicator flag " +
+                                               "cannot be changed.")
+                } else {
+                    try {
+                        template.setDefaultIndicator(user, on)
+                    } catch (Exception e) {
+                        log.error("UnexpectedError: " + e.getMessage(), e)
+                        failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+                    }                    
                 }
             }
         }

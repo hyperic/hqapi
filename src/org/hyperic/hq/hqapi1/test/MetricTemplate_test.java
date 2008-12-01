@@ -20,8 +20,6 @@ import java.util.List;
 
 public class MetricTemplate_test extends MetricTestBase {
 
-    Metric _m;
-    
     public MetricTemplate_test(String name) {
         super(name);
     }
@@ -34,33 +32,42 @@ public class MetricTemplate_test extends MetricTestBase {
         assertTrue(t.getPlugin().length() > 0);
         assertTrue(t.getDefaultInterval() > 0);
         assertTrue(t.getUnits().length() > 0);
+        assertTrue(t.getCategory().length() > 0);
     }
 
-    public void setUp() throws Exception {
-        super.setUp();
-        
+    public void testMetricTemplate() throws Exception {
+
         Resource r = getResource();
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricsResponse resp = api.listMetrics(r);
+        ListMetricsResponse resp = api.listEnabledMetrics(r);
         hqAssertSuccess(resp);
 
-        assertTrue("No metrics found for " + r.getName(),
-                   resp.getMetric().size() > 0);
-        _m = resp.getMetric().get(0);
-    }
+        Metric normalMetric = null;
+        Metric availabilityMetric = null;
 
-    public void testSetDefaultIndicator() throws Exception {
+        for (Metric m : resp.getMetric()) {
+            if (m.getMetricTemplate().getCategory().equals("AVAILABILITY")) {
+                availabilityMetric = m;
+            } else {
+                normalMetric = m;
+            }
+        }
 
-        MetricTemplate t = _m.getMetricTemplate();
-        boolean isIndicator = t.isIndicator();
+        assertNotNull("Unable to find metric for resource " + r.getId(),
+                      normalMetric);
+        assertNotNull("Unable to find availability metric for " +
+                      "resource " + r.getId(), availabilityMetric);
 
-        MetricApi api = getApi().getMetricApi();
+        // Test setting indicator for a normal metric
+        boolean isIndicator = normalMetric.isIndicator();
+
         SetMetricDefaultIndicatorResponse indicatorResponse =
-                api.setDefaultIndicator(t, !isIndicator);
+                api.setDefaultIndicator(normalMetric.getMetricTemplate(),
+                                        !isIndicator);
         hqAssertSuccess(indicatorResponse);
 
-        GetMetricResponse getResponse = api.getMetric(_m.getId());
+        GetMetricResponse getResponse = api.getMetric(normalMetric.getId());
         hqAssertSuccess(getResponse);
         Metric m = getResponse.getMetric();
 
@@ -69,106 +76,91 @@ public class MetricTemplate_test extends MetricTestBase {
                    m.getMetricTemplate().isIndicator() == !isIndicator);
 
         // Reset back to original value
-        indicatorResponse = api.setDefaultIndicator(t, isIndicator);
+        indicatorResponse = api.setDefaultIndicator(normalMetric.getMetricTemplate(),
+                                                    isIndicator);
         hqAssertSuccess(indicatorResponse);
-        getResponse = api.getMetric(_m.getId());
+        getResponse = api.getMetric(normalMetric.getId());
         hqAssertSuccess(getResponse);
         m = getResponse.getMetric();
         assertTrue("Indicator not set correctly expected=" + isIndicator +
                    " was=" + m.getMetricTemplate().isIndicator(),
                    m.getMetricTemplate().isIndicator() == isIndicator);
-    }
 
-    public void testSetDefaultIndicatorBadId() throws Exception {
+        // Test setting indicator for availability measuremnt
+        SetMetricDefaultIndicatorResponse availResponse =
+                api.setDefaultIndicator(availabilityMetric.getMetricTemplate(),
+                                        false);
+        hqAssertFailureInvalidParameters(availResponse);
 
-        MetricTemplate t = new MetricTemplate();
-        t.setId(Integer.MAX_VALUE);
-        
-        MetricApi api = getApi().getMetricApi();
-        SetMetricDefaultIndicatorResponse indicatorResponse =
-                api.setDefaultIndicator(t, true);
-        hqAssertFailureObjectNotFound(indicatorResponse);
-    }
+        // Test setting indicator for a bad id
+        MetricTemplate badTemplate = new MetricTemplate();
+        badTemplate.setId(Integer.MAX_VALUE);
+        SetMetricDefaultIndicatorResponse badTemplateResponse =
+                api.setDefaultIndicator(badTemplate, true);
+        hqAssertFailureObjectNotFound(badTemplateResponse);
 
-    public void testSetDefaultInterval() throws Exception {
-
-        MetricTemplate t = _m.getMetricTemplate();
-        long interval = t.getDefaultInterval();
+        // Test setting the default interval
+        long interval = normalMetric.getInterval();
         long newInterval = interval * 2;
 
-        MetricApi api = getApi().getMetricApi();
         SetMetricDefaultIntervalResponse intervalResponse =
-                api.setDefaultInterval(t, newInterval);
+                api.setDefaultInterval(normalMetric.getMetricTemplate(),
+                                       newInterval);       
         hqAssertSuccess(intervalResponse);
 
-        GetMetricResponse getResponse = api.getMetric(_m.getId());
+        getResponse = api.getMetric(m.getId());
         hqAssertSuccess(getResponse);
-        Metric m = getResponse.getMetric();
-
+        m = getResponse.getMetric();
         assertTrue("Interval not set correctly expected=" + newInterval +
                    " was=" + m.getMetricTemplate().getDefaultInterval(),
                    m.getMetricTemplate().getDefaultInterval() == newInterval);
 
-        // Reset back to original value
-        intervalResponse = api.setDefaultInterval(t, interval);
+        // Test resetting back to original value
+        intervalResponse = api.setDefaultInterval(normalMetric.getMetricTemplate(),
+                                                  interval);
         hqAssertSuccess(intervalResponse);
-        getResponse = api.getMetric(_m.getId());
+        getResponse = api.getMetric(m.getId());
         hqAssertSuccess(getResponse);
         m = getResponse.getMetric();
         assertTrue("Interval not set correctly expected=" + interval +
                    " was=" + m.getMetricTemplate().getDefaultInterval(),
                    m.getMetricTemplate().getDefaultInterval() == interval);
-    }
 
-    public void testSetDefaultIntervalBadId() throws Exception {
 
-        MetricTemplate t = new MetricTemplate();
-        t.setId(Integer.MAX_VALUE);
+        SetMetricDefaultIntervalResponse badIntervalResponse =
+                api.setDefaultInterval(badTemplate, interval);
+        hqAssertFailureObjectNotFound(badIntervalResponse);
 
-        MetricApi api = getApi().getMetricApi();
-        SetMetricDefaultIntervalResponse intervalResponse =
-                api.setDefaultInterval(t, 60000);
-        hqAssertFailureObjectNotFound(intervalResponse);
-    }
+        // Test setting default on
 
-    public void testSetDefaultOn() throws Exception {
-
-        MetricTemplate t = _m.getMetricTemplate();
-        boolean defaultOn = t.isDefaultOn();
-
-        MetricApi api = getApi().getMetricApi();
+        boolean defaultOn = normalMetric.isDefaultOn();
         SetMetricDefaultOnResponse defaultOnResponse =
-                api.setDefaultOn(t, !defaultOn);
+                api.setDefaultOn(normalMetric.getMetricTemplate(), !defaultOn);
         hqAssertSuccess(defaultOnResponse);
 
-        GetMetricResponse getResponse = api.getMetric(_m.getId());
+        getResponse = api.getMetric(m.getId());
         hqAssertSuccess(getResponse);
-        Metric m = getResponse.getMetric();
+        m = getResponse.getMetric();
 
         assertTrue("Default on not set correctly expected=" + !defaultOn +
                    " was=" + m.getMetricTemplate().isDefaultOn(),
                    m.getMetricTemplate().isDefaultOn() == !defaultOn);
 
-        // Reset back to original value
-        defaultOnResponse = api.setDefaultOn(t, defaultOn);
+        // Reset default on flag
+        defaultOnResponse = api.setDefaultOn(normalMetric.getMetricTemplate(),
+                                             defaultOn);
         hqAssertSuccess(defaultOnResponse);
-        getResponse = api.getMetric(_m.getId());
+        getResponse = api.getMetric(m.getId());
         hqAssertSuccess(getResponse);
         m = getResponse.getMetric();
         assertTrue("Default on not set correctly expected=" + defaultOn +
                    " was=" + m.getMetricTemplate().isDefaultOn(),
                    m.getMetricTemplate().isDefaultOn() == defaultOn);
-    }
 
-    public void testSetDefaultOnBadId() throws Exception {
-
-        MetricTemplate t = new MetricTemplate();
-        t.setId(Integer.MAX_VALUE);
-
-        MetricApi api = getApi().getMetricApi();
-        SetMetricDefaultOnResponse defaultOnResponse =
-                api.setDefaultOn(t, true);
-        hqAssertFailureObjectNotFound(defaultOnResponse);
+        // Test setting defaultOn for a bad template
+        SetMetricDefaultOnResponse badDefaultOnResponse =
+                api.setDefaultOn(badTemplate, true);
+        hqAssertFailureObjectNotFound(badDefaultOnResponse);
     }
 
     public void testListTemplates() throws Exception {
