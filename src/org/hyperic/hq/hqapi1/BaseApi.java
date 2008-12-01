@@ -27,7 +27,7 @@ public abstract class BaseApi {
     {
         return _conn.doGet(BASE_URI + action, params, resultClass);
     }
-    
+
     /**
      * Call {@link HQConnection#doPost(String, Object, Class)} for the specified
      * controller/action via Post

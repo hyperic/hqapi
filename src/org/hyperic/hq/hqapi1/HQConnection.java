@@ -6,6 +6,8 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethodBase;
+import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.Part;
@@ -209,11 +211,18 @@ public class HQConnection {
         try {
             HttpClient client = new HttpClient();
 
+            // Set Basic auth creds
             client.getParams().setAuthenticationPreemptive(true);
             Credentials defaultcreds = new UsernamePasswordCredentials(_user,
                                                                        _password);
             client.getState().setCredentials(AuthScope.ANY, defaultcreds);
 
+            // Disable re-tries
+            DefaultHttpMethodRetryHandler retryhandler =
+                    new DefaultHttpMethodRetryHandler(0, true);
+            client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
+                                             retryhandler);
+            
             ServiceError error;
             switch (client.executeMethod(method)) {
                 case 200:
