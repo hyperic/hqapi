@@ -16,4 +16,36 @@ public class InvalidLogin_test extends HQApiTestBase {
 
         hqAssertFailureLoginFailure(response);
     }
+
+    public void testNullUsername() throws Exception {
+
+        UserApi api = getApi(null, "invalidPassword").getUserApi();
+        GetUsersResponse response = api.getUsers();
+
+        hqAssertFailureLoginFailure(response);
+    }
+
+    public void testNullPassword() throws Exception {
+
+        UserApi api = getApi("invalidUser", null).getUserApi();
+        GetUsersResponse response = api.getUsers();
+
+        hqAssertFailureLoginFailure(response);
+    }
+
+    public void testEmptyUsername() throws Exception {
+
+        UserApi api = getApi("", "invalidPassword").getUserApi();
+        GetUsersResponse response = api.getUsers();
+
+        hqAssertFailureLoginFailure(response);
+    }
+
+    public void testEmptyPassword() throws Exception {
+
+        UserApi api = getApi("hqadmin", "").getUserApi();
+        GetUsersResponse response = api.getUsers();
+
+        hqAssertFailureLoginFailure(response);
+    }
 }

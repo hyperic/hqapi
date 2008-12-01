@@ -206,12 +206,27 @@ public class HQConnection {
         throws IOException
     {
         String protocol = _isSecure ? "https" : "http";
-
+        ServiceError error;
         URL url = new URL(protocol, _host, _port, uri);
         method.setURI(new URI(url.toString(), true));
 
         try {
             HttpClient client = new HttpClient();
+
+            // Validate user & password inputs
+            if (_user == null || _user.length() == 0) {
+                error = new ServiceError();
+                error.setErrorCode("LoginFailure");
+                error.setReasonText("User name cannot be null or empty");
+                return getErrorResponse(resultClass, error);
+            }
+
+            if (_password == null || _password.length() == 0) {
+                error = new ServiceError();
+                error.setErrorCode("LoginFailure");
+                error.setReasonText("Password cannot be null or empty");
+                return getErrorResponse(resultClass, error);
+            }
 
             // Set Basic auth creds
             client.getParams().setAuthenticationPreemptive(true);
@@ -225,7 +240,6 @@ public class HQConnection {
             client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
                                              retryhandler);
             
-            ServiceError error;
             switch (client.executeMethod(method)) {
                 case 200:
                     // We only deal with HTTP_OK responses
