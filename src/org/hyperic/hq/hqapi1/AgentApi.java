@@ -41,9 +41,9 @@ public class AgentApi extends BaseApi {
     public GetAgentResponse getAgent(String address, int port)
         throws IOException
     {
-        Map<String,String> params = new HashMap<String,String>();
-        params.put("address", address);
-        params.put("port", String.valueOf(port));
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("address", new String[] { address });
+        params.put("port", new String[] { String.valueOf(port) });
         return doGet("agent/getAgent.hqu", params, GetAgentResponse.class);
     }
 
@@ -59,7 +59,7 @@ public class AgentApi extends BaseApi {
     public GetAgentsResponse getAgents()
         throws IOException
     {
-        return doGet("agent/list.hqu", new HashMap<String,String>(),
+        return doGet("agent/list.hqu", new HashMap<String,String[]>(),
                      GetAgentsResponse.class);
     }
 
@@ -77,8 +77,8 @@ public class AgentApi extends BaseApi {
     public PingAgentResponse pingAgent(Agent agent)
         throws IOException
     {
-        Map <String,String> params = new HashMap<String,String>();
-        params.put("id", String.valueOf(agent.getId()));
+        Map <String,String[]> params = new HashMap<String,String[]>();
+        params.put("id", new String[] { String.valueOf(agent.getId()) });
         return doGet("agent/pingAgent.hqu", params, PingAgentResponse.class);
     }
 }

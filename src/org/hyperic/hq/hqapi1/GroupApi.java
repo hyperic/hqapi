@@ -47,8 +47,8 @@ public class GroupApi extends BaseApi {
     public GetGroupResponse getGroup(String name)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("name", name);
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("name", new String[] { name });
         return doGet("group/get.hqu", params, GetGroupResponse.class);
     }
 
@@ -66,8 +66,8 @@ public class GroupApi extends BaseApi {
     public GetGroupResponse getGroup(int id)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("id", Integer.toString(id));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("id", new String[] { Integer.toString(id) });
         return doGet("group/get.hqu", params, GetGroupResponse.class);
     }
 
@@ -102,8 +102,8 @@ public class GroupApi extends BaseApi {
     public DeleteGroupResponse deleteGroup(int id)
         throws IOException
     {
-        Map<String,String> params = new HashMap<String,String>();
-        params.put("id", Integer.toString(id));
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("id", new String[] { Integer.toString(id) });
         return doGet("group/delete.hqu", params, DeleteGroupResponse.class);
     }
     
@@ -123,9 +123,9 @@ public class GroupApi extends BaseApi {
                                                           int resourceId)
         throws IOException
     {
-        Map<String,String> params = new HashMap<String,String>();
-        params.put("groupId", Integer.toString(groupId));
-        params.put("resourceId", Integer.toString(resourceId));
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("groupId", new String[] { Integer.toString(groupId) });
+        params.put("resourceId", new String[] { Integer.toString(resourceId) });
         return doGet("group/removeResource.hqu", params,
                      RemoveResourceFromGroupResponse.class);
     }
@@ -141,7 +141,7 @@ public class GroupApi extends BaseApi {
     public GetGroupsResponse listGroups()
         throws IOException
     {
-        return doGet("group/list.hqu", new HashMap<String,String>(),
+        return doGet("group/list.hqu", new HashMap<String,String[]>(),
                      GetGroupsResponse.class);
     }
 
@@ -158,8 +158,8 @@ public class GroupApi extends BaseApi {
     public GetGroupsResponse listCompatibleGroups()
         throws IOException
     {
-        Map<String,String> params = new HashMap<String,String>();
-        params.put("compatible", Boolean.toString(true));
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("compatible", new String[] { Boolean.toString(true) });
         return doGet("group/list.hqu", params, GetGroupsResponse.class);
     }
 
@@ -176,8 +176,8 @@ public class GroupApi extends BaseApi {
     public GetGroupsResponse listMixedGroups()
         throws IOException
     {
-        Map<String,String> params = new HashMap<String,String>();
-        params.put("compatible", Boolean.toString(false));
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("compatible", new String[] { Boolean.toString(false) });
         return doGet("group/list.hqu", params, GetGroupsResponse.class);
     }
 
@@ -194,8 +194,8 @@ public class GroupApi extends BaseApi {
     public FindResourcesResponse listResources(int groupId)
         throws IOException
     {
-        Map<String,String> params = new HashMap<String,String>();
-        params.put("groupId", Integer.toString(groupId));
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("groupId", new String[] { Integer.toString(groupId) });
         return doGet("group/listResources.hqu", params,
                      FindResourcesResponse.class);
     }
@@ -215,9 +215,9 @@ public class GroupApi extends BaseApi {
     public AddResourceToGroupResponse addResource(int groupId, int resourceId)
         throws IOException
     {
-        Map<String,String> params = new HashMap<String,String>();
-        params.put("groupId", Integer.toString(groupId));
-        params.put("resourceId", Integer.toString(resourceId));
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("groupId", new String[] { Integer.toString(groupId) });
+        params.put("resourceId", new String[] { Integer.toString(resourceId) });
         return doGet("group/addResource.hqu", params,
                      AddResourceToGroupResponse.class);
     }

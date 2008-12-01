@@ -47,8 +47,8 @@ public class UserApi extends BaseApi {
     public GetUserResponse getUser(String name)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("name", name);
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("name", new String[] { name });
         return doGet("user/get.hqu", params, GetUserResponse.class);
     }
 
@@ -66,8 +66,8 @@ public class UserApi extends BaseApi {
     public GetUserResponse getUser(int id)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("id", Integer.toString(id));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("id", new String[] { Integer.toString(id) });
         return doGet("user/get.hqu", params, GetUserResponse.class);
     }
 
@@ -82,7 +82,7 @@ public class UserApi extends BaseApi {
     public GetUsersResponse getUsers()
         throws IOException
     {
-        return doGet("user/list.hqu", new HashMap<String,String>(),
+        return doGet("user/list.hqu", new HashMap<String,String[]>(),
                      GetUsersResponse.class);
     }
 
@@ -101,17 +101,17 @@ public class UserApi extends BaseApi {
     public CreateUserResponse createUser(User user, String password)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String[]> params = new HashMap<String, String[]>();
 
-        params.put("name", user.getName());
-        params.put("password", password);
-        params.put("firstName", user.getFirstName());
-        params.put("lastName", user.getLastName());
-        params.put("emailAddress", user.getEmailAddress());
-        params.put("active", Boolean.valueOf(user.isActive()).toString());
-        params.put("department", user.getDepartment());
-        params.put("htmlEmail", Boolean.valueOf(user.isActive()).toString());
-        params.put("SMSAddress", user.getSMSAddress());
+        params.put("name", new String[] { user.getName() });
+        params.put("password", new String[] { password });
+        params.put("firstName", new String[] { user.getFirstName() });
+        params.put("lastName", new String[] { user.getLastName() });
+        params.put("emailAddress", new String[] { user.getEmailAddress() });
+        params.put("active", new String[] { Boolean.toString(user.isActive()) });
+        params.put("department", new String[] { user.getDepartment() });
+        params.put("htmlEmail", new String[] { Boolean.toString(user.isActive())});
+        params.put("SMSAddress", new String[] { user.getSMSAddress() });
 
         return doGet("user/create.hqu", params, CreateUserResponse.class);
     }
@@ -128,9 +128,9 @@ public class UserApi extends BaseApi {
     public DeleteUserResponse deleteUser(int id)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String[]> params = new HashMap<String, String[]>();
 
-        params.put("id", Integer.toString(id));
+        params.put("id", new String[] { Integer.toString(id) });
 
         return doGet("user/delete.hqu", params, DeleteUserResponse.class);
     }
@@ -187,10 +187,10 @@ public class UserApi extends BaseApi {
     public ChangePasswordResponse changePassword(User user, String password)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String[]> params = new HashMap<String, String[]>();
 
-        params.put("id", String.valueOf(user.getId()));
-        params.put("password", password);
+        params.put("id", new String[] { Integer.toString(user.getId()) });
+        params.put("password", new String[] { password });
 
         return doGet("user/changePassword.hqu", params,
                      ChangePasswordResponse.class);

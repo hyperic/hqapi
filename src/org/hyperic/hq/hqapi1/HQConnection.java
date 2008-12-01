@@ -133,7 +133,7 @@ public class HQConnection {
      * the type given in the resultClass argument.
      * @throws IOException If a network error occurs during the request.
      */
-    <T> T doGet(String path, Map<String, String> params, Class<T> resultClass)
+    <T> T doGet(String path, Map<String, String[]> params, Class<T> resultClass)
         throws IOException
     {
         GetMethod method = new GetMethod();
@@ -147,12 +147,14 @@ public class HQConnection {
         int idx = 0;
         for (Iterator i = params.keySet().iterator(); i.hasNext(); idx++) {
             String key = (String)i.next();
-            String value = (String)params.get(key);
-            if (value != null) {
-                if (idx > 0) {
-                    uri.append("&");
+            String[] vals = params.get(key);
+            for (String val : vals) {
+                if (val != null) {
+                    if (idx > 0) {
+                        uri.append("&");
+                    }
+                    uri.append(key).append("=").append(urlEncode(val));
                 }
-                uri.append(key).append("=").append(urlEncode(value));
             }
         }
 

@@ -35,7 +35,7 @@ public class AutodiscoveryApi extends BaseApi {
     public GetQueueResponse getQueue()
         throws IOException
     {
-        return doGet("autodiscovery/getQueue.hqu", new HashMap<String,String>(),
+        return doGet("autodiscovery/getQueue.hqu", new HashMap<String,String[]>(),
                      GetQueueResponse.class);
     }
 
@@ -53,9 +53,9 @@ public class AutodiscoveryApi extends BaseApi {
     public ApproveResponse approve(int id)
         throws IOException
     {
-        HashMap<String, String> params = new HashMap<String, String>();
+        HashMap<String, String[]> params = new HashMap<String, String[]>();
 
-        params.put("id", String.valueOf(id));
+        params.put("id", new String[] { String.valueOf(id) });
 
         return doGet("autodiscovery/approve.hqu", params, ApproveResponse.class);
     }

@@ -55,8 +55,8 @@ public class MetricApi extends BaseApi {
     public ListMetricsResponse listMetrics(Resource resource)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("resourceId", Integer.toString(resource.getId()));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("resourceId", new String[] { Integer.toString(resource.getId()) });
         return doGet("metric/listMetrics.hqu", params,
                      ListMetricsResponse.class);
     }
@@ -76,9 +76,9 @@ public class MetricApi extends BaseApi {
     public ListMetricsResponse listEnabledMetrics(Resource resource)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("resourceId", Integer.toString(resource.getId()));
-        params.put("enabled", Boolean.toString(true));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("resourceId", new String[] { Integer.toString(resource.getId()) });
+        params.put("enabled", new String[] { Boolean.toString(true) });
         return doGet("metric/listMetrics.hqu", params,
                      ListMetricsResponse.class);
     }
@@ -98,8 +98,8 @@ public class MetricApi extends BaseApi {
     public ListMetricTemplatesResponse listMetricTemplates(ResourcePrototype prototype)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("prototype", prototype.getName());
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("prototype", new String[] { prototype.getName() });
         return doGet("metric/listTemplates.hqu", params,
                      ListMetricTemplatesResponse.class);
     }
@@ -120,8 +120,8 @@ public class MetricApi extends BaseApi {
     public GetMetricResponse getMetric(int id)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("id", Integer.toString(id));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("id", new String[] { Integer.toString(id) });
         return doGet("metric/getMetric.hqu", params,
                      GetMetricResponse.class);
     }
@@ -139,8 +139,8 @@ public class MetricApi extends BaseApi {
     public DisableMetricResponse disableMetric(Metric m)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("id", Integer.toString(m.getId()));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("id", new String[] { Integer.toString(m.getId()) });
         return doGet("metric/disableMetric.hqu", params,
                      DisableMetricResponse.class);
     }
@@ -161,9 +161,9 @@ public class MetricApi extends BaseApi {
     public EnableMetricResponse enableMetric(Metric m, long interval)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("id", Integer.toString(m.getId()));
-        params.put("interval", Long.toString(interval));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("id", new String[] { Integer.toString(m.getId()) });
+        params.put("interval", new String[] { Long.toString(interval) });
         return doGet("metric/enableMetric.hqu", params,
                      EnableMetricResponse.class);
     }
@@ -185,9 +185,9 @@ public class MetricApi extends BaseApi {
     public SetMetricIntervalResponse setInterval(Metric m, long interval)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("id", Integer.toString(m.getId()));
-        params.put("interval", Long.toString(interval));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("id", new String[] { Integer.toString(m.getId()) });
+        params.put("interval", new String[] { Long.toString(interval) });
         return doGet("metric/setInterval.hqu", params,
                      SetMetricIntervalResponse.class);
     }
@@ -208,8 +208,8 @@ public class MetricApi extends BaseApi {
     public GetMetricTemplateResponse getMetricTemplate(int id)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("id", Integer.toString(id));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("id", new String[] { Integer.toString(id) });
         return doGet("metric/getMetricTemplate.hqu", params,
                      GetMetricTemplateResponse.class);
     }
@@ -232,9 +232,9 @@ public class MetricApi extends BaseApi {
     public SetMetricDefaultOnResponse setDefaultOn(MetricTemplate template, boolean on)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("templateId", Integer.toString(template.getId()));
-        params.put("on", Boolean.toString(on));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("templateId", new String[] { Integer.toString(template.getId()) });
+        params.put("on", new String[] { Boolean.toString(on) });
         return doGet("metric/setDefaultOn.hqu", params,
                      SetMetricDefaultOnResponse.class);
     }
@@ -256,9 +256,9 @@ public class MetricApi extends BaseApi {
                                                                  boolean on)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("templateId", Integer.toString(template.getId()));
-        params.put("on", Boolean.toString(on));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("templateId", new String[] { Integer.toString(template.getId()) });
+        params.put("on", new String[] { Boolean.toString(on) });
         return doGet("metric/setDefaultIndicator.hqu", params,
                      SetMetricDefaultIndicatorResponse.class);
     }
@@ -280,9 +280,9 @@ public class MetricApi extends BaseApi {
                                                                long interval)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("templateId", Integer.toString(template.getId()));
-        params.put("interval", Long.toString(interval));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("templateId", new String[] { Integer.toString(template.getId()) });
+        params.put("interval", new String[] { Long.toString(interval) });
         return doGet("metric/setDefaultInterval.hqu", params,
                      SetMetricDefaultIntervalResponse.class);
     }
@@ -304,10 +304,10 @@ public class MetricApi extends BaseApi {
     public GetMetricDataResponse getMetricData(int metricId, long start, long end)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("metricId", Integer.toString(metricId));
-        params.put("start", Long.toString(start));
-        params.put("end", Long.toString(end));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("metricId", new String[] { Integer.toString(metricId) });
+        params.put("start", new String[] { Long.toString(start) });
+        params.put("end", new String[] { Long.toString(end) });
 
         return doGet("metric/getData.hqu", params, GetMetricDataResponse.class);
     }
@@ -334,11 +334,11 @@ public class MetricApi extends BaseApi {
                                                 long start, long end)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("groupId", Integer.toString(groupId));
-        params.put("templateId", Integer.toString(templateId));
-        params.put("start", Long.toString(start));
-        params.put("end", Long.toString(end));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("groupId", new String[] { Integer.toString(groupId) });
+        params.put("templateId", new String[] { Integer.toString(templateId) });
+        params.put("start", new String[] { Long.toString(start) });
+        params.put("end", new String[] { Long.toString(end) });
 
         return doGet("metric/getGroupData.hqu", params,
                      GetMetricsDataResponse.class);

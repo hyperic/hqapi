@@ -48,7 +48,7 @@ public class RoleApi extends BaseApi {
     public GetRolesResponse getRoles()
         throws IOException
     {
-        return doGet("role/list.hqu", new HashMap<String, String>(),
+        return doGet("role/list.hqu", new HashMap<String, String[]>(),
                      GetRolesResponse.class);
     }
 
@@ -65,8 +65,8 @@ public class RoleApi extends BaseApi {
     public GetRoleResponse getRole(String name)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("name", name);
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("name", new String[] { name });
         return doGet("role/get.hqu", params, GetRoleResponse.class);
     }
 
@@ -84,8 +84,8 @@ public class RoleApi extends BaseApi {
     public GetRoleResponse getRole(int id)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("id", String.valueOf(id));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("id", new String[] { String.valueOf(id) });
         return doGet("role/get.hqu", params, GetRoleResponse.class);
     }
 
@@ -122,8 +122,8 @@ public class RoleApi extends BaseApi {
     public DeleteRoleResponse deleteRole(int id)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String,String>();
-        params.put("id", String.valueOf(id));
+        Map<String, String[]> params = new HashMap<String,String[]>();
+        params.put("id", new String[] { String.valueOf(id) });
         return doGet("role/delete.hqu", params, DeleteRoleResponse.class);
     }
 
@@ -197,8 +197,8 @@ public class RoleApi extends BaseApi {
     public GetUsersResponse getUsers(Role role)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String,String>();
-        params.put("id", String.valueOf(role.getId()));
+        Map<String, String[]> params = new HashMap<String,String[]>();
+        params.put("id", new String[] {Integer.toString(role.getId()) });
         return doGet("role/getUsers.hqu", params, GetUsersResponse.class);
     }
 }

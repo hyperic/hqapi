@@ -58,7 +58,7 @@ public class ResourceApi extends BaseApi {
         throws IOException
     {   
         return doGet("resource/listResourcePrototypes.hqu",
-                     new HashMap<String,String>(),
+                     new HashMap<String,String[]>(),
                      ListResourcePrototypesResponse.class);
     }
 
@@ -75,8 +75,8 @@ public class ResourceApi extends BaseApi {
     public ListResourcePrototypesResponse listResourcePrototypes() 
         throws IOException
     {
-        Map<String,String> params = new HashMap<String,String>();
-        params.put("existing", Boolean.toString(Boolean.TRUE));
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("existing", new String[] { Boolean.toString(Boolean.TRUE) });
         return doGet("resource/listResourcePrototypes.hqu", params,
                      ListResourcePrototypesResponse.class);
     }
@@ -94,8 +94,8 @@ public class ResourceApi extends BaseApi {
     public GetResourcePrototypeResponse getResourcePrototype(String name)
         throws IOException
     {
-        Map<String,String> params = new HashMap<String,String>();
-        params.put("name", name);
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("name", new String[] { name });
         return doGet("resource/getResourcePrototype.hqu",
                      params, GetResourcePrototypeResponse.class);
     }
@@ -217,8 +217,8 @@ public class ResourceApi extends BaseApi {
     public GetResourceResponse getResource(int id)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("id", Integer.toString(id));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("id", new String[] { Integer.toString(id) });
         return doGet("resource/get.hqu", params,
                      GetResourceResponse.class);
     }
@@ -237,8 +237,8 @@ public class ResourceApi extends BaseApi {
     public GetResourceResponse getResourceForPlatform(int id)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("platformId", Integer.toString(id));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("platformId", new String[] { Integer.toString(id) });
         return doGet("resource/get.hqu", params,
                      GetResourceResponse.class);
     }
@@ -257,8 +257,8 @@ public class ResourceApi extends BaseApi {
     public GetResourceResponse getResourceForPlatform(String name)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("platformName", name);
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("platformName", new String[] { name });
         return doGet("resource/get.hqu", params,
                      GetResourceResponse.class);
     }
@@ -278,8 +278,8 @@ public class ResourceApi extends BaseApi {
     public GetResourceResponse getResourceForServer(int id)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("serverId", Integer.toString(id));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("serverId", new String[] { Integer.toString(id) });
         return doGet("resource/get.hqu", params,
                      GetResourceResponse.class);
     }
@@ -298,8 +298,8 @@ public class ResourceApi extends BaseApi {
     public GetResourceResponse getResourceForService(int id)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("serviceId", Integer.toString(id));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("serviceId", new String[] { Integer.toString(id) });
         return doGet("resource/get.hqu", params,
                      GetResourceResponse.class);
     }
@@ -320,8 +320,8 @@ public class ResourceApi extends BaseApi {
     public FindResourcesResponse findResources(Agent agent)
         throws IOException
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("agentId", Integer.toString(agent.getId()));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("agentId", new String[] { Integer.toString(agent.getId()) });
         return doGet("resource/find.hqu", params,
                      FindResourcesResponse.class);
     }
@@ -341,8 +341,8 @@ public class ResourceApi extends BaseApi {
     public FindResourcesResponse findResources(ResourcePrototype pt)
         throws IOException
     {
-        Map<String,String> params = new HashMap<String, String>();
-        params.put("prototype", pt.getName());
+        Map<String,String[]> params = new HashMap<String, String[]>();
+        params.put("prototype", new String[] { pt.getName() });
         return doGet("resource/find.hqu", params,
                      FindResourcesResponse.class);
     }
@@ -362,8 +362,8 @@ public class ResourceApi extends BaseApi {
     public FindResourcesResponse findResourceChildren(Resource r)
         throws IOException
     {
-        Map<String,String> params = new HashMap<String, String>();
-        params.put("childrenOfId", Integer.toString(r.getId()));
+        Map<String,String[]> params = new HashMap<String, String[]>();
+        params.put("childrenOfId", new String[] { Integer.toString(r.getId()) });
         return doGet("resource/find.hqu", params,
                      FindResourcesResponse.class);
     }
@@ -382,8 +382,8 @@ public class ResourceApi extends BaseApi {
     public DeleteResourceResponse deleteResource(int id)
         throws IOException
     {
-        Map<String,String> params = new HashMap<String, String>();
-        params.put("id", Integer.toString(id));
+        Map<String,String[]> params = new HashMap<String, String[]>();
+        params.put("id", new String[] { Integer.toString(id) });
         return doGet("resource/delete.hqu", params,
                      DeleteResourceResponse.class);
     }

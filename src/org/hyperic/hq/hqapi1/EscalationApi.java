@@ -46,8 +46,8 @@ public class EscalationApi extends BaseApi {
      */
     public GetEscalationResponse getEscalation(int id)
         throws IOException {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("id", Integer.toString(id));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("id", new String[] { Integer.toString(id) });
         return doGet("escalation/get.hqu", params, GetEscalationResponse.class);
     }
 
@@ -64,8 +64,8 @@ public class EscalationApi extends BaseApi {
      */
     public GetEscalationResponse getEscalation(String name)
         throws IOException {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("name", name);
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("name", new String[] { name });
         return doGet("escalation/get.hqu",
                      params, GetEscalationResponse.class);
     }
@@ -118,7 +118,7 @@ public class EscalationApi extends BaseApi {
      */
     public ListEscalationsResponse listEscalations()
         throws IOException {
-        return doGet("escalation/list.hqu", new HashMap<String,String>(),
+        return doGet("escalation/list.hqu", new HashMap<String,String[]>(),
                      ListEscalationsResponse.class);
     }
     
@@ -151,8 +151,8 @@ public class EscalationApi extends BaseApi {
      */
     public DeleteEscalationResponse deleteEscalation(int id)
         throws IOException {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("id", Integer.toString(id));
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("id", new String[] { Integer.toString(id) });
         return doGet("escalation/delete.hqu",
                      params, DeleteEscalationResponse.class);
     }

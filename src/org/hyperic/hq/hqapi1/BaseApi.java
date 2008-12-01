@@ -2,6 +2,7 @@ package org.hyperic.hq.hqapi1;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.HashMap;
 
 public abstract class BaseApi {
     private static final String BASE_URI = "/hqu/hqapi1/";
@@ -17,11 +18,12 @@ public abstract class BaseApi {
      * specified controller/action
      * 
      * @param action  The name of the controller/action to GET from.  This is
-     *                tacked on to the BASE_URI and results in a path
-     *                like:  '/hqu/hqapi1/user/listUsers.hqu'
-     *                ex:  'resource/listResources.hqu'
+     *  appended on to the BASE_URI and results in a path like
+     * '/hqu/hqapi1/user/listUsers.hqu'
+     * @param params  A map parameters to pass to the action.  Each HTTP
+     * parameter may have multiple values.
      */
-    protected <T> T doGet(String action, Map<String, String> params, 
+    protected <T> T doGet(String action, Map<String, String[]> params, 
                           Class<T> resultClass)
         throws IOException
     {
