@@ -29,7 +29,7 @@ class ApiController extends BaseController {
             Status("Failure")
             Error() {
                 ErrorCode(code.getErrorCode())
-                ReasonText(code.getReasonText())
+                ReasonText(reason)
             }
         }
     }
