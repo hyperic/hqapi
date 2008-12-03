@@ -88,16 +88,22 @@ public class ResourceFind_test extends ResourceTestBase {
         // there will be at least one platform servicing it.
         assertTrue("Found 0 platform resources for agent " + a.getId(),
                    resp.getResource().size() > 0);
-        for (Resource r : resp.getResource()) {
+
+        for (Resource platform : resp.getResource()) {
             // For each platform resource, loop through it's viewable children.
-            validateResource(r);
+            validateResource(platform);
 
-            FindResourcesResponse childrenResponse = api.findResourceChildren(r);
-            hqAssertSuccess(childrenResponse);
+            FindResourcesResponse serverResponse = api.findResourceChildren(platform);
+            hqAssertSuccess(serverResponse);
 
-            for (Resource child : childrenResponse.getResource()) {
-                validateResource(child);
-            }
+            assertTrue("Found no servers for platform " + platform.getName(),
+                       serverResponse.getResource().size() > 0);
+              
+            Resource server = serverResponse.getResource().get(0);
+
+            FindResourcesResponse servicesResponse =
+                    api.findResourceChildren(server);
+            hqAssertSuccess(servicesResponse);
         }
     }
 
