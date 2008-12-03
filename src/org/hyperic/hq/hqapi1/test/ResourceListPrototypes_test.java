@@ -34,7 +34,9 @@ public class ResourceListPrototypes_test extends HQApiTestBase {
         ListResourcePrototypesResponse response = api.listResourcePrototypes();
         hqAssertSuccess(response);
 
-        assertTrue("All prototypes not greater than existing prototypes",
+        assertTrue("All prototypes not greater than existing prototypes " +
+                   "all=" + allResponse.getResourcePrototype().size() +
+                   " existing=" + response.getResourcePrototype().size(),
                    allResponse.getResourcePrototype().size() >
                    response.getResourcePrototype().size());
 
