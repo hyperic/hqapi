@@ -346,7 +346,7 @@ public class MetricApi extends BaseApi {
 
     /**
      * Get the {@link org.hyperic.hq.hqapi1.types.MetricData} for the given
-     * list of @{link Resource}s and {@link org.hyperic.hq.hqapi1.types.MetricTemplate}.
+     * list of {@link Resource}s and {@link org.hyperic.hq.hqapi1.types.MetricTemplate}.
      *
      * @param resourceIds The list of {@link org.hyperic.hq.hqapi1.types.Resource}s to
      * query.  It is required that all Resources in this list are of the same
