@@ -55,6 +55,15 @@ public class ResourceCreateService_test extends ResourceTestBase {
         assertEquals(createdResource.getName(), name);
 
         // Clean up
+
+        // TODO: XXX: HQ periodically fails when a resource is deleted so
+        // quickly after it's been created.
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            // Ignore
+        }
+        
         DeleteResourceResponse deleteResponse =
                 api.deleteResource(createdResource.getId());
         hqAssertSuccess(deleteResponse);
