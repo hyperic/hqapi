@@ -89,6 +89,18 @@
                 <include name="*.xsd"/>
             </fileset>
         </copy>
+        <mkdir dir="${build.dir}/hqapi1/bin"/>
+        <copy todir="${build.dir}/hqapi1/bin">
+            <fileset dir="${basedir}/bin">
+                <include name="*.sh"/>
+            </fileset>
+        </copy>
+        <chmod perm="+x" type="file">
+            <fileset dir="${build.dir}/hqapi1/bin">
+              <include name="*.sh"/>
+            </fileset>
+        </chmod>
+        
         <tar tarfile="${dist.dir}/hqapi1/public/hqapi1.tar.gz"
              longfile="gnu"
              compression="gzip">
