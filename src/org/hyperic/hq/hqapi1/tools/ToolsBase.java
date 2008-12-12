@@ -5,28 +5,18 @@ import org.hyperic.hq.hqapi1.types.Response;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.apache.log4j.PropertyConfigurator;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Properties;
+
+import jargs.gnu.CmdLineParser;
 
 public abstract class ToolsBase {
 
-    static final String PROP_HOST   = "host";
-    static final String PROP_PORT   = "port";
-    static final String PROP_SECURE = "secure";
-    static final String PROP_USER   = "user";
-    static final String PROP_PASS   = "password";
-
-    static final String PROP_HELP   = "help";
-
-    static final String[][] REQURIED =
-            { {PROP_HOST, "The HQ server host"},
-              {PROP_USER, "The user to connect as"},
-              {PROP_PASS, "The password for the given user" } };
-    static final String[][] OPTIONAL =
-            { {PROP_PORT, "The HQ server port.  Defaults to 7080."},
-              {PROP_SECURE, "Controls whether communication will use SSL" },
-              {PROP_HELP, "Prints help information"} };
+    static final CmdLineParser.Option OPT_HOST = new CmdLineParser.Option.StringOption("host");
+    static final CmdLineParser.Option OPT_PORT = new CmdLineParser.Option.IntegerOption("port");
+    static final CmdLineParser.Option OPT_USER = new CmdLineParser.Option.StringOption("user");
+    static final CmdLineParser.Option OPT_PASS = new CmdLineParser.Option.StringOption("password");
+    static final CmdLineParser.Option OPT_SECURE = new CmdLineParser.Option.BooleanOption('s', "secure");
+    static final CmdLineParser.Option OPT_HELP = new CmdLineParser.Option.BooleanOption('h', "help");
 
     // Ripped out from PluginMain.java
     private static final String[][] LOG_PROPS = {
@@ -54,39 +44,26 @@ public abstract class ToolsBase {
         // Quiet all logging
         configureLogging("fatal");
     }
-    
-    static Map<String,String> parseParameters(String[] args) throws Exception {
 
-        Map<String,String> params = new HashMap<String,String>();
-        for (String arg : args) {
-            if (arg.startsWith("--")) {
-                int idx = arg.indexOf("=");
-                if (idx > 0) {
-                    params.put(arg.substring(2,idx), arg.substring(idx+1));
-                } else {
-                    params.put(arg.substring(2), "true");
-                }
-            }
+    static Parser getParser() {
+        Parser p = new Parser();
 
-            // Handle -D
-        }
+        p.addOption(OPT_HOST, true, "The HQ server host.");
+        p.addOption(OPT_PORT, false, "The HQ server port.  Defaults to 7080.");
+        p.addOption(OPT_USER, true, "The user to connect as.");
+        p.addOption(OPT_PASS, true, "The passord for the given user.");
+        p.addOption(OPT_SECURE, false, "Controls whether communication will use SSL.");
+        p.addOption(OPT_HELP, false, "Show this help meesage");
 
-        return params;
+        return p;
     }
 
-    static HQApi getApi(Map<String,String> params) {
-        String host     = params.get(PROP_HOST);
-        int port;
-        String user     = params.get(PROP_USER);
-        String password = params.get(PROP_PASS);
-
-        try {
-            port = Integer.parseInt(params.get(PROP_PORT));
-        } catch (NumberFormatException e) {
-            port = 7080;
-        }
-
-        boolean secure  = (port != 7080) || params.containsKey(PROP_SECURE);
+    static HQApi getApi(Parser p) {
+        String host = (String)p.getOptionValue(OPT_HOST);
+        Integer port = (Integer)p.getOptionValue(OPT_PORT, 7080);
+        String user = (String)p.getOptionValue(OPT_USER);
+        String password = (String)p.getOptionValue(OPT_PASS);
+        Boolean secure = (Boolean)p.getOptionValue(OPT_SECURE, false);
 
         return new HQApi(host, port, secure, user, password);
     }
@@ -97,20 +74,5 @@ public abstract class ToolsBase {
             return false;
         }
         return true;
-    }
-
-    static boolean checkHelp(Map<String,String> params) {
-        if (params.containsKey(PROP_HELP)) {
-            System.err.println("Required parameters:");
-            for (String[] param : REQURIED) {
-                System.err.println("    --" + param[0] + ": " + param[1]);
-            }
-            System.err.println("Optional parameters:");
-            for (String[] param : OPTIONAL) {
-                System.err.println("    --" + param[0] + ": " + param[1]);
-            }
-            return true;
-        }
-        return false;
     }
 }

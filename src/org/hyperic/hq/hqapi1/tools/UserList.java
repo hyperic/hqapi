@@ -5,19 +5,25 @@ import org.hyperic.hq.hqapi1.UserApi;
 import org.hyperic.hq.hqapi1.types.GetUsersResponse;
 import org.hyperic.hq.hqapi1.types.User;
 
-import java.util.Map;
-
 public class UserList extends ToolsBase {
 
     private static void listUsers(String[] args) throws Exception {
 
-        Map<String,String> params = parseParameters(args);
+        Parser p = getParser();
 
-        if (checkHelp(params)) {
-            return;
+        try {
+            p.parse(args);
+        } catch (Exception e) {
+            System.err.println("Error parsing command line: " + e.getMessage());
+            System.exit(-1);
         }
 
-        HQApi api = getApi(params);
+        if (Boolean.TRUE.equals(p.getOptionValue(OPT_HELP))) {
+            p.printUsage();
+            System.exit(0);
+        }
+
+        HQApi api = getApi(p);
         UserApi userApi = api.getUserApi();
 
         GetUsersResponse users = userApi.getUsers();
