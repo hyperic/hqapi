@@ -5,5 +5,5 @@ RUNDIR=`pwd`
 
 CLASSPATH=$CLASSPATH$(find $RUNDIR -name "*.jar" -exec printf :{} ';')
 
-java -cp $CLASSPATH $1
+java -cp $CLASSPATH $@
 
