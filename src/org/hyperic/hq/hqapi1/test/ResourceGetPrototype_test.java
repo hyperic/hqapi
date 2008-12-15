@@ -33,4 +33,12 @@ public class ResourceGetPrototype_test extends HQApiTestBase {
         GetResourcePrototypeResponse response = api.getResourcePrototype(TYPE);
         hqAssertFailureObjectNotFound(response);
     }
+
+    public void testGetNullPrototype() throws Exception {
+
+        ResourceApi api = getApi().getResourceApi();
+
+        GetResourcePrototypeResponse response = api.getResourcePrototype(null);
+        hqAssertFailureInvalidParameters(response);
+    }
 }

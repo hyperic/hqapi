@@ -32,11 +32,17 @@ class ResourceController extends ApiController {
     def getResourcePrototype(params) {
         def name = params.getOne("name")
 
-        def prototype = resourceHelper.find(prototype: name)
+        def prototype
+        if (name) {
+            prototype = resourceHelper.find(prototype: name)
+        }
 
         renderXml() {
             out << GetResourcePrototypeResponse() {
-                if (!prototype) {
+                if (!name) {
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         "Resource prototype not given")
+                } else if (!prototype) {
                     out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
                 } else {
                     out << getSuccessXML()
