@@ -2,6 +2,7 @@ package org.hyperic.hq.hqapi1.tools;
 
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.UserApi;
+import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.types.GetUsersResponse;
 import org.hyperic.hq.hqapi1.types.User;
 
@@ -28,12 +29,10 @@ public class UserList extends ToolsBase {
 
         GetUsersResponse users = userApi.getUsers();
         if (!isSuccess(users)) {
-            return;
+            System.exit(-1);
         }
 
-        for (User u : users.getUser()) {
-            System.out.println(u.getId() + " " + u.getName());
-        }
+        XmlUtil.serialize(users, System.out);
     }
 
     public static void main(String[] args) throws Exception {
@@ -41,6 +40,7 @@ public class UserList extends ToolsBase {
             listUsers(args);
         } catch (Exception e) {
             System.err.println("Error listing users: " + e.getMessage());
+            System.exit(-1);
         }
     }
 }
