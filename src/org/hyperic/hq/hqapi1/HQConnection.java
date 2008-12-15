@@ -18,15 +18,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import java.util.Map;
 import java.util.Iterator;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -96,26 +91,6 @@ public class HQConnection {
         }
     }
 
-    private <T> T deserialize(Class<T> res, InputStream is)
-        throws JAXBException
-    {
-        String pkg = res.getPackage().getName();
-        JAXBContext jc = JAXBContext.newInstance(pkg);
-        Unmarshaller u = jc.createUnmarshaller();
-        u.setEventHandler(new DefaultValidationEventHandler());
-        return res.cast(u.unmarshal(is));
-    }
-
-    private void serialize(Object o, OutputStream os)
-        throws JAXBException
-    {
-        String pkg = o.getClass().getPackage().getName();
-        JAXBContext jc = JAXBContext.newInstance(pkg);
-        Marshaller m = jc.createMarshaller();
-        m.setEventHandler(new DefaultValidationEventHandler());
-        m.marshal(o, os);
-    }
-
     private String urlEncode(String s)
         throws IOException
     {
@@ -180,7 +155,7 @@ public class HQConnection {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
-            serialize(o, bos);
+            XmlUtil.serialize(o, bos);
         } catch (JAXBException e) {
             ServiceError error = new ServiceError();
             error.setErrorCode("UnexpectedError");
@@ -245,7 +220,7 @@ public class HQConnection {
                     // We only deal with HTTP_OK responses
                     InputStream is = method.getResponseBodyAsStream();
                     try {
-                        return deserialize(resultClass, is);
+                        return XmlUtil.deserialize(resultClass, is);
                     } catch (JAXBException e) {
                         error = new ServiceError();
                         error.setErrorCode("UnexpectedError");
