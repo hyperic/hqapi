@@ -7,8 +7,8 @@ import java.util.ArrayList;
 
 public class Parser extends CmdLineParser {
 
-    List<String> requiredHelp = new ArrayList<String>();
-    List<String> optionalHelp = new ArrayList<String>();
+    private List<String> _requiredHelp = new ArrayList<String>();
+    private List<String> _optionalHelp = new ArrayList<String>();
 
     public Option addOption(Option option, boolean required, String helpString)
     {
@@ -22,9 +22,9 @@ public class Parser extends CmdLineParser {
             help = "--" + option.longForm() + ": " + helpString;
         }
         if (required) {
-            requiredHelp.add(help);
+            _requiredHelp.add(help);
         } else {
-            optionalHelp.add(help);
+            _optionalHelp.add(help);
         }
 
         return option;
@@ -34,12 +34,12 @@ public class Parser extends CmdLineParser {
         System.err.println("Usage: prog [arguments]");
         System.err.println("Required arguments:");
 
-        for (String help : requiredHelp) {
+        for (String help : _requiredHelp) {
             System.err.println(help);
         }
 
         System.err.println("Optional arguments:");
-        for (String help : optionalHelp) {
+        for (String help : _optionalHelp) {
             System.err.println(help);
         }
     }
