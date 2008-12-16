@@ -28,9 +28,6 @@ public class ResourceCreateService extends ToolsBase {
                 withRequiredArg().ofType(Integer.class);
         p.accepts(OPT_NAME, "The name of the service to create").
                 withRequiredArg().ofType(String.class);
-
-        // Register -Wfoo=bar options
-        p.recognizeAlternativeLongOptions(true);
         
         OptionSet options = getOptions(p, args);
 
@@ -50,6 +47,14 @@ public class ResourceCreateService extends ToolsBase {
         String name = (String)getRequired(options ,OPT_NAME);
 
         Map<String,String> config = new HashMap<String,String>();
+        for (String opt : options.nonOptionArguments()) {
+            int idx;
+            if ((idx = opt.indexOf("=")) != -1) {
+                String key = opt.substring(0, idx);
+                String val = opt.substring(idx+1);
+                config.put(key, val);
+            }
+        }
 
         CreateResourceResponse createResponse =
                 resourceApi.createService(protoResponse.getResourcePrototype(),
