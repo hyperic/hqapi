@@ -6,6 +6,8 @@ import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.util.Properties;
+import java.util.Arrays;
+import java.io.IOException;
 
 import joptsimple.OptionSet;
 import joptsimple.OptionParser;
@@ -57,17 +59,21 @@ public abstract class ToolsBase {
                 describedAs("The user to connect as").ofType(String.class);
         parser.accepts(OPT_PASS).withRequiredArg().
                 describedAs("The password for the given user").ofType(String.class);
-        parser.accepts(OPT_SECURE[0], OPT_SECURE[1]).withOptionalArg().
-                describedAs("Connect using SSL");
-        parser.accepts(OPT_HELP[0], OPT_HELP[1]).withOptionalArg().
-                describedAs("Show this message");
+        parser.acceptsAll(Arrays.asList(OPT_SECURE), "Connect using SSL");
+        parser.acceptsAll(Arrays.asList(OPT_HELP), "Show this message");
 
         return parser;
     }
 
-    static OptionSet getOptions(OptionParser p, String[] args) {
-        //TODO: help
-        return p.parse(args);
+    static OptionSet getOptions(OptionParser p, String[] args) throws IOException {
+        OptionSet o = p.parse(args);
+        
+        if (o.has(OPT_HELP[0]) || o.has(OPT_HELP[1])) {
+            p.printHelpOn(System.err);
+            System.exit(0);
+        }
+
+        return o;
     }
 
     static HQApi getApi(OptionSet s) {
