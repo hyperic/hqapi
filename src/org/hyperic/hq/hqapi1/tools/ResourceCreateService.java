@@ -29,6 +29,9 @@ public class ResourceCreateService extends ToolsBase {
         p.accepts(OPT_NAME, "The name of the service to create").
                 withRequiredArg().ofType(String.class);
 
+        // Register -Wfoo=bar options
+        p.recognizeAlternativeLongOptions(true);
+        
         OptionSet options = getOptions(p, args);
 
         HQApi api = getApi(options);
