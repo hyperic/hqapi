@@ -7,16 +7,17 @@ import org.apache.log4j.PropertyConfigurator;
 
 import java.util.Properties;
 
-import jargs.gnu.CmdLineParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionParser;
 
 public abstract class ToolsBase {
 
-    static final CmdLineParser.Option OPT_HOST = new CmdLineParser.Option.StringOption("host");
-    static final CmdLineParser.Option OPT_PORT = new CmdLineParser.Option.IntegerOption("port");
-    static final CmdLineParser.Option OPT_USER = new CmdLineParser.Option.StringOption("user");
-    static final CmdLineParser.Option OPT_PASS = new CmdLineParser.Option.StringOption("password");
-    static final CmdLineParser.Option OPT_SECURE = new CmdLineParser.Option.BooleanOption('s', "secure");
-    static final CmdLineParser.Option OPT_HELP = new CmdLineParser.Option.BooleanOption('h', "help");
+    static final String OPT_HOST     = "host";
+    static final String OPT_PORT     = "port";
+    static final String OPT_USER     = "user";
+    static final String OPT_PASS     = "password";
+    static final String[] OPT_SECURE = {"s", "secure"};
+    static final String[] OPT_HELP   = {"h","help"};
 
     // Ripped out from PluginMain.java
     private static final String[][] LOG_PROPS = {
@@ -45,34 +46,64 @@ public abstract class ToolsBase {
         configureLogging("fatal");
     }
 
-    static Parser getParser() {
-        Parser p = new Parser();
+    static OptionParser getOptionParser() {
+        OptionParser parser = new OptionParser();
 
-        p.addOption(OPT_HOST, true, "The HQ server host.");
-        p.addOption(OPT_PORT, false, "The HQ server port.  Defaults to 7080.");
-        p.addOption(OPT_USER, true, "The user to connect as.");
-        p.addOption(OPT_PASS, true, "The passord for the given user.");
-        p.addOption(OPT_SECURE, false, "Controls whether communication will use SSL.");
-        p.addOption(OPT_HELP, false, "Show this help meesage");
+        parser.accepts(OPT_HOST).withRequiredArg().
+                describedAs("The HQ server host").ofType(String.class);
+        parser.accepts(OPT_PORT).withRequiredArg().
+                describedAs("The HQ server port. Defaults to 7080").ofType(Integer.class);
+        parser.accepts(OPT_USER).withRequiredArg().
+                describedAs("The user to connect as").ofType(String.class);
+        parser.accepts(OPT_PASS).withRequiredArg().
+                describedAs("The password for the given user").ofType(String.class);
+        parser.accepts(OPT_SECURE[0], OPT_SECURE[1]).withOptionalArg().
+                describedAs("Connect using SSL");
+        parser.accepts(OPT_HELP[0], OPT_HELP[1]).withOptionalArg().
+                describedAs("Show this message");
 
-        return p;
+        return parser;
     }
 
-    static HQApi getApi(Parser p) {
-        String host = (String)p.getOptionValue(OPT_HOST);
-        Integer port = (Integer)p.getOptionValue(OPT_PORT, 7080);
-        String user = (String)p.getOptionValue(OPT_USER);
-        String password = (String)p.getOptionValue(OPT_PASS);
-        Boolean secure = (Boolean)p.getOptionValue(OPT_SECURE, false);
+    static OptionSet getOptions(OptionParser p, String[] args) {
+        //TODO: help
+        return p.parse(args);
+    }
+
+    static HQApi getApi(OptionSet s) {
+        String host = (String)s.valueOf(OPT_HOST);
+        Integer port;
+        if (s.hasArgument(OPT_PORT)) {
+            port = (Integer)s.valueOf(OPT_PORT);
+        } else {
+            port = 7080;
+        }
+        String user = (String)s.valueOf(OPT_USER);
+        String password = (String)s.valueOf(OPT_PASS);
+        Boolean secure = false;
+        if(s.hasArgument(OPT_SECURE[0])) {
+            secure = true;
+        }
 
         return new HQApi(host, port, secure, user, password);
     }
 
-    static boolean isSuccess(Response r) {
+    static Object getRequired(OptionSet s, String opt) {
+
+        Object o = s.valueOf(opt);
+
+        if (o == null) {
+            System.err.println("Required argument " + opt + " not given.");
+            System.exit(-1);
+        }
+
+        return o;
+    }
+
+    static void checkSuccess(Response r) {
         if (r.getStatus() != ResponseStatus.SUCCESS) {
             System.err.println("Error running command: " + r.getError().getReasonText());
-            return false;
+            System.exit(-1);
         }
-        return true;
     }
 }
