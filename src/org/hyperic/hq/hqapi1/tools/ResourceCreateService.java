@@ -22,12 +22,12 @@ public class ResourceCreateService extends ToolsBase {
 
         OptionParser p = getOptionParser();
 
-        p.accepts(OPT_PROTOTYPE).withRequiredArg().
-                describedAs("The resource prototype to create").ofType(String.class);
-        p.accepts(OPT_RESOURCEID).withRequiredArg().
-                describedAs("The parent resource id").ofType(Integer.class);
-        p.accepts(OPT_NAME).withRequiredArg().
-                describedAs("The name of the service to create").ofType(String.class);
+        p.accepts(OPT_PROTOTYPE, "The resource prototype to create").
+                withRequiredArg().ofType(String.class);
+        p.accepts(OPT_RESOURCEID, "The parent resource id").
+                withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_NAME, "The name of the service to create").
+                withRequiredArg().ofType(String.class);
 
         OptionSet options = getOptions(p, args);
 

@@ -51,14 +51,15 @@ public abstract class ToolsBase {
     static OptionParser getOptionParser() {
         OptionParser parser = new OptionParser();
 
-        parser.accepts(OPT_HOST).withRequiredArg().
-                describedAs("The HQ server host").ofType(String.class);
-        parser.accepts(OPT_PORT).withRequiredArg().
-                describedAs("The HQ server port. Defaults to 7080").ofType(Integer.class);
-        parser.accepts(OPT_USER).withRequiredArg().
-                describedAs("The user to connect as").ofType(String.class);
-        parser.accepts(OPT_PASS).withRequiredArg().
-                describedAs("The password for the given user").ofType(String.class);
+        parser.accepts(OPT_HOST, "The HQ server host").
+                withRequiredArg().ofType(String.class);
+        parser.accepts(OPT_PORT, "The HQ server port. Defaults to 7080").
+                withOptionalArg().ofType(Integer.class);
+        parser.accepts(OPT_USER, "The user to connect as").
+                withRequiredArg().ofType(String.class);
+        parser.accepts(OPT_PASS, "The password for the given user").
+                withRequiredArg().ofType(String.class);
+
         parser.acceptsAll(Arrays.asList(OPT_SECURE), "Connect using SSL");
         parser.acceptsAll(Arrays.asList(OPT_HELP), "Show this message");
 
