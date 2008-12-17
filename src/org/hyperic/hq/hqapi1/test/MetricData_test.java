@@ -89,7 +89,10 @@ public class MetricData_test extends MetricTestBase {
         GetMetricDataResponse dataResponse = api.getMetricData(m.getId(),
                                                                start, end);
         hqAssertSuccess(dataResponse);
-        assertTrue("Metric data found for " + m.getName(),
+
+        assertTrue("Metric data found for " + m.getName() + " on " +
+                   _r.getName() + " (" + dataResponse.getMetricData().getDataPoint().size() +
+                   " datapoints)",
                    dataResponse.getMetricData().getDataPoint().size() == 0);
     }
 
