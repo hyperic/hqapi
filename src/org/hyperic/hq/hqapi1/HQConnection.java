@@ -31,7 +31,7 @@ import java.lang.reflect.Method;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.ServiceError;
 
-public class HQConnection {
+class HQConnection {
 
     private static Log _log = LogFactory.getLog(HQConnection.class);
 

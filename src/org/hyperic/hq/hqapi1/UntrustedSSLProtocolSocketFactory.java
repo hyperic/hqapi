@@ -17,7 +17,7 @@ import java.net.InetAddress;
 import java.io.IOException;
 
 // For use with Commons-HTTPClient
-public class UntrustedSSLProtocolSocketFactory
+class UntrustedSSLProtocolSocketFactory
     extends SSLProtocolSocketFactory
 {
     private SSLSocketFactory factory;

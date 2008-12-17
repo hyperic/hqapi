@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
 
-public abstract class BaseApi {
+abstract class BaseApi {
     private static final String BASE_URI = "/hqu/hqapi1/";
 
     private final HQConnection _conn;
@@ -14,8 +14,7 @@ public abstract class BaseApi {
     }
     
     /**
-     * Call {@link HQConnection#doGet(String, Map, Class)} for the
-     * specified controller/action
+     * Issue a GET for the specified controller/action.
      * 
      * @param action  The name of the controller/action to GET from.  This is
      *  appended on to the BASE_URI and results in a path like
@@ -31,8 +30,7 @@ public abstract class BaseApi {
     }
 
     /**
-     * Call {@link HQConnection#doPost(String, Object, Class)} for the specified
-     * controller/action via Post
+     * Issue a POST for the specified controller/action.
      *
      * @param action  The name of the controller/action to POST to.  This is
      *                tacked on to the BASE_URI and results in a path
