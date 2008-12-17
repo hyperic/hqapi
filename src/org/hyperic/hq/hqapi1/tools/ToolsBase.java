@@ -8,6 +8,8 @@ import org.apache.log4j.PropertyConfigurator;
 import java.util.Properties;
 import java.util.Arrays;
 import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
 
 import joptsimple.OptionSet;
 import joptsimple.OptionParser;
@@ -77,20 +79,53 @@ public abstract class ToolsBase {
         return o;
     }
 
+    static Properties getClientProperties() {
+        Properties props = new Properties();
+
+        String home = System.getProperty("user.home");
+        File hq = new File(home, ".hq");
+        File clientProperties = new File(hq, "client.properties");
+
+        if (clientProperties.exists()) {
+            props = new Properties();
+            try {
+                props.load(new FileInputStream(clientProperties));
+            } catch (IOException e) {
+                return props;
+            }
+        }
+        return props;
+    }
+
     static HQApi getApi(OptionSet s) {
+
+        Properties clientProps = getClientProperties();
+
         String host = (String)s.valueOf(OPT_HOST);
+        if (host == null) {
+            host = clientProps.getProperty(OPT_HOST);
+        }
+
         Integer port;
         if (s.hasArgument(OPT_PORT)) {
             port = (Integer)s.valueOf(OPT_PORT);
         } else {
-            port = 7080;
+            port = Integer.parseInt(clientProps.getProperty(OPT_PORT, "7080"));
         }
+
         String user = (String)s.valueOf(OPT_USER);
-        String password = (String)s.valueOf(OPT_PASS);
-        Boolean secure = false;
-        if(s.hasArgument(OPT_SECURE[0])) {
-            secure = true;
+        if (user == null) {
+            user = clientProps.getProperty(OPT_USER);
         }
+
+        String password = (String)s.valueOf(OPT_PASS);
+        if (password == null) {
+            password = clientProps.getProperty(OPT_PASS);
+        }
+
+        Boolean secure = s.hasArgument(OPT_SECURE[0]) ||
+                         Boolean.valueOf(clientProps.getProperty(OPT_SECURE[1],
+                                                                 "false"));
 
         return new HQApi(host, port, secure, user, password);
     }
