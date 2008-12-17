@@ -22,7 +22,7 @@ abstract class BaseApi {
      * @param params  A map parameters to pass to the action.  Each HTTP
      * parameter may have multiple values.
      */
-    protected <T> T doGet(String action, Map<String, String[]> params, 
+    <T> T doGet(String action, Map<String, String[]> params,
                           Class<T> resultClass)
         throws IOException
     {
@@ -37,7 +37,7 @@ abstract class BaseApi {
      *                like:  '/hqu/hqapi1/user/syncUsers.hqu'
      *                ex:  'resource/syncResources.hqu'
      */
-    protected <T> T doPost(String action, Object o, Class<T> resultClass)
+    <T> T doPost(String action, Object o, Class<T> resultClass)
         throws IOException
     {
         return _conn.doPost(BASE_URI + action, o, resultClass);
