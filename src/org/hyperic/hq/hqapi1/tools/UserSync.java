@@ -37,7 +37,7 @@ public class UserSync extends ToolsBase {
         try {
             syncUsers(args);
         } catch (Exception e) {
-            System.err.println("Error listing users: " + e.getMessage());
+            System.err.println("Error syncing users: " + e.getMessage());
             System.exit(-1);
         }
     }

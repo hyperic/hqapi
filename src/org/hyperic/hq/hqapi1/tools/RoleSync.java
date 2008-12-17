@@ -36,7 +36,7 @@ public class RoleSync extends ToolsBase {
         try {
             syncRoles(args);
         } catch (Exception e) {
-            System.err.println("Error listing users: " + e.getMessage());
+            System.err.println("Error syncing roles: " + e.getMessage());
             System.exit(-1);
         }
     }

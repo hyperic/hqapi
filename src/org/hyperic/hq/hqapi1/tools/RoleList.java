@@ -56,7 +56,7 @@ public class RoleList extends ToolsBase {
         try {
             listRoles(args);
         } catch (Exception e) {
-            System.err.println("Error listing users: " + e.getMessage());
+            System.err.println("Error listing roles: " + e.getMessage());
             System.exit(-1);
         }
     }
