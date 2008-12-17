@@ -168,12 +168,13 @@
         <javadoc destdir="${javadoc.dir}"
                  private="false"
                  package="false"
+                 protected="false"
                  version="true"
                  author="true"
                  maxmemory="256M"
                  use="true"
                  packagenames="org.hyperic.*"
-                 excludepackagenames="org.hyperic.hq.hqapi1.test.*"
+                 excludepackagenames="org.hyperic.hq.hqapi1.test.*,org.hyperic.hq.hqapi1.examples.*,org.hyperic.hq.hqapi1.tools.*"
                  windowtitle="Hyperic HQ API">
             <sourcepath>
                 <pathelement location="src"/>
