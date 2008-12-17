@@ -49,7 +49,7 @@ public class UserList extends ToolsBase {
             checkSuccess(users);
         }
 
-        XmlUtil.serialize(users, System.out);
+        XmlUtil.serialize(users, System.out, Boolean.TRUE);
     }
 
     public static void main(String[] args) throws Exception {

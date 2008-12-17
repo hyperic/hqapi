@@ -20,13 +20,14 @@ public class XmlUtil {
         return res.cast(u.unmarshal(is));
     }
 
-    public static void serialize(Object o, OutputStream os)
+    public static void serialize(Object o, OutputStream os, Boolean format)
         throws JAXBException
     {
         String pkg = o.getClass().getPackage().getName();
         JAXBContext jc = JAXBContext.newInstance(pkg);
         Marshaller m = jc.createMarshaller();
         m.setEventHandler(new DefaultValidationEventHandler());
+        m.setProperty("jaxb.formatted.output", format);
         m.marshal(o, os);
     }
 }

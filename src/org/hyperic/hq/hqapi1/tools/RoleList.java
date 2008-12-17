@@ -49,7 +49,7 @@ public class RoleList extends ToolsBase {
             checkSuccess(roles);
         }
 
-        XmlUtil.serialize(roles, System.out);
+        XmlUtil.serialize(roles, System.out, Boolean.TRUE);
     }
 
     public static void main(String[] args) throws Exception {

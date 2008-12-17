@@ -155,7 +155,7 @@ class HQConnection {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
-            XmlUtil.serialize(o, bos);
+            XmlUtil.serialize(o, bos, Boolean.FALSE);
         } catch (JAXBException e) {
             ServiceError error = new ServiceError();
             error.setErrorCode("UnexpectedError");
