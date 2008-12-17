@@ -1,6 +1,0 @@
-<SetUsersRequest>
-	<Role name="apiTest-setUsers"/>
-	<User name="roleTestuser1"/>	
-	<User name="roleTestuser2"/>
-	<User name="roleTestuser3"/>
-</SetUsersRequest>

@@ -1,6 +1,0 @@
-<CreateRoleRequest>
-	<Role name="apiTest-setUsers" description="apiTest Role- setUsers">
-		<Operation>viewPlatform</Operation>		
-		<Operation>modifyPlatform</Operation>						
-	</Role>	
-</CreateRoleRequest>

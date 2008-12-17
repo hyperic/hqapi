@@ -1,3 +1,0 @@
-<SyncUsersRequest>
-    <User name="apiSyncCreate" firstName="Sync" lastName="Create" departement="" emailAddress="localhost" SMSAddress="" active="true" htmlEmail="false"/>
-</SyncUsersRequest>

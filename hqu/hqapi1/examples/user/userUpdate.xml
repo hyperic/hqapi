@@ -1,3 +1,0 @@
-<UpdateUserRequest>
-    <User id="1" name="hqadmin" firstName="HQ" lastName="Administrator" departement="" emailAddress="localhost" SMSAddress="" active="true" htmlEmail="false"/>
-</UpdateUserRequest>
