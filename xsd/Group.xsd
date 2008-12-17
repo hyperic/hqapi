@@ -36,39 +36,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="CreateGroupResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="DeleteGroupResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="RemoveResourceFromGroupResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="AddResourceToGroupResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="GetGroupResponse">
+    <xs:element name="GroupResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">
@@ -80,7 +48,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="GetGroupsResponse">
+    <xs:element name="GroupsResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">

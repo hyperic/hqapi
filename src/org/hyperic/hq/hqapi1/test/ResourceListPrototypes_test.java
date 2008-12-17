@@ -1,9 +1,8 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.ResourceApi;
-import org.hyperic.hq.hqapi1.types.ListResourcePrototypesResponse;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
-import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypesResponse;
 
 public class ResourceListPrototypes_test extends HQApiTestBase {
 
@@ -14,7 +13,7 @@ public class ResourceListPrototypes_test extends HQApiTestBase {
     public void testListAllPrototypes() throws Exception {
         ResourceApi api = getApi().getResourceApi();
         
-        ListResourcePrototypesResponse resp = api.listAllResourcePrototypes(); 
+        ResourcePrototypesResponse resp = api.getAllResourcePrototypes();
         
         hqAssertSuccess(resp);
         assertTrue(resp.getResourcePrototype().size() != 0);
@@ -28,10 +27,10 @@ public class ResourceListPrototypes_test extends HQApiTestBase {
     public void testListPrototypes() throws Exception {
         ResourceApi api = getApi().getResourceApi();
 
-        ListResourcePrototypesResponse allResponse = api.listAllResourcePrototypes();
+        ResourcePrototypesResponse allResponse = api.getAllResourcePrototypes();
         hqAssertSuccess(allResponse);
 
-        ListResourcePrototypesResponse response = api.listResourcePrototypes();
+        ResourcePrototypesResponse response = api.getResourcePrototypes();
         hqAssertSuccess(response);
 
         assertTrue("All prototypes not greater than existing prototypes " +

@@ -1,13 +1,11 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.MetricApi;
-import org.hyperic.hq.hqapi1.types.DisableMetricResponse;
-import org.hyperic.hq.hqapi1.types.EnableMetricResponse;
-import org.hyperic.hq.hqapi1.types.GetMetricResponse;
 import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.Resource;
-import org.hyperic.hq.hqapi1.types.SetMetricIntervalResponse;
-import org.hyperic.hq.hqapi1.types.ListMetricsResponse;
+import org.hyperic.hq.hqapi1.types.MetricsResponse;
+import org.hyperic.hq.hqapi1.types.MetricResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 public class Metric_test extends MetricTestBase {
 
@@ -36,7 +34,7 @@ public class Metric_test extends MetricTestBase {
     public void testListMetrics() throws Exception {
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricsResponse resp = api.listMetrics(_r);
+        MetricsResponse resp = api.getMetrics(_r);
         hqAssertSuccess(resp);
 
         int numNotDefaultOn = 0;
@@ -52,7 +50,7 @@ public class Metric_test extends MetricTestBase {
     public void testListEnabledMetrics() throws Exception {
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricsResponse resp = api.listEnabledMetrics(_r);
+        MetricsResponse resp = api.getEnabledMetrics(_r);
         hqAssertSuccess(resp);
 
         for (Metric m : resp.getMetric()) {
@@ -67,21 +65,21 @@ public class Metric_test extends MetricTestBase {
         MetricApi api = getApi().getMetricApi();
         Resource r = new Resource();
         r.setId(Integer.MAX_VALUE);
-        ListMetricsResponse resp = api.listMetrics(r);
+        MetricsResponse resp = api.getMetrics(r);
         hqAssertFailureObjectNotFound(resp);
     }
 
     public void testMetricById() throws Exception {
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricsResponse resp = api.listMetrics(_r);
+        MetricsResponse resp = api.getMetrics(_r);
         hqAssertSuccess(resp);
 
         assertFalse("Resource " + _r.getName() + " has no metrics",
                    resp.getMetric().size() == 0);
 
         Metric m = resp.getMetric().get(0);
-        GetMetricResponse metricResponse = api.getMetric(m.getId());
+        MetricResponse metricResponse = api.getMetric(m.getId());
         hqAssertSuccess(metricResponse);
         validateMetric(metricResponse.getMetric());  
     }
@@ -89,14 +87,14 @@ public class Metric_test extends MetricTestBase {
     public void testMetricByBadId() throws Exception {
 
         MetricApi api = getApi().getMetricApi();
-        GetMetricResponse metricResponse = api.getMetric(Integer.MAX_VALUE);
+        MetricResponse metricResponse = api.getMetric(Integer.MAX_VALUE);
         hqAssertFailureObjectNotFound(metricResponse);
     }
 
     public void testMetricDisableEnable() throws Exception {
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricsResponse resp = api.listMetrics(_r);
+        MetricsResponse resp = api.getMetrics(_r);
         hqAssertSuccess(resp);
 
         assertFalse("Resource " + _r.getName() + " has no metrics",
@@ -105,17 +103,17 @@ public class Metric_test extends MetricTestBase {
         Metric m = resp.getMetric().get(0);
 
         // Disable
-        DisableMetricResponse disableMetricResponse = api.disableMetric(m);
+        StatusResponse disableMetricResponse = api.disableMetric(m);
         hqAssertSuccess(disableMetricResponse);
 
         // Verify
-        GetMetricResponse metricResponse = api.getMetric(m.getId());
+        MetricResponse metricResponse = api.getMetric(m.getId());
         hqAssertSuccess(metricResponse);
         assertFalse("Metric id " + m.getId() + " not disabled",
                      metricResponse.getMetric().isEnabled());
 
         // Enable
-        EnableMetricResponse enableResponse =
+        StatusResponse enableResponse =
                 api.enableMetric(m, m.getMetricTemplate().getDefaultInterval());
         hqAssertSuccess(enableResponse);
 
@@ -131,7 +129,7 @@ public class Metric_test extends MetricTestBase {
         MetricApi api = getApi().getMetricApi();
         Metric m = new Metric();
         m.setId(Integer.MAX_VALUE);
-        DisableMetricResponse disableMetricResponse = api.disableMetric(m);
+        StatusResponse disableMetricResponse = api.disableMetric(m);
         hqAssertFailureObjectNotFound(disableMetricResponse);
     }
 
@@ -140,14 +138,14 @@ public class Metric_test extends MetricTestBase {
         MetricApi api = getApi().getMetricApi();
         Metric m = new Metric();
         m.setId(Integer.MAX_VALUE);
-        EnableMetricResponse enableResponse = api.enableMetric(m, 60000);
+        StatusResponse enableResponse = api.enableMetric(m, 60000);
         hqAssertFailureObjectNotFound(enableResponse);
     }
 
     public void testMetricSetInterval() throws Exception {
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricsResponse resp = api.listMetrics(_r);
+        MetricsResponse resp = api.getMetrics(_r);
         hqAssertSuccess(resp);
         assertFalse("Resource " + _r.getName() + " has no metrics",
                    resp.getMetric().size() == 0);
@@ -157,12 +155,12 @@ public class Metric_test extends MetricTestBase {
         final long INTERVAL = 60000;
 
         // Set new interval
-        SetMetricIntervalResponse intervalResp = api.setInterval(m, INTERVAL);
+        StatusResponse intervalResp = api.setInterval(m, INTERVAL);
         hqAssertSuccess(intervalResp);
 
 
         // Validate
-        GetMetricResponse metricResponse = api.getMetric(m.getId());
+        MetricResponse metricResponse = api.getMetric(m.getId());
         hqAssertSuccess(metricResponse);
         assertEquals(INTERVAL, metricResponse.getMetric().getInterval());
 
@@ -182,14 +180,14 @@ public class Metric_test extends MetricTestBase {
         MetricApi api = getApi().getMetricApi();
         Metric m = new Metric();
         m.setId(Integer.MAX_VALUE);
-        SetMetricIntervalResponse intervalResp = api.setInterval(m, 60000);
+        StatusResponse intervalResp = api.setInterval(m, 60000);
         hqAssertFailureObjectNotFound(intervalResp);
     }
 
     public void testMetricSetInvalidInterval() throws Exception {
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricsResponse resp = api.listMetrics(_r);
+        MetricsResponse resp = api.getMetrics(_r);
         hqAssertSuccess(resp);
         assertFalse("Resource " + _r.getName() + " has no metrics",
                    resp.getMetric().size() == 0);
@@ -199,7 +197,7 @@ public class Metric_test extends MetricTestBase {
         final long[] BAD_INTERVALS = { -1, 0, 1, 60, 60001 };
 
         for (long interval : BAD_INTERVALS) {
-            SetMetricIntervalResponse intervalResponse =
+            StatusResponse intervalResponse =
                     api.setInterval(m, interval);
             hqAssertFailureInvalidParameters(intervalResponse);
         }

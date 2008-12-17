@@ -1,10 +1,9 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.types.User;
-import org.hyperic.hq.hqapi1.types.SyncUsersResponse;
-import org.hyperic.hq.hqapi1.types.GetUserResponse;
-import org.hyperic.hq.hqapi1.types.CreateUserResponse;
-import org.hyperic.hq.hqapi1.types.GetUsersResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.UserResponse;
+import org.hyperic.hq.hqapi1.types.UsersResponse;
 import org.hyperic.hq.hqapi1.UserApi;
 
 import java.util.List;
@@ -24,10 +23,10 @@ public class UserSync_test extends UserTestBase {
         List<User> users = new ArrayList<User>();
         users.add(u);
 
-        SyncUsersResponse response = api.syncUsers(users);
+        StatusResponse response = api.syncUsers(users);
         hqAssertSuccess(response);
 
-        GetUserResponse getResponse = api.getUser(u.getName());
+        UserResponse getResponse = api.getUser(u.getName());
         hqAssertSuccess(getResponse);
     }
 
@@ -37,7 +36,7 @@ public class UserSync_test extends UserTestBase {
         User u = generateTestUser();
 
         // Create a new user
-        CreateUserResponse createResponse = api.createUser(u, PASSWORD);
+        UserResponse createResponse = api.createUser(u, PASSWORD);
         hqAssertSuccess(createResponse);
 
         // Sync the user with new information
@@ -65,11 +64,11 @@ public class UserSync_test extends UserTestBase {
         
         List<User> users = new ArrayList<User>();
         users.add(newUser);
-        SyncUsersResponse syncResponse = api.syncUsers(users);
+        StatusResponse syncResponse = api.syncUsers(users);
         hqAssertSuccess(syncResponse);
 
         // Assert the fields were properly updated
-        GetUserResponse getResponse = api.getUser(newUser.getId());
+        UserResponse getResponse = api.getUser(newUser.getId());
         hqAssertSuccess(getResponse);
 
         User syncedUser = getResponse.getUser();
@@ -95,11 +94,11 @@ public class UserSync_test extends UserTestBase {
             toCreate.add(u);
         }
 
-        SyncUsersResponse syncCreateResponse = api.syncUsers(toCreate);
+        StatusResponse syncCreateResponse = api.syncUsers(toCreate);
         hqAssertSuccess(syncCreateResponse);
 
         // Update user's firstname.
-        GetUsersResponse getUsersRespose = api.getUsers();
+        UsersResponse getUsersRespose = api.getUsers();
         hqAssertSuccess(getUsersRespose);
 
         String FIRST = "Synced FirstName";
@@ -112,10 +111,10 @@ public class UserSync_test extends UserTestBase {
             }
         }
 
-        SyncUsersResponse syncResponse = api.syncUsers(users);
+        StatusResponse syncResponse = api.syncUsers(users);
         hqAssertSuccess(syncResponse);
 
-        GetUsersResponse getSyncedResponse = api.getUsers();
+        UsersResponse getSyncedResponse = api.getUsers();
         hqAssertSuccess(getSyncedResponse);
         for (User u : getSyncedResponse.getUser()) {
             // See above, only test suite users are synced

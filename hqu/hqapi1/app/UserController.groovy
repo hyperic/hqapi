@@ -23,7 +23,7 @@ class UserController extends ApiController {
 
     def list(params) {
         renderXml() {
-            out << GetUsersResponse() {
+            out << UsersResponse() {
                 out << getSuccessXML()
                 for (u in userHelper.allUsers.sort {a, b -> a.name <=> b.name}) {
                     out << getUserXML(u)
@@ -38,7 +38,7 @@ class UserController extends ApiController {
         def u = getUser(id, name)
         
         renderXml() {
-            GetUserResponse() {
+            UserResponse() {
                 if (!u) {
                     out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
                 } else {
@@ -91,7 +91,7 @@ class UserController extends ApiController {
         }
         
         renderXml() {
-            CreateUserResponse() {
+            UserResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -120,7 +120,7 @@ class UserController extends ApiController {
         }
         
         renderXml() {
-            DeleteUserResponse() {
+            StatusResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -138,7 +138,7 @@ class UserController extends ApiController {
             
             if (!xmlUser || xmlUser.size() != 1) {
                 renderXml() {
-                    UpdateUserResponse() {
+                    StatusResponse() {
                         out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
                     }
                 }
@@ -174,7 +174,7 @@ class UserController extends ApiController {
         }
 
         renderXml() {
-            UpdateUserResponse() {
+            StatusResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -238,7 +238,7 @@ class UserController extends ApiController {
         }
 
         renderXml() {
-            SyncUsersResponse() {
+            StatusResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -276,7 +276,7 @@ class UserController extends ApiController {
         }
 
         renderXml() {
-            ChangePasswordResponse() {
+            StatusResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {

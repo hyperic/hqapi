@@ -30,7 +30,7 @@
         <xs:attribute name="description" type="xs:string" use="optional"/>
     </xs:complexType>
 
-    <xs:element name="ListResourcePrototypesResponse">
+    <xs:element name="ResourcePrototypesResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">
@@ -43,7 +43,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="GetResourcePrototypeResponse">
+    <xs:element name="ResourcePrototypeResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">
@@ -87,7 +87,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="CreateResourceResponse">
+    <xs:element name="ResourceResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">
@@ -99,19 +99,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="GetResourceResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response">
-                    <xs:sequence>
-                        <xs:element name="Resource" type="Resource" maxOccurs="1"/>
-                    </xs:sequence>
-                </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="FindResourcesResponse">
+    <xs:element name="ResourcesResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">
@@ -119,15 +107,6 @@
                         <xs:element name="Resource" type="Resource" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-
-    <xs:element name="DeleteResourceResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
             </xs:complexContent>
         </xs:complexType>
     </xs:element>

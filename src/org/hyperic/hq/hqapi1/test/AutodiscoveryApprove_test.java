@@ -1,9 +1,7 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.AutodiscoveryApi;
-import org.hyperic.hq.hqapi1.types.ApproveResponse;
-import org.hyperic.hq.hqapi1.types.GetQueueResponse;
-import org.hyperic.hq.hqapi1.types.AIPlatform;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 /**
  * XXX: Tests for autoinventory approve are somewhat limited since the
@@ -19,7 +17,7 @@ public class AutodiscoveryApprove_test extends AutodiscoveryTestBase {
 
         AutodiscoveryApi api = getAutodiscoveryApi();
 
-        ApproveResponse response = api.approve(Integer.MAX_VALUE);
+        StatusResponse response = api.approve(Integer.MAX_VALUE);
         hqAssertFailureObjectNotFound(response);
     }
 }

@@ -3,7 +3,7 @@ package org.hyperic.hq.hqapi1.tools;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.UserApi;
-import org.hyperic.hq.hqapi1.types.GetUsersResponse;
+import org.hyperic.hq.hqapi1.types.UsersResponse;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
@@ -18,7 +18,7 @@ public class UserList extends ToolsBase {
 
         UserApi userApi = api.getUserApi();
 
-        GetUsersResponse users = userApi.getUsers();
+        UsersResponse users = userApi.getUsers();
         checkSuccess(users);
 
         XmlUtil.serialize(users, System.out);

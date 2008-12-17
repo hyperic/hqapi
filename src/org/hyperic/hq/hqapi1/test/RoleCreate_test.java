@@ -2,7 +2,7 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.RoleApi;
 import org.hyperic.hq.hqapi1.UserApi;
-import org.hyperic.hq.hqapi1.types.CreateRoleResponse;
+import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.Operation;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.User;
@@ -18,7 +18,7 @@ public class RoleCreate_test extends RoleTestBase {
         RoleApi api = getRoleApi();
         Role r = generateTestRole();
 
-        CreateRoleResponse response = api.createRole(r);
+        RoleResponse response = api.createRole(r);
         hqAssertSuccess(response);
     }
 
@@ -29,7 +29,7 @@ public class RoleCreate_test extends RoleTestBase {
 
         r.getOperation().addAll(VIEW_OPS);
 
-        CreateRoleResponse response = api.createRole(r);
+        RoleResponse response = api.createRole(r);
         hqAssertSuccess(response);
 
         Role role = response.getRole();
@@ -44,10 +44,10 @@ public class RoleCreate_test extends RoleTestBase {
         RoleApi api = getRoleApi();
         Role r = generateTestRole();
 
-        CreateRoleResponse response = api.createRole(r);
+        RoleResponse response = api.createRole(r);
         hqAssertSuccess(response);
 
-        CreateRoleResponse existsResponse = api.createRole(r);
+        RoleResponse existsResponse = api.createRole(r);
         hqAssertFailureObjectExists(existsResponse);
     }
     
@@ -63,8 +63,7 @@ public class RoleCreate_test extends RoleTestBase {
         RoleApi api = getRoleApi(user.getName(), PASSWORD);
         Role r = generateTestRole();
 
-        CreateRoleResponse roleResponse = api.createRole(r);
+        RoleResponse roleResponse = api.createRole(r);
         hqAssertFailurePermissionDenied(roleResponse);
     }
-    
 }

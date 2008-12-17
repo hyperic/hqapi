@@ -2,7 +2,7 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.UserApi;
 import org.hyperic.hq.hqapi1.types.User;
-import org.hyperic.hq.hqapi1.types.GetUsersResponse;
+import org.hyperic.hq.hqapi1.types.UsersResponse;
 
 public class UserGetUsers_test extends UserTestBase {
 
@@ -12,7 +12,7 @@ public class UserGetUsers_test extends UserTestBase {
 
     public void testGetUsers() throws Exception {
         UserApi api = getUserApi();
-        GetUsersResponse response = api.getUsers();
+        UsersResponse response = api.getUsers();
 
         // Assert success response
         hqAssertSuccess(response);

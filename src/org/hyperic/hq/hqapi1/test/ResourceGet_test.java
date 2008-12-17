@@ -1,10 +1,10 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.ResourceApi;
-import org.hyperic.hq.hqapi1.types.GetResourceResponse;
 import org.hyperic.hq.hqapi1.types.Agent;
-import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourceResponse;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 
 public class ResourceGet_test extends ResourceTestBase {
 
@@ -16,7 +16,7 @@ public class ResourceGet_test extends ResourceTestBase {
 
         ResourceApi api = getApi().getResourceApi();
 
-        GetResourceResponse resp = api.getResource(Integer.MAX_VALUE);
+        ResourceResponse resp = api.getResource(Integer.MAX_VALUE);
         hqAssertFailureObjectNotFound(resp);
     }
 
@@ -26,7 +26,7 @@ public class ResourceGet_test extends ResourceTestBase {
 
         ResourceApi api = getApi().getResourceApi();
 
-        FindResourcesResponse findResponse = api.findResources(a);
+        ResourcesResponse findResponse = api.getResources(a);
         hqAssertSuccess(findResponse);
 
         // This test assumes if you have a local agent that is pingable that
@@ -37,7 +37,7 @@ public class ResourceGet_test extends ResourceTestBase {
             // Now that we have valid resource ids, query each
             Integer rid = r.getId();
 
-            GetResourceResponse getResponse = api.getResource(rid);
+            ResourceResponse getResponse = api.getResource(rid);
             hqAssertSuccess(getResponse);
             Resource resource = getResponse.getResource();
             validateResource(resource);
@@ -60,7 +60,7 @@ public class ResourceGet_test extends ResourceTestBase {
 
         ResourceApi api = getApi().getResourceApi();
 
-        GetResourceResponse resp = api.getResourceForPlatform(Integer.MAX_VALUE);
+        ResourceResponse resp = api.getResourceForPlatform(Integer.MAX_VALUE);
         hqAssertFailureObjectNotFound(resp);
     }
 
@@ -89,7 +89,7 @@ public class ResourceGet_test extends ResourceTestBase {
 
         final String name = "Non-existant platform name";
         ResourceApi api = getApi().getResourceApi();
-        GetResourceResponse resp = api.getResourceForPlatform(name);
+        ResourceResponse resp = api.getResourceForPlatform(name);
         hqAssertFailureObjectNotFound(resp);
     }
 
@@ -107,7 +107,7 @@ public class ResourceGet_test extends ResourceTestBase {
 
         ResourceApi api = getApi().getResourceApi();
 
-        GetResourceResponse resp = api.getResourceForServer(Integer.MAX_VALUE);
+        ResourceResponse resp = api.getResourceForServer(Integer.MAX_VALUE);
         hqAssertFailureObjectNotFound(resp);
     }
 
@@ -124,7 +124,7 @@ public class ResourceGet_test extends ResourceTestBase {
 
         ResourceApi api = getApi().getResourceApi();
 
-        GetResourceResponse resp = api.getResourceForService(Integer.MAX_VALUE);
+        ResourceResponse resp = api.getResourceForService(Integer.MAX_VALUE);
         hqAssertFailureObjectNotFound(resp);
     }
 }

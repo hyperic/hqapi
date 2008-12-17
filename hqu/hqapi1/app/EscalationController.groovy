@@ -52,7 +52,7 @@ class EscalationController extends ApiController {
         
         def esc = escalationHelper.getEscalation(id, name)
         renderXml() {
-            out << GetEscalationResponse() {
+            out << EscalationResponse() {
                 if (!esc) {
                     out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
                 }
@@ -66,7 +66,7 @@ class EscalationController extends ApiController {
 
     def list(params) {
         renderXml() {
-            out << ListEscalationsResponse() {
+            out << EscalationsResponse() {
                 out << getSuccessXML()
                 for (e in escalationHelper.allEscalations.sort {a, b -> a.name <=> b.name}) {
                     out << getEscalationXML(e)
@@ -79,7 +79,7 @@ class EscalationController extends ApiController {
         def id = params.getOne("id").toInteger()
         def esc = escalationHelper.deleteEscalation(id)
         renderXml() {
-            out << DeleteEscalationResponse() {
+            out << StatusResponse() {
                 out << getSuccessXML()
             }
         }
@@ -103,7 +103,7 @@ class EscalationController extends ApiController {
             syncActions(esc, xmlEsc['Action'])
 
             renderXml() {
-                out << CreateEscalationResponse() {
+                out << EscalationResponse() {
                     out << getSuccessXML()
                     out << getEscalationXML(esc)
                 }
@@ -130,7 +130,7 @@ class EscalationController extends ApiController {
             syncActions(esc, xmlEsc['Action'])
             
             renderXml() {
-                out << UpdateEscalationResponse() {
+                out << EscalationResponse() {
                     out << getSuccessXML()
                     out << getEscalationXML(esc)
                 }
@@ -166,7 +166,7 @@ class EscalationController extends ApiController {
         }
 
         renderXml() {
-            out << SyncEscalationResponse() {
+            out << StatusResponse() {
                 out << getSuccessXML()
             }
         }

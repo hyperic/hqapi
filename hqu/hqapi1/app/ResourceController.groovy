@@ -9,7 +9,7 @@ class ResourceController extends ApiController {
         }
     }
 
-    def listResourcePrototypes(params) {
+    def getResourcePrototypes(params) {
         def existing = params.getOne('existing')?.toBoolean()
 
         def prototypes
@@ -20,7 +20,7 @@ class ResourceController extends ApiController {
         }
         
         renderXml() {
-            out << ListResourcePrototypesResponse() {
+            out << ResourcePrototypesResponse() {
                 out << getSuccessXML()
                 for (p in prototypes.sort {a, b -> a.name <=> b.name}) {
                     out << getPrototypeXML(p)
@@ -38,7 +38,7 @@ class ResourceController extends ApiController {
         }
 
         renderXml() {
-            out << GetResourcePrototypeResponse() {
+            out << ResourcePrototypeResponse() {
                 if (!name) {
                     out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                          "Resource prototype not given")
@@ -55,7 +55,7 @@ class ResourceController extends ApiController {
     // TODO: Implement
     def createPlatform(params) {
         renderXml() {
-            out << CreateResourceResponse() {
+            out << ResourceResponse() {
                 out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
             }
         }
@@ -64,7 +64,7 @@ class ResourceController extends ApiController {
     // TODO: Implement
     def createServer(params) {
         renderXml() {
-            out << CreateResourceResponse() {
+            out << ResourceResponse() {
                 out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
             }
         }
@@ -80,7 +80,7 @@ class ResourceController extends ApiController {
             !xmlService || xmlService.size() != 1 ||
             !xmlServicePrototype || xmlServicePrototype.size() != 1) {
             renderXml() {
-                CreateResourceResponse() {
+                ResourceResponse() {
                     out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
                 }
             }
@@ -92,7 +92,7 @@ class ResourceController extends ApiController {
 
         if (!parent || !prototype) {
             renderXml() {
-                CreateResourceResponse() {
+                ResourceResponse() {
                     out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
                 }
             }
@@ -113,7 +113,7 @@ class ResourceController extends ApiController {
             // XXX: duplicate service not handled properly, but assume that's
             //      the case.
             renderXml() {
-                CreateResourceResponse() {
+                ResourceResponse() {
                     out << getFailureXML(ErrorCode.OBJECT_EXISTS);
                 }
             }
@@ -122,7 +122,7 @@ class ResourceController extends ApiController {
         }
         
         renderXml() {
-            CreateResourceResponse() {
+            ResourceResponse() {
                 out << getSuccessXML()                
                 out << getResourceXML(service)
             }
@@ -167,7 +167,7 @@ class ResourceController extends ApiController {
         }
 
         renderXml() {
-            out << GetResourceResponse() {
+            out << ResourceResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -213,7 +213,7 @@ class ResourceController extends ApiController {
         }
 
         renderXml() {
-            out << FindResourcesResponse() {
+            out << ResourcesResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -232,7 +232,7 @@ class ResourceController extends ApiController {
 
         if (!resource) {
             renderXml() {
-                DeleteResourceResponse() {
+                StatusResponse() {
                     out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
                 }
             }
@@ -244,7 +244,7 @@ class ResourceController extends ApiController {
         } catch (Exception e) {
             renderXml() {
                 log.error("Error removing resource", e)
-                DeleteResourceResponse() {
+                StatusResponse() {
                     out << getFailureXML(ErrorCode.UNEXPECTED_ERROR)
                 }
             }
@@ -252,7 +252,7 @@ class ResourceController extends ApiController {
         }
 
         renderXml() {
-            DeleteResourceResponse() {
+            StatusResponse() {
                 out << getSuccessXML()
             }
         }

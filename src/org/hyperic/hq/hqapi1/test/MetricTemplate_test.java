@@ -1,17 +1,15 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.types.Resource;
-import org.hyperic.hq.hqapi1.types.ListMetricsResponse;
 import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.MetricTemplate;
-import org.hyperic.hq.hqapi1.types.SetMetricDefaultIndicatorResponse;
-import org.hyperic.hq.hqapi1.types.GetMetricResponse;
-import org.hyperic.hq.hqapi1.types.SetMetricDefaultIntervalResponse;
-import org.hyperic.hq.hqapi1.types.SetMetricDefaultOnResponse;
-import org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
-import org.hyperic.hq.hqapi1.types.ListMetricTemplatesResponse;
-import org.hyperic.hq.hqapi1.types.GetMetricTemplateResponse;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.MetricsResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.MetricResponse;
+import org.hyperic.hq.hqapi1.types.MetricTemplatesResponse;
+import org.hyperic.hq.hqapi1.types.MetricTemplateResponse;
 import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.HQApi;
@@ -40,7 +38,7 @@ public class MetricTemplate_test extends MetricTestBase {
         Resource r = getResource();
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricsResponse resp = api.listEnabledMetrics(r);
+        MetricsResponse resp = api.getEnabledMetrics(r);
         hqAssertSuccess(resp);
 
         Metric normalMetric = null;
@@ -62,12 +60,12 @@ public class MetricTemplate_test extends MetricTestBase {
         // Test setting indicator for a normal metric
         boolean isIndicator = normalMetric.isIndicator();
 
-        SetMetricDefaultIndicatorResponse indicatorResponse =
+        StatusResponse indicatorResponse =
                 api.setDefaultIndicator(normalMetric.getMetricTemplate(),
                                         !isIndicator);
         hqAssertSuccess(indicatorResponse);
 
-        GetMetricResponse getResponse = api.getMetric(normalMetric.getId());
+        MetricResponse getResponse = api.getMetric(normalMetric.getId());
         hqAssertSuccess(getResponse);
         Metric m = getResponse.getMetric();
 
@@ -87,7 +85,7 @@ public class MetricTemplate_test extends MetricTestBase {
                    m.getMetricTemplate().isIndicator() == isIndicator);
 
         // Test setting indicator for availability measuremnt
-        SetMetricDefaultIndicatorResponse availResponse =
+        StatusResponse availResponse =
                 api.setDefaultIndicator(availabilityMetric.getMetricTemplate(),
                                         false);
         hqAssertFailureInvalidParameters(availResponse);
@@ -95,7 +93,7 @@ public class MetricTemplate_test extends MetricTestBase {
         // Test setting indicator for a bad id
         MetricTemplate badTemplate = new MetricTemplate();
         badTemplate.setId(Integer.MAX_VALUE);
-        SetMetricDefaultIndicatorResponse badTemplateResponse =
+        StatusResponse badTemplateResponse =
                 api.setDefaultIndicator(badTemplate, true);
         hqAssertFailureObjectNotFound(badTemplateResponse);
 
@@ -103,7 +101,7 @@ public class MetricTemplate_test extends MetricTestBase {
         long interval = normalMetric.getInterval();
         long newInterval = interval * 2;
 
-        SetMetricDefaultIntervalResponse intervalResponse =
+        StatusResponse intervalResponse =
                 api.setDefaultInterval(normalMetric.getMetricTemplate(),
                                        newInterval);       
         hqAssertSuccess(intervalResponse);
@@ -126,15 +124,14 @@ public class MetricTemplate_test extends MetricTestBase {
                    " was=" + m.getMetricTemplate().getDefaultInterval(),
                    m.getMetricTemplate().getDefaultInterval() == interval);
 
-
-        SetMetricDefaultIntervalResponse badIntervalResponse =
+        StatusResponse badIntervalResponse =
                 api.setDefaultInterval(badTemplate, interval);
         hqAssertFailureObjectNotFound(badIntervalResponse);
 
         // Test setting default on
 
         boolean defaultOn = normalMetric.isDefaultOn();
-        SetMetricDefaultOnResponse defaultOnResponse =
+        StatusResponse defaultOnResponse =
                 api.setDefaultOn(normalMetric.getMetricTemplate(), !defaultOn);
         hqAssertSuccess(defaultOnResponse);
 
@@ -158,7 +155,7 @@ public class MetricTemplate_test extends MetricTestBase {
                    m.getMetricTemplate().isDefaultOn() == defaultOn);
 
         // Test setting defaultOn for a bad template
-        SetMetricDefaultOnResponse badDefaultOnResponse =
+        StatusResponse badDefaultOnResponse =
                 api.setDefaultOn(badTemplate, true);
         hqAssertFailureObjectNotFound(badDefaultOnResponse);
     }
@@ -169,14 +166,14 @@ public class MetricTemplate_test extends MetricTestBase {
         ResourceApi resourceApi = api.getResourceApi();
 
         final String TYPE = "Linux";
-        GetResourcePrototypeResponse response = resourceApi.getResourcePrototype(TYPE);
+        ResourcePrototypeResponse response = resourceApi.getResourcePrototype(TYPE);
         hqAssertSuccess(response);
 
         ResourcePrototype pt = response.getResourcePrototype();
 
         MetricApi metricApi = api.getMetricApi();
-        ListMetricTemplatesResponse metricTemplates =
-                metricApi.listMetricTemplates(pt);
+        MetricTemplatesResponse metricTemplates =
+                metricApi.getMetricTemplates(pt);
         hqAssertSuccess(metricTemplates);
 
         List<MetricTemplate> templates = metricTemplates.getMetricTemplate();
@@ -193,7 +190,7 @@ public class MetricTemplate_test extends MetricTestBase {
 
         ResourcePrototype pt = new ResourcePrototype();
 
-        ListMetricTemplatesResponse response = api.listMetricTemplates(pt);
+        MetricTemplatesResponse response = api.getMetricTemplates(pt);
         hqAssertFailureInvalidParameters(response);
     }
 
@@ -203,7 +200,7 @@ public class MetricTemplate_test extends MetricTestBase {
 
         ResourcePrototype pt = new ResourcePrototype();
         pt.setName("Non-existant resource prototype");
-        ListMetricTemplatesResponse response = api.listMetricTemplates(pt);
+        MetricTemplatesResponse response = api.getMetricTemplates(pt);
         hqAssertFailureObjectNotFound(response);
     }
 
@@ -213,14 +210,14 @@ public class MetricTemplate_test extends MetricTestBase {
         ResourceApi resourceApi = api.getResourceApi();
 
         final String TYPE = "Linux";
-        GetResourcePrototypeResponse response = resourceApi.getResourcePrototype(TYPE);
+        ResourcePrototypeResponse response = resourceApi.getResourcePrototype(TYPE);
         hqAssertSuccess(response);
 
         ResourcePrototype pt = response.getResourcePrototype();
 
         MetricApi metricApi = api.getMetricApi();
-        ListMetricTemplatesResponse metricTemplates =
-                metricApi.listMetricTemplates(pt);
+        MetricTemplatesResponse metricTemplates =
+                metricApi.getMetricTemplates(pt);
         hqAssertSuccess(metricTemplates);
 
         List<MetricTemplate> templates = metricTemplates.getMetricTemplate();
@@ -229,7 +226,7 @@ public class MetricTemplate_test extends MetricTestBase {
 
         MetricTemplate t = templates.get(0);
 
-        GetMetricTemplateResponse getResponse = metricApi.getMetricTemplate(t.getId());
+        MetricTemplateResponse getResponse = metricApi.getMetricTemplate(t.getId());
         hqAssertSuccess(getResponse);
         validateTemplate(getResponse.getMetricTemplate());
     }
@@ -238,7 +235,7 @@ public class MetricTemplate_test extends MetricTestBase {
 
         MetricApi api = getApi().getMetricApi();
 
-        GetMetricTemplateResponse getResponse = api.getMetricTemplate(Integer.MAX_VALUE);
+        MetricTemplateResponse getResponse = api.getMetricTemplate(Integer.MAX_VALUE);
         hqAssertFailureObjectNotFound(getResponse);
     }
 }

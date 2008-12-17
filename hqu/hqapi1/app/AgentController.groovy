@@ -41,7 +41,7 @@ class AgentController extends ApiController {
         }
 
         renderXml() {
-            out << GetAgentResponse() {
+            out << AgentResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -58,7 +58,7 @@ class AgentController extends ApiController {
 
     def list(params) {
         renderXml() {
-            out << GetAgentsResponse() {
+            out << AgentsResponse() {
                 out << getSuccessXML()
                 for (agent in agentHelper.allAgents.sort {a, b -> a.address <=> b.address}) {
                     out << getAgentXML(agent)

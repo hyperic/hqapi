@@ -86,39 +86,7 @@
     </xs:complexType>
 
     <!-- Role response objects -->
-    <xs:element name="GetRoleResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response">
-                    <xs:sequence>
-                        <xs:element name="Role" minOccurs="0" type="Role"/>
-                    </xs:sequence>
-                </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="GetRolesResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response">
-                    <xs:sequence>
-                        <xs:element name="Role" maxOccurs="unbounded" type="Role"/>
-                    </xs:sequence>
-                </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="CreateRoleRequest">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="Role" type="Role"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="CreateRoleResponse">
+    <xs:element name="RoleResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">
@@ -130,15 +98,19 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="DeleteRoleResponse">
+    <xs:element name="RolesResponse">
         <xs:complexType>
             <xs:complexContent>
-                <xs:extension base="Response" />
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="Role" maxOccurs="unbounded" type="Role"/>
+                    </xs:sequence>
+                </xs:extension>
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="UpdateRoleRequest">
+    <xs:element name="RoleRequest">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="Role" type="Role"/>
@@ -146,27 +118,11 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="UpdateRoleResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="SyncRolesRequest">
+    <xs:element name="RolesRequest">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="Role" maxOccurs="unbounded" type="Role"/>
             </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="SyncRolesResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
         </xs:complexType>
     </xs:element>
 
@@ -176,14 +132,6 @@
                 <xs:element name="Role" type="Role"/>
                 <xs:element name="User" maxOccurs="unbounded" type="User"/>
             </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="SetUsersResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
         </xs:complexType>
     </xs:element>
 

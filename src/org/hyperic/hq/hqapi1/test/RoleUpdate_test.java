@@ -2,13 +2,11 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.RoleApi;
 import org.hyperic.hq.hqapi1.UserApi;
-import org.hyperic.hq.hqapi1.types.CreateUserResponse;
 import org.hyperic.hq.hqapi1.types.Role;
-import org.hyperic.hq.hqapi1.types.CreateRoleResponse;
-import org.hyperic.hq.hqapi1.types.UpdateRoleResponse;
-import org.hyperic.hq.hqapi1.types.GetRoleResponse;
+import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.Operation;
 import org.hyperic.hq.hqapi1.types.User;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 public class RoleUpdate_test extends RoleTestBase {
 
@@ -21,7 +19,7 @@ public class RoleUpdate_test extends RoleTestBase {
         RoleApi api = getRoleApi();
         Role r = generateTestRole();
 
-        CreateRoleResponse createResponse = api.createRole(r);
+        RoleResponse createResponse = api.createRole(r);
         hqAssertSuccess(createResponse);
 
         final String UPDATED_ROLENAME    = TESTROLE_NAME_PREFIX + " (Updated)";
@@ -32,10 +30,10 @@ public class RoleUpdate_test extends RoleTestBase {
         role.setName(UPDATED_ROLENAME);
         role.setDescription(UPDATED_DESCRIPTION);
 
-        UpdateRoleResponse updateResponse = api.updateRole(role);
+        StatusResponse updateResponse = api.updateRole(role);
         hqAssertSuccess(updateResponse);
 
-        GetRoleResponse getResponse = api.getRole(role.getId());
+        RoleResponse getResponse = api.getRole(role.getId());
         hqAssertSuccess(getResponse);
 
         Role updatedRole = getResponse.getRole();
@@ -48,7 +46,7 @@ public class RoleUpdate_test extends RoleTestBase {
         RoleApi api = getRoleApi();
         Role r = generateTestRole();
 
-        CreateRoleResponse createResponse = api.createRole(r);
+        RoleResponse createResponse = api.createRole(r);
         hqAssertSuccess(createResponse);
 
         Role role = createResponse.getRole();
@@ -56,10 +54,10 @@ public class RoleUpdate_test extends RoleTestBase {
         role.setName(null);
         role.setDescription(null);
 
-        UpdateRoleResponse updateResponse = api.updateRole(role);
+        StatusResponse updateResponse = api.updateRole(role);
         hqAssertSuccess(updateResponse);
 
-        GetRoleResponse getResponse = api.getRole(role.getId());
+        RoleResponse getResponse = api.getRole(role.getId());
         hqAssertSuccess(getResponse);
 
         Role updatedRole = getResponse.getRole();
@@ -73,16 +71,16 @@ public class RoleUpdate_test extends RoleTestBase {
         RoleApi api = getRoleApi();
         Role r = generateTestRole();
 
-        CreateRoleResponse createResponse = api.createRole(r);
+        RoleResponse createResponse = api.createRole(r);
         hqAssertSuccess(createResponse);
 
         Role role = createResponse.getRole();
         role.getOperation().addAll(VIEW_OPS);
 
-        UpdateRoleResponse updateResponse = api.updateRole(role);
+        StatusResponse updateResponse = api.updateRole(role);
         hqAssertSuccess(updateResponse);
 
-        GetRoleResponse getResponse = api.getRole(role.getId());
+        RoleResponse getResponse = api.getRole(role.getId());
         hqAssertSuccess(getResponse);
 
         Role updatedRole = getResponse.getRole();
@@ -98,17 +96,17 @@ public class RoleUpdate_test extends RoleTestBase {
         Role r = generateTestRole();
         r.getOperation().addAll(VIEW_OPS);
 
-        CreateRoleResponse createResponse = api.createRole(r);
+        RoleResponse createResponse = api.createRole(r);
         hqAssertSuccess(createResponse);
 
         Role role = createResponse.getRole();
         role.getOperation().clear();
         role.getOperation().addAll(MODIFY_OPS);
 
-        UpdateRoleResponse updateResponse = api.updateRole(role);
+        StatusResponse updateResponse = api.updateRole(role);
         hqAssertSuccess(updateResponse);
 
-        GetRoleResponse getResponse = api.getRole(role.getId());
+        RoleResponse getResponse = api.getRole(role.getId());
         hqAssertSuccess(getResponse);
 
         Role updatedRole = getResponse.getRole();
@@ -131,7 +129,7 @@ public class RoleUpdate_test extends RoleTestBase {
         RoleApi api = getRoleApi();
         Role r = generateTestRole();
 
-        CreateRoleResponse createResponse = api.createRole(r);
+        RoleResponse createResponse = api.createRole(r);
         hqAssertSuccess(createResponse);
 
         Role r1 = generateTestRole();
@@ -144,7 +142,7 @@ public class RoleUpdate_test extends RoleTestBase {
 
         role.setName(UPDATED_ROLENAME);        
 
-        UpdateRoleResponse updateResponse = api.updateRole(role);
+        StatusResponse updateResponse = api.updateRole(role);
         
         hqAssertFailureObjectExists(updateResponse);
     }
@@ -154,7 +152,7 @@ public class RoleUpdate_test extends RoleTestBase {
         RoleApi api = getRoleApi();
         Role r = generateTestRole();
 
-        CreateRoleResponse createResponse = api.createRole(r);
+        RoleResponse createResponse = api.createRole(r);
         hqAssertSuccess(createResponse);
         
         //Create an underprivileged user
@@ -173,7 +171,7 @@ public class RoleUpdate_test extends RoleTestBase {
 
         role.setName(UPDATED_ROLENAME);        
 
-        UpdateRoleResponse updateResponse = roleapi.updateRole(role);
+        StatusResponse updateResponse = roleapi.updateRole(role);
         
         hqAssertFailurePermissionDenied(updateResponse);
     }

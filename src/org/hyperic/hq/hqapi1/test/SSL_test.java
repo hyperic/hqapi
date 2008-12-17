@@ -2,7 +2,7 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.UserApi;
-import org.hyperic.hq.hqapi1.types.GetUsersResponse;
+import org.hyperic.hq.hqapi1.types.UsersResponse;
 
 public class SSL_test extends HQApiTestBase {
 
@@ -15,7 +15,7 @@ public class SSL_test extends HQApiTestBase {
         HQApi api = getApi(true);
         UserApi userApi = api.getUserApi();
 
-        GetUsersResponse response = userApi.getUsers();
+        UsersResponse response = userApi.getUsers();
         hqAssertSuccess(response);
 
         assert(response.getUser().size() > 0);

@@ -20,31 +20,8 @@
     </xs:complexType>
 
     <!-- MetricTemplate Responses -->
-    <xs:element name="SetMetricDefaultOnResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
 
-    <xs:element name="SetMetricDefaultIndicatorResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="SetMetricDefaultIntervalResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="GetMetricTemplateResponse">
+    <xs:element name="MetricTemplateResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">
@@ -56,7 +33,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="ListMetricTemplatesResponse">
+    <xs:element name="MetricTemplatesResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">

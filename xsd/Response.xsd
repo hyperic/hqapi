@@ -12,4 +12,12 @@
         </xs:sequence>
     </xs:complexType>
 
+    <xs:element name="StatusResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response"/>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
 </xs:schema>

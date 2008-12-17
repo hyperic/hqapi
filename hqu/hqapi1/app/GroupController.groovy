@@ -41,7 +41,7 @@ class GroupController extends ApiController {
         }
 
         renderXml() {
-            GetGroupResponse() {
+            GroupResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -54,7 +54,7 @@ class GroupController extends ApiController {
 
     def create(params) {
         renderXml() {
-            CreateGroupResponse() {
+            GroupResponse() {
                 out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
             }
         }
@@ -62,7 +62,7 @@ class GroupController extends ApiController {
 
     def delete(params) {
         renderXml() {
-            DeleteGroupResponse() {
+            StatusResponse() {
                 out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
             }
         }
@@ -70,7 +70,7 @@ class GroupController extends ApiController {
 
     def removeResource(params) {
         renderXml() {
-            RemoveResourceFromGroupResponse() {
+            StatusResponse() {
                 out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)                
             }
         }
@@ -89,7 +89,7 @@ class GroupController extends ApiController {
         }
 
         renderXml() {
-            out << GetGroupsResponse() {
+            out << GroupsResponse() {
                 out << getSuccessXML()
                 for (g in  groups.sort {a, b -> a.name <=> b.name}) {
                     out << getGroupXML(g)
@@ -103,7 +103,7 @@ class GroupController extends ApiController {
 
         if (!id) {
             renderXml() {
-                FindResourcesResponse() {
+                ResourcesResponse() {
                     out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
                 }
             }
@@ -113,7 +113,7 @@ class GroupController extends ApiController {
         def group = getGroup(id, null)
         if (!group) {
             renderXml() {
-                FindResourcesResponse() {
+                ResourcesResponse() {
                     out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND);
                 }
             }
@@ -122,7 +122,7 @@ class GroupController extends ApiController {
 
         def resources = group.resources
         renderXml() {
-            FindResourcesResponse() {
+            ResourcesResponse() {
                 out << getSuccessXML()   
                 for (r in resources.sort {a, b -> a.name <=> b.name}) {
                     out << getResourceXML(r)
@@ -133,7 +133,7 @@ class GroupController extends ApiController {
 
     def addResource(params) {
         renderXml() {
-            AddResourceToGroupResponse() {
+            StatusResponse() {
                 out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)                                                                
             }
         }

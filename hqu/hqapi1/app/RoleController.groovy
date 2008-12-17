@@ -21,7 +21,7 @@ class RoleController extends ApiController {
 
     def list(params) {
         renderXml() {
-            out << GetRolesResponse() {
+            out << RolesResponse() {
                 out << getSuccessXML()
                 for (role in roleHelper.allRoles.sort {a, b -> a.name <=> b.name}) {
                     out << getRoleXML(role)
@@ -50,7 +50,7 @@ class RoleController extends ApiController {
 
         def r = getRole(id, name)
         renderXml() {
-            GetRoleResponse() {
+            RoleResponse() {
                 if (!r) {
                     out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
                 } else {
@@ -70,7 +70,7 @@ class RoleController extends ApiController {
 
             if (!xmlRole || xmlRole.size() != 1) {
                 renderXml() {
-                    CreateRoleResponse() {
+                    RoleResponse() {
                         out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
                     }
                 }
@@ -103,7 +103,7 @@ class RoleController extends ApiController {
         }
 
         renderXml() {
-            CreateRoleResponse() {
+            RoleResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -122,7 +122,7 @@ class RoleController extends ApiController {
 
             if (!xmlRole || xmlRole.size() != 1) {
                 renderXml() {
-                    UpdateRoleResponse() {
+                    StatusResponse() {
                         out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
                     }
                 }
@@ -158,7 +158,7 @@ class RoleController extends ApiController {
         }
 
         renderXml() {
-            UpdateRoleResponse() {
+            StatusResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -210,7 +210,7 @@ class RoleController extends ApiController {
         }
 
         renderXml() {
-            SyncRolesResponse() {
+            StatusResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -228,7 +228,7 @@ class RoleController extends ApiController {
 
             if (!xmlRole || xmlRole.size() != 1) {
                 renderXml() {
-                    UpdateRoleResponse() {
+                    StatusResponse() {
                         out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
                     }
                 }
@@ -261,7 +261,7 @@ class RoleController extends ApiController {
         }
 
         renderXml() {
-            SetUsersResponse() {
+            StatusResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -277,7 +277,7 @@ class RoleController extends ApiController {
 
         def r = getRole(id, name)
         renderXml() {
-            GetUsersResponse() {
+            UsersResponse() {
                 if (!r) {
                     out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
                 } else {
@@ -311,7 +311,7 @@ class RoleController extends ApiController {
         }
 
         renderXml() {
-            DeleteRoleResponse() {
+            StatusResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {

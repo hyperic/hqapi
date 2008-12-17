@@ -2,10 +2,9 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.UserApi;
 import org.hyperic.hq.hqapi1.types.User;
-import org.hyperic.hq.hqapi1.types.CreateUserResponse;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
-import org.hyperic.hq.hqapi1.types.UpdateUserResponse;
-import org.hyperic.hq.hqapi1.types.GetUserResponse;
+import org.hyperic.hq.hqapi1.types.UserResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 public class UserUpdate_test extends UserTestBase {
 
@@ -19,7 +18,7 @@ public class UserUpdate_test extends UserTestBase {
 
         User user = generateTestUser();
 
-        CreateUserResponse createResponse = api.createUser(user, PASSWORD);
+        UserResponse createResponse = api.createUser(user, PASSWORD);
         assertEquals(ResponseStatus.SUCCESS, createResponse.getStatus());
 
         String FIRST   = "Updated FirstName";
@@ -41,12 +40,12 @@ public class UserUpdate_test extends UserTestBase {
         user.setActive(ACTIVE);
         user.setHtmlEmail(HTML);
         user.setPasswordHash(HASHED_PWD);
-        UpdateUserResponse updateResponse = api.updateUser(user);
+        StatusResponse updateResponse = api.updateUser(user);
         // Assert update success
         hqAssertSuccess(updateResponse);
 
         // Test the name has been updated
-        GetUserResponse getResponse = api.getUser(user.getName());
+        UserResponse getResponse = api.getUser(user.getName());
         hqAssertSuccess(getResponse);
         User u = getResponse.getUser();
         assertEquals(FIRST,  u.getFirstName());
@@ -66,7 +65,7 @@ public class UserUpdate_test extends UserTestBase {
 
         User user = generateTestUser();
 
-        CreateUserResponse createResponse = api.createUser(user, PASSWORD);
+        UserResponse createResponse = api.createUser(user, PASSWORD);
         hqAssertSuccess(createResponse);
 
         // Reconnect as the new user
@@ -77,7 +76,7 @@ public class UserUpdate_test extends UserTestBase {
         u.setName("hqadmin");
         u.setFirstName("Updated FirstName");
 
-        UpdateUserResponse updateResponse = apiNewUser.updateUser(u);
+        StatusResponse updateResponse = apiNewUser.updateUser(u);
         hqAssertFailurePermissionDenied(updateResponse);
     }
 }

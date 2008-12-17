@@ -1,10 +1,9 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.types.Role;
-import org.hyperic.hq.hqapi1.types.CreateRoleResponse;
-import org.hyperic.hq.hqapi1.types.DeleteRoleResponse;
-import org.hyperic.hq.hqapi1.types.GetRoleResponse;
+import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.User;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.RoleApi;
 import org.hyperic.hq.hqapi1.UserApi;
 
@@ -19,14 +18,14 @@ public class RoleDelete_test extends RoleTestBase {
         RoleApi api = getRoleApi();
         Role r = generateTestRole();
 
-        CreateRoleResponse createResponse = api.createRole(r);
+        RoleResponse createResponse = api.createRole(r);
         hqAssertSuccess(createResponse);
 
         Role role = createResponse.getRole();
-        DeleteRoleResponse deleteResponse = api.deleteRole(role.getId());
+        StatusResponse deleteResponse = api.deleteRole(role.getId());
         hqAssertSuccess(deleteResponse);
 
-        GetRoleResponse getResponse = api.getRole(role.getId());
+        RoleResponse getResponse = api.getRole(role.getId());
         hqAssertFailureObjectNotFound(getResponse);
     }
 
@@ -34,7 +33,7 @@ public class RoleDelete_test extends RoleTestBase {
 
         RoleApi api = getRoleApi();
 
-        DeleteRoleResponse response = api.deleteRole(Integer.MAX_VALUE);
+        StatusResponse response = api.deleteRole(Integer.MAX_VALUE);
         hqAssertFailureObjectNotFound(response);
     }
     
@@ -43,7 +42,7 @@ public class RoleDelete_test extends RoleTestBase {
         RoleApi api = getRoleApi();
         Role r = generateTestRole();
 
-        CreateRoleResponse createResponse = api.createRole(r);
+        RoleResponse createResponse = api.createRole(r);
         hqAssertSuccess(createResponse);
         
         //Create an underprivileged user
@@ -55,9 +54,8 @@ public class RoleDelete_test extends RoleTestBase {
         
         RoleApi roleapi = getRoleApi(user.getName(), PASSWORD);
         Role role = createResponse.getRole();
-        DeleteRoleResponse deleteResponse = roleapi.deleteRole(role.getId());
+        StatusResponse deleteResponse = roleapi.deleteRole(role.getId());
         hqAssertFailurePermissionDenied(deleteResponse);
 
     }
-    
 }

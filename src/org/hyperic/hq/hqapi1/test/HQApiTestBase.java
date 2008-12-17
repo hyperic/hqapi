@@ -6,10 +6,9 @@ import org.hyperic.hq.hqapi1.ErrorCode;
 import org.hyperic.hq.hqapi1.AgentApi;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.Response;
-import org.hyperic.hq.hqapi1.types.GetAgentResponse;
 import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.PingAgentResponse;
-import org.hyperic.hq.hqapi1.types.GetAgentsResponse;
+import org.hyperic.hq.hqapi1.types.AgentsResponse;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -95,7 +94,7 @@ public class HQApiTestBase  extends TestCase {
 
         AgentApi api = getApi().getAgentApi();
 
-        GetAgentsResponse response = api.getAgents();
+        AgentsResponse response = api.getAgents();
         if (response.getStatus().equals(ResponseStatus.FAILURE)) {
             String err = "Error querying agents: " +
                     response.getError().getReasonText();

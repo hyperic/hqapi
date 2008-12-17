@@ -1,16 +1,13 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.GroupApi;
-import org.hyperic.hq.hqapi1.types.CreateGroupResponse;
 import org.hyperic.hq.hqapi1.types.Group;
-import org.hyperic.hq.hqapi1.types.DeleteGroupResponse;
-import org.hyperic.hq.hqapi1.types.RemoveResourceFromGroupResponse;
-import org.hyperic.hq.hqapi1.types.GetGroupsResponse;
-import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
-import org.hyperic.hq.hqapi1.types.AddResourceToGroupResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
-import org.hyperic.hq.hqapi1.types.GetGroupResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.GroupResponse;
+import org.hyperic.hq.hqapi1.types.GroupsResponse;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 
 import java.util.List;
 
@@ -37,21 +34,21 @@ public class Group_test extends HQApiTestBase {
         GroupApi api = getApi().getGroupApi();
 
         Group g = new Group();
-        CreateGroupResponse resp = api.createGroup(g);
+        GroupResponse resp = api.createGroup(g);
         hqAssertFailureNotImplemented(resp);
     }
 
     public void testDelete() throws Exception {
         GroupApi api = getApi().getGroupApi();
 
-        DeleteGroupResponse resp = api.deleteGroup(1);
+        StatusResponse resp = api.deleteGroup(1);
         hqAssertFailureNotImplemented(resp);
     }
 
     public void testRemoveResource() throws Exception {
         GroupApi api = getApi().getGroupApi();
 
-        RemoveResourceFromGroupResponse resp = api.removeResource(1,2);
+        StatusResponse resp = api.removeResource(1,2);
         hqAssertFailureNotImplemented(resp);
     }
 
@@ -59,14 +56,14 @@ public class Group_test extends HQApiTestBase {
 
         GroupApi api = getApi().getGroupApi();
 
-        AddResourceToGroupResponse resp = api.addResource(1,2);
+        StatusResponse resp = api.addResource(1,2);
         hqAssertFailureNotImplemented(resp);
     }
     
     public void testList() throws Exception {
         GroupApi api = getApi().getGroupApi();
 
-        GetGroupsResponse resp = api.listGroups();
+        GroupsResponse resp = api.listGroups();
         hqAssertSuccess(resp);
 
         List<Group> groups = resp.getGroup();
@@ -83,7 +80,7 @@ public class Group_test extends HQApiTestBase {
     public void testGetResourcesInGroup() throws Exception {
         GroupApi api = getApi().getGroupApi();
 
-        GetGroupsResponse resp = api.listGroups();
+        GroupsResponse resp = api.listGroups();
         hqAssertSuccess(resp);
 
         List<Group> groups = resp.getGroup();
@@ -93,7 +90,7 @@ public class Group_test extends HQApiTestBase {
 
         for (Group g : resp.getGroup()) {
             validateGroup(g);
-            FindResourcesResponse resourceResponse = api.listResources(g.getId());
+            ResourcesResponse resourceResponse = api.listResources(g.getId());
             hqAssertSuccess(resourceResponse);
             if (resourceResponse.getResource().size() == 0) {
                 getLog().warn("Zero group members found for " + g.getId());
@@ -111,14 +108,14 @@ public class Group_test extends HQApiTestBase {
 
         GroupApi api = getApi().getGroupApi();
 
-        FindResourcesResponse resp = api.listResources(Integer.MAX_VALUE);
+        ResourcesResponse resp = api.listResources(Integer.MAX_VALUE);
         hqAssertFailureObjectNotFound(resp);
     }
 
     public void testGetGroupById() throws Exception {
         GroupApi api = getApi().getGroupApi();
 
-        GetGroupsResponse resp = api.listGroups();
+        GroupsResponse resp = api.listGroups();
         hqAssertSuccess(resp);
 
         List<Group> groups = resp.getGroup();
@@ -128,7 +125,7 @@ public class Group_test extends HQApiTestBase {
 
         Group g = resp.getGroup().get(0);
 
-        GetGroupResponse groupResponse = api.getGroup(g.getId());
+        GroupResponse groupResponse = api.getGroup(g.getId());
         hqAssertSuccess(groupResponse);
         validateGroup(groupResponse.getGroup());
     }
@@ -137,7 +134,7 @@ public class Group_test extends HQApiTestBase {
 
         GroupApi api = getApi().getGroupApi();
 
-        GetGroupResponse groupResponse = api.getGroup(Integer.MAX_VALUE);
+        GroupResponse groupResponse = api.getGroup(Integer.MAX_VALUE);
         hqAssertFailureObjectNotFound(groupResponse);
     }
 
@@ -145,7 +142,7 @@ public class Group_test extends HQApiTestBase {
 
         GroupApi api = getApi().getGroupApi();
 
-        GetGroupsResponse resp = api.listGroups();
+        GroupsResponse resp = api.listGroups();
         hqAssertSuccess(resp);
 
         List<Group> groups = resp.getGroup();
@@ -155,7 +152,7 @@ public class Group_test extends HQApiTestBase {
 
         Group g = resp.getGroup().get(0);
 
-        GetGroupResponse groupResponse = api.getGroup(g.getName());
+        GroupResponse groupResponse = api.getGroup(g.getName());
         hqAssertSuccess(groupResponse);
         validateGroup(groupResponse.getGroup());
     }
@@ -164,7 +161,7 @@ public class Group_test extends HQApiTestBase {
 
         GroupApi api = getApi().getGroupApi();
 
-        GetGroupResponse groupResponse = api.getGroup("Non-existant group");
+        GroupResponse groupResponse = api.getGroup("Non-existant group");
         hqAssertFailureObjectNotFound(groupResponse);
     }
 
@@ -172,7 +169,7 @@ public class Group_test extends HQApiTestBase {
 
         GroupApi api = getApi().getGroupApi();
 
-        GetGroupsResponse response = api.listCompatibleGroups();
+        GroupsResponse response = api.listCompatibleGroups();
         hqAssertSuccess(response);
 
         List<Group> groups = response.getGroup();
@@ -191,7 +188,7 @@ public class Group_test extends HQApiTestBase {
 
         GroupApi api = getApi().getGroupApi();
 
-        GetGroupsResponse response = api.listMixedGroups();
+        GroupsResponse response = api.listMixedGroups();
         hqAssertSuccess(response);
 
         List<Group> groups = response.getGroup();

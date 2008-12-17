@@ -2,9 +2,8 @@ package org.hyperic.hq.hqapi1.tools;
 
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
-import org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse;
-import org.hyperic.hq.hqapi1.types.GetResourceResponse;
-import org.hyperic.hq.hqapi1.types.CreateResourceResponse;
+import org.hyperic.hq.hqapi1.types.ResourceResponse;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,12 +33,12 @@ public class ResourceCreateService extends ToolsBase {
         HQApi api = getApi(options);
         ResourceApi resourceApi = api.getResourceApi();
 
-        GetResourcePrototypeResponse protoResponse =
+        ResourcePrototypeResponse protoResponse =
                 resourceApi.getResourcePrototype((String)getRequired(options,
                                                                      OPT_PROTOTYPE));
         checkSuccess(protoResponse);
 
-        GetResourceResponse resourceResponse =
+        ResourceResponse resourceResponse =
                 resourceApi.getResource((Integer)getRequired(options,
                                                              OPT_RESOURCEID));
         checkSuccess(resourceResponse);
@@ -56,7 +55,7 @@ public class ResourceCreateService extends ToolsBase {
             }
         }
 
-        CreateResourceResponse createResponse =
+        ResourceResponse createResponse =
                 resourceApi.createService(protoResponse.getResourcePrototype(),
                                           resourceResponse.getResource(),
                                           name, config);

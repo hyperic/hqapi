@@ -1,10 +1,10 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.EscalationApi;
-import org.hyperic.hq.hqapi1.types.CreateEscalationResponse;
 import org.hyperic.hq.hqapi1.types.Escalation;
 import org.hyperic.hq.hqapi1.types.FullEscalationAction;
 import org.hyperic.hq.hqapi1.types.Who;
+import org.hyperic.hq.hqapi1.types.EscalationResponse;
 
 public class EscalationTestBase extends HQApiTestBase {
     protected static final String TEST_NAME = EscalationTestBase.class.getName();
@@ -36,8 +36,7 @@ public class EscalationTestBase extends HQApiTestBase {
         act.getNotify().add(who);
         esc.getAction().add(act);
         
-        CreateEscalationResponse resp =
-            escApi.createEscalation(esc);
+        EscalationResponse resp = escApi.createEscalation(esc);
         _esc = resp.getEscalation();
     }
 

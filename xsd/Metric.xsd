@@ -39,31 +39,7 @@
 
     <!-- Metric Responses -->
 
-    <xs:element name="EnableMetricResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="DisableMetricResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="SetMetricIntervalResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="GetMetricResponse">
+    <xs:element name="MetricResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">
@@ -75,7 +51,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="ListMetricsResponse">
+    <xs:element name="MetricsResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">
@@ -89,7 +65,7 @@
 
     <!-- MetricData Responses -->
     
-    <xs:element name="GetMetricDataResponse">
+    <xs:element name="MetricDataResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">
@@ -101,7 +77,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="GetMetricsDataResponse">
+    <xs:element name="MetricsDataResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">

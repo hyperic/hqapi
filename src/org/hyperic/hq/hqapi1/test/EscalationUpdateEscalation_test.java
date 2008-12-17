@@ -2,7 +2,7 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.EscalationApi;
 import org.hyperic.hq.hqapi1.types.Escalation;
-import org.hyperic.hq.hqapi1.types.GetEscalationResponse;
+import org.hyperic.hq.hqapi1.types.EscalationResponse;
 
 public class EscalationUpdateEscalation_test extends EscalationTestBase {
 
@@ -33,7 +33,7 @@ public class EscalationUpdateEscalation_test extends EscalationTestBase {
         escApi.updateEscalation(esc);
         
         // Now look it up
-        GetEscalationResponse resp = escApi.getEscalation(esc.getId());
+        EscalationResponse resp = escApi.getEscalation(esc.getId());
         esc = resp.getEscalation();
         
         // Verify the updates

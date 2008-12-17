@@ -4,10 +4,10 @@ import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
-import org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse;
-import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
-import org.hyperic.hq.hqapi1.types.CreateResourceResponse;
-import org.hyperic.hq.hqapi1.types.DeleteResourceResponse;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.ResourceResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,12 +26,12 @@ public class ResourceCreateService_test extends ResourceTestBase {
         ResourceApi api = getApi().getResourceApi();
 
         // Find HTTP resource type
-        GetResourcePrototypeResponse protoResponse = api.getResourcePrototype("HTTP");
+        ResourcePrototypeResponse protoResponse = api.getResourcePrototype("HTTP");
         hqAssertSuccess(protoResponse);
         ResourcePrototype pt = protoResponse.getResourcePrototype();
 
         // Find local platform
-        FindResourcesResponse resourcesResponse = api.findResources(a);
+        ResourcesResponse resourcesResponse = api.getResources(a);
         hqAssertSuccess(resourcesResponse);
         assertTrue("Did not find a single platform for " + a.getAddress() + ":" +
                    a.getPort(), resourcesResponse.getResource().size() == 1);
@@ -48,8 +48,7 @@ public class ResourceCreateService_test extends ResourceTestBase {
         Random r = new Random();
         String name = "My HTTP Check " + r.nextInt();
 
-        CreateResourceResponse resp = api.createService(pt, platform, name,
-                                                        params);
+        ResourceResponse resp = api.createService(pt, platform, name, params);
         hqAssertSuccess(resp);
         Resource createdResource = resp.getResource();
         assertEquals(createdResource.getName(), name);
@@ -64,7 +63,7 @@ public class ResourceCreateService_test extends ResourceTestBase {
             // Ignore
         }
         
-        DeleteResourceResponse deleteResponse =
+        StatusResponse deleteResponse =
                 api.deleteResource(createdResource.getId());
         hqAssertSuccess(deleteResponse);
     }

@@ -1,7 +1,7 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.AutodiscoveryApi;
-import org.hyperic.hq.hqapi1.types.GetQueueResponse;
+import org.hyperic.hq.hqapi1.types.QueueResponse;
 
 public class AutodiscoveryGetQueue_test extends AutodiscoveryTestBase {
     
@@ -13,7 +13,7 @@ public class AutodiscoveryGetQueue_test extends AutodiscoveryTestBase {
 
         AutodiscoveryApi api = getAutodiscoveryApi();
 
-        GetQueueResponse response = api.getQueue();
+        QueueResponse response = api.getQueue();
         hqAssertSuccess(response);
         assertNotNull(response.getAIPlatform());
     }

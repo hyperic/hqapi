@@ -3,9 +3,9 @@ package org.hyperic.hq.hqapi1.tools;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.UserApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
-import org.hyperic.hq.hqapi1.types.GetUsersResponse;
 import org.hyperic.hq.hqapi1.types.User;
-import org.hyperic.hq.hqapi1.types.SyncUsersResponse;
+import org.hyperic.hq.hqapi1.types.UsersResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 import java.util.List;
 
@@ -23,11 +23,11 @@ public class UserSync extends ToolsBase {
 
         UserApi userApi = api.getUserApi();
 
-        GetUsersResponse resp = XmlUtil.deserialize(GetUsersResponse.class,
-                                                    System.in);
+        UsersResponse resp = XmlUtil.deserialize(UsersResponse.class,
+                                                 System.in);
         List<User> users = resp.getUser();
 
-        SyncUsersResponse syncResponse = userApi.syncUsers(users);
+        StatusResponse syncResponse = userApi.syncUsers(users);
         checkSuccess(syncResponse);
 
         System.out.println("Successfully synced " + users.size() + " users.");

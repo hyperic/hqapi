@@ -60,7 +60,7 @@ class MetricController extends ApiController {
         return interval > 0 && interval%60000 == 0
     }
 
-    def listTemplates(params) {
+    def getTemplates(params) {
         def prototype = params.getOne("prototype")
 
         def failureXml = null
@@ -79,7 +79,7 @@ class MetricController extends ApiController {
         }
 
         renderXml() {
-            ListMetricTemplatesResponse() {
+            MetricTemplatesResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -107,7 +107,7 @@ class MetricController extends ApiController {
         }
 
         renderXml() {
-            GetMetricTemplateResponse() {
+            MetricTemplateResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -118,7 +118,7 @@ class MetricController extends ApiController {
         }
     }
 
-    def listMetrics(params) {
+    def getMetrics(params) {
         def failureXml
         def metrics
         def resourceId = params.getOne("resourceId")?.toInteger()
@@ -145,7 +145,7 @@ class MetricController extends ApiController {
         }
 
         renderXml() {
-            ListMetricsResponse() {
+            MetricsResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -178,7 +178,7 @@ class MetricController extends ApiController {
         }
         
         renderXml() {
-            GetMetricResponse() {
+            MetricResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -216,7 +216,7 @@ class MetricController extends ApiController {
         }
 
         renderXml() {
-            EnableMetricResponse() {
+            StatusResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -247,7 +247,7 @@ class MetricController extends ApiController {
         }
 
         renderXml() {
-            DisableMetricResponse() {
+            StatusResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -284,7 +284,7 @@ class MetricController extends ApiController {
         }
 
         renderXml() {
-            SetMetricIntervalResponse() {
+            StatusResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -316,7 +316,7 @@ class MetricController extends ApiController {
         }
         
         renderXml() {
-            SetMetricDefaultOnResponse() {
+            StatusResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -354,7 +354,7 @@ class MetricController extends ApiController {
         }
 
         renderXml() {
-            SetMetricDefaultIndicatorResponse() {
+            StatusResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -391,7 +391,7 @@ class MetricController extends ApiController {
         }
         
         renderXml() {
-            SetMetricDefaultIntervalResponse() {
+            StatusResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -431,7 +431,7 @@ class MetricController extends ApiController {
         }
 
         renderXml() {
-            GetMetricDataResponse() {
+            MetricDataResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -453,7 +453,7 @@ class MetricController extends ApiController {
         if ((!groupId || !templateId || !start || !end) ||
             (end < start)) {
             renderXml() {
-                GetMetricsDataResponse() {
+                MetricsDataResponse() {
                     out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
                 }
             }
@@ -465,7 +465,7 @@ class MetricController extends ApiController {
         def template = metricHelper.findTemplateById(templateId)
         if (!group || !template) {
             renderXml() {
-                GetMetricsDataResponse() {
+                MetricsDataResponse() {
                     out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
                 }
             }
@@ -476,7 +476,7 @@ class MetricController extends ApiController {
         def prototype = group.resourcePrototype
         if (!prototype) {
             renderXml() {
-                GetMetricsDataResponse() {
+                MetricsDataResponse() {
                     out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                          "Group " + group.name + " is not a " +
                                          "compatible group")
@@ -491,7 +491,7 @@ class MetricController extends ApiController {
         def foundTemplate = templates.find { it.id == templateId }
         if (!foundTemplate) {
             renderXml() {
-                GetMetricsDataResponse() {
+                MetricsDataResponse() {
                     out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                          "Unable to find metric template " +
                                          template.name + " for group " +
@@ -514,7 +514,7 @@ class MetricController extends ApiController {
         }
 
         renderXml() {
-            GetMetricsDataResponse() {
+            MetricsDataResponse() {
                 out << getSuccessXML()
                 for (result in results) {
                     out << getMetricDataXML(result)
@@ -533,7 +533,7 @@ class MetricController extends ApiController {
         if ((!ids || !ids.length == 0 || !templateId || !start || !end) ||
             (end < start)) {
             renderXml() {
-                GetMetricsDataResponse() {
+                MetricsDataResponse() {
                     out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
                 }
             }
@@ -544,7 +544,7 @@ class MetricController extends ApiController {
         def template = metricHelper.findTemplateById(templateId)
         if (!template) {
             renderXml() {
-                GetMetricsDataResponse() {
+                MetricsDataResponse() {
                     out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                          "Template with id " + templateId +
                                          " not found")
@@ -559,7 +559,7 @@ class MetricController extends ApiController {
             def resource = getResource(id.toInteger())
             if (!resource) {
                 renderXml() {
-                    GetMetricsDataResponse() {
+                    MetricsDataResponse() {
                         out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                              "Resource with id " + id + 
                                              " not found")
@@ -570,7 +570,7 @@ class MetricController extends ApiController {
             def m = resource.metrics.find { it.template.id == templateId }
             if (!m) {
                 renderXml() {
-                    GetMetricsDataResponse() {
+                    MetricsDataResponse() {
                         out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                              "Unable to find metric " +
                                              template.name + " for resource " +
@@ -585,7 +585,7 @@ class MetricController extends ApiController {
         }
 
         renderXml() {
-            GetMetricsDataResponse() {
+            MetricsDataResponse() {
                 out << getSuccessXML()
                 for (result in results) {
                     out << getMetricDataXML(result)

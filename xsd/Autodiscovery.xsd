@@ -11,7 +11,7 @@
         <xs:attribute name="fqdn" type="xs:string" use="required"/>
     </xs:complexType>
 
-    <xs:element name="GetQueueResponse">
+    <xs:element name="QueueResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">
@@ -19,14 +19,6 @@
                         <xs:element name="AIPlatform" maxOccurs="unbounded" type="AIPlatform"/>
                     </xs:sequence>
                 </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="ApproveResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
             </xs:complexContent>
         </xs:complexType>
     </xs:element>

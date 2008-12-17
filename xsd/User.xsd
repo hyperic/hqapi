@@ -20,7 +20,7 @@
     </xs:complexType>
 
     <!-- User Responses -->
-    <xs:element name="GetUserResponse">
+    <xs:element name="UserResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">
@@ -32,7 +32,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="GetUsersResponse">
+    <xs:element name="UsersResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">
@@ -44,27 +44,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="CreateUserResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response">
-                    <xs:sequence>
-                        <xs:element name="User" type="User"/>
-                    </xs:sequence>
-                </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="DeleteUserResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response" />
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="UpdateUserRequest">
+    <xs:element name="UserRequest">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="User" type="User"/>
@@ -72,43 +52,11 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="UpdateUserResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="SyncUsersRequest">
+    <xs:element name="UsersRequest">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="User" maxOccurs="unbounded" type="User"/>
             </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="SyncUsersResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="SetRolesResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="ChangePasswordResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
         </xs:complexType>
     </xs:element>
 

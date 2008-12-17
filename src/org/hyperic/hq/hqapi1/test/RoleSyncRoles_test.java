@@ -3,11 +3,10 @@ package org.hyperic.hq.hqapi1.test;
 import org.hyperic.hq.hqapi1.RoleApi;
 import org.hyperic.hq.hqapi1.UserApi;
 import org.hyperic.hq.hqapi1.types.Role;
-import org.hyperic.hq.hqapi1.types.SyncRolesResponse;
-import org.hyperic.hq.hqapi1.types.CreateRoleResponse;
-import org.hyperic.hq.hqapi1.types.GetRoleResponse;
+import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.Operation;
 import org.hyperic.hq.hqapi1.types.User;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -29,11 +28,11 @@ public class RoleSyncRoles_test extends RoleTestBase {
             roles.add(r);
         }
 
-        SyncRolesResponse response = api.syncRoles(roles);
+        StatusResponse response = api.syncRoles(roles);
         hqAssertSuccess(response);
 
         for (Role r : roles) {
-            GetRoleResponse getResponse = api.getRole(r.getName());
+            RoleResponse getResponse = api.getRole(r.getName());
             hqAssertSuccess(getResponse);
         }
     }
@@ -47,7 +46,7 @@ public class RoleSyncRoles_test extends RoleTestBase {
             Role r = generateTestRole();
             r.getOperation().addAll(VIEW_OPS);
 
-            CreateRoleResponse createResponse = api.createRole(r);
+            RoleResponse createResponse = api.createRole(r);
             hqAssertSuccess(createResponse);
             createdRoles.add(createResponse.getRole());
         }
@@ -61,11 +60,11 @@ public class RoleSyncRoles_test extends RoleTestBase {
             r.getOperation().addAll(MODIFY_OPS);
         }
 
-        SyncRolesResponse response = api.syncRoles(createdRoles);
+        StatusResponse response = api.syncRoles(createdRoles);
         hqAssertSuccess(response);
 
         for (Role r : createdRoles) {
-            GetRoleResponse getResponse = api.getRole(r.getId());
+            RoleResponse getResponse = api.getRole(r.getId());
             hqAssertSuccess(getResponse);
 
             Role updatedRole = getResponse.getRole();
@@ -104,7 +103,7 @@ public class RoleSyncRoles_test extends RoleTestBase {
             roles.add(r);
         }
 
-        SyncRolesResponse response = api.syncRoles(roles);
+        StatusResponse response = api.syncRoles(roles);
         hqAssertFailurePermissionDenied(response);
     }
     
@@ -117,7 +116,7 @@ public class RoleSyncRoles_test extends RoleTestBase {
             Role r = generateTestRole();
             r.getOperation().addAll(VIEW_OPS);
 
-            CreateRoleResponse createResponse = api.createRole(r);
+            RoleResponse createResponse = api.createRole(r);
             hqAssertSuccess(createResponse);
             createdRoles.add(createResponse.getRole());
         }
@@ -139,7 +138,7 @@ public class RoleSyncRoles_test extends RoleTestBase {
             r.getOperation().addAll(MODIFY_OPS);
         }
 
-        SyncRolesResponse response = roleapi.syncRoles(createdRoles);
+        StatusResponse response = roleapi.syncRoles(createdRoles);
         hqAssertFailurePermissionDenied(response);
     }
 }

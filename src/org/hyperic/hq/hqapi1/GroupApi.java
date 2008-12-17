@@ -4,17 +4,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hyperic.hq.hqapi1.types.AddResourceToGroupResponse;
-import org.hyperic.hq.hqapi1.types.CreateGroupResponse;
-import org.hyperic.hq.hqapi1.types.DeleteGroupResponse;
-import org.hyperic.hq.hqapi1.types.GetGroupsResponse;
 import org.hyperic.hq.hqapi1.types.Group;
-import org.hyperic.hq.hqapi1.types.RemoveResourceFromGroupResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.CreateGroupRequest;
-import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
-import org.hyperic.hq.hqapi1.types.GetUserResponse;
-import org.hyperic.hq.hqapi1.types.GetGroupResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.GroupResponse;
+import org.hyperic.hq.hqapi1.types.GroupsResponse;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 
 /**
  * The Hyperic HQ Group API.
@@ -40,16 +36,16 @@ public class GroupApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the User by the given name is returned via
-     * {@link org.hyperic.hq.hqapi1.types.GetGroupResponse#getGroup()}.
+     * {@link org.hyperic.hq.hqapi1.types.GroupResponse#getGroup()}.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetGroupResponse getGroup(String name)
+    public GroupResponse getGroup(String name)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("name", new String[] { name });
-        return doGet("group/get.hqu", params, GetGroupResponse.class);
+        return doGet("group/get.hqu", params, GroupResponse.class);
     }
 
     /**
@@ -59,16 +55,16 @@ public class GroupApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the User by the given id is returned via
-     * {@link org.hyperic.hq.hqapi1.types.GetGroupResponse#getGroup()}.
+     * {@link org.hyperic.hq.hqapi1.types.GroupResponse#getGroup()}.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetGroupResponse getGroup(int id)
+    public GroupResponse getGroup(int id)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id) });
-        return doGet("group/get.hqu", params, GetGroupResponse.class);
+        return doGet("group/get.hqu", params, GroupResponse.class);
     }
 
     /**
@@ -81,12 +77,12 @@ public class GroupApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public CreateGroupResponse createGroup(Group group)
+    public GroupResponse createGroup(Group group)
         throws IOException
     {
         CreateGroupRequest req = new CreateGroupRequest();
         req.setGroup(group);
-        return doPost("group/create.hqu", req, CreateGroupResponse.class);
+        return doPost("group/create.hqu", req, GroupResponse.class);
     }
     
     /**
@@ -99,12 +95,12 @@ public class GroupApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public DeleteGroupResponse deleteGroup(int id)
+    public StatusResponse deleteGroup(int id)
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("id", new String[] { Integer.toString(id) });
-        return doGet("group/delete.hqu", params, DeleteGroupResponse.class);
+        return doGet("group/delete.hqu", params, StatusResponse.class);
     }
     
     /**
@@ -119,15 +115,14 @@ public class GroupApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public RemoveResourceFromGroupResponse removeResource(int groupId,
-                                                          int resourceId)
+    public StatusResponse removeResource(int groupId, int resourceId)
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("groupId", new String[] { Integer.toString(groupId) });
         params.put("resourceId", new String[] { Integer.toString(resourceId) });
         return doGet("group/removeResource.hqu", params,
-                     RemoveResourceFromGroupResponse.class);
+                     StatusResponse.class);
     }
 
     /**
@@ -138,11 +133,11 @@ public class GroupApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetGroupsResponse listGroups()
+    public GroupsResponse listGroups()
         throws IOException
     {
         return doGet("group/list.hqu", new HashMap<String,String[]>(),
-                     GetGroupsResponse.class);
+                     GroupsResponse.class);
     }
 
     /**
@@ -155,12 +150,12 @@ public class GroupApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetGroupsResponse listCompatibleGroups()
+    public GroupsResponse listCompatibleGroups()
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("compatible", new String[] { Boolean.toString(true) });
-        return doGet("group/list.hqu", params, GetGroupsResponse.class);
+        return doGet("group/list.hqu", params, GroupsResponse.class);
     }
 
     /**
@@ -173,12 +168,12 @@ public class GroupApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetGroupsResponse listMixedGroups()
+    public GroupsResponse listMixedGroups()
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("compatible", new String[] { Boolean.toString(false) });
-        return doGet("group/list.hqu", params, GetGroupsResponse.class);
+        return doGet("group/list.hqu", params, GroupsResponse.class);
     }
 
     /**
@@ -191,13 +186,13 @@ public class GroupApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public FindResourcesResponse listResources(int groupId)
+    public ResourcesResponse listResources(int groupId)
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("groupId", new String[] { Integer.toString(groupId) });
         return doGet("group/listResources.hqu", params,
-                     FindResourcesResponse.class);
+                     ResourcesResponse.class);
     }
 
     /**
@@ -212,13 +207,13 @@ public class GroupApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public AddResourceToGroupResponse addResource(int groupId, int resourceId)
+    public StatusResponse addResource(int groupId, int resourceId)
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("groupId", new String[] { Integer.toString(groupId) });
         params.put("resourceId", new String[] { Integer.toString(resourceId) });
         return doGet("group/addResource.hqu", params,
-                     AddResourceToGroupResponse.class);
+                     StatusResponse.class);
     }
 }

@@ -1,15 +1,11 @@
 package org.hyperic.hq.hqapi1;
 
-import org.hyperic.hq.hqapi1.types.GetUserResponse;
-import org.hyperic.hq.hqapi1.types.GetUsersResponse;
-import org.hyperic.hq.hqapi1.types.CreateUserResponse;
 import org.hyperic.hq.hqapi1.types.User;
-import org.hyperic.hq.hqapi1.types.DeleteUserResponse;
-import org.hyperic.hq.hqapi1.types.UpdateUserResponse;
-import org.hyperic.hq.hqapi1.types.UpdateUserRequest;
-import org.hyperic.hq.hqapi1.types.SyncUsersResponse;
-import org.hyperic.hq.hqapi1.types.SyncUsersRequest;
-import org.hyperic.hq.hqapi1.types.ChangePasswordResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.UsersResponse;
+import org.hyperic.hq.hqapi1.types.UserResponse;
+import org.hyperic.hq.hqapi1.types.UserRequest;
+import org.hyperic.hq.hqapi1.types.UsersRequest;
 
 import java.io.IOException;
 import java.util.Map;
@@ -40,16 +36,16 @@ public class UserApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the User by the given name is returned via
-     * {@link org.hyperic.hq.hqapi1.types.GetUserResponse#getUser()}.
+     * {@link org.hyperic.hq.hqapi1.types.UserResponse#getUser()}.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetUserResponse getUser(String name)
+    public UserResponse getUser(String name)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("name", new String[] { name });
-        return doGet("user/get.hqu", params, GetUserResponse.class);
+        return doGet("user/get.hqu", params, UserResponse.class);
     }
 
     /**
@@ -59,16 +55,16 @@ public class UserApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the User by the given id is returned via
-     * {@link org.hyperic.hq.hqapi1.types.GetUserResponse#getUser()}.
+     * {@link org.hyperic.hq.hqapi1.types.UserResponse#getUser()}.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetUserResponse getUser(int id)
+    public UserResponse getUser(int id)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id) });
-        return doGet("user/get.hqu", params, GetUserResponse.class);
+        return doGet("user/get.hqu", params, UserResponse.class);
     }
 
     /**
@@ -79,11 +75,11 @@ public class UserApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetUsersResponse getUsers()
+    public UsersResponse getUsers()
         throws IOException
     {
         return doGet("user/list.hqu", new HashMap<String,String[]>(),
-                     GetUsersResponse.class);
+                     UsersResponse.class);
     }
 
     /**
@@ -94,11 +90,11 @@ public class UserApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
      * the created user is returned via
-     * {@link org.hyperic.hq.hqapi1.types.CreateUserResponse#getUser()}.
+     * {@link org.hyperic.hq.hqapi1.types.UserResponse#getUser()}.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public CreateUserResponse createUser(User user, String password)
+    public UserResponse createUser(User user, String password)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
@@ -113,7 +109,7 @@ public class UserApi extends BaseApi {
         params.put("htmlEmail", new String[] { Boolean.toString(user.isActive())});
         params.put("SMSAddress", new String[] { user.getSMSAddress() });
 
-        return doGet("user/create.hqu", params, CreateUserResponse.class);
+        return doGet("user/create.hqu", params, UserResponse.class);
     }
 
     /**
@@ -125,14 +121,14 @@ public class UserApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public DeleteUserResponse deleteUser(int id)
+    public StatusResponse deleteUser(int id)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
 
         params.put("id", new String[] { Integer.toString(id) });
 
-        return doGet("user/delete.hqu", params, DeleteUserResponse.class);
+        return doGet("user/delete.hqu", params, StatusResponse.class);
     }
 
     /**
@@ -145,13 +141,13 @@ public class UserApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public UpdateUserResponse updateUser(User user)
+    public StatusResponse updateUser(User user)
         throws IOException
     {
-        UpdateUserRequest req = new UpdateUserRequest();
+        UserRequest req = new UserRequest();
         req.setUser(user);
 
-        return doPost("user/update.hqu", req, UpdateUserResponse.class);
+        return doPost("user/update.hqu", req, StatusResponse.class);
     }
 
     /**
@@ -164,13 +160,13 @@ public class UserApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public SyncUsersResponse syncUsers(List<User> users)
+    public StatusResponse syncUsers(List<User> users)
         throws IOException
     {
-        SyncUsersRequest request = new SyncUsersRequest();
+        UsersRequest request = new UsersRequest();
         request.getUser().addAll(users);
 
-        return doPost("user/sync.hqu", request, SyncUsersResponse.class);
+        return doPost("user/sync.hqu", request, StatusResponse.class);
     }
 
     /**
@@ -184,7 +180,7 @@ public class UserApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public ChangePasswordResponse changePassword(User user, String password)
+    public StatusResponse changePassword(User user, String password)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
@@ -193,6 +189,6 @@ public class UserApi extends BaseApi {
         params.put("password", new String[] { password });
 
         return doGet("user/changePassword.hqu", params,
-                     ChangePasswordResponse.class);
+                     StatusResponse.class);
     }
 }

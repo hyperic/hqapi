@@ -1,7 +1,7 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.AgentApi;
-import org.hyperic.hq.hqapi1.types.GetAgentResponse;
+import org.hyperic.hq.hqapi1.types.AgentResponse;
 import org.hyperic.hq.hqapi1.types.Agent;
 
 public class AgentGet_test extends HQApiTestBase {
@@ -14,7 +14,7 @@ public class AgentGet_test extends HQApiTestBase {
 
         AgentApi api = getApi().getAgentApi();
 
-        GetAgentResponse response = api.getAgent("invalid.hyperic.com", 2144);
+        AgentResponse response = api.getAgent("invalid.hyperic.com", 2144);
         hqAssertFailureObjectNotFound(response);
     }
 
@@ -24,8 +24,8 @@ public class AgentGet_test extends HQApiTestBase {
 
         AgentApi api = getApi().getAgentApi();
 
-        GetAgentResponse response = api.getAgent(agent.getAddress(),
-                                                 agent.getPort());
+        AgentResponse response = api.getAgent(agent.getAddress(),
+                                              agent.getPort());
         hqAssertSuccess(response);
 
         Agent a = response.getAgent();

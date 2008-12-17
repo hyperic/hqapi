@@ -5,19 +5,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.hyperic.hq.hqapi1.types.Agent;
-import org.hyperic.hq.hqapi1.types.CreateResourceResponse;
-import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
-import org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse;
-import org.hyperic.hq.hqapi1.types.GetResourceResponse;
-import org.hyperic.hq.hqapi1.types.ListResourcePrototypesResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
-import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.CreateServiceRequest;
 import org.hyperic.hq.hqapi1.types.ResourceConfig;
 import org.hyperic.hq.hqapi1.types.CreatePlatformRequest;
 import org.hyperic.hq.hqapi1.types.CreateServerRequest;
-import org.hyperic.hq.hqapi1.types.DeleteResourceResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypesResponse;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.ResourceResponse;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 
 /**
  * The Hyperic HQ Resource API.
@@ -50,16 +48,16 @@ public class ResourceApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the list of ResourcePrototypes are returned via
-     * {@link org.hyperic.hq.hqapi1.types.ListResourcePrototypesResponse#getResourcePrototype()}.
+     * {@link org.hyperic.hq.hqapi1.types.ResourcePrototypesResponse#getResourcePrototype()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */    
-    public ListResourcePrototypesResponse listAllResourcePrototypes()
+    public ResourcePrototypesResponse getAllResourcePrototypes()
         throws IOException
     {   
-        return doGet("resource/listResourcePrototypes.hqu",
+        return doGet("resource/getResourcePrototypes.hqu",
                      new HashMap<String,String[]>(),
-                     ListResourcePrototypesResponse.class);
+                     ResourcePrototypesResponse.class);
     }
 
     /**
@@ -68,17 +66,17 @@ public class ResourceApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the list of ResourcePrototypes are returned via
-     * {@link org.hyperic.hq.hqapi1.types.ListResourcePrototypesResponse#getResourcePrototype()}.
+     * {@link org.hyperic.hq.hqapi1.types.ResourcePrototypesResponse#getResourcePrototype()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public ListResourcePrototypesResponse listResourcePrototypes() 
+    public ResourcePrototypesResponse getResourcePrototypes()
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("existing", new String[] { Boolean.toString(Boolean.TRUE) });
-        return doGet("resource/listResourcePrototypes.hqu", params,
-                     ListResourcePrototypesResponse.class);
+        return doGet("resource/getResourcePrototypes.hqu", params,
+                     ResourcePrototypesResponse.class);
     }
 
     /**
@@ -87,17 +85,17 @@ public class ResourceApi extends BaseApi {
      * @param name The name of the ResourcePrototype to find
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the ResourcePrototypes is returned via
-     * {@link org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse#getResourcePrototype()}.
+     * {@link org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse#getResourcePrototype()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public GetResourcePrototypeResponse getResourcePrototype(String name)
+    public ResourcePrototypeResponse getResourcePrototype(String name)
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("name", new String[] { name });
         return doGet("resource/getResourcePrototype.hqu",
-                     params, GetResourcePrototypeResponse.class);
+                     params, ResourcePrototypeResponse.class);
     }
 
     /**
@@ -112,15 +110,15 @@ public class ResourceApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the created Resource is returned via
-     * {@link org.hyperic.hq.hqapi1.types.CreateResourceResponse#getResource()}.
+     * {@link org.hyperic.hq.hqapi1.types.ResourceResponse#getResource()}.
      * 
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public CreateResourceResponse createPlatform(Agent agent,
-                                                 ResourcePrototype type,
-                                                 String name,
-                                                 String fqdn,
-                                                 Map configs)
+    public ResourceResponse createPlatform(Agent agent,
+                                           ResourcePrototype type,
+                                           String name,
+                                           String fqdn,
+                                           Map configs)
         throws IOException
     {
 
@@ -129,7 +127,7 @@ public class ResourceApi extends BaseApi {
         request.setPlatformPrototype(type);
 
         return doPost("resource/createPlatform.hqu", request,
-                      CreateResourceResponse.class);
+                      ResourceResponse.class);
     }
 
     /**
@@ -144,15 +142,15 @@ public class ResourceApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the created Resource is returned via
-     * {@link org.hyperic.hq.hqapi1.types.CreateResourceResponse#getResource()}.
+     * {@link org.hyperic.hq.hqapi1.types.ResourceResponse#getResource()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public CreateResourceResponse createServer(ResourcePrototype type,
-                                               Resource parent,
-                                               String name,
-                                               String installPath,
-                                               Map config)
+    public ResourceResponse createServer(ResourcePrototype type,
+                                         Resource parent,
+                                         String name,
+                                         String installPath,
+                                         Map config)
         throws IOException
     {
         CreateServerRequest request = new CreateServerRequest();
@@ -160,7 +158,7 @@ public class ResourceApi extends BaseApi {
         request.setServerPrototype(type);
 
         return doPost("resource/createServer.hqu", request,
-                      CreateResourceResponse.class);
+                      ResourceResponse.class);
     }
 
     /**
@@ -175,14 +173,14 @@ public class ResourceApi extends BaseApi {
      * 
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the created Resource is returned via
-     * {@link org.hyperic.hq.hqapi1.types.CreateResourceResponse#getResource()}.
+     * {@link org.hyperic.hq.hqapi1.types.ResourceResponse#getResource()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public CreateResourceResponse createService(ResourcePrototype type,
-                                                Resource parent,
-                                                String name,
-                                                Map<String,String> config)
+    public ResourceResponse createService(ResourcePrototype type,
+                                          Resource parent,
+                                          String name,
+                                          Map<String,String> config)
         throws IOException
     {
         Resource service = new Resource();
@@ -200,7 +198,7 @@ public class ResourceApi extends BaseApi {
         request.setServicePrototype(type);
 
         return doPost("resource/createService.hqu", request,
-                      CreateResourceResponse.class);
+                      ResourceResponse.class);
     }
 
     /**
@@ -210,17 +208,17 @@ public class ResourceApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the Resource is returned via
-     * {@link org.hyperic.hq.hqapi1.types.GetResourceResponse#getResource()}.
+     * {@link org.hyperic.hq.hqapi1.types.ResourceResponse#getResource()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public GetResourceResponse getResource(int id)
+    public ResourceResponse getResource(int id)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id) });
         return doGet("resource/get.hqu", params,
-                     GetResourceResponse.class);
+                     ResourceResponse.class);
     }
 
     /**
@@ -230,17 +228,17 @@ public class ResourceApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the Resource is returned via
-     * {@link org.hyperic.hq.hqapi1.types.GetResourceResponse#getResource()}.
+     * {@link org.hyperic.hq.hqapi1.types.ResourceResponse#getResource()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public GetResourceResponse getResourceForPlatform(int id)
+    public ResourceResponse getResourceForPlatform(int id)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("platformId", new String[] { Integer.toString(id) });
         return doGet("resource/get.hqu", params,
-                     GetResourceResponse.class);
+                     ResourceResponse.class);
     }
 
     /**
@@ -250,17 +248,17 @@ public class ResourceApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the Resource is returned via
-     * {@link org.hyperic.hq.hqapi1.types.GetResourceResponse#getResource()}.
+     * {@link org.hyperic.hq.hqapi1.types.ResourceResponse#getResource()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public GetResourceResponse getResourceForPlatform(String name)
+    public ResourceResponse getResourceForPlatform(String name)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("platformName", new String[] { name });
         return doGet("resource/get.hqu", params,
-                     GetResourceResponse.class);
+                     ResourceResponse.class);
     }
 
 
@@ -271,17 +269,17 @@ public class ResourceApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the Resource is returned via
-     * {@link org.hyperic.hq.hqapi1.types.GetResourceResponse#getResource()}.
+     * {@link org.hyperic.hq.hqapi1.types.ResourceResponse#getResource()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public GetResourceResponse getResourceForServer(int id)
+    public ResourceResponse getResourceForServer(int id)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("serverId", new String[] { Integer.toString(id) });
         return doGet("resource/get.hqu", params,
-                     GetResourceResponse.class);
+                     ResourceResponse.class);
     }
 
     /**
@@ -291,17 +289,17 @@ public class ResourceApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the Resource is returned via
-     * {@link org.hyperic.hq.hqapi1.types.GetResourceResponse#getResource()}.
+     * {@link org.hyperic.hq.hqapi1.types.ResourceResponse#getResource()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public GetResourceResponse getResourceForService(int id)
+    public ResourceResponse getResourceForService(int id)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("serviceId", new String[] { Integer.toString(id) });
         return doGet("resource/get.hqu", params,
-                     GetResourceResponse.class);
+                     ResourceResponse.class);
     }
 
     /**
@@ -312,18 +310,18 @@ public class ResourceApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the list of Resources are returned via
-     * {@link org.hyperic.hq.hqapi1.types.FindResourcesResponse#getResource()}.
+     * {@link org.hyperic.hq.hqapi1.types.ResourcesResponse#getResource()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      *
      */
-    public FindResourcesResponse findResources(Agent agent)
+    public ResourcesResponse getResources(Agent agent)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("agentId", new String[] { Integer.toString(agent.getId()) });
         return doGet("resource/find.hqu", params,
-                     FindResourcesResponse.class);
+                     ResourcesResponse.class);
     }
 
     /**
@@ -334,17 +332,17 @@ public class ResourceApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the list of Resources are returned via
-     * {@link org.hyperic.hq.hqapi1.types.FindResourcesResponse#getResource()}.
+     * {@link org.hyperic.hq.hqapi1.types.ResourcesResponse#getResource()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public FindResourcesResponse findResources(ResourcePrototype pt)
+    public ResourcesResponse getResources(ResourcePrototype pt)
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String, String[]>();
         params.put("prototype", new String[] { pt.getName() });
         return doGet("resource/find.hqu", params,
-                     FindResourcesResponse.class);
+                     ResourcesResponse.class);
     }
 
     /**
@@ -355,17 +353,17 @@ public class ResourceApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the list of Resources are returned via
-     * {@link org.hyperic.hq.hqapi1.types.FindResourcesResponse#getResource()}.
+     * {@link org.hyperic.hq.hqapi1.types.ResourcesResponse#getResource()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public FindResourcesResponse findResourceChildren(Resource r)
+    public ResourcesResponse getResourceChildren(Resource r)
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String, String[]>();
         params.put("childrenOfId", new String[] { Integer.toString(r.getId()) });
         return doGet("resource/find.hqu", params,
-                     FindResourcesResponse.class);
+                     ResourcesResponse.class);
     }
 
     /**
@@ -375,16 +373,15 @@ public class ResourceApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the list of Resources are returned via
-     * {@link org.hyperic.hq.hqapi1.types.FindResourcesResponse#getResource()}.
+     * {@link org.hyperic.hq.hqapi1.types.ResourcesResponse#getResource()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public DeleteResourceResponse deleteResource(int id)
+    public StatusResponse deleteResource(int id)
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id) });
-        return doGet("resource/delete.hqu", params,
-                     DeleteResourceResponse.class);
+        return doGet("resource/delete.hqu", params, StatusResponse.class);
     }
 }

@@ -22,7 +22,7 @@ class AutodiscoveryController extends ApiController {
         }
 
         renderXml() {
-            out << GetQueueResponse() {
+            out << QueueResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
@@ -56,7 +56,7 @@ class AutodiscoveryController extends ApiController {
         }
 
         renderXml() {
-            out << ApproveResponse() {
+            out << StatusResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {

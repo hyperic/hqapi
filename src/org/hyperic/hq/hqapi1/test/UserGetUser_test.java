@@ -1,7 +1,7 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.UserApi;
-import org.hyperic.hq.hqapi1.types.GetUserResponse;
+import org.hyperic.hq.hqapi1.types.UserResponse;
 
 public class UserGetUser_test extends UserTestBase {
 
@@ -11,7 +11,7 @@ public class UserGetUser_test extends UserTestBase {
                      
     public void testGetUserValid() throws Exception {
         UserApi api = getUserApi();
-        GetUserResponse response = api.getUser("hqadmin");
+        UserResponse response = api.getUser("hqadmin");
 
         hqAssertSuccess(response);
         assertEquals("HQ", response.getUser().getFirstName());
@@ -20,14 +20,14 @@ public class UserGetUser_test extends UserTestBase {
 
     public void testGetUserInvalid() throws Exception {
         UserApi api = getUserApi();
-        GetUserResponse response = api.getUser("unknownUser");
+        UserResponse response = api.getUser("unknownUser");
 
         hqAssertFailureObjectNotFound(response);
     }
 
     public void testGetUserById() throws Exception {
         UserApi api = getUserApi();
-        GetUserResponse response = api.getUser(1);
+        UserResponse response = api.getUser(1);
 
         hqAssertSuccess(response);
         assertEquals("HQ", response.getUser().getFirstName());
@@ -36,7 +36,7 @@ public class UserGetUser_test extends UserTestBase {
 
     public void testGetUserByIdInvalid() throws Exception {
         UserApi api = getUserApi();
-        GetUserResponse response = api.getUser(Integer.MAX_VALUE);
+        UserResponse response = api.getUser(Integer.MAX_VALUE);
 
         hqAssertFailureObjectNotFound(response);
     }

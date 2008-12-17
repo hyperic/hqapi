@@ -2,7 +2,7 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.RoleApi;
 import org.hyperic.hq.hqapi1.types.Role;
-import org.hyperic.hq.hqapi1.types.GetRolesResponse;
+import org.hyperic.hq.hqapi1.types.RolesResponse;
 import org.hyperic.hq.hqapi1.types.Operation;
 
 import java.util.Random;
@@ -75,7 +75,7 @@ public class RoleTestBase extends UserTestBase {
     public void tearDown() throws Exception {
 
         RoleApi api = getRoleApi();
-        GetRolesResponse response = api.getRoles();
+        RolesResponse response = api.getRoles();
 
         for (Role r : response.getRole()) {
             if (r.getName().startsWith(TESTROLE_NAME_PREFIX)) {

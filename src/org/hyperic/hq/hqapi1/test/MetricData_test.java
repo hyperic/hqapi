@@ -1,20 +1,20 @@
 package org.hyperic.hq.hqapi1.test;
 
-import org.hyperic.hq.hqapi1.types.GetMetricDataResponse;
 import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.MetricData;
 import org.hyperic.hq.hqapi1.types.Resource;
-import org.hyperic.hq.hqapi1.types.ListMetricsResponse;
-import org.hyperic.hq.hqapi1.types.GetGroupsResponse;
+import org.hyperic.hq.hqapi1.types.GroupsResponse;
 import org.hyperic.hq.hqapi1.types.Group;
-import org.hyperic.hq.hqapi1.types.GetMetricsDataResponse;
 import org.hyperic.hq.hqapi1.types.MetricTemplate;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
-import org.hyperic.hq.hqapi1.types.ListMetricTemplatesResponse;
-import org.hyperic.hq.hqapi1.types.FindResourcesResponse;
 import org.hyperic.hq.hqapi1.types.DataPoint;
-import org.hyperic.hq.hqapi1.types.GetMetricTemplateResponse;
-import org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.MetricsResponse;
+import org.hyperic.hq.hqapi1.types.MetricDataResponse;
+import org.hyperic.hq.hqapi1.types.MetricTemplatesResponse;
+import org.hyperic.hq.hqapi1.types.MetricsDataResponse;
+import org.hyperic.hq.hqapi1.types.MetricTemplateResponse;
 import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.HQApi;
@@ -38,7 +38,7 @@ public class MetricData_test extends MetricTestBase {
     public void testGetEnabledMetricData() throws Exception {
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricsResponse resp = api.listEnabledMetrics(_r);
+        MetricsResponse resp = api.getEnabledMetrics(_r);
         hqAssertSuccess(resp);
 
         assertTrue("No enabled metrics found for " + _r.getName(),
@@ -48,7 +48,7 @@ public class MetricData_test extends MetricTestBase {
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
 
-        GetMetricDataResponse dataResponse = api.getMetricData(m.getId(),
+        MetricDataResponse dataResponse = api.getMetricData(m.getId(),
                                                                start, end);
         hqAssertSuccess(dataResponse);
         assertTrue("No metric data found for " + m.getName(),
@@ -69,7 +69,7 @@ public class MetricData_test extends MetricTestBase {
     public void testGetDisabledMetricData() throws Exception {
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricsResponse resp = api.listMetrics(_r);
+        MetricsResponse resp = api.getMetrics(_r);
         hqAssertSuccess(resp);
 
         assertTrue("No metrics found for " + _r.getName(),
@@ -86,8 +86,8 @@ public class MetricData_test extends MetricTestBase {
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
 
-        GetMetricDataResponse dataResponse = api.getMetricData(m.getId(),
-                                                               start, end);
+        MetricDataResponse dataResponse = api.getMetricData(m.getId(),
+                                                            start, end);
         hqAssertSuccess(dataResponse);
 
         assertTrue("Metric data found for " + m.getName() + " on " +
@@ -101,15 +101,15 @@ public class MetricData_test extends MetricTestBase {
         MetricApi api = getApi().getMetricApi();
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
-        GetMetricDataResponse dataResponse = api.getMetricData(Integer.MAX_VALUE,
-                                                               start, end);
+        MetricDataResponse dataResponse = api.getMetricData(Integer.MAX_VALUE,
+                                                            start, end);
         hqAssertFailureObjectNotFound(dataResponse);
     }
 
     public void testGetMetricDataInvalidRange() throws Exception {
 
         MetricApi api = getApi().getMetricApi();
-        ListMetricsResponse resp = api.listMetrics(_r);
+        MetricsResponse resp = api.getMetrics(_r);
         hqAssertSuccess(resp);
 
         long end = System.currentTimeMillis();
@@ -120,8 +120,8 @@ public class MetricData_test extends MetricTestBase {
         Metric m = resp.getMetric().get(0);
 
         // Test end > start.
-        GetMetricDataResponse dataResponse = api.getMetricData(m.getId(),
-                                                               end, start);
+        MetricDataResponse dataResponse = api.getMetricData(m.getId(),
+                                                            end, start);
         hqAssertFailureInvalidParameters(dataResponse);
     }
 
@@ -131,18 +131,18 @@ public class MetricData_test extends MetricTestBase {
 
         GroupApi groupApi = api.getGroupApi();
 
-        GetGroupsResponse groupsResponse = groupApi.listCompatibleGroups();
+        GroupsResponse groupsResponse = groupApi.listCompatibleGroups();
         hqAssertSuccess(groupsResponse);
         List<Group> compatGroups = groupsResponse.getGroup();
         assertTrue("No compatible groups found", compatGroups.size() > 0);
         Group g = compatGroups.get(0);
 
-        FindResourcesResponse resourcesResponse = groupApi.listResources(g.getId());
+        ResourcesResponse resourcesResponse = groupApi.listResources(g.getId());
         hqAssertSuccess(resourcesResponse);
 
         ResourcePrototype pt = g.getResourcePrototype();
         MetricApi metricApi = api.getMetricApi();
-        ListMetricTemplatesResponse templatesResponse = metricApi.listMetricTemplates(pt);
+        MetricTemplatesResponse templatesResponse = metricApi.getMetricTemplates(pt);
         hqAssertSuccess(templatesResponse);
         List<MetricTemplate> templates = templatesResponse.getMetricTemplate();
         assertTrue("No templates found for " + pt.getName(), templates.size() > 0);
@@ -164,9 +164,9 @@ public class MetricData_test extends MetricTestBase {
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
 
-        GetMetricsDataResponse response = metricApi.getMetricData(g.getId(),
-                                                                  template.getId(),
-                                                                  start, end);
+        MetricsDataResponse response = metricApi.getMetricData(g.getId(),
+                                                               template.getId(),
+                                                               start, end);
         hqAssertSuccess(response);
 
         List<MetricData> metricData = response.getMetricData();
@@ -189,18 +189,18 @@ public class MetricData_test extends MetricTestBase {
 
         GroupApi groupApi = api.getGroupApi();
 
-        GetGroupsResponse groupsResponse = groupApi.listCompatibleGroups();
+        GroupsResponse groupsResponse = groupApi.listCompatibleGroups();
         hqAssertSuccess(groupsResponse);
         List<Group> compatGroups = groupsResponse.getGroup();
         assertTrue("No compatible groups found", compatGroups.size() > 0);
         Group g = compatGroups.get(0);
 
-        FindResourcesResponse resourcesResponse = groupApi.listResources(g.getId());
+        ResourcesResponse resourcesResponse = groupApi.listResources(g.getId());
         hqAssertSuccess(resourcesResponse);
 
         ResourcePrototype pt = g.getResourcePrototype();
         MetricApi metricApi = api.getMetricApi();
-        ListMetricTemplatesResponse templatesResponse = metricApi.listMetricTemplates(pt);
+        MetricTemplatesResponse templatesResponse = metricApi.getMetricTemplates(pt);
         hqAssertSuccess(templatesResponse);
         List<MetricTemplate> templates = templatesResponse.getMetricTemplate();
         assertTrue("No templates found for " + pt.getName(), templates.size() > 0);
@@ -222,9 +222,9 @@ public class MetricData_test extends MetricTestBase {
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
         // Start < End
-        GetMetricsDataResponse response = metricApi.getMetricData(g.getId(),
-                                                                  template.getId(),
-                                                                  end, start);
+        MetricsDataResponse response = metricApi.getMetricData(g.getId(),
+                                                               template.getId(),
+                                                               end, start);
         hqAssertFailureInvalidParameters(response);      
     }
 
@@ -234,7 +234,7 @@ public class MetricData_test extends MetricTestBase {
 
         GroupApi groupApi = api.getGroupApi();
 
-        GetGroupsResponse groupsResponse = groupApi.listCompatibleGroups();
+        GroupsResponse groupsResponse = groupApi.listCompatibleGroups();
         hqAssertSuccess(groupsResponse);
         List<Group> compatGroups = groupsResponse.getGroup();
         assertTrue("No compatible groups found", compatGroups.size() > 0);
@@ -243,9 +243,9 @@ public class MetricData_test extends MetricTestBase {
         MetricApi metricApi = api.getMetricApi();
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
-        GetMetricsDataResponse response = metricApi.getMetricData(g.getId(),
-                                                                  Integer.MAX_VALUE,
-                                                                  start, end);
+        MetricsDataResponse response = metricApi.getMetricData(g.getId(),
+                                                               Integer.MAX_VALUE,
+                                                               start, end);
         hqAssertFailureObjectNotFound(response);
     }
 
@@ -255,7 +255,7 @@ public class MetricData_test extends MetricTestBase {
 
         GroupApi groupApi = api.getGroupApi();
 
-        GetGroupsResponse groupsResponse = groupApi.listCompatibleGroups();
+        GroupsResponse groupsResponse = groupApi.listCompatibleGroups();
         hqAssertSuccess(groupsResponse);
         List<Group> compatGroups = groupsResponse.getGroup();
         assertTrue("No compatible groups found", compatGroups.size() > 0);
@@ -263,16 +263,16 @@ public class MetricData_test extends MetricTestBase {
 
         MetricApi metricApi = api.getMetricApi();
 
-        GetMetricTemplateResponse getTemplateResponse =
+        MetricTemplateResponse getTemplateResponse =
                 metricApi.getMetricTemplate(10001);
         hqAssertSuccess(getTemplateResponse);
         MetricTemplate t = getTemplateResponse.getMetricTemplate();
 
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
-        GetMetricsDataResponse response = metricApi.getMetricData(g.getId(),
-                                                                  t.getId(),
-                                                                  start, end);
+        MetricsDataResponse response = metricApi.getMetricData(g.getId(),
+                                                               t.getId(),
+                                                               start, end);
         hqAssertFailureInvalidParameters(response);
     }
 
@@ -282,7 +282,7 @@ public class MetricData_test extends MetricTestBase {
 
         GroupApi groupApi = api.getGroupApi();
 
-        GetGroupsResponse groupsResponse = groupApi.listMixedGroups();
+        GroupsResponse groupsResponse = groupApi.listMixedGroups();
         hqAssertSuccess(groupsResponse);
         List<Group> mixedGroups = groupsResponse.getGroup();
         assertTrue("No mixed groups found", mixedGroups.size() > 0);
@@ -290,16 +290,16 @@ public class MetricData_test extends MetricTestBase {
 
         MetricApi metricApi = api.getMetricApi();
 
-        GetMetricTemplateResponse getTemplateResponse =
+        MetricTemplateResponse getTemplateResponse =
                 metricApi.getMetricTemplate(10001);
         hqAssertSuccess(getTemplateResponse);
         MetricTemplate t = getTemplateResponse.getMetricTemplate();
 
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
-        GetMetricsDataResponse response = metricApi.getMetricData(g.getId(),
-                                                                  t.getId(),
-                                                                  start, end);
+        MetricsDataResponse response = metricApi.getMetricData(g.getId(),
+                                                               t.getId(),
+                                                               start, end);
         hqAssertFailureInvalidParameters(response);
     }
 
@@ -310,19 +310,18 @@ public class MetricData_test extends MetricTestBase {
 
         GroupApi groupApi = api.getGroupApi();
 
-        GetGroupsResponse groupsResponse = groupApi.listCompatibleGroups();
+        GroupsResponse groupsResponse = groupApi.listCompatibleGroups();
         hqAssertSuccess(groupsResponse);
         List<Group> compatGroups = groupsResponse.getGroup();
         assertTrue("No compatible groups found", compatGroups.size() > 0);
         Group g = compatGroups.get(0);
 
-        FindResourcesResponse resourcesResponse = groupApi.listResources(g.getId());
+        ResourcesResponse resourcesResponse = groupApi.listResources(g.getId());
         hqAssertSuccess(resourcesResponse);
 
         ResourcePrototype pt = g.getResourcePrototype();
         MetricApi metricApi = api.getMetricApi();
-        ListMetricTemplatesResponse templatesResponse =
-                metricApi.listMetricTemplates(pt);
+        MetricTemplatesResponse templatesResponse = metricApi.getMetricTemplates(pt);
         hqAssertSuccess(templatesResponse);
         List<MetricTemplate> templates = templatesResponse.getMetricTemplate();
         assertTrue("No templates found for " + pt.getName(), templates.size() > 0);
@@ -343,9 +342,9 @@ public class MetricData_test extends MetricTestBase {
 
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
-        GetMetricsDataResponse response = metricApi.getMetricData(Integer.MAX_VALUE,
-                                                                  template.getId(),
-                                                                  start, end);
+        MetricsDataResponse response = metricApi.getMetricData(Integer.MAX_VALUE,
+                                                               template.getId(),
+                                                               start, end);
         hqAssertFailureObjectNotFound(response);
     }
 
@@ -355,18 +354,18 @@ public class MetricData_test extends MetricTestBase {
 
         GroupApi groupApi = api.getGroupApi();
 
-        GetGroupsResponse groupsResponse = groupApi.listCompatibleGroups();
+        GroupsResponse groupsResponse = groupApi.listCompatibleGroups();
         hqAssertSuccess(groupsResponse);
         List<Group> compatGroups = groupsResponse.getGroup();
         assertTrue("No compatible groups found", compatGroups.size() > 0);
         Group g = compatGroups.get(0);
 
-        FindResourcesResponse resourcesResponse = groupApi.listResources(g.getId());
+        ResourcesResponse resourcesResponse = groupApi.listResources(g.getId());
         hqAssertSuccess(resourcesResponse);
 
         ResourcePrototype pt = g.getResourcePrototype();
         MetricApi metricApi = api.getMetricApi();
-        ListMetricTemplatesResponse templatesResponse = metricApi.listMetricTemplates(pt);
+        MetricTemplatesResponse templatesResponse = metricApi.getMetricTemplates(pt);
         hqAssertSuccess(templatesResponse);
         List<MetricTemplate> templates = templatesResponse.getMetricTemplate();
         assertTrue("No templates found for " + pt.getName(), templates.size() > 0);
@@ -388,9 +387,9 @@ public class MetricData_test extends MetricTestBase {
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
 
-        GetMetricsDataResponse response = metricApi.getMetricData(g.getId(),
-                                                                  template.getId(),
-                                                                  start, end);
+        MetricsDataResponse response = metricApi.getMetricData(g.getId(),
+                                                               template.getId(),
+                                                               start, end);
         hqAssertSuccess(response);
 
         List<MetricData> metricData = response.getMetricData();
@@ -414,20 +413,20 @@ public class MetricData_test extends MetricTestBase {
         MetricApi metricApi = api.getMetricApi();
 
         // Find prototype
-        GetResourcePrototypeResponse prototypeResponse =
+        ResourcePrototypeResponse prototypeResponse =
             resourceApi.getResourcePrototype("FileServer Mount");
         hqAssertSuccess(prototypeResponse);
 
         // Find resources to query
-        FindResourcesResponse findResponse =
-                resourceApi.findResources(prototypeResponse.getResourcePrototype());
+        ResourcesResponse findResponse =
+                resourceApi.getResources(prototypeResponse.getResourcePrototype());
         hqAssertSuccess(findResponse);
         assertTrue("No resources found to query",
                    findResponse.getResource().size() > 0);
 
         // Get template
-        ListMetricTemplatesResponse listTemplatesResponse =
-                metricApi.listMetricTemplates(prototypeResponse.getResourcePrototype());
+        MetricTemplatesResponse listTemplatesResponse =
+                metricApi.getMetricTemplates(prototypeResponse.getResourcePrototype());
         hqAssertSuccess(listTemplatesResponse);
 
         int templateId = 0;
@@ -449,9 +448,9 @@ public class MetricData_test extends MetricTestBase {
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
 
-        GetMetricsDataResponse goodResponse = metricApi.getMetricData(resourceIds,
-                                                                      templateId,
-                                                                      start, end);
+        MetricsDataResponse goodResponse = metricApi.getMetricData(resourceIds,
+                                                                   templateId,
+                                                                   start, end);
         hqAssertSuccess(goodResponse);
 
         List<MetricData> metricData = goodResponse.getMetricData();
@@ -468,27 +467,27 @@ public class MetricData_test extends MetricTestBase {
         }
 
         // Retry with start > end.
-        GetMetricsDataResponse invalidIntervalResponse =
+        MetricsDataResponse invalidIntervalResponse =
                 metricApi.getMetricData(resourceIds, templateId, end, start);
         hqAssertFailureInvalidParameters(invalidIntervalResponse);
 
         // Retry with invalid template id.
-        GetMetricsDataResponse invalidTemplateResponse =
+        MetricsDataResponse invalidTemplateResponse =
                 metricApi.getMetricData(resourceIds, 1, start, end);
         hqAssertFailureObjectNotFound(invalidTemplateResponse);
 
         // Retry with valid template, but belonging to this type
-        GetMetricsDataResponse wrongTemplateResponse =
+        MetricsDataResponse wrongTemplateResponse =
                 metricApi.getMetricData(resourceIds, 10001, start, end);
         hqAssertFailureInvalidParameters(wrongTemplateResponse);
 
         // Retry with empty resources array
-        GetMetricsDataResponse emptyResourcesResponse =
+        MetricsDataResponse emptyResourcesResponse =
                 metricApi.getMetricData(new int[] {}, templateId, start, end);
         hqAssertFailureInvalidParameters(emptyResourcesResponse);
 
         // Retry with invalid resource ids.
-        GetMetricsDataResponse invalidResourceResponse =
+        MetricsDataResponse invalidResourceResponse =
                 metricApi.getMetricData(new int[] { Integer.MAX_VALUE },
                                         templateId, start, end);
         hqAssertFailureObjectNotFound(invalidResourceResponse);

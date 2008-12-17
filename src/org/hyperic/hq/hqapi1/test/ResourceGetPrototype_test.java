@@ -1,8 +1,8 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.ResourceApi;
-import org.hyperic.hq.hqapi1.types.GetResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 
 public class ResourceGetPrototype_test extends HQApiTestBase {
 
@@ -15,7 +15,7 @@ public class ResourceGetPrototype_test extends HQApiTestBase {
         ResourceApi api = getApi().getResourceApi();
 
         final String TYPE = "Linux";
-        GetResourcePrototypeResponse response = api.getResourcePrototype(TYPE);
+        ResourcePrototypeResponse response = api.getResourcePrototype(TYPE);
         hqAssertSuccess(response);
 
         ResourcePrototype type = response.getResourcePrototype();
@@ -30,7 +30,7 @@ public class ResourceGetPrototype_test extends HQApiTestBase {
         ResourceApi api = getApi().getResourceApi();
 
         final String TYPE = "Some unkonwn type";
-        GetResourcePrototypeResponse response = api.getResourcePrototype(TYPE);
+        ResourcePrototypeResponse response = api.getResourcePrototype(TYPE);
         hqAssertFailureObjectNotFound(response);
     }
 
@@ -38,7 +38,7 @@ public class ResourceGetPrototype_test extends HQApiTestBase {
 
         ResourceApi api = getApi().getResourceApi();
 
-        GetResourcePrototypeResponse response = api.getResourcePrototype(null);
+        ResourcePrototypeResponse response = api.getResourcePrototype(null);
         hqAssertFailureInvalidParameters(response);
     }
 }

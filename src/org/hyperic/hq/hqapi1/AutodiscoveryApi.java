@@ -1,7 +1,7 @@
 package org.hyperic.hq.hqapi1;
 
-import org.hyperic.hq.hqapi1.types.GetQueueResponse;
-import org.hyperic.hq.hqapi1.types.ApproveResponse;
+import org.hyperic.hq.hqapi1.types.QueueResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -28,15 +28,15 @@ public class AutodiscoveryApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
      * a list of {@link org.hyperic.hq.hqapi1.types.AIPlatform} objects is
-     * returned via {@link org.hyperic.hq.hqapi1.types.GetQueueResponse#getAIPlatform()}
+     * returned via {@link org.hyperic.hq.hqapi1.types.QueueResponse#getAIPlatform()}
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public GetQueueResponse getQueue()
+    public QueueResponse getQueue()
         throws IOException
     {
         return doGet("autodiscovery/getQueue.hqu", new HashMap<String,String[]>(),
-                     GetQueueResponse.class);
+                     QueueResponse.class);
     }
 
     /**
@@ -50,13 +50,13 @@ public class AutodiscoveryApi extends BaseApi {
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public ApproveResponse approve(int id)
+    public StatusResponse approve(int id)
         throws IOException
     {
         HashMap<String, String[]> params = new HashMap<String, String[]>();
 
         params.put("id", new String[] { String.valueOf(id) });
 
-        return doGet("autodiscovery/approve.hqu", params, ApproveResponse.class);
+        return doGet("autodiscovery/approve.hqu", params, StatusResponse.class);
     }
 }

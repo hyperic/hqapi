@@ -1,19 +1,14 @@
 package org.hyperic.hq.hqapi1;
 
-import org.hyperic.hq.hqapi1.types.GetRolesResponse;
-import org.hyperic.hq.hqapi1.types.GetRoleResponse;
-import org.hyperic.hq.hqapi1.types.CreateRoleResponse;
 import org.hyperic.hq.hqapi1.types.Role;
-import org.hyperic.hq.hqapi1.types.DeleteRoleResponse;
-import org.hyperic.hq.hqapi1.types.UpdateRoleResponse;
-import org.hyperic.hq.hqapi1.types.SyncRolesResponse;
 import org.hyperic.hq.hqapi1.types.User;
-import org.hyperic.hq.hqapi1.types.SetUsersResponse;
-import org.hyperic.hq.hqapi1.types.CreateRoleRequest;
-import org.hyperic.hq.hqapi1.types.UpdateRoleRequest;
+import org.hyperic.hq.hqapi1.types.RoleRequest;
 import org.hyperic.hq.hqapi1.types.SetUsersRequest;
-import org.hyperic.hq.hqapi1.types.GetUsersResponse;
-import org.hyperic.hq.hqapi1.types.SyncRolesRequest;
+import org.hyperic.hq.hqapi1.types.RolesRequest;
+import org.hyperic.hq.hqapi1.types.UsersResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.RoleResponse;
+import org.hyperic.hq.hqapi1.types.RolesResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -45,11 +40,11 @@ public class RoleApi extends BaseApi {
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public GetRolesResponse getRoles()
+    public RolesResponse getRoles()
         throws IOException
     {
         return doGet("role/list.hqu", new HashMap<String, String[]>(),
-                     GetRolesResponse.class);
+                     RolesResponse.class);
     }
 
     /**
@@ -58,16 +53,16 @@ public class RoleApi extends BaseApi {
      * @param name The role name to search for.
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the Role by the given name is returned via
-     * {@link org.hyperic.hq.hqapi1.types.GetRoleResponse#getRole()}.
+     * {@link org.hyperic.hq.hqapi1.types.RoleResponse#getRole()}.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetRoleResponse getRole(String name)
+    public RoleResponse getRole(String name)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("name", new String[] { name });
-        return doGet("role/get.hqu", params, GetRoleResponse.class);
+        return doGet("role/get.hqu", params, RoleResponse.class);
     }
 
     /**
@@ -77,16 +72,16 @@ public class RoleApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the Role by the given id is returned via
-     * {@link org.hyperic.hq.hqapi1.types.GetRoleResponse#getRole()}.
+     * {@link org.hyperic.hq.hqapi1.types.RoleResponse#getRole()}.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetRoleResponse getRole(int id)
+    public RoleResponse getRole(int id)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { String.valueOf(id) });
-        return doGet("role/get.hqu", params, GetRoleResponse.class);
+        return doGet("role/get.hqu", params, RoleResponse.class);
     }
 
     /**
@@ -96,17 +91,17 @@ public class RoleApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the Role by the given id is returned via
-     * {@link org.hyperic.hq.hqapi1.types.CreateRoleResponse#getRole()}.
+     * {@link org.hyperic.hq.hqapi1.types.RoleResponse#getRole()}.
      *
      * @throws IOException If a network error occurs while making the request.
      */
 
-    public CreateRoleResponse createRole(Role role)
+    public RoleResponse createRole(Role role)
         throws IOException
     {
-        CreateRoleRequest request = new CreateRoleRequest();
+        RoleRequest request = new RoleRequest();
         request.setRole(role);
-        return doPost("role/create.hqu", request, CreateRoleResponse.class);
+        return doPost("role/create.hqu", request, RoleResponse.class);
     }
 
     /**
@@ -119,12 +114,12 @@ public class RoleApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public DeleteRoleResponse deleteRole(int id)
+    public StatusResponse deleteRole(int id)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String,String[]>();
         params.put("id", new String[] { String.valueOf(id) });
-        return doGet("role/delete.hqu", params, DeleteRoleResponse.class);
+        return doGet("role/delete.hqu", params, StatusResponse.class);
     }
 
     /**
@@ -137,12 +132,12 @@ public class RoleApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public UpdateRoleResponse updateRole(Role role)
+    public StatusResponse updateRole(Role role)
         throws IOException
     {
-        UpdateRoleRequest request = new UpdateRoleRequest();
+        RoleRequest request = new RoleRequest();
         request.setRole(role);
-        return doPost("role/update.hqu", request, UpdateRoleResponse.class);
+        return doPost("role/update.hqu", request, StatusResponse.class);
     }
 
     /**
@@ -155,12 +150,12 @@ public class RoleApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public SyncRolesResponse syncRoles(List<Role> roles)
+    public StatusResponse syncRoles(List<Role> roles)
         throws IOException
     {
-        SyncRolesRequest request = new SyncRolesRequest();
+        RolesRequest request = new RolesRequest();
         request.getRole().addAll(roles);
-        return doPost("role/sync.hqu", request, SyncRolesResponse.class);
+        return doPost("role/sync.hqu", request, StatusResponse.class);
     }
 
     /**
@@ -174,13 +169,13 @@ public class RoleApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public SetUsersResponse setUsers(Role role, List<User> users)
+    public StatusResponse setUsers(Role role, List<User> users)
         throws IOException
     {
         SetUsersRequest request = new SetUsersRequest();
         request.setRole(role);
         request.getUser().addAll(users);
-        return doPost("role/setUsers.hqu", request, SetUsersResponse.class);
+        return doPost("role/setUsers.hqu", request, StatusResponse.class);
     }
 
     /**
@@ -190,15 +185,15 @@ public class RoleApi extends BaseApi {
      * 
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
      * the list of users is returned via
-     * {@link org.hyperic.hq.hqapi1.types.GetUsersResponse#getUser()}
+     * {@link org.hyperic.hq.hqapi1.types.UsersResponse#getUser()}
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetUsersResponse getUsers(Role role)
+    public UsersResponse getUsers(Role role)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String,String[]>();
         params.put("id", new String[] {Integer.toString(role.getId()) });
-        return doGet("role/getUsers.hqu", params, GetUsersResponse.class);
+        return doGet("role/getUsers.hqu", params, UsersResponse.class);
     }
 }

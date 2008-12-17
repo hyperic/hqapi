@@ -1,9 +1,9 @@
 package org.hyperic.hq.hqapi1;
 
-import org.hyperic.hq.hqapi1.types.GetAgentResponse;
 import org.hyperic.hq.hqapi1.types.PingAgentResponse;
 import org.hyperic.hq.hqapi1.types.Agent;
-import org.hyperic.hq.hqapi1.types.GetAgentsResponse;
+import org.hyperic.hq.hqapi1.types.AgentResponse;
+import org.hyperic.hq.hqapi1.types.AgentsResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -34,17 +34,17 @@ public class AgentApi extends BaseApi {
      *
      * @return  On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * a the requested agent is returned via
-     * {@link org.hyperic.hq.hqapi1.types.GetAgentResponse#getAgent()}.
+     * {@link org.hyperic.hq.hqapi1.types.AgentResponse#getAgent()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public GetAgentResponse getAgent(String address, int port)
+    public AgentResponse getAgent(String address, int port)
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("address", new String[] { address });
         params.put("port", new String[] { String.valueOf(port) });
-        return doGet("agent/getAgent.hqu", params, GetAgentResponse.class);
+        return doGet("agent/getAgent.hqu", params, AgentResponse.class);
     }
 
     /**
@@ -52,15 +52,15 @@ public class AgentApi extends BaseApi {
      *
      * @return  On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * a list of agents is returned via 
-     * {@link org.hyperic.hq.hqapi1.types.GetAgentsResponse#getAgent()}.
+     * {@link org.hyperic.hq.hqapi1.types.AgentsResponse#getAgent()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public GetAgentsResponse getAgents()
+    public AgentsResponse getAgents()
         throws IOException
     {
         return doGet("agent/list.hqu", new HashMap<String,String[]>(),
-                     GetAgentsResponse.class);
+                     AgentsResponse.class);
     }
 
     /**

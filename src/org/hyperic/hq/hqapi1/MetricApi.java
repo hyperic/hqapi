@@ -4,23 +4,17 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hyperic.hq.hqapi1.types.DisableMetricResponse;
-import org.hyperic.hq.hqapi1.types.EnableMetricResponse;
-import org.hyperic.hq.hqapi1.types.GetMetricDataResponse;
-import org.hyperic.hq.hqapi1.types.GetMetricResponse;
-import org.hyperic.hq.hqapi1.types.GetMetricTemplateResponse;
 import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.MetricTemplate;
 import org.hyperic.hq.hqapi1.types.Resource;
-import org.hyperic.hq.hqapi1.types.SetMetricDefaultIndicatorResponse;
-import org.hyperic.hq.hqapi1.types.SetMetricDefaultIntervalResponse;
-import org.hyperic.hq.hqapi1.types.SetMetricDefaultOnResponse;
-import org.hyperic.hq.hqapi1.types.SetMetricIntervalResponse;
-import org.hyperic.hq.hqapi1.types.ListMetricsResponse;
-import org.hyperic.hq.hqapi1.types.GetMetricsDataResponse;
-import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
-import org.hyperic.hq.hqapi1.types.ListMetricTemplatesResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.MetricsResponse;
+import org.hyperic.hq.hqapi1.types.MetricTemplatesResponse;
+import org.hyperic.hq.hqapi1.types.MetricResponse;
+import org.hyperic.hq.hqapi1.types.MetricTemplateResponse;
+import org.hyperic.hq.hqapi1.types.MetricDataResponse;
+import org.hyperic.hq.hqapi1.types.MetricsDataResponse;
 
 /**
  * The Hyperic HQ Metric API.
@@ -52,13 +46,13 @@ public class MetricApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public ListMetricsResponse listMetrics(Resource resource)
+    public MetricsResponse getMetrics(Resource resource)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("resourceId", new String[] { Integer.toString(resource.getId()) });
-        return doGet("metric/listMetrics.hqu", params,
-                     ListMetricsResponse.class);
+        return doGet("metric/getMetrics.hqu", params,
+                     MetricsResponse.class);
     }
 
     /**
@@ -73,14 +67,14 @@ public class MetricApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public ListMetricsResponse listEnabledMetrics(Resource resource)
+    public MetricsResponse getEnabledMetrics(Resource resource)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("resourceId", new String[] { Integer.toString(resource.getId()) });
         params.put("enabled", new String[] { Boolean.toString(true) });
-        return doGet("metric/listMetrics.hqu", params,
-                     ListMetricsResponse.class);
+        return doGet("metric/getMetrics.hqu", params,
+                     MetricsResponse.class);
     }
 
     /**
@@ -95,13 +89,13 @@ public class MetricApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public ListMetricTemplatesResponse listMetricTemplates(ResourcePrototype prototype)
+    public MetricTemplatesResponse getMetricTemplates(ResourcePrototype prototype)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("prototype", new String[] { prototype.getName() });
-        return doGet("metric/listTemplates.hqu", params,
-                     ListMetricTemplatesResponse.class);
+        return doGet("metric/getTemplates.hqu", params,
+                     MetricTemplatesResponse.class);
     }
 
     /**
@@ -117,13 +111,13 @@ public class MetricApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetMetricResponse getMetric(int id)
+    public MetricResponse getMetric(int id)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id) });
         return doGet("metric/getMetric.hqu", params,
-                     GetMetricResponse.class);
+                     MetricResponse.class);
     }
     
     /**
@@ -136,13 +130,13 @@ public class MetricApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public DisableMetricResponse disableMetric(Metric m)
+    public StatusResponse disableMetric(Metric m)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(m.getId()) });
         return doGet("metric/disableMetric.hqu", params,
-                     DisableMetricResponse.class);
+                     StatusResponse.class);
     }
 
     /**
@@ -158,14 +152,14 @@ public class MetricApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public EnableMetricResponse enableMetric(Metric m, long interval)
+    public StatusResponse enableMetric(Metric m, long interval)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(m.getId()) });
         params.put("interval", new String[] { Long.toString(interval) });
         return doGet("metric/enableMetric.hqu", params,
-                     EnableMetricResponse.class);
+                     StatusResponse.class);
     }
 
     /**
@@ -182,14 +176,14 @@ public class MetricApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public SetMetricIntervalResponse setInterval(Metric m, long interval)
+    public StatusResponse setInterval(Metric m, long interval)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(m.getId()) });
         params.put("interval", new String[] { Long.toString(interval) });
         return doGet("metric/setInterval.hqu", params,
-                     SetMetricIntervalResponse.class);
+                     StatusResponse.class);
     }
 
     /**
@@ -205,13 +199,13 @@ public class MetricApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetMetricTemplateResponse getMetricTemplate(int id)
+    public MetricTemplateResponse getMetricTemplate(int id)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id) });
         return doGet("metric/getMetricTemplate.hqu", params,
-                     GetMetricTemplateResponse.class);
+                     MetricTemplateResponse.class);
     }
     
     /**
@@ -229,14 +223,14 @@ public class MetricApi extends BaseApi {
      * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
      * @throws IOException If a network error occurs while making the request.
      */
-    public SetMetricDefaultOnResponse setDefaultOn(MetricTemplate template, boolean on)
+    public StatusResponse setDefaultOn(MetricTemplate template, boolean on)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("templateId", new String[] { Integer.toString(template.getId()) });
         params.put("on", new String[] { Boolean.toString(on) });
         return doGet("metric/setDefaultOn.hqu", params,
-                     SetMetricDefaultOnResponse.class);
+                     StatusResponse.class);
     }
     
     /**
@@ -252,15 +246,15 @@ public class MetricApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public SetMetricDefaultIndicatorResponse setDefaultIndicator(MetricTemplate template,
-                                                                 boolean on)
+    public StatusResponse setDefaultIndicator(MetricTemplate template,
+                                              boolean on)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("templateId", new String[] { Integer.toString(template.getId()) });
         params.put("on", new String[] { Boolean.toString(on) });
         return doGet("metric/setDefaultIndicator.hqu", params,
-                     SetMetricDefaultIndicatorResponse.class);
+                     StatusResponse.class);
     }
     
     /**
@@ -276,15 +270,15 @@ public class MetricApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public SetMetricDefaultIntervalResponse setDefaultInterval(MetricTemplate template,
-                                                               long interval)
+    public StatusResponse setDefaultInterval(MetricTemplate template,
+                                             long interval)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("templateId", new String[] { Integer.toString(template.getId()) });
         params.put("interval", new String[] { Long.toString(interval) });
         return doGet("metric/setDefaultInterval.hqu", params,
-                     SetMetricDefaultIntervalResponse.class);
+                     StatusResponse.class);
     }
 
     /**
@@ -297,11 +291,11 @@ public class MetricApi extends BaseApi {
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
      * if the data was succesfully queried.  The returned data can be retrieved
-     * via {@link org.hyperic.hq.hqapi1.types.GetMetricDataResponse#getMetricData()}.
+     * via {@link org.hyperic.hq.hqapi1.types.MetricDataResponse#getMetricData()}.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetMetricDataResponse getMetricData(int metricId, long start, long end)
+    public MetricDataResponse getMetricData(int metricId, long start, long end)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
@@ -309,7 +303,7 @@ public class MetricApi extends BaseApi {
         params.put("start", new String[] { Long.toString(start) });
         params.put("end", new String[] { Long.toString(end) });
 
-        return doGet("metric/getData.hqu", params, GetMetricDataResponse.class);
+        return doGet("metric/getData.hqu", params, MetricDataResponse.class);
     }
 
     /**
@@ -326,12 +320,12 @@ public class MetricApi extends BaseApi {
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
      * if the data was succesfully queried.  The returned data can be retrieved
-     * via {@link org.hyperic.hq.hqapi1.types.GetMetricsDataResponse#getMetricData()}.
+     * via {@link org.hyperic.hq.hqapi1.types.MetricsDataResponse#getMetricData()}.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetMetricsDataResponse getMetricData(int groupId, int templateId,
-                                                long start, long end)
+    public MetricsDataResponse getMetricData(int groupId, int templateId,
+                                             long start, long end)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
@@ -341,7 +335,7 @@ public class MetricApi extends BaseApi {
         params.put("end", new String[] { Long.toString(end) });
 
         return doGet("metric/getGroupData.hqu", params,
-                     GetMetricsDataResponse.class);
+                     MetricsDataResponse.class);
     }
 
     /**
@@ -360,10 +354,12 @@ public class MetricApi extends BaseApi {
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
      * if the data was succesfully queried.  The returned data can be retrieved
-     * via {@link org.hyperic.hq.hqapi1.types.GetMetricsDataResponse#getMetricData()}.
+     * via {@link org.hyperic.hq.hqapi1.types.MetricsDataResponse#getMetricData()}.
+     *
+     * @throws IOException If a network error occurs while making the request.
      */
-    public GetMetricsDataResponse getMetricData(int[] resourceIds, int templateId,
-                                                long start, long end)
+    public MetricsDataResponse getMetricData(int[] resourceIds, int templateId,
+                                             long start, long end)
         throws IOException {
 
         Map<String,String[]> params = new HashMap<String,String[]>();
@@ -377,6 +373,6 @@ public class MetricApi extends BaseApi {
         params.put("end", new String[] { Long.toString(end) });
 
         return doGet("metric/getResourceData.hqu", params,
-                     GetMetricsDataResponse.class);
+                     MetricsDataResponse.class);
     }
 }

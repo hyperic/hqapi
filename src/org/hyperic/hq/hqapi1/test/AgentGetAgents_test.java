@@ -1,8 +1,8 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.AgentApi;
-import org.hyperic.hq.hqapi1.types.GetAgentsResponse;
 import org.hyperic.hq.hqapi1.types.Agent;
+import org.hyperic.hq.hqapi1.types.AgentsResponse;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public class AgentGetAgents_test extends HQApiTestBase {
 
         AgentApi api = getApi().getAgentApi();
 
-        GetAgentsResponse response = api.getAgents();
+        AgentsResponse response = api.getAgents();
         hqAssertSuccess(response);
 
         List<Agent> agents = response.getAgent();

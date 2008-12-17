@@ -3,20 +3,16 @@ package org.hyperic.hq.hqapi1;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
-import org.hyperic.hq.hqapi1.types.CreateEscalationResponse;
-import org.hyperic.hq.hqapi1.types.DeleteEscalationResponse;
 import org.hyperic.hq.hqapi1.types.EmailAction;
 import org.hyperic.hq.hqapi1.types.Escalation;
 import org.hyperic.hq.hqapi1.types.FullEscalationAction;
-import org.hyperic.hq.hqapi1.types.GetEscalationResponse;
-import org.hyperic.hq.hqapi1.types.ListEscalationsResponse;
 import org.hyperic.hq.hqapi1.types.SuppressAction;
-import org.hyperic.hq.hqapi1.types.SyncEscalationResponse;
-import org.hyperic.hq.hqapi1.types.SyncEscalationsRequest;
-import org.hyperic.hq.hqapi1.types.UpdateEscalationResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.EscalationResponse;
+import org.hyperic.hq.hqapi1.types.EscalationsResponse;
+import org.hyperic.hq.hqapi1.types.EscalationsRequest;
 
 /**
  * The Hyperic HQ Escalation API.
@@ -40,15 +36,15 @@ public class EscalationApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the Escalation by the given name is returned via
-     * {@link org.hyperic.hq.hqapi1.types.GetEscalationResponse#getEscalation()}.
+     * {@link org.hyperic.hq.hqapi1.types.EscalationResponse#getEscalation()}.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetEscalationResponse getEscalation(int id)
+    public EscalationResponse getEscalation(int id)
         throws IOException {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id) });
-        return doGet("escalation/get.hqu", params, GetEscalationResponse.class);
+        return doGet("escalation/get.hqu", params, EscalationResponse.class);
     }
 
     /**
@@ -58,16 +54,16 @@ public class EscalationApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the Escalation by the given name is returned via
-     * {@link org.hyperic.hq.hqapi1.types.GetEscalationResponse#getEscalation()}.
+     * {@link org.hyperic.hq.hqapi1.types.EscalationResponse#getEscalation()}.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GetEscalationResponse getEscalation(String name)
+    public EscalationResponse getEscalation(String name)
         throws IOException {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("name", new String[] { name });
         return doGet("escalation/get.hqu",
-                     params, GetEscalationResponse.class);
+                     params, EscalationResponse.class);
     }
     
     /**
@@ -80,13 +76,13 @@ public class EscalationApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public CreateEscalationResponse createEscalation(Escalation esc)
+    public EscalationResponse createEscalation(Escalation esc)
         throws IOException {
         
-        SyncEscalationsRequest req = new SyncEscalationsRequest();
+        EscalationsRequest req = new EscalationsRequest();
         req.getEscalation().add(esc);
         return doPost("escalation/create.hqu", req,
-                      CreateEscalationResponse.class);
+                      EscalationResponse.class);
     }
 
     /**
@@ -99,12 +95,12 @@ public class EscalationApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public UpdateEscalationResponse updateEscalation(Escalation esc)
+    public EscalationResponse updateEscalation(Escalation esc)
         throws IOException {
-        SyncEscalationsRequest req = new SyncEscalationsRequest();
+        EscalationsRequest req = new EscalationsRequest();
         req.getEscalation().add(esc);
         return doPost("escalation/update.hqu",
-                      req, UpdateEscalationResponse.class);
+                      req, EscalationResponse.class);
     }
 
     /**
@@ -112,14 +108,14 @@ public class EscalationApi extends BaseApi {
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * a collection of Escalations is returned via
-     * {@link org.hyperic.hq.hqapi1.types.ListEscalationsResponse#getEscalation()}.
+     * {@link org.hyperic.hq.hqapi1.types.EscalationsResponse#getEscalation()}.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public ListEscalationsResponse listEscalations()
+    public EscalationsResponse getEscalations()
         throws IOException {
         return doGet("escalation/list.hqu", new HashMap<String,String[]>(),
-                     ListEscalationsResponse.class);
+                     EscalationsResponse.class);
     }
     
     /**
@@ -132,11 +128,11 @@ public class EscalationApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public SyncEscalationResponse syncEscalations(Collection<Escalation> escs)
+    public StatusResponse syncEscalations(Collection<Escalation> escs)
         throws IOException {
-        SyncEscalationsRequest req = new SyncEscalationsRequest();
+        EscalationsRequest req = new EscalationsRequest();
         req.getEscalation().addAll(escs);
-        return doPost("escalation/sync.hqu", req, SyncEscalationResponse.class);
+        return doPost("escalation/sync.hqu", req, StatusResponse.class);
     }
 
     /**
@@ -149,12 +145,12 @@ public class EscalationApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public DeleteEscalationResponse deleteEscalation(int id)
+    public StatusResponse deleteEscalation(int id)
         throws IOException {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id) });
         return doGet("escalation/delete.hqu",
-                     params, DeleteEscalationResponse.class);
+                     params, StatusResponse.class);
     }
 
     /**

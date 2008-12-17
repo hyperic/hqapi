@@ -2,7 +2,7 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.EscalationApi;
 import org.hyperic.hq.hqapi1.types.Escalation;
-import org.hyperic.hq.hqapi1.types.GetEscalationResponse;
+import org.hyperic.hq.hqapi1.types.EscalationResponse;
 
 public class EscalationGetEscalation_test extends EscalationTestBase {
 
@@ -16,7 +16,7 @@ public class EscalationGetEscalation_test extends EscalationTestBase {
         Escalation esc = getTestEscalation();
               
         // Look up escalation by id
-        GetEscalationResponse response = escApi.getEscalation(esc.getId());
+        EscalationResponse response = escApi.getEscalation(esc.getId());
         hqAssertSuccess(response);
     }
 
@@ -26,7 +26,7 @@ public class EscalationGetEscalation_test extends EscalationTestBase {
         Escalation esc = getTestEscalation();
               
         // Look up escalation by name
-        GetEscalationResponse response = escApi.getEscalation(esc.getName());
+        EscalationResponse response = escApi.getEscalation(esc.getName());
         hqAssertSuccess(response);
     }
     

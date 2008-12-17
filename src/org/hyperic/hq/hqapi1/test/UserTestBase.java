@@ -1,8 +1,8 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.types.User;
-import org.hyperic.hq.hqapi1.types.GetUsersResponse;
-import org.hyperic.hq.hqapi1.types.CreateUserResponse;
+import org.hyperic.hq.hqapi1.types.UserResponse;
+import org.hyperic.hq.hqapi1.types.UsersResponse;
 import org.hyperic.hq.hqapi1.UserApi;
 
 import java.util.Random;
@@ -57,8 +57,7 @@ public class UserTestBase extends HQApiTestBase {
         ArrayList<User> users = new ArrayList<User>();
         for (int i = 0; i < num; i++) {
             User u = generateTestUser();
-            CreateUserResponse createResponse =
-                getUserApi().createUser(u, PASSWORD);
+            UserResponse createResponse = getUserApi().createUser(u, PASSWORD);
             hqAssertSuccess(createResponse);
             users.add(createResponse.getUser());
         }
@@ -71,7 +70,7 @@ public class UserTestBase extends HQApiTestBase {
     public void tearDown() throws Exception {
 
         UserApi api = getUserApi();
-        GetUsersResponse response = api.getUsers();
+        UsersResponse response = api.getUsers();
 
         for (User u : response.getUser()) {
             if (u.getName().startsWith(TESTUSER_NAME_PREFIX)) {

@@ -12,7 +12,7 @@
         <xs:attribute name="unidirectional" type="xs:boolean" use="required"/>
     </xs:complexType>
 
-    <xs:element name="GetAgentResponse">
+    <xs:element name="AgentResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">
@@ -24,7 +24,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="GetAgentsResponse">
+    <xs:element name="AgentsResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">

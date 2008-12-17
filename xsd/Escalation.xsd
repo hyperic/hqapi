@@ -63,7 +63,7 @@
     </xs:complexType>
 
     <!-- Escalation Responses -->
-    <xs:element name="GetEscalationResponse">
+    <xs:element name="EscalationResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">
@@ -75,31 +75,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="CreateEscalationResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response">
-                    <xs:sequence>
-                        <xs:element name="Escalation" minOccurs="0" type="Escalation"/>
-                    </xs:sequence>
-                </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="UpdateEscalationResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response">
-                    <xs:sequence>
-                        <xs:element name="Escalation" minOccurs="0" type="Escalation"/>
-                    </xs:sequence>
-                </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="ListEscalationsResponse">
+    <xs:element name="EscalationsResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">
@@ -111,23 +87,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="SyncEscalationResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="DeleteEscalationResponse">
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="Response"/>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="SyncEscalationsRequest">
+    <xs:element name="EscalationsRequest">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="Escalation" maxOccurs="unbounded" type="Escalation"/>
