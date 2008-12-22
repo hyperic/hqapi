@@ -3,6 +3,7 @@ package org.hyperic.hq.hqapi1;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.MetricTemplate;
@@ -15,6 +16,8 @@ import org.hyperic.hq.hqapi1.types.MetricResponse;
 import org.hyperic.hq.hqapi1.types.MetricTemplateResponse;
 import org.hyperic.hq.hqapi1.types.MetricDataResponse;
 import org.hyperic.hq.hqapi1.types.MetricsDataResponse;
+import org.hyperic.hq.hqapi1.types.MetricTemplatesRequest;
+import org.hyperic.hq.hqapi1.types.MetricsRequest;
 
 /**
  * The Hyperic HQ Metric API.
@@ -78,27 +81,6 @@ public class MetricApi extends BaseApi {
     }
 
     /**
-     * List all {@link org.hyperic.hq.hqapi1.types.MetricTemplate}s associated
-     * with the given {@link org.hyperic.hq.hqapi1.types.ResourcePrototype}.
-     *
-     * @param prototype The associated {@link org.hyperic.hq.hqapi1.types.ResourcePrototype}
-     * to query.
-     *
-     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
-     * metric templates were successfully retrieved.
-     *
-     * @throws IOException If a network error occurs while making the request.
-     */
-    public MetricTemplatesResponse getMetricTemplates(ResourcePrototype prototype)
-        throws IOException
-    {
-        Map<String, String[]> params = new HashMap<String, String[]>();
-        params.put("prototype", new String[] { prototype.getName() });
-        return doGet("metric/getTemplates.hqu", params,
-                     MetricTemplatesResponse.class);
-    }
-
-    /**
      * Get the {@link org.hyperic.hq.hqapi1.types.Metric} associated
      * with the metricId
      *
@@ -119,71 +101,24 @@ public class MetricApi extends BaseApi {
         return doGet("metric/getMetric.hqu", params,
                      MetricResponse.class);
     }
-    
-    /**
-     * Disable a {@link org.hyperic.hq.hqapi1.types.Metric}.
-     *
-     * @param m The {@link Metric} to disable.
-     *
-     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
-     * metric was successfully disabled.
-     *
-     * @throws IOException If a network error occurs while making the request.
-     */
-    public StatusResponse disableMetric(Metric m)
-        throws IOException
-    {
-        Map<String, String[]> params = new HashMap<String, String[]>();
-        params.put("id", new String[] { Integer.toString(m.getId()) });
-        return doGet("metric/disableMetric.hqu", params,
-                     StatusResponse.class);
-    }
 
     /**
-     * Enable a {@link org.hyperic.hq.hqapi1.types.Metric}.
+     * Sync a List of {@link Metric}s.
      *
-     * @param m The metric to enable.
-     * @param interval The interval for collection in milliseconds.  The
-     * interval must be set on 1 minute increments otherwise an invalid
-     * arguments error will be returned.
-     * 
+     * @param metrics The List of Metrics to sync.
+     *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
-     * metric was successfully enabled.
+     * MetricTemplates were synced successfully.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public StatusResponse enableMetric(Metric m, long interval)
+    public StatusResponse syncMetrics(List<Metric> metrics)
         throws IOException
     {
-        Map<String, String[]> params = new HashMap<String, String[]>();
-        params.put("id", new String[] { Integer.toString(m.getId()) });
-        params.put("interval", new String[] { Long.toString(interval) });
-        return doGet("metric/enableMetric.hqu", params,
-                     StatusResponse.class);
-    }
-
-    /**
-     * Set a {@link org.hyperic.hq.hqapi1.types.Metric} collection interval.
-     *
-     * @param m The metric to change the collection interval.
-     * @param interval The interval for collection in milliseconds.  The
-     * interval must be set on 1 minute increments otherwise an invalid
-     * arguments error will be returned.
-     *
-     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
-     * {@link org.hyperic.hq.hqapi1.types.Metric}s collection interval was
-     * successfully updated.
-     *
-     * @throws IOException If a network error occurs while making the request.
-     */
-    public StatusResponse setInterval(Metric m, long interval)
-        throws IOException
-    {
-        Map<String, String[]> params = new HashMap<String, String[]>();
-        params.put("id", new String[] { Integer.toString(m.getId()) });
-        params.put("interval", new String[] { Long.toString(interval) });
-        return doGet("metric/setInterval.hqu", params,
-                     StatusResponse.class);
+        MetricsRequest syncRequest = new MetricsRequest();
+        syncRequest.getMetric().addAll(metrics);
+        return doPost("metric/syncMetrics.hqu", syncRequest,
+                      StatusResponse.class);
     }
 
     /**
@@ -207,78 +142,45 @@ public class MetricApi extends BaseApi {
         return doGet("metric/getMetricTemplate.hqu", params,
                      MetricTemplateResponse.class);
     }
-    
+
     /**
-     * Sets the default on behavior for all
-     *  {@link org.hyperic.hq.hqapi1.types.Metric}s associated with this
-     *  {@link org.hyperic.hq.hqapi1.types.MetricTemplate}
+     * List all {@link org.hyperic.hq.hqapi1.types.MetricTemplate}s associated
+     * with the given {@link org.hyperic.hq.hqapi1.types.ResourcePrototype}.
      *
-     * @param template The {@link org.hyperic.hq.hqapi1.types.MetricTemplate} to operate on.
-     * @param on The flag to set for default on.
+     * @param prototype The associated {@link org.hyperic.hq.hqapi1.types.ResourcePrototype}
+     * to query.
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
-     * {@link org.hyperic.hq.hqapi1.types.Metric}s collection interval was
-     * successfully updated.
+     * metric templates were successfully retrieved.
      *
-     * @see org.hyperic.hq.hqapi1.ErrorCode#INVALID_PARAMETERS
      * @throws IOException If a network error occurs while making the request.
      */
-    public StatusResponse setDefaultOn(MetricTemplate template, boolean on)
+    public MetricTemplatesResponse getMetricTemplates(ResourcePrototype prototype)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
-        params.put("templateId", new String[] { Integer.toString(template.getId()) });
-        params.put("on", new String[] { Boolean.toString(on) });
-        return doGet("metric/setDefaultOn.hqu", params,
-                     StatusResponse.class);
+        params.put("prototype", new String[] { prototype.getName() });
+        return doGet("metric/getTemplates.hqu", params,
+                     MetricTemplatesResponse.class);
     }
-    
+
     /**
-     * Sets the default indicator for all
-     *  {@link org.hyperic.hq.hqapi1.types.Metric}s associated with this
-     *  {@link org.hyperic.hq.hqapi1.types.MetricTemplate}
+     * Sync a List of {@link MetricTemplate}s.
      *
-     * @param template The {@link org.hyperic.hq.hqapi1.types.MetricTemplate} to operate on.
-     * @param on The flag to set for default indicator.
+     * @param templates The List of MetricTemplates to update.
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
-     * metric's collection interval was successfully updated.
+     * MetricTemplates were synced successfully.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public StatusResponse setDefaultIndicator(MetricTemplate template,
-                                              boolean on)
+    public StatusResponse syncMetricTemplates(List<MetricTemplate> templates)
         throws IOException
     {
-        Map<String, String[]> params = new HashMap<String, String[]>();
-        params.put("templateId", new String[] { Integer.toString(template.getId()) });
-        params.put("on", new String[] { Boolean.toString(on) });
-        return doGet("metric/setDefaultIndicator.hqu", params,
-                     StatusResponse.class);
-    }
-    
-    /**
-     * Set a {@link org.hyperic.hq.hqapi1.types.Metric} collection interval.
-     *
-     * @param template The {@link org.hyperic.hq.hqapi1.types.MetricTemplate} to operate on
-     * @param interval The interval for collection in milliseconds.  The
-     * interval must be set on 1 minute increments otherwise an invalid
-     * arguments error will be returned.
-     * 
-     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
-     * metric template's default collection interval was successfully updated.
-     *
-     * @throws IOException If a network error occurs while making the request.
-     */
-    public StatusResponse setDefaultInterval(MetricTemplate template,
-                                             long interval)
-        throws IOException
-    {
-        Map<String, String[]> params = new HashMap<String, String[]>();
-        params.put("templateId", new String[] { Integer.toString(template.getId()) });
-        params.put("interval", new String[] { Long.toString(interval) });
-        return doGet("metric/setDefaultInterval.hqu", params,
-                     StatusResponse.class);
+        MetricTemplatesRequest syncRequest = new MetricTemplatesRequest();
+        syncRequest.getMetricTemplate().addAll(templates);
+        return doPost("metric/syncTemplates.hqu", syncRequest,
+                      StatusResponse.class);
     }
 
     /**

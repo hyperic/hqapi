@@ -1,11 +1,15 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.MetricApi;
+import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.MetricsResponse;
 import org.hyperic.hq.hqapi1.types.MetricResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+
+import java.util.List;
+import java.util.ArrayList;
 
 public class Metric_test extends MetricTestBase {
 
@@ -91,115 +95,134 @@ public class Metric_test extends MetricTestBase {
         hqAssertFailureObjectNotFound(metricResponse);
     }
 
-    public void testMetricDisableEnable() throws Exception {
+    public void testSyncUpdateInterval() throws Exception {
 
-        MetricApi api = getApi().getMetricApi();
-        MetricsResponse resp = api.getMetrics(_r);
-        hqAssertSuccess(resp);
+        HQApi api = getApi();
+        MetricApi metricApi = api.getMetricApi();
 
-        assertFalse("Resource " + _r.getName() + " has no metrics",
-                   resp.getMetric().size() == 0);
+        // Keep a copy of the old metrics.
+        MetricsResponse orignalMetrics = metricApi.getMetrics(_r);
 
-        Metric m = resp.getMetric().get(0);
+        MetricsResponse metrics = metricApi.getMetrics(_r);
+        hqAssertSuccess(metrics);
 
-        // Disable
-        StatusResponse disableMetricResponse = api.disableMetric(m);
-        hqAssertSuccess(disableMetricResponse);
+        Metric enabledMetric = null;
 
-        // Verify
-        MetricResponse metricResponse = api.getMetric(m.getId());
-        hqAssertSuccess(metricResponse);
-        assertFalse("Metric id " + m.getId() + " not disabled",
-                     metricResponse.getMetric().isEnabled());
+        for (Metric m : metrics.getMetric()) {
+            if (m.isEnabled()) {
+                enabledMetric = m;
+                break;
+            }
+        }
 
-        // Enable
-        StatusResponse enableResponse =
-                api.enableMetric(m, m.getMetricTemplate().getDefaultInterval());
-        hqAssertSuccess(enableResponse);
+        assertNotNull("Unable to find enabled metric for " + _r.getName(),
+                      enabledMetric);
 
-        // Verify
-        metricResponse = api.getMetric(m.getId());
-        hqAssertSuccess(metricResponse);
-        assertTrue("Metric id " + m.getId() + " not enabled",
-                   metricResponse.getMetric().isEnabled());
-    }
+        final long newInterval = enabledMetric.getInterval() * 60000;
+        enabledMetric.setInterval(newInterval);
 
-    public void testMetricDisableBadId() throws Exception {
+        List<Metric> syncMetrics = new ArrayList<Metric>();
+        syncMetrics.add(enabledMetric);
+        StatusResponse syncResponse = metricApi.syncMetrics(syncMetrics);
+        hqAssertSuccess(syncResponse);
 
-        MetricApi api = getApi().getMetricApi();
-        Metric m = new Metric();
-        m.setId(Integer.MAX_VALUE);
-        StatusResponse disableMetricResponse = api.disableMetric(m);
-        hqAssertFailureObjectNotFound(disableMetricResponse);
-    }
-
-    public void testMetricEnableBadId() throws Exception {
-
-        MetricApi api = getApi().getMetricApi();
-        Metric m = new Metric();
-        m.setId(Integer.MAX_VALUE);
-        StatusResponse enableResponse = api.enableMetric(m, 60000);
-        hqAssertFailureObjectNotFound(enableResponse);
-    }
-
-    public void testMetricSetInterval() throws Exception {
-
-        MetricApi api = getApi().getMetricApi();
-        MetricsResponse resp = api.getMetrics(_r);
-        hqAssertSuccess(resp);
-        assertFalse("Resource " + _r.getName() + " has no metrics",
-                   resp.getMetric().size() == 0);
-
-        Metric m = resp.getMetric().get(0);
-
-        final long INTERVAL = 60000;
-
-        // Set new interval
-        StatusResponse intervalResp = api.setInterval(m, INTERVAL);
-        hqAssertSuccess(intervalResp);
-
-
-        // Validate
-        MetricResponse metricResponse = api.getMetric(m.getId());
-        hqAssertSuccess(metricResponse);
-        assertEquals(INTERVAL, metricResponse.getMetric().getInterval());
+        MetricResponse metric = metricApi.getMetric(enabledMetric.getId());
+        hqAssertSuccess(metric);
+        assertTrue("Interval for metric " + enabledMetric.getName() + " not " +
+                   "updated.", metric.getMetric().getInterval() == newInterval);
 
         // Reset
-        intervalResp = api.setInterval(m, m.getMetricTemplate().getDefaultInterval());
-        hqAssertSuccess(intervalResp);
-
-        // Validate
-        metricResponse = api.getMetric(m.getId());
-        hqAssertSuccess(metricResponse);
-        assertEquals(metricResponse.getMetric().getInterval(),
-                     metricResponse.getMetric().getMetricTemplate().getDefaultInterval());
+        syncResponse = metricApi.syncMetrics(orignalMetrics.getMetric());
+        hqAssertSuccess(syncResponse);
     }
 
-    public void testMetricSetIntervalBadId() throws Exception {
+    public void testSyncEnable() throws Exception {
 
-        MetricApi api = getApi().getMetricApi();
+        HQApi api = getApi();
+        MetricApi metricApi = api.getMetricApi();
+
+        // Keep a copy of the old metrics.
+        MetricsResponse orignalMetrics = metricApi.getMetrics(_r);
+
+        MetricsResponse metrics = metricApi.getMetrics(_r);
+        hqAssertSuccess(metrics);
+
+        Metric disabledMetric = null;
+
+        for (Metric m : metrics.getMetric()) {
+            if (!m.isEnabled()) {
+                disabledMetric = m;
+                break;
+            }
+        }
+
+        assertNotNull("Unable to find enabled metric for " + _r.getName(),
+                      disabledMetric);
+
+        disabledMetric.setEnabled(true);
+
+        List<Metric> syncMetrics = new ArrayList<Metric>();
+        syncMetrics.add(disabledMetric);
+        StatusResponse syncResponse = metricApi.syncMetrics(syncMetrics);
+        hqAssertSuccess(syncResponse);
+
+        MetricResponse metric = metricApi.getMetric(disabledMetric.getId());
+        hqAssertSuccess(metric);
+        assertTrue("Metric " + disabledMetric.getName() + " not enabled.",
+                   metric.getMetric().isEnabled());
+
+        // Reset
+        syncResponse = metricApi.syncMetrics(orignalMetrics.getMetric());
+        hqAssertSuccess(syncResponse);
+    }
+
+    public void testSyncInvalidMetric() throws Exception {
+        HQApi api = getApi();
+        MetricApi metricApi = api.getMetricApi();
+
         Metric m = new Metric();
         m.setId(Integer.MAX_VALUE);
-        StatusResponse intervalResp = api.setInterval(m, 60000);
-        hqAssertFailureObjectNotFound(intervalResp);
+
+        List<Metric> metrics = new ArrayList<Metric>();
+        metrics.add(m);
+
+        // Reset metrics back to the original state
+        StatusResponse syncResponse = metricApi.syncMetrics(metrics);
+        hqAssertFailureObjectNotFound(syncResponse);
     }
 
-    public void testMetricSetInvalidInterval() throws Exception {
+    public void testSyncInvalidInterval() throws Exception {
 
-        MetricApi api = getApi().getMetricApi();
-        MetricsResponse resp = api.getMetrics(_r);
-        hqAssertSuccess(resp);
-        assertFalse("Resource " + _r.getName() + " has no metrics",
-                   resp.getMetric().size() == 0);
+        HQApi api = getApi();
+        MetricApi metricApi = api.getMetricApi();
+
+        MetricsResponse metrics = metricApi.getMetrics(_r);
+        hqAssertSuccess(metrics);
+
+        assertTrue("No metrics found for " + _r.getName(),
+                   metrics.getMetric().size() > 0);
+
+        Metric enabledMetric = null;
+
+        for (Metric m : metrics.getMetric()) {
+            if (m.isEnabled()) {
+                enabledMetric = m;
+                break;
+            }
+        }
+
+        assertNotNull("Unable to find default on metric for " + _r.getName(),
+                      enabledMetric);
         
-        Metric m = resp.getMetric().get(0);
+        final long  BAD_INTERVALS[] = { -1, 0, 1, 1000, 59999 };
+        for (long BAD_INTERVAL : BAD_INTERVALS) {
+            enabledMetric.setInterval(BAD_INTERVAL);
 
-        final long[] BAD_INTERVALS = { -1, 0, 1, 60, 60001 };
+            List<Metric> syncMetrics = new ArrayList<Metric>();
+            syncMetrics.add(enabledMetric);
 
-        for (long interval : BAD_INTERVALS) {
-            StatusResponse intervalResponse =
-                    api.setInterval(m, interval);
-            hqAssertFailureInvalidParameters(intervalResponse);
+            StatusResponse syncResponse = metricApi.syncMetrics(syncMetrics);
+            hqAssertFailureInvalidParameters(syncResponse);            
         }
     }
 }

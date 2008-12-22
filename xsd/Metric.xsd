@@ -63,6 +63,14 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="MetricsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Metric" type="Metric" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <!-- MetricData Responses -->
     
     <xs:element name="MetricDataResponse">

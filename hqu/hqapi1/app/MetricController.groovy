@@ -189,29 +189,64 @@ class MetricController extends ApiController {
         }
     }
 
-    def enableMetric(params) {
-        def failureXml = null
-        def metricId = params.getOne("id")?.toInteger()
-        def interval = params.getOne("interval")?.toLong()
+    // TODO: Need collection based method for enable/disable
+    def syncMetrics(params) {
 
-        if (!metricId || !interval) {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
-        } else {
-            if (!validInterval(interval)) {
-                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
-                                           "Interval " + interval + " is not valid")
-            } else {
-                def metric = metricHelper.findMeasurementById(metricId)
-                if (!metric) {
-                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+        def xmlMetric = syncRequest['Metric']
+        def failureXml = null
+
+        xmlMetric.each { metric ->
+            def id = metric.'@id'?.toInteger()
+            def m = metricHelper.findMeasurementById(id)
+            if(!m) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Unable to find metric with id " + id)
+                return
+            }
+
+            def enabled   = metric.'@enabled'.toBoolean();
+            def interval  = metric.'@interval'?.toLong();
+
+            try {
+                if (enabled != null && enabled != m.enabled) {
+                    if (enabled) {
+                        if (interval == null) {
+                            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                                       "No interval given for metric id " + id)
+                            return
+                        }
+
+                        if (interval == 0) {
+                            interval = m.template.defaultInterval
+                        }
+
+                        if (!validInterval(interval)) {
+                            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                                       "Invalid interval " + interval +
+                                                       " for metric " + id)
+                            return
+                        }
+
+                        m.enableMeasurement(user, interval)
+                    } else {
+                        m.disableMeasurement(user)
+                    }
                 } else {
-                    try {
-                        metric.enableMeasurement(user, interval)
-                    } catch (Exception e) {
-                        log.error("UnexpectedError: " + e.getMessage(), e)
-                        failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+                    // Enabled flag was not changed, check for interval update.
+                    if (interval != null && interval != m.interval) {
+                        if (!validInterval(interval)) {
+                            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                                       "Invalid interval " + interval +
+                                                       " for metric " + id)
+                            return
+                        }
+                        m.updateMeasurementInterval(user, interval)
                     }
                 }
+            } catch (Exception e) {
+                log.error("UnexpectedError: " + e.getMessage(), e)
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
             }
         }
 
@@ -226,167 +261,57 @@ class MetricController extends ApiController {
         }
     }
 
-    def disableMetric(params) {
-        def failureXml
-        def metric
-        def metricId = params.getOne("id")?.toInteger()
-        if (!metricId) {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
-        } else {
-            metric = metricHelper.findMeasurementById(metricId)
-            if (!metric) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
-            } else {
-                try {
-                    metric.disableMeasurement(user)
-                } catch (Exception e) {
-                    log.error("UnexpectedError: " + e.getMessage(), e)
-                    failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
-                }
-            }
-        }
+    def syncTemplates(params) {
 
-        renderXml() {
-            StatusResponse() {
-                if (failureXml) {
-                    out << failureXml
-                } else {
-                    out << getSuccessXML()
-                }
-            }
-        }
-    }
-
-    def setInterval(params) {
+        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+        def xmlTemplate = syncRequest['MetricTemplate']
         def failureXml = null
-        def metricId = params.getOne("id")?.toInteger()
-        def interval = params.getOne("interval")?.toInteger()
 
-        if (!metricId || !interval) {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
-        } else {
-            if (!validInterval(interval)) {
-                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
-                                           "Interval " + interval + " is not valid")
-           } else {
-                def metric = metricHelper.findMeasurementById(metricId)
-                if (!metric) {
-                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
-                } else {
-                    try {
-                        metric.updateMeasurementInterval(user, interval)
-                    } catch (Exception e) {
-                        log.error("UnexpectedError: " + e.getMessage(), e)
-                        failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+        xmlTemplate.each { template ->
+            def id = template.'@id'?.toInteger()
+            def t = metricHelper.findTemplateById(id)
+            if(!t) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Unable to find template with id " + id)
+                return
+            }
+
+            def indicator = template.'@indicator'?.toBoolean();
+            def defaultOn = template.'@defaultOn'?.toBoolean();
+            def interval  = template.'@defaultInterval'?.toLong();
+
+            try {
+                if (indicator != null && indicator != t.designate) {
+                    // Availability templates cannot be changed.
+                    if (t.availability && !indicator) {
+                        failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                                   "Indicator flag for availability " +
+                                                   "template " + t.id +
+                                                   " cannot be false")
+                        return
                     }
+
+                    t.setDefaultIndicator(user, indicator)
                 }
-            }
-        }
 
-        renderXml() {
-            StatusResponse() {
-                if (failureXml) {
-                    out << failureXml
-                } else {
-                    out << getSuccessXML()
+                if (defaultOn != null && defaultOn != t.defaultOn) {
+                    t.setDefaultOn(user, defaultOn)
                 }
-            }
-        }
-    }
 
-    def setDefaultOn(params) {
-        def failureXml
-        def templateId = params.getOne("templateId")?.toInteger()
-        def on = params.getOne("on")?.toBoolean()
+                if (interval != null && interval != t.defaultInterval) {
 
-        if (!templateId) {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
-        } else {
-            def template = metricHelper.findTemplateById(templateId)
-            if (!template) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
-            } else {
-                try {
-                    template.setDefaultOn(user, on)
-                } catch (Exception e) {
-                    log.error("UnexpectedError: " + e.getMessage(), e)
-                    failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
-                }
-            }
-        }
-        
-        renderXml() {
-            StatusResponse() {
-                if (failureXml) {
-                    out << failureXml
-                } else {
-                    out << getSuccessXML()
-                }
-            }
-        }
-    }
-
-    def setDefaultIndicator(params) {
-        def failureXml
-        def templateId = params.getOne("templateId")?.toInteger()
-        def on = params.getOne("on")?.toBoolean()
-
-        if (!templateId) {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
-        } else {
-            def template = metricHelper.findTemplateById(templateId)
-            if (!template) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
-            } else {
-                if (template.isAvailability()) {
-                    failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
-                                               "Availability indicator flag " +
-                                               "cannot be changed.")
-                } else {
-                    try {
-                        template.setDefaultIndicator(user, on)
-                    } catch (Exception e) {
-                        log.error("UnexpectedError: " + e.getMessage(), e)
-                        failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
-                    }                    
-                }
-            }
-        }
-
-        renderXml() {
-            StatusResponse() {
-                if (failureXml) {
-                    out << failureXml
-                } else {
-                    out << getSuccessXML()
-                }
-            }
-        }
-    }
-
-    def setDefaultInterval(params) {
-        def failureXml = null
-        def templateId = params.getOne("templateId")?.toInteger()
-        def interval = params.getOne("interval")?.toInteger()
-
-        if (!templateId || !interval) {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
-        } else {
-            if (!validInterval(interval)) {
-                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
-                                           "Interval " + interval + " is not valid")
-            } else {
-                def template = metricHelper.findTemplateById(templateId)
-                if (!template) {
-                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
-                } else {
-                    try {
-                        template.setDefaultInterval(user, interval)
-                    } catch (Exception e) {
-                        log.error("UnexpectedError: " + e.getMessage(), e)
-                        failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+                    if (!validInterval(interval)) {
+                        failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                                   "Invalid interval " + interval +
+                                                   " for template " + t.id)
+                        return
                     }
+
+                    t.setDefaultInterval(user, interval)
                 }
+            } catch (Exception e) {
+                log.error("UnexpectedError: " + e.getMessage(), e)
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
             }
         }
         

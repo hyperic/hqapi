@@ -45,4 +45,12 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="MetricTemplatesRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="MetricTemplate" type="MetricTemplate" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
 </xs:schema>
