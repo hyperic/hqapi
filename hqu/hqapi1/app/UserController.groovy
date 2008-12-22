@@ -129,61 +129,7 @@ class UserController extends ApiController {
             }
         }
     }
-
-    def update(params) {
-        def failureXml
-        try {
-            def updateRequest = new XmlParser().parseText(getUpload('postdata'))
-            def xmlUser = updateRequest['User']
-            
-            if (!xmlUser || xmlUser.size() != 1) {
-                renderXml() {
-                    StatusResponse() {
-                        out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
-                    }
-                }
-                return
-            }
-            
-            def xmlIn = xmlUser[0]
-            def existing = getUser(xmlIn.'@id'?.toInteger(), xmlIn.'@name')
-            if (!existing) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
-            } else {
-                userHelper.updateUser(existing,
-                                      xmlIn.'@active'?.toBoolean(),
-                                      "CAM", // Dsn
-                                      xmlIn.'@department',
-                                      xmlIn.'@emailAddress',
-                                      xmlIn.'@firstName',
-                                      xmlIn.'@lastName',
-                                      xmlIn.'@phoneNumber',
-                                      xmlIn.'@SMSAddress',
-                                      xmlIn.'@htmlEmail'?.toBoolean())
-                def hash = xmlIn.'@passwordHash'
-                if (hash) {                       
-            		existing.updatePassword(user, hash)
-            	}
-            }
-        } catch (PermissionException e) {
-            log.debug("Permission denied [${user.name}]", e)
-            failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
-        } catch (Exception e) {
-            log.error("UnexpectedError: " + e.getMessage(), e)
-            failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
-        }
-
-        renderXml() {
-            StatusResponse() {
-                if (failureXml) {
-                    out << failureXml
-                } else {
-                    out << getSuccessXML()
-                }
-            }
-        }
-    }
-
+    
     def sync(params) {
         def failureXml
         try {

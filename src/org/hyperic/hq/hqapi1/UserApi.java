@@ -144,10 +144,10 @@ public class UserApi extends BaseApi {
     public StatusResponse updateUser(User user)
         throws IOException
     {
-        UserRequest req = new UserRequest();
-        req.setUser(user);
+        UsersRequest req = new UsersRequest();
+        req.getUser().add(user);
 
-        return doPost("user/update.hqu", req, StatusResponse.class);
+        return doPost("user/sync.hqu", req, StatusResponse.class);
     }
 
     /**
