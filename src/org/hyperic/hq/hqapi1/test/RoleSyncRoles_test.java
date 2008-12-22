@@ -2,16 +2,20 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.RoleApi;
 import org.hyperic.hq.hqapi1.UserApi;
+import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.Operation;
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.UsersResponse;
 
 import java.util.List;
 import java.util.ArrayList;
 
 public class RoleSyncRoles_test extends RoleTestBase {
+
+    private static final int SYNC_NUM = 3;
 
     public RoleSyncRoles_test(String name) {
         super(name);
@@ -19,34 +23,48 @@ public class RoleSyncRoles_test extends RoleTestBase {
 
     public void testSyncCreate() throws Exception {
 
-        RoleApi api = getRoleApi();
+        HQApi api = getApi();
+        RoleApi roleApi = api.getRoleApi();
+        UserApi userApi = api.getUserApi();
+
+        UsersResponse users = userApi.getUsers();
+        hqAssertSuccess(users);
 
         List<Role> roles = new ArrayList<Role>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < SYNC_NUM; i++) {
             Role r = generateTestRole();
             r.getOperation().addAll(VIEW_OPS);
+            r.getUser().addAll(users.getUser());
             roles.add(r);
         }
 
-        StatusResponse response = api.syncRoles(roles);
+        StatusResponse response = roleApi.syncRoles(roles);
         hqAssertSuccess(response);
 
         for (Role r : roles) {
-            RoleResponse getResponse = api.getRole(r.getName());
+            RoleResponse getResponse = roleApi.getRole(r.getName());
             hqAssertSuccess(getResponse);
+            assertTrue(r.getOperation().size() == VIEW_OPS.size());
+            assertTrue(r.getUser().size() == users.getUser().size());
         }
     }
 
     public void testSyncUpdate() throws Exception {
 
-        RoleApi api = getRoleApi();
+        HQApi api = getApi();
+        RoleApi roleApi = api.getRoleApi();
+        UserApi userApi = api.getUserApi();
+
+        UsersResponse users = userApi.getUsers();
+        hqAssertSuccess(users);
 
         List<Role> createdRoles = new ArrayList<Role>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < SYNC_NUM; i++) {
             Role r = generateTestRole();
             r.getOperation().addAll(VIEW_OPS);
+            r.getUser().addAll(users.getUser());
 
-            RoleResponse createResponse = api.createRole(r);
+            RoleResponse createResponse = roleApi.createRole(r);
             hqAssertSuccess(createResponse);
             createdRoles.add(createResponse.getRole());
         }
@@ -58,13 +76,14 @@ public class RoleSyncRoles_test extends RoleTestBase {
             r.setDescription(r.getDescription() + UPDATE_STR);
             r.getOperation().clear();
             r.getOperation().addAll(MODIFY_OPS);
+            r.getUser().clear();
         }
 
-        StatusResponse response = api.syncRoles(createdRoles);
+        StatusResponse response = roleApi.syncRoles(createdRoles);
         hqAssertSuccess(response);
 
         for (Role r : createdRoles) {
-            RoleResponse getResponse = api.getRole(r.getId());
+            RoleResponse getResponse = roleApi.getRole(r.getId());
             hqAssertSuccess(getResponse);
 
             Role updatedRole = getResponse.getRole();
@@ -82,9 +101,12 @@ public class RoleSyncRoles_test extends RoleTestBase {
                 assertTrue("Synced role does not contain operation " + o.value(),
                            updatedRole.getOperation().contains(o));
             }
+
+            assertTrue("All users were not removed from role",
+                       r.getUser().size() == 0);
         }
     }
-    
+
     public void testSyncCreateNoPermission() throws Exception {
 
     	//Create an underprivileged user
@@ -97,7 +119,7 @@ public class RoleSyncRoles_test extends RoleTestBase {
         RoleApi api = getRoleApi(user.getName(), PASSWORD);
 
         List<Role> roles = new ArrayList<Role>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < SYNC_NUM; i++) {
             Role r = generateTestRole();
             r.getOperation().addAll(VIEW_OPS);
             roles.add(r);
@@ -112,7 +134,7 @@ public class RoleSyncRoles_test extends RoleTestBase {
         RoleApi api = getRoleApi();
 
         List<Role> createdRoles = new ArrayList<Role>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < SYNC_NUM; i++) {
             Role r = generateTestRole();
             r.getOperation().addAll(VIEW_OPS);
 

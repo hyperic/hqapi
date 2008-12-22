@@ -19,6 +19,8 @@ public class RoleGetRole_test extends RoleTestBase {
 
         Role r = response.getRole();
         assertEquals(2, r.getId().intValue());
+        assertTrue("Guest role does not have a single user",
+                   r.getUser().size() == 1);
     }
 
     public void testGetRoleNameInvalid() throws Exception {

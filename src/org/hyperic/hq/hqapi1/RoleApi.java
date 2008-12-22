@@ -157,43 +157,4 @@ public class RoleApi extends BaseApi {
         request.getRole().addAll(roles);
         return doPost("role/sync.hqu", request, StatusResponse.class);
     }
-
-    /**
-     * Set the {@link User}s for the given {@link Role}.
-     *
-     * @param role The role to add users for.
-     * @param users The list of Users to add to the Role.
-     *
-     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if
-     * the users were sucessfully assigned to the role.
-     *
-     * @throws IOException If a network error occurs while making the request.
-     */
-    public StatusResponse setUsers(Role role, List<User> users)
-        throws IOException
-    {
-        SetUsersRequest request = new SetUsersRequest();
-        request.setRole(role);
-        request.getUser().addAll(users);
-        return doPost("role/setUsers.hqu", request, StatusResponse.class);
-    }
-
-    /**
-     * Get the {@link User}s for the given {@link Role}.
-     *
-     * @param role The role to get users for.
-     * 
-     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
-     * the list of users is returned via
-     * {@link org.hyperic.hq.hqapi1.types.UsersResponse#getUser()}
-     *
-     * @throws IOException If a network error occurs while making the request.
-     */
-    public UsersResponse getUsers(Role role)
-        throws IOException
-    {
-        Map<String, String[]> params = new HashMap<String,String[]>();
-        params.put("id", new String[] {Integer.toString(role.getId()) });
-        return doGet("role/getUsers.hqu", params, UsersResponse.class);
-    }
 }

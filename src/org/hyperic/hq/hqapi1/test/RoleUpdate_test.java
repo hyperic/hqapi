@@ -2,11 +2,16 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.RoleApi;
 import org.hyperic.hq.hqapi1.UserApi;
+import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.Operation;
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.UsersResponse;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RoleUpdate_test extends RoleTestBase {
 
@@ -174,5 +179,56 @@ public class RoleUpdate_test extends RoleTestBase {
         StatusResponse updateResponse = roleapi.updateRole(role);
         
         hqAssertFailurePermissionDenied(updateResponse);
+    }
+
+    public void testUpdateValidUsers() throws Exception {
+
+        HQApi api = getApi();
+        RoleApi roleApi = api.getRoleApi();
+        Role r = generateTestRole();
+
+        RoleResponse createResponse = roleApi.createRole(r);
+        hqAssertSuccess(createResponse);
+
+        // Add all users.
+        UserApi userApi = getUserApi();
+        UsersResponse users = userApi.getUsers();
+        hqAssertSuccess(users);
+
+        Role role = createResponse.getRole();
+        role.getUser().addAll(users.getUser());
+        StatusResponse updateResponse = roleApi.updateRole(role);
+        hqAssertSuccess(updateResponse);
+
+        RoleResponse getResponse = roleApi.getRole(r.getName());
+        hqAssertSuccess(getResponse);
+        assertTrue("Updated role does not contain all the users",
+                   getResponse.getRole().getUser().size() == users.getUser().size());
+    }
+
+    public void testUpdateInvalidUsers() throws Exception {
+
+        HQApi api = getApi();
+        RoleApi roleApi = api.getRoleApi();
+        Role r = generateTestRole();
+
+        RoleResponse createResponse = roleApi.createRole(r);
+        hqAssertSuccess(createResponse);
+
+        // Add all users.
+        List<User> users = new ArrayList<User>();
+        for (int i = 0; i < 5; i++) {
+            users.add(generateTestUser());
+        }
+
+        Role role = createResponse.getRole();
+        role.getUser().addAll(users);
+        StatusResponse updateResponse = roleApi.updateRole(role);
+        hqAssertSuccess(updateResponse);
+
+        RoleResponse getResponse = roleApi.getRole(r.getName());
+        hqAssertSuccess(getResponse);
+        assertTrue("Updated role contained users, should be 0",
+                   getResponse.getRole().getUser().size() == 0);
     }
 }

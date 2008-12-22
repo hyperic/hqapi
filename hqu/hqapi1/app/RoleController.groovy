@@ -15,6 +15,19 @@ class RoleController extends ApiController {
                 for (o in r.operations.sort {a, b -> a.name <=> b.name}) {
                     Operation(o.name)
                 }
+                for (u in r.subjects.sort {a, b -> a.name <=> b.name}) {
+                    // TODO: Use getUserXML() in ApiController
+                    User(id         : u.id,
+                        name        : u.name,
+                        firstName   : u.firstName,
+                        lastName    : u.lastName,
+                        department  : (u.department ? u.department : ''),
+                        emailAddress: u.emailAddress,
+                        SMSAddress  : (u.SMSAddress ? u.SMSAddress : ''),
+                        phoneNumber : (u.phoneNumber ? u.phoneNumber : ''),
+                        active      : u.active,
+                        htmlEmail   : u.htmlEmail)
+                }
             }
         }
     }
@@ -87,11 +100,21 @@ class RoleController extends ApiController {
                 ops.each{o ->
                     operations << o.text()
                 }
+
+                def userIds = []
+                def subjects = xmlIn['User']
+                subjects.each{subj ->
+                    def u = getUser(subj.'@id'?.toInteger(), subj.'@name')
+                    if (u) {
+                        log.info("Found user " + u.name)
+                        userIds << u.id
+                    }
+                }
                 
                 createdRole = roleHelper.createRole(xmlIn.'@name',
                                                     xmlIn.'@description',
                                                     operations as String[],
-                                                    [] as Integer[],
+                                                    userIds as Integer[],
                                                     [] as Integer[])
             }
         } catch (PermissionException e) {
@@ -141,10 +164,21 @@ class RoleController extends ApiController {
                     operations << opMap[o.text()]
                 }
 
+                def users = []
+                def subjects = xmlIn['User']
+                subjects.each{subj ->
+                    def u = getUser(subj.'@id'?.toInteger(), subj.'@name')
+                    if (u) {
+                        log.info("Found user " + u.name)
+                        users << u
+                    }
+                }
+
                 existing.update(user,
                                 xmlIn.'@name',
                                 xmlIn.'@description')
                 existing.setOperations(user, operations)
+                existing.setSubjects(user, users)
             }
         } catch (AuthzDuplicateNameException e) {
             log.debug("Duplicate object", e)
@@ -183,10 +217,21 @@ class RoleController extends ApiController {
                         operations << opMap[o.text()]
                     }
 
+                    def users = []
+                    def subjects = xmlRole['User']
+                    subjects.each{subj ->
+                        def u = getUser(subj.'@id'?.toInteger(), subj.'@name')
+                        if (u) {
+                            log.info("Found user " + u.name)
+                            users << u
+                        }
+                    }
+
                     existing.update(user,
                                     xmlRole.'@name',
                                     xmlRole.'@description')
                     existing.setOperations(user, operations)
+                    existing.setSubjects(user, users)
                 } else {
                     def operations = []
                     def ops = xmlRole['Operation']
@@ -215,76 +260,6 @@ class RoleController extends ApiController {
                     out << failureXml
                 } else {
                     out << getSuccessXML()
-                }
-            }
-        }
-    }
-
-    def setUsers(params) {
-        def failureXml
-        try {
-            def setRequest = new XmlParser().parseText(getUpload('postdata'))
-            def xmlRole = setRequest['Role']
-
-            if (!xmlRole || xmlRole.size() != 1) {
-                renderXml() {
-                    StatusResponse() {
-                        out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
-                    }
-                }
-                return
-            }
-
-            def xmlIn = xmlRole[0]
-            def role = getRole(xmlIn.'@id'?.toInteger(),
-                               xmlIn.'@name')
-            if (!role) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
-            } else {
-                def users = []
-                for (xmlUser in setRequest['User']) {
-                    def u = getUser(xmlUser.'@id'?.toInteger(),
-                                    xmlUser.'@name')
-                    if (u) {
-                        users << u
-                    }
-                }
-
-                role.setSubjects(user, users)
-            }
-        } catch (PermissionException e) {
-            log.debug("Permission denied [${user.name}]", e)
-            failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
-        } catch (Exception e) {
-            log.error("UnexpectedError: " + e.getMessage(), e)
-            failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
-        }
-
-        renderXml() {
-            StatusResponse() {
-                if (failureXml) {
-                    out << failureXml
-                } else {
-                    out << getSuccessXML()
-                }
-            }
-        }
-    }
-
-    def getUsers(params) {
-        def id   = params.getOne("id")?.toInteger()
-        def name = params.getOne("name")
-
-        def r = getRole(id, name)
-        renderXml() {
-            UsersResponse() {
-                if (!r) {
-                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
-                } else {
-                    out << getSuccessXML()
-                    r.subjects.each{u ->
-                        out << getUserXML(u)
-                    }
                 }
             }
         }

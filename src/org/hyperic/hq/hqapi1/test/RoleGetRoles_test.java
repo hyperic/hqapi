@@ -27,6 +27,7 @@ public class RoleGetRoles_test extends RoleTestBase {
             for (Operation o : role.getOperation()) {
                 assertNotNull(o);
             }
+            assertNotNull(role.getUser());
         }
     }
 }

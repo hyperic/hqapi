@@ -56,6 +56,5 @@ public class RoleDelete_test extends RoleTestBase {
         Role role = createResponse.getRole();
         StatusResponse deleteResponse = roleapi.deleteRole(role.getId());
         hqAssertFailurePermissionDenied(deleteResponse);
-
     }
 }
