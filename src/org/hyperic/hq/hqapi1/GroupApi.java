@@ -133,7 +133,7 @@ public class GroupApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GroupsResponse listGroups()
+    public GroupsResponse getGroups()
         throws IOException
     {
         return doGet("group/list.hqu", new HashMap<String,String[]>(),
@@ -150,7 +150,7 @@ public class GroupApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GroupsResponse listCompatibleGroups()
+    public GroupsResponse getCompatibleGroups()
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String,String[]>();
@@ -168,7 +168,7 @@ public class GroupApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GroupsResponse listMixedGroups()
+    public GroupsResponse getMixedGroups()
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String,String[]>();
@@ -186,7 +186,7 @@ public class GroupApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public ResourcesResponse listResources(int groupId)
+    public ResourcesResponse getResources(int groupId)
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String,String[]>();

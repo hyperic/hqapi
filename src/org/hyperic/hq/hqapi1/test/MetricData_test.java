@@ -131,13 +131,13 @@ public class MetricData_test extends MetricTestBase {
 
         GroupApi groupApi = api.getGroupApi();
 
-        GroupsResponse groupsResponse = groupApi.listCompatibleGroups();
+        GroupsResponse groupsResponse = groupApi.getCompatibleGroups();
         hqAssertSuccess(groupsResponse);
         List<Group> compatGroups = groupsResponse.getGroup();
         assertTrue("No compatible groups found", compatGroups.size() > 0);
         Group g = compatGroups.get(0);
 
-        ResourcesResponse resourcesResponse = groupApi.listResources(g.getId());
+        ResourcesResponse resourcesResponse = groupApi.getResources(g.getId());
         hqAssertSuccess(resourcesResponse);
 
         ResourcePrototype pt = g.getResourcePrototype();
@@ -189,13 +189,13 @@ public class MetricData_test extends MetricTestBase {
 
         GroupApi groupApi = api.getGroupApi();
 
-        GroupsResponse groupsResponse = groupApi.listCompatibleGroups();
+        GroupsResponse groupsResponse = groupApi.getCompatibleGroups();
         hqAssertSuccess(groupsResponse);
         List<Group> compatGroups = groupsResponse.getGroup();
         assertTrue("No compatible groups found", compatGroups.size() > 0);
         Group g = compatGroups.get(0);
 
-        ResourcesResponse resourcesResponse = groupApi.listResources(g.getId());
+        ResourcesResponse resourcesResponse = groupApi.getResources(g.getId());
         hqAssertSuccess(resourcesResponse);
 
         ResourcePrototype pt = g.getResourcePrototype();
@@ -234,7 +234,7 @@ public class MetricData_test extends MetricTestBase {
 
         GroupApi groupApi = api.getGroupApi();
 
-        GroupsResponse groupsResponse = groupApi.listCompatibleGroups();
+        GroupsResponse groupsResponse = groupApi.getCompatibleGroups();
         hqAssertSuccess(groupsResponse);
         List<Group> compatGroups = groupsResponse.getGroup();
         assertTrue("No compatible groups found", compatGroups.size() > 0);
@@ -255,7 +255,7 @@ public class MetricData_test extends MetricTestBase {
 
         GroupApi groupApi = api.getGroupApi();
 
-        GroupsResponse groupsResponse = groupApi.listCompatibleGroups();
+        GroupsResponse groupsResponse = groupApi.getCompatibleGroups();
         hqAssertSuccess(groupsResponse);
         List<Group> compatGroups = groupsResponse.getGroup();
         assertTrue("No compatible groups found", compatGroups.size() > 0);
@@ -282,7 +282,7 @@ public class MetricData_test extends MetricTestBase {
 
         GroupApi groupApi = api.getGroupApi();
 
-        GroupsResponse groupsResponse = groupApi.listMixedGroups();
+        GroupsResponse groupsResponse = groupApi.getMixedGroups();
         hqAssertSuccess(groupsResponse);
         List<Group> mixedGroups = groupsResponse.getGroup();
         assertTrue("No mixed groups found", mixedGroups.size() > 0);
@@ -310,13 +310,13 @@ public class MetricData_test extends MetricTestBase {
 
         GroupApi groupApi = api.getGroupApi();
 
-        GroupsResponse groupsResponse = groupApi.listCompatibleGroups();
+        GroupsResponse groupsResponse = groupApi.getCompatibleGroups();
         hqAssertSuccess(groupsResponse);
         List<Group> compatGroups = groupsResponse.getGroup();
         assertTrue("No compatible groups found", compatGroups.size() > 0);
         Group g = compatGroups.get(0);
 
-        ResourcesResponse resourcesResponse = groupApi.listResources(g.getId());
+        ResourcesResponse resourcesResponse = groupApi.getResources(g.getId());
         hqAssertSuccess(resourcesResponse);
 
         ResourcePrototype pt = g.getResourcePrototype();
@@ -354,13 +354,13 @@ public class MetricData_test extends MetricTestBase {
 
         GroupApi groupApi = api.getGroupApi();
 
-        GroupsResponse groupsResponse = groupApi.listCompatibleGroups();
+        GroupsResponse groupsResponse = groupApi.getCompatibleGroups();
         hqAssertSuccess(groupsResponse);
         List<Group> compatGroups = groupsResponse.getGroup();
         assertTrue("No compatible groups found", compatGroups.size() > 0);
         Group g = compatGroups.get(0);
 
-        ResourcesResponse resourcesResponse = groupApi.listResources(g.getId());
+        ResourcesResponse resourcesResponse = groupApi.getResources(g.getId());
         hqAssertSuccess(resourcesResponse);
 
         ResourcePrototype pt = g.getResourcePrototype();

@@ -63,7 +63,7 @@ public class Group_test extends HQApiTestBase {
     public void testList() throws Exception {
         GroupApi api = getApi().getGroupApi();
 
-        GroupsResponse resp = api.listGroups();
+        GroupsResponse resp = api.getGroups();
         hqAssertSuccess(resp);
 
         List<Group> groups = resp.getGroup();
@@ -80,7 +80,7 @@ public class Group_test extends HQApiTestBase {
     public void testGetResourcesInGroup() throws Exception {
         GroupApi api = getApi().getGroupApi();
 
-        GroupsResponse resp = api.listGroups();
+        GroupsResponse resp = api.getGroups();
         hqAssertSuccess(resp);
 
         List<Group> groups = resp.getGroup();
@@ -90,7 +90,7 @@ public class Group_test extends HQApiTestBase {
 
         for (Group g : resp.getGroup()) {
             validateGroup(g);
-            ResourcesResponse resourceResponse = api.listResources(g.getId());
+            ResourcesResponse resourceResponse = api.getResources(g.getId());
             hqAssertSuccess(resourceResponse);
             if (resourceResponse.getResource().size() == 0) {
                 getLog().warn("Zero group members found for " + g.getId());
@@ -108,14 +108,14 @@ public class Group_test extends HQApiTestBase {
 
         GroupApi api = getApi().getGroupApi();
 
-        ResourcesResponse resp = api.listResources(Integer.MAX_VALUE);
+        ResourcesResponse resp = api.getResources(Integer.MAX_VALUE);
         hqAssertFailureObjectNotFound(resp);
     }
 
     public void testGetGroupById() throws Exception {
         GroupApi api = getApi().getGroupApi();
 
-        GroupsResponse resp = api.listGroups();
+        GroupsResponse resp = api.getGroups();
         hqAssertSuccess(resp);
 
         List<Group> groups = resp.getGroup();
@@ -142,7 +142,7 @@ public class Group_test extends HQApiTestBase {
 
         GroupApi api = getApi().getGroupApi();
 
-        GroupsResponse resp = api.listGroups();
+        GroupsResponse resp = api.getGroups();
         hqAssertSuccess(resp);
 
         List<Group> groups = resp.getGroup();
@@ -169,7 +169,7 @@ public class Group_test extends HQApiTestBase {
 
         GroupApi api = getApi().getGroupApi();
 
-        GroupsResponse response = api.listCompatibleGroups();
+        GroupsResponse response = api.getCompatibleGroups();
         hqAssertSuccess(response);
 
         List<Group> groups = response.getGroup();
@@ -188,7 +188,7 @@ public class Group_test extends HQApiTestBase {
 
         GroupApi api = getApi().getGroupApi();
 
-        GroupsResponse response = api.listMixedGroups();
+        GroupsResponse response = api.getMixedGroups();
         hqAssertSuccess(response);
 
         List<Group> groups = response.getGroup();
