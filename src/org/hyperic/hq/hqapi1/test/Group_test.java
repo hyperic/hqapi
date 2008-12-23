@@ -40,7 +40,7 @@ public class Group_test extends HQApiTestBase {
 
         if (g.getRole().size() > 0) {
             for (Role r : g.getRole()) {
-                assertTrue("Invalid role id", r.getId() > 0);
+                assertTrue("Invalid role id", r.getId() >= 0);
                 assertTrue("Invalid role name", r.getName().length() > 0);
             }
         }
