@@ -8,6 +8,7 @@ import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.GroupsResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.Role;
 
 import java.util.List;
 
@@ -27,6 +28,21 @@ public class Group_test extends HQApiTestBase {
             assertTrue("Invalid prototype id", pt.getId() > 0);
             assertTrue("Invalid prototype name for group " + g.getName(),
                        pt.getName().length() > 0);
+        }
+
+        if (g.getResource().size() > 0) {
+            for (Resource r : g.getResource()) {
+                assertTrue("Invalid resource id for group member", r.getId() > 0);
+                assertTrue("Invalid resource name for group member",
+                           r.getName().length() > 0);
+            }
+        }
+
+        if (g.getRole().size() > 0) {
+            for (Role r : g.getRole()) {
+                assertTrue("Invalid role id", r.getId() > 0);
+                assertTrue("Invalid role name", r.getName().length() > 0);
+            }
         }
     }
 

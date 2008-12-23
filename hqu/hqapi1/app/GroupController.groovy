@@ -12,7 +12,14 @@ class GroupController extends ApiController {
                     ResourcePrototype(id   : g.resourcePrototype.id,
                                       name : g.resourcePrototype.name)
                 }
-                // TODO: Roles, Criteria
+                for (r in g.resources) {
+                    Resource(id : r.id,
+                             name : r.name)
+                }
+                for (r in g.roles) {
+                    Role(id : r.id,
+                         name : r.name)
+                }
             }
         }
     }

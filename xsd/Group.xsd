@@ -16,9 +16,10 @@
 
     <xs:complexType name="Group">
         <xs:sequence>
-            <!-- xs:element name="Role"        type="Role"     minOccurs="0" maxOccurs="unbounded"/ -->
             <!-- xs:element name="Criteria"    type="Criteria" minOccurs="0"/ -->
-            <xs:element name="ResourcePrototype"   type="ResourcePrototype" maxOccurs="1"/>
+            <xs:element name="ResourcePrototype" type="ResourcePrototype" maxOccurs="1"/>
+            <xs:element name="Resource" type="Resource" maxOccurs="unbounded"/>
+            <xs:element name="Role" type="Role" maxOccurs="unbounded"/>
         </xs:sequence>
         <xs:attribute name="id"          type="xs:int"    use="required"/>
         <xs:attribute name="name"        type="xs:string" use="required"/>
