@@ -21,7 +21,7 @@ public class Metric_test extends MetricTestBase {
 
     public void setUp() throws Exception {
         super.setUp();
-        _r = getResource();
+        _r = getLocalPlatformResource();
     }
 
     protected void validateMetric(Metric m) throws Exception {

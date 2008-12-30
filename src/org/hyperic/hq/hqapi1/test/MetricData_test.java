@@ -32,7 +32,7 @@ public class MetricData_test extends MetricTestBase {
 
     public void setUp() throws Exception {
         super.setUp();
-        _r = getResource();
+        _r = getLocalPlatformResource();
     }
 
     public void testGetEnabledMetricData() throws Exception {

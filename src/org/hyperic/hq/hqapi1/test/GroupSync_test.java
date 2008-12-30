@@ -10,6 +10,9 @@ import org.hyperic.hq.hqapi1.types.RolesResponse;
 import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
+
+import java.util.List;
 
 /**
  * This class tests all aspects of the group sync. (which includes update/create)
@@ -22,6 +25,33 @@ public class GroupSync_test extends GroupTestBase {
 
     public void testCreateMixed() throws Exception {
 
+        HQApi api = getApi();
+        ResourceApi resourceApi = api.getResourceApi();
+        GroupApi groupApi = api.getGroupApi();
+
+        Resource platform = getLocalPlatformResource();
+
+        ResourcesResponse resourceResponse =
+                resourceApi.getResourceChildren(platform);
+        hqAssertSuccess(resourceResponse);
+        List<Resource> resources = resourceResponse.getResource();
+        assertTrue("No servers found on platform " + platform.getName(),
+                   resources.size() > 0);
+
+        Group g = generateTestGroup();
+        g.getResource().addAll(resources);
+
+        StatusResponse createResponse = groupApi.createGroup(g);
+        hqAssertSuccess(createResponse);
+
+        GroupResponse getResponse = groupApi.getGroup(g.getName());
+        hqAssertSuccess(getResponse);
+
+        Group createdGroup = getResponse.getGroup();
+        validateGroup(createdGroup);
+        assertEquals(g.getName(), createdGroup.getName());
+        assertEquals(g.getDescription(), createdGroup.getDescription());
+        assertEquals(g.getLocation(), createdGroup.getLocation());
     }
 
     public void testCreateCompatible() throws Exception {
@@ -50,13 +80,14 @@ public class GroupSync_test extends GroupTestBase {
         g.getResource().addAll(resourceResponse.getResource());
         g.getRole().addAll(roleResponse.getRole());
 
-        StatusResponse response = groupApi.createGroup(g);
-        hqAssertSuccess(response);
+        StatusResponse createResponse = groupApi.createGroup(g);
+        hqAssertSuccess(createResponse);
 
-        GroupResponse createGroupResponse = groupApi.getGroup(g.getName());
-        hqAssertSuccess(createGroupResponse);
+        GroupResponse getResponse = groupApi.getGroup(g.getName());
+        hqAssertSuccess(getResponse);
 
-        Group createdGroup = createGroupResponse.getGroup();
+        Group createdGroup = getResponse.getGroup();
+        validateGroup(createdGroup);
         assertEquals(createdGroup.getName(), g.getName());
         assertEquals(createdGroup.getDescription(), g.getDescription());
         assertEquals(createdGroup.getLocation(), g.getLocation());

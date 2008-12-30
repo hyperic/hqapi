@@ -4,16 +4,20 @@ import junit.framework.TestCase;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.ErrorCode;
 import org.hyperic.hq.hqapi1.AgentApi;
+import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.Response;
 import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.PingAgentResponse;
 import org.hyperic.hq.hqapi1.types.AgentsResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Properties;
+import java.util.List;
 
 public class HQApiTestBase  extends TestCase {
 
@@ -113,6 +117,25 @@ public class HQApiTestBase  extends TestCase {
         String err = "No running agents found.";
         _log.error(err);
         throw new Exception(err);
+    }
+
+    protected Resource getLocalPlatformResource() throws Exception {
+
+        Agent a = getRunningAgent();
+
+        ResourceApi api = getApi().getResourceApi();
+        ResourcesResponse resourceResponse =
+            api.getResources(a);
+        hqAssertSuccess(resourceResponse);
+
+        List<Resource> localPlatforms = resourceResponse.getResource();
+        if (localPlatforms.size() == 0) {
+            String err = "Unable to find platform associated with agent " +
+                         a.getAddress() + ":" + a.getPort();
+            getLog().error(err);
+            throw new Exception(err);
+        }
+        return localPlatforms.get(0);
     }
 
     // Assert SUCCESS
