@@ -136,7 +136,7 @@
 
             <sysproperty key="log" value="${log}"/>
             <classpath refid="all.classpath"/>
-            <formatter type="xml"/>
+            <formatter type="plain"/>
 
             <test name="${testcase}" todir="${build.dir}/testresults"
                   if="single.test" />
@@ -148,14 +148,6 @@
                 </fileset>
             </batchtest>
         </junit>
-
-        <junitreport todir="${build.dir}/testresults">
-            <fileset dir="${build.dir}/testresults">
-                <include name="TEST-*.xml" />
-            </fileset>
-            <report todir="${build.dir}/testresults" />
-        </junitreport>
-
     </target>
 
     <!-- Target to hot deploy the plugins into a running HQ instance -->
