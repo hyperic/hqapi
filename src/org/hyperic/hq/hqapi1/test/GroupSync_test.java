@@ -52,6 +52,10 @@ public class GroupSync_test extends GroupTestBase {
         assertEquals(g.getName(), createdGroup.getName());
         assertEquals(g.getDescription(), createdGroup.getDescription());
         assertEquals(g.getLocation(), createdGroup.getLocation());
+
+        // Cleanup
+        StatusResponse deleteResponse = groupApi.deleteGroup(createdGroup.getId());
+        hqAssertSuccess(deleteResponse);
     }
 
     public void testCreateCompatible() throws Exception {

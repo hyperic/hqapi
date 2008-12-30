@@ -2,7 +2,6 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.types.Group;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.GroupsResponse;
 
