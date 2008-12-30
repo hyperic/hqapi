@@ -43,20 +43,6 @@ class RoleController extends ApiController {
         }
     }
 
-    /**
-     * Get a Role by id or name
-     * @return The role by the given id.  If the passed in id is null then
-     * the Role by the given name is returned.  If no role could be found
-     * for either the id or name, null is returned.
-     */
-    private getRole(Integer id, String name) {
-        if (id) {
-            return roleHelper.getRoleById(id)
-        } else {
-            return roleHelper.findRoleByName(name)
-        }
-    }
-
     def get(params) {
         def id   = params.getOne("id")?.toInteger()
         def name = params.getOne("name")

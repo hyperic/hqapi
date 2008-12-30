@@ -137,9 +137,6 @@ public class MetricData_test extends MetricTestBase {
         assertTrue("No compatible groups found", compatGroups.size() > 0);
         Group g = compatGroups.get(0);
 
-        ResourcesResponse resourcesResponse = groupApi.getResources(g.getId());
-        hqAssertSuccess(resourcesResponse);
-
         ResourcePrototype pt = g.getResourcePrototype();
         MetricApi metricApi = api.getMetricApi();
         MetricTemplatesResponse templatesResponse = metricApi.getMetricTemplates(pt);
@@ -172,7 +169,7 @@ public class MetricData_test extends MetricTestBase {
         List<MetricData> metricData = response.getMetricData();
         assertTrue("Number of Resources in Group does not match the number " +
                    "of ResourceMetrics",
-                   resourcesResponse.getResource().size() == metricData.size());
+                   g.getResource().size() == metricData.size());
 
         for (MetricData m : metricData) {
             assertTrue(m.getMetricId() > 0);
@@ -194,9 +191,6 @@ public class MetricData_test extends MetricTestBase {
         List<Group> compatGroups = groupsResponse.getGroup();
         assertTrue("No compatible groups found", compatGroups.size() > 0);
         Group g = compatGroups.get(0);
-
-        ResourcesResponse resourcesResponse = groupApi.getResources(g.getId());
-        hqAssertSuccess(resourcesResponse);
 
         ResourcePrototype pt = g.getResourcePrototype();
         MetricApi metricApi = api.getMetricApi();
@@ -316,9 +310,6 @@ public class MetricData_test extends MetricTestBase {
         assertTrue("No compatible groups found", compatGroups.size() > 0);
         Group g = compatGroups.get(0);
 
-        ResourcesResponse resourcesResponse = groupApi.getResources(g.getId());
-        hqAssertSuccess(resourcesResponse);
-
         ResourcePrototype pt = g.getResourcePrototype();
         MetricApi metricApi = api.getMetricApi();
         MetricTemplatesResponse templatesResponse = metricApi.getMetricTemplates(pt);
@@ -360,9 +351,6 @@ public class MetricData_test extends MetricTestBase {
         assertTrue("No compatible groups found", compatGroups.size() > 0);
         Group g = compatGroups.get(0);
 
-        ResourcesResponse resourcesResponse = groupApi.getResources(g.getId());
-        hqAssertSuccess(resourcesResponse);
-
         ResourcePrototype pt = g.getResourcePrototype();
         MetricApi metricApi = api.getMetricApi();
         MetricTemplatesResponse templatesResponse = metricApi.getMetricTemplates(pt);
@@ -395,7 +383,7 @@ public class MetricData_test extends MetricTestBase {
         List<MetricData> metricData = response.getMetricData();
         assertTrue("Number of Resources in Group does not match the number " +
                    "of ResourceMetrics",
-                   resourcesResponse.getResource().size() == metricData.size());
+                   g.getResource().size() == metricData.size());
 
         for (MetricData m : metricData) {
             assertTrue(m.getMetricId() > 0);

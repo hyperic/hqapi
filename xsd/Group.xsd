@@ -29,10 +29,10 @@
 
     <!-- Group Responses -->
 
-    <xs:element name="CreateGroupRequest">
+    <xs:element name="GroupsRequest">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="Group" type="Group"/>
+                <xs:element name="Group" type="Group" maxOccurs="unbounded" />
             </xs:sequence>
         </xs:complexType>
     </xs:element>

@@ -102,7 +102,22 @@ class ApiController extends BaseController {
             return userHelper.findUser(name)
         }
     }
-    
+
+    /**
+     * Get a Role by id or name
+     *
+     * @return The role by the given id.  If the passed in id is null then
+     * the Role by the given name is returned.  If no role could be found
+     * for either the id or name, null is returned.
+     */
+    protected getRole(Integer id, String name) {
+        if (id) {
+            return roleHelper.getRoleById(id)
+        } else {
+            return roleHelper.findRoleByName(name)
+        }
+    }
+
     def index(params) {
         render(locals:[plugin: getPlugin()])
     }

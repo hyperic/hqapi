@@ -1,14 +1,19 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.GroupApi;
+import org.hyperic.hq.hqapi1.HQApi;
+import org.hyperic.hq.hqapi1.ResourceApi;
+import org.hyperic.hq.hqapi1.RoleApi;
 import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.GroupsResponse;
-import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.RolesResponse;
 
 import java.util.List;
 
@@ -46,36 +51,13 @@ public class Group_test extends HQApiTestBase {
         }
     }
 
-    public void testCreate() throws Exception {
+    public void testDeleteInvalidId() throws Exception {
         GroupApi api = getApi().getGroupApi();
 
-        Group g = new Group();
-        GroupResponse resp = api.createGroup(g);
-        hqAssertFailureNotImplemented(resp);
+        StatusResponse resp = api.deleteGroup(Integer.MAX_VALUE);
+        hqAssertFailureObjectNotFound(resp);
     }
 
-    public void testDelete() throws Exception {
-        GroupApi api = getApi().getGroupApi();
-
-        StatusResponse resp = api.deleteGroup(1);
-        hqAssertFailureNotImplemented(resp);
-    }
-
-    public void testRemoveResource() throws Exception {
-        GroupApi api = getApi().getGroupApi();
-
-        StatusResponse resp = api.removeResource(1,2);
-        hqAssertFailureNotImplemented(resp);
-    }
-
-    public void testAddResource() throws Exception {
-
-        GroupApi api = getApi().getGroupApi();
-
-        StatusResponse resp = api.addResource(1,2);
-        hqAssertFailureNotImplemented(resp);
-    }
-    
     public void testList() throws Exception {
         GroupApi api = getApi().getGroupApi();
 
@@ -91,41 +73,6 @@ public class Group_test extends HQApiTestBase {
         for (Group g : groups) {
             validateGroup(g);
         }
-    }
-
-    public void testGetResourcesInGroup() throws Exception {
-        GroupApi api = getApi().getGroupApi();
-
-        GroupsResponse resp = api.getGroups();
-        hqAssertSuccess(resp);
-
-        List<Group> groups = resp.getGroup();
-        if (groups.size() == 0) {
-            throw new Exception("No groups found.");
-        }
-
-        for (Group g : resp.getGroup()) {
-            validateGroup(g);
-            ResourcesResponse resourceResponse = api.getResources(g.getId());
-            hqAssertSuccess(resourceResponse);
-            if (resourceResponse.getResource().size() == 0) {
-                getLog().warn("Zero group members found for " + g.getId());
-            }
-
-            for (Resource r : resourceResponse.getResource()) {
-                assertNotNull(r);
-                assertTrue(r.getId() > 0);
-                assertTrue(r.getName().length() > 0);
-            }
-        }
-    }
-
-    public void testGetResourcesInInvalidGroup() throws Exception {
-
-        GroupApi api = getApi().getGroupApi();
-
-        ResourcesResponse resp = api.getResources(Integer.MAX_VALUE);
-        hqAssertFailureObjectNotFound(resp);
     }
 
     public void testGetGroupById() throws Exception {
@@ -217,5 +164,132 @@ public class Group_test extends HQApiTestBase {
             assertNull(g.getResourcePrototype());
             validateGroup(g);
         }
+    }
+
+    public void testCreateMixed() throws Exception {
+
+    }
+
+    public void testCreateCompatible() throws Exception {
+
+        HQApi api = getApi();
+        ResourceApi resourceApi = api.getResourceApi();
+        RoleApi roleApi = api.getRoleApi();
+        GroupApi groupApi = api.getGroupApi();
+
+        // Find CPU resources
+        ResourcePrototypeResponse prototypeResponse =
+                resourceApi.getResourcePrototype("CPU");
+        hqAssertSuccess(prototypeResponse);
+
+        ResourcesResponse resourceResponse =
+                resourceApi.getResources(prototypeResponse.getResourcePrototype());
+        hqAssertSuccess(resourceResponse);
+
+        // Find all Roles
+        RolesResponse roleResponse = roleApi.getRoles();
+        hqAssertSuccess(roleResponse);
+
+        final String NAME = "API Test Group";
+        final String DESCRIPTION = "Api Test Group Description";
+        final String LOCATION = "Api Test Group Location";
+
+        // Create
+        Group g = new Group();
+        g.setName(NAME);
+        g.setDescription(DESCRIPTION);
+        g.setLocation(LOCATION);
+        g.setResourcePrototype(prototypeResponse.getResourcePrototype());
+        g.getResource().addAll(resourceResponse.getResource());
+        g.getRole().addAll(roleResponse.getRole());
+
+        StatusResponse response = groupApi.createGroup(g);
+        hqAssertSuccess(response);
+
+        GroupResponse createGroupResponse = groupApi.getGroup(NAME);
+        hqAssertSuccess(createGroupResponse);
+
+        Group createdGroup = createGroupResponse.getGroup();
+        assertEquals(createdGroup.getName(), g.getName());
+        assertEquals(createdGroup.getDescription(), g.getDescription());
+        assertEquals(createdGroup.getLocation(), g.getLocation());
+        assertEquals(createdGroup.getResource().size(),
+                     g.getResource().size());
+        assertEquals(createdGroup.getRole().size(),
+                     g.getRole().size());
+
+        // Cleanup
+        StatusResponse deleteResponse = groupApi.deleteGroup(createdGroup.getId());
+        hqAssertSuccess(deleteResponse);
+    }
+
+    public void testCreateCompatibleWrongPrototype() throws Exception {
+
+    }
+
+    public void testUpdateFields() throws Exception {
+
+        HQApi api = getApi();
+        GroupApi groupApi = api.getGroupApi();
+
+        final String NAME = "API Test Group";
+        final String DESCRIPTION = "Api Test Group Description";
+        final String LOCATION = "Api Test Group Location";
+
+        // Create
+        Group g = new Group();
+        g.setName(NAME);
+        g.setDescription(DESCRIPTION);
+        g.setLocation(LOCATION);
+
+        StatusResponse response = groupApi.createGroup(g);
+        hqAssertSuccess(response);
+
+        GroupResponse createGroupResponse = groupApi.getGroup(NAME);
+        hqAssertSuccess(createGroupResponse);
+
+        // Update
+        Group createdGroup = createGroupResponse.getGroup();
+
+        final String UPDATED_NAME = "API Test Group Updated";
+        final String UPDATED_DESC = "Api Test Description Updated";
+        final String UPDATED_LOCATION = "Api Test Location Updated";
+
+        createdGroup.setName(UPDATED_NAME);
+        createdGroup.setDescription(UPDATED_DESC);
+        createdGroup.setLocation(UPDATED_LOCATION);
+
+        StatusResponse updateResponse = groupApi.updateGroup(createdGroup);
+        hqAssertSuccess(updateResponse);
+
+        // Validate
+
+        GroupResponse getResponse = groupApi.getGroup(createdGroup.getId());
+        hqAssertSuccess(getResponse);
+
+        Group updatedGroup = getResponse.getGroup();
+        assertEquals(updatedGroup.getName(), UPDATED_NAME);
+        assertEquals(updatedGroup.getDescription(), UPDATED_DESC);
+        assertEquals(updatedGroup.getLocation(), UPDATED_LOCATION);
+
+        // Cleanup
+        StatusResponse deleteResponse = groupApi.deleteGroup(updatedGroup.getId());
+        hqAssertSuccess(deleteResponse);
+    }
+
+    public void testUpdateRoles() throws Exception {
+
+    }
+
+    public void testUpdateResources() throws Exception {
+
+    }
+
+    public void testUpdateResourcesWrongPrototype() throws Exception {
+
+    }
+
+    public void testUpdatePrototype() throws Exception {
+        
     }
 }

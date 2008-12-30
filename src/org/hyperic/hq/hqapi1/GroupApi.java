@@ -3,14 +3,14 @@ package org.hyperic.hq.hqapi1;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.hyperic.hq.hqapi1.types.Group;
-import org.hyperic.hq.hqapi1.types.Resource;
-import org.hyperic.hq.hqapi1.types.CreateGroupRequest;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.GroupsResponse;
-import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.GroupsRequest;
 
 /**
  * The Hyperic HQ Group API.
@@ -68,8 +68,7 @@ public class GroupApi extends BaseApi {
     }
 
     /**
-     * Create a {@link org.hyperic.hq.hqapi1.types.Group}.<br><b>This API is
-     * not yet availabile.  It will return an not implemented error.</b>
+     * Create a {@link org.hyperic.hq.hqapi1.types.Group}.
      *
      * @param group The group to create.
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
@@ -77,17 +76,33 @@ public class GroupApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public GroupResponse createGroup(Group group)
+    public StatusResponse createGroup(Group group)
         throws IOException
     {
-        CreateGroupRequest req = new CreateGroupRequest();
-        req.setGroup(group);
-        return doPost("group/create.hqu", req, GroupResponse.class);
+        List<Group> groups = new ArrayList<Group>();
+        groups.add(group);
+        return syncGroups(groups);
     }
-    
+
     /**
-     * Delete a {@link Group}.<br><b>This API is
-     * not yet availabile.  It will return an not implemented error.</b>
+     * Update a {@link org.hyperic.hq.hqapi1.types.Group}.
+     *
+     * @param group The group to create.
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * group was created successfully.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public StatusResponse updateGroup(Group group)
+        throws IOException
+    {
+        List<Group> groups = new ArrayList<Group>();
+        groups.add(group);
+        return syncGroups(groups);
+    }
+
+    /**
+     * Delete a {@link Group}.
      *
      * @param id The {@link org.hyperic.hq.hqapi1.types.Group} id to delete.
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
@@ -101,28 +116,6 @@ public class GroupApi extends BaseApi {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("id", new String[] { Integer.toString(id) });
         return doGet("group/delete.hqu", params, StatusResponse.class);
-    }
-    
-    /**
-     * Delete a {@link Resource} from a {@link Group}.<br><b>This API is
-     * not yet availabile.  It will return an not implemented error.</b>
-     *
-     * @param groupId The {@link Group} id to operate on.
-     * @param resourceId The {@link Resource} id to remove.
-     *
-     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
-     * resource was successfully removed from the group.
-     *
-     * @throws IOException If a network error occurs while making the request.
-     */
-    public StatusResponse removeResource(int groupId, int resourceId)
-        throws IOException
-    {
-        Map<String,String[]> params = new HashMap<String,String[]>();
-        params.put("groupId", new String[] { Integer.toString(groupId) });
-        params.put("resourceId", new String[] { Integer.toString(resourceId) });
-        return doGet("group/removeResource.hqu", params,
-                     StatusResponse.class);
     }
 
     /**
@@ -177,43 +170,20 @@ public class GroupApi extends BaseApi {
     }
 
     /**
-     * List all the Resources associated with a {@link Group}.
+     * Sync a list of {@link org.hyperic.hq.hqapi1.types.Group}s.
      *
-     * @param groupId The {@link org.hyperic.hq.hqapi1.types.Group} id to query.
+     * @param groups The list of groups to sync.
      *
-     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if all
-     * the resources were successfully retrieved.
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if
+     * all the groups were successfully syced.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public ResourcesResponse getResources(int groupId)
-        throws IOException
-    {
-        Map<String,String[]> params = new HashMap<String,String[]>();
-        params.put("groupId", new String[] { Integer.toString(groupId) });
-        return doGet("group/listResources.hqu", params,
-                     ResourcesResponse.class);
-    }
+    public StatusResponse syncGroups(List<Group> groups)
+            throws IOException {
 
-    /**
-     * Add the specified {@link Resource} to the {@link Group}.<br><b>This API is
-     * not yet availabile.  It will return an not implemented error.</b>
-     *
-     * @param groupId The {@link org.hyperic.hq.hqapi1.types.Group} id to operate on.
-     * @param resourceId The {@link org.hyperic.hq.hqapi1.types.Resource} id to add.
-     *
-     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
-     * resource was successfully added to the group.
-     *
-     * @throws IOException If a network error occurs while making the request.
-     */
-    public StatusResponse addResource(int groupId, int resourceId)
-        throws IOException
-    {
-        Map<String,String[]> params = new HashMap<String,String[]>();
-        params.put("groupId", new String[] { Integer.toString(groupId) });
-        params.put("resourceId", new String[] { Integer.toString(resourceId) });
-        return doGet("group/addResource.hqu", params,
-                     StatusResponse.class);
+        GroupsRequest groupRequest = new GroupsRequest();
+        groupRequest.getGroup().addAll(groups);
+        return doPost("group/sync.hqu", groupRequest, StatusResponse.class);
     }
 }

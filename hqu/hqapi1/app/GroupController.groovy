@@ -1,4 +1,5 @@
 import org.hyperic.hq.hqapi1.ErrorCode
+import org.hyperic.hq.authz.shared.PermissionException
 
 class GroupController extends ApiController {
 
@@ -59,26 +60,121 @@ class GroupController extends ApiController {
         }
     }
 
-    def create(params) {
-        renderXml() {
-            GroupResponse() {
-                out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
-            }
-        }
-    }
-
     def delete(params) {
+        def id = params.getOne('id')?.toInteger()
+
+        if (!id) {
+            renderXml() {
+                out << StatusResponse() {
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                }
+            }
+            return
+        }
+
+        def group = getGroup(id, null)
+        def failureXml = null
+        if (!group) {
+            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                       "Group with id " + id + " not found")
+        } else {
+            try {
+                group.remove(user)
+            } catch (PermissionException e) {
+                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+            } catch (Exception e) {
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+            }
+        }
+
         renderXml() {
-            StatusResponse() {
-                out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
+            out << StatusResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                }
             }
         }
     }
 
-    def removeResource(params) {
+    def sync(params) {
+        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+        for (xmlGroup in syncRequest['Group']) {
+            // Check for existance
+            def existing = getGroup(xmlGroup.'@id'?.toInteger(),
+                                    xmlGroup.'@name')
+
+            def failureXml = null
+            def roles = [] as Set
+            def resources = []
+            def prototype = null
+
+            // Look up prototype
+            def xmlPrototype = xmlGroup.'ResourcePrototype'
+            if (!xmlPrototype) {
+                log.debug("No prototype found for " + xmlGroup.'@name')
+            } else {
+                prototype = resourceHelper.find(prototype:xmlPrototype.'@name')
+                if (!prototype) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Unable to find prototype with " +
+                                               "name " + xmlPrototype.'@name')
+                }
+            }
+
+            // Look up roles
+            for (xmlRole in xmlGroup['Role']) {
+                log.debug("Found role "+ xmlRole.'@name')
+
+                def role = getRole(xmlRole.'@id'?.toInteger(),
+                                   xmlRole.'@name')
+                if (!role) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Unable to find role with id " +
+                                               xmlRole.'@id' + " and name " +
+                                               xmlRole.'@name')
+                } else {
+                    roles.add(role)
+                }
+            }
+
+            // Look up resources
+            for (xmlResource in xmlGroup['Resource']) {
+                log.debug("Found resource " + xmlResource.'@name')
+
+                def resource = getResource(xmlResource.'@id'?.toInteger());
+
+                if (!resource) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Unable to find resource with id " +
+                                               xmlResource.'@id')
+                } else {
+                    resources.add(resource)
+                }
+            }
+
+            if (!failureXml) {
+                if (existing) {
+                    // TODO: This needs to be moved out to the Manager.
+                    existing.setRoles(roles)
+                    existing.setResources(user, resources)
+                    existing.updateGroup(user,
+                                         xmlGroup.'@name',
+                                         xmlGroup.'@description',
+                                         xmlGroup.'@location')
+                } else {
+                    resourceHelper.createGroup(xmlGroup.'@name',
+                                               xmlGroup.'@description',
+                                               xmlGroup.'@location',
+                                               prototype, roles, resources)
+                }
+            }
+        }
+
         renderXml() {
-            StatusResponse() {
-                out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)                
+            out << StatusResponse() {
+                out << getSuccessXML()
             }
         }
     }
@@ -101,47 +197,6 @@ class GroupController extends ApiController {
                 for (g in  groups.sort {a, b -> a.name <=> b.name}) {
                     out << getGroupXML(g)
                 }
-            }
-        }
-    }
-
-    def listResources(params) {
-        def id = params.getOne("groupId")?.toInteger()
-
-        if (!id) {
-            renderXml() {
-                ResourcesResponse() {
-                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
-                }
-            }
-            return
-        }
-
-        def group = getGroup(id, null)
-        if (!group) {
-            renderXml() {
-                ResourcesResponse() {
-                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND);
-                }
-            }
-            return
-        }
-
-        def resources = group.resources
-        renderXml() {
-            ResourcesResponse() {
-                out << getSuccessXML()   
-                for (r in resources.sort {a, b -> a.name <=> b.name}) {
-                    out << getResourceXML(r)
-                }
-            }
-        }
-    }
-
-    def addResource(params) {
-        renderXml() {
-            StatusResponse() {
-                out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)                                                                
             }
         }
     }
