@@ -24,7 +24,7 @@ public class GroupDelete_test extends GroupTestBase {
 
         Group g = generateTestGroup();
 
-        StatusResponse response = groupApi.createGroup(g);
+        GroupResponse response = groupApi.createGroup(g);
         hqAssertSuccess(response);
 
         GroupResponse groupResponse = groupApi.getGroup(g.getName());

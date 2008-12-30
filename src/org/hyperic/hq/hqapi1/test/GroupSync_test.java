@@ -42,13 +42,10 @@ public class GroupSync_test extends GroupTestBase {
         Group g = generateTestGroup();
         g.getResource().addAll(resources);
 
-        StatusResponse createResponse = groupApi.createGroup(g);
+        GroupResponse createResponse = groupApi.createGroup(g);
         hqAssertSuccess(createResponse);
 
-        GroupResponse getResponse = groupApi.getGroup(g.getName());
-        hqAssertSuccess(getResponse);
-
-        Group createdGroup = getResponse.getGroup();
+        Group createdGroup = createResponse.getGroup();
         validateGroup(createdGroup);
         assertEquals(g.getName(), createdGroup.getName());
         assertEquals(g.getDescription(), createdGroup.getDescription());
@@ -85,13 +82,10 @@ public class GroupSync_test extends GroupTestBase {
         g.getResource().addAll(resourceResponse.getResource());
         g.getRole().addAll(roleResponse.getRole());
 
-        StatusResponse createResponse = groupApi.createGroup(g);
+        GroupResponse createResponse = groupApi.createGroup(g);
         hqAssertSuccess(createResponse);
 
-        GroupResponse getResponse = groupApi.getGroup(g.getName());
-        hqAssertSuccess(getResponse);
-
-        Group createdGroup = getResponse.getGroup();
+        Group createdGroup = createResponse.getGroup();
         validateGroup(createdGroup);
         assertEquals(createdGroup.getName(), g.getName());
         assertEquals(createdGroup.getDescription(), g.getDescription());
@@ -117,7 +111,7 @@ public class GroupSync_test extends GroupTestBase {
         Group g = generateTestGroup();
         g.setResourcePrototype(type);
 
-        StatusResponse createResponse = groupApi.createGroup(g);
+        GroupResponse createResponse = groupApi.createGroup(g);
         hqAssertFailureObjectNotFound(createResponse);    
     }
 
@@ -129,14 +123,11 @@ public class GroupSync_test extends GroupTestBase {
         // Create
         Group g = generateTestGroup();
 
-        StatusResponse response = groupApi.createGroup(g);
+        GroupResponse response = groupApi.createGroup(g);
         hqAssertSuccess(response);
 
-        GroupResponse createGroupResponse = groupApi.getGroup(g.getName());
-        hqAssertSuccess(createGroupResponse);
-
         // Update
-        Group createdGroup = createGroupResponse.getGroup();
+        Group createdGroup = response.getGroup();
 
         final String UPDATED = "Updated";
 
@@ -144,14 +135,11 @@ public class GroupSync_test extends GroupTestBase {
         createdGroup.setDescription(g.getDescription() + UPDATED);
         createdGroup.setLocation(g.getLocation() + UPDATED);
 
-        StatusResponse updateResponse = groupApi.updateGroup(createdGroup);
+        GroupResponse updateResponse = groupApi.updateGroup(createdGroup);
         hqAssertSuccess(updateResponse);
 
         // Validate
-        GroupResponse getResponse = groupApi.getGroup(createdGroup.getId());
-        hqAssertSuccess(getResponse);
-
-        Group updatedGroup = getResponse.getGroup();
+        Group updatedGroup = updateResponse.getGroup();
         assertTrue(updatedGroup.getName().endsWith(UPDATED));
         assertTrue(updatedGroup.getDescription().endsWith(UPDATED));
         assertTrue(updatedGroup.getLocation().endsWith(UPDATED));

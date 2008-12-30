@@ -100,6 +100,9 @@ class GroupController extends ApiController {
 
     def sync(params) {
         def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+
+        def groups = []
+
         for (xmlGroup in syncRequest['Group']) {
             // Check for existance
             def existing = getGroup(xmlGroup.'@id'?.toInteger(),
@@ -163,18 +166,21 @@ class GroupController extends ApiController {
                                          xmlGroup.'@name',
                                          xmlGroup.'@description',
                                          xmlGroup.'@location')
+                    groups << existing
                 } else {
-                    resourceHelper.createGroup(xmlGroup.'@name',
-                                               xmlGroup.'@description',
-                                               xmlGroup.'@location',
-                                               prototype, roles, resources)
+                    def group = resourceHelper.createGroup(xmlGroup.'@name',
+                                                           xmlGroup.'@description',
+                                                           xmlGroup.'@location',
+                                                           prototype, roles,
+                                                           resources)
+                    groups << group
                 }
             }
 
             // If any group is unable to be synced exit with an error.
             if (failureXml) {
                 renderXml() {
-                    out << StatusResponse() {
+                    out << GroupsResponse() {
                         out << failureXml
                     }
                 }
@@ -183,8 +189,11 @@ class GroupController extends ApiController {
         }
 
         renderXml() {
-            out << StatusResponse() {
+            out << GroupsResponse() {
                 out << getSuccessXML()
+                for (g in  groups) {
+                    out << getGroupXML(g)
+                }
             }
         }
     }

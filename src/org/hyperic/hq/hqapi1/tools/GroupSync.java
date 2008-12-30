@@ -5,7 +5,6 @@ import joptsimple.OptionSet;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.GroupApi;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.GroupsResponse;
 import org.hyperic.hq.hqapi1.types.Group;
 
@@ -26,7 +25,7 @@ public class GroupSync extends ToolsBase {
                                                   System.in);
         List<Group> groups = resp.getGroup();
 
-        StatusResponse syncResponse = groupApi.syncGroups(groups);
+        GroupsResponse syncResponse = groupApi.syncGroups(groups);
         checkSuccess(syncResponse);
 
         System.out.println("Successfully synced " + groups.size() + " groups.");

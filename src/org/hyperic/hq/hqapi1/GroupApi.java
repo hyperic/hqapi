@@ -11,6 +11,7 @@ import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.GroupsResponse;
 import org.hyperic.hq.hqapi1.types.GroupsRequest;
+import org.hyperic.hq.hqapi1.types.ResponseStatus;
 
 /**
  * The Hyperic HQ Group API.
@@ -67,6 +68,24 @@ public class GroupApi extends BaseApi {
         return doGet("group/get.hqu", params, GroupResponse.class);
     }
 
+    private GroupResponse syncSingleGroup(Group group)
+        throws IOException
+    {
+        List<Group> groups = new ArrayList<Group>();
+        groups.add(group);
+        GroupsResponse syncResponse = syncGroups(groups);
+
+        GroupResponse groupResponse = new GroupResponse();
+        groupResponse.setStatus(syncResponse.getStatus());
+        if (syncResponse.getStatus().equals(ResponseStatus.SUCCESS)) {
+            groupResponse.setGroup(syncResponse.getGroup().get(0));
+        } else {
+            groupResponse.setError(syncResponse.getError());
+        }
+
+        return groupResponse;
+    }
+
     /**
      * Create a {@link org.hyperic.hq.hqapi1.types.Group}.
      *
@@ -76,12 +95,10 @@ public class GroupApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public StatusResponse createGroup(Group group)
+    public GroupResponse createGroup(Group group)
         throws IOException
     {
-        List<Group> groups = new ArrayList<Group>();
-        groups.add(group);
-        return syncGroups(groups);
+        return syncSingleGroup(group);
     }
 
     /**
@@ -93,12 +110,10 @@ public class GroupApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public StatusResponse updateGroup(Group group)
+    public GroupResponse updateGroup(Group group)
         throws IOException
     {
-        List<Group> groups = new ArrayList<Group>();
-        groups.add(group);
-        return syncGroups(groups);
+        return syncSingleGroup(group);
     }
 
     /**
@@ -179,11 +194,11 @@ public class GroupApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public StatusResponse syncGroups(List<Group> groups)
+    public GroupsResponse syncGroups(List<Group> groups)
             throws IOException {
 
         GroupsRequest groupRequest = new GroupsRequest();
         groupRequest.getGroup().addAll(groups);
-        return doPost("group/sync.hqu", groupRequest, StatusResponse.class);
+        return doPost("group/sync.hqu", groupRequest, GroupsResponse.class);
     }
 }
