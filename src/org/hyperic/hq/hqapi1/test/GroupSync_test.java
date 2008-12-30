@@ -11,6 +11,7 @@ import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 
 import java.util.List;
 
@@ -105,8 +106,19 @@ public class GroupSync_test extends GroupTestBase {
         hqAssertSuccess(deleteResponse);
     }
 
-    public void testCreateCompatibleWrongPrototype() throws Exception {
+    public void testCreateCompatibleInvalidPrototype() throws Exception {
 
+        GroupApi groupApi = getApi().getGroupApi();
+
+        ResourcePrototype type = new ResourcePrototype();
+        type.setName("Invalid Resource Prototype");
+
+        // Create
+        Group g = generateTestGroup();
+        g.setResourcePrototype(type);
+
+        StatusResponse createResponse = groupApi.createGroup(g);
+        hqAssertFailureObjectNotFound(createResponse);    
     }
 
     public void testUpdateFields() throws Exception {

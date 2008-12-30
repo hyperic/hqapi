@@ -170,6 +170,16 @@ class GroupController extends ApiController {
                                                prototype, roles, resources)
                 }
             }
+
+            // If any group is unable to be synced exit with an error.
+            if (failureXml) {
+                renderXml() {
+                    out << StatusResponse() {
+                        out << failureXml
+                    }
+                }
+                return
+            }
         }
 
         renderXml() {
