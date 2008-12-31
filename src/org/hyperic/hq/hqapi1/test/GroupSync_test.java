@@ -90,6 +90,8 @@ public class GroupSync_test extends GroupTestBase {
         assertEquals(createdGroup.getName(), g.getName());
         assertEquals(createdGroup.getDescription(), g.getDescription());
         assertEquals(createdGroup.getLocation(), g.getLocation());
+        assertEquals(g.getResourcePrototype().getName(),
+                     prototypeResponse.getResourcePrototype().getName());
         assertEquals(createdGroup.getResource().size(),
                      g.getResource().size());
         assertEquals(createdGroup.getRole().size(),
@@ -151,17 +153,145 @@ public class GroupSync_test extends GroupTestBase {
 
     public void testUpdateRoles() throws Exception {
 
+        HQApi api = getApi();
+        RoleApi roleApi = api.getRoleApi();
+        GroupApi groupApi = api.getGroupApi();
+
+        // Create
+        Group g = generateTestGroup();
+        GroupResponse createResponse = groupApi.createGroup(g);
+        hqAssertSuccess(createResponse);
+
+        Group createdGroup = createResponse.getGroup();
+        assertTrue(createdGroup.getRole().size() == 0);
+
+        // Add all Roles
+        RolesResponse roleResponse = roleApi.getRoles();
+        hqAssertSuccess(roleResponse);
+        createdGroup.getRole().addAll(roleResponse.getRole());
+        GroupResponse updateResponse = groupApi.updateGroup(createdGroup);
+        hqAssertSuccess(updateResponse);
+        Group updatedGroup = updateResponse.getGroup();
+        assertTrue(updatedGroup.getRole().size() == roleResponse.getRole().size());
+
+        // Clear all roles
+        updatedGroup.getRole().clear();
+        updateResponse = groupApi.updateGroup(updatedGroup);
+        hqAssertSuccess(updateResponse);
+        updatedGroup = updateResponse.getGroup();
+        assertTrue(updatedGroup.getRole().size() == 0);
+
+        // Cleanup
+        StatusResponse deleteResponse = groupApi.deleteGroup(createdGroup.getId());
+        hqAssertSuccess(deleteResponse);
     }
 
     public void testUpdateResources() throws Exception {
 
+        HQApi api = getApi();
+        ResourceApi resourceApi = api.getResourceApi();
+        GroupApi groupApi = api.getGroupApi();
+
+        // Find CPU resources
+        ResourcePrototypeResponse prototypeResponse =
+                resourceApi.getResourcePrototype("CPU");
+        hqAssertSuccess(prototypeResponse);
+
+        ResourcesResponse resourceResponse =
+                resourceApi.getResources(prototypeResponse.getResourcePrototype());
+        hqAssertSuccess(resourceResponse);
+
+        // Create
+        Group g = generateTestGroup();
+        g.setResourcePrototype(prototypeResponse.getResourcePrototype());
+        GroupResponse createResponse = groupApi.createGroup(g);
+        hqAssertSuccess(createResponse);
+        Group createdGroup = createResponse.getGroup();
+        assertTrue(createdGroup.getResource().size() == 0);
+        assertEquals(createdGroup.getResourcePrototype().getName(),
+                     prototypeResponse.getResourcePrototype().getName());
+
+        // Update with resources
+        createdGroup.getResource().addAll(resourceResponse.getResource());
+        GroupResponse updateResponse = groupApi.updateGroup(createdGroup);
+        hqAssertSuccess(updateResponse);
+        Group updatedGroup = updateResponse.getGroup();
+        assertTrue(updatedGroup.getResource().size() ==
+                   resourceResponse.getResource().size());
+
+        // Clear all resources
+        updatedGroup.getResource().clear();
+        updateResponse = groupApi.updateGroup(updatedGroup);
+        hqAssertSuccess(updateResponse);
+        updatedGroup = updateResponse.getGroup();
+        assertTrue(updatedGroup.getResource().size() == 0);
+
+        // Cleanup
+        StatusResponse deleteResponse = groupApi.deleteGroup(createdGroup.getId());
+        hqAssertSuccess(deleteResponse);
     }
 
     public void testUpdateResourcesWrongPrototype() throws Exception {
+        HQApi api = getApi();
+        ResourceApi resourceApi = api.getResourceApi();
+        GroupApi groupApi = api.getGroupApi();
 
+        // Find CPU resources
+        ResourcePrototypeResponse cpuPrototypeResponse =
+                resourceApi.getResourcePrototype("CPU");
+        hqAssertSuccess(cpuPrototypeResponse);
+        ResourcePrototypeResponse fileServerFileResponse =
+                resourceApi.getResourcePrototype("FileServer File");
+        hqAssertSuccess(fileServerFileResponse);
+
+        ResourcesResponse resourceResponse =
+                resourceApi.getResources(cpuPrototypeResponse.getResourcePrototype());
+        hqAssertSuccess(resourceResponse);
+
+        // Create
+        Group g = generateTestGroup();
+        g.setResourcePrototype(fileServerFileResponse.getResourcePrototype());
+        GroupResponse createResponse = groupApi.createGroup(g);
+        hqAssertSuccess(createResponse);
+        Group createdGroup = createResponse.getGroup();
+
+        // Add CPU resources to FileServer File compat group
+        createdGroup.getResource().addAll(resourceResponse.getResource());
+        GroupResponse updateResponse = groupApi.updateGroup(createdGroup);
+        hqAssertFailureInvalidParameters(updateResponse);
+
+        // Cleanup
+        StatusResponse deleteResponse = groupApi.deleteGroup(createdGroup.getId());
+        hqAssertSuccess(deleteResponse);
     }
 
     public void testUpdatePrototype() throws Exception {
+        HQApi api = getApi();
+        ResourceApi resourceApi = api.getResourceApi();
+        GroupApi groupApi = api.getGroupApi();
 
+        // Find prototypes
+        ResourcePrototypeResponse cpuProtoResponse =
+                resourceApi.getResourcePrototype("CPU");
+        hqAssertSuccess(cpuProtoResponse);
+        ResourcePrototypeResponse fileServerFileResponse =
+                resourceApi.getResourcePrototype("FileServer File");
+        hqAssertSuccess(fileServerFileResponse);
+
+        // Create
+        Group g = generateTestGroup();
+        g.setResourcePrototype(cpuProtoResponse.getResourcePrototype());
+        GroupResponse createResponse = groupApi.createGroup(g);
+        hqAssertSuccess(createResponse);
+        Group createdGroup = createResponse.getGroup();
+
+        // Update prototype
+        createdGroup.setResourcePrototype(fileServerFileResponse.getResourcePrototype());
+        GroupResponse updateResponse = groupApi.updateGroup(createdGroup);
+        hqAssertFailureNotSupported(updateResponse);
+
+        // Cleanup
+        StatusResponse deleteResponse = groupApi.deleteGroup(createdGroup.getId());
+        hqAssertSuccess(deleteResponse);
     }    
 }

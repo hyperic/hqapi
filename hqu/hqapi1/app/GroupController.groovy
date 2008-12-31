@@ -123,6 +123,15 @@ class GroupController extends ApiController {
                     failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                                "Unable to find prototype with " +
                                                "name " + xmlPrototype.'@name')
+                } else {
+                    if (existing) {
+                        if (!existing.resourcePrototype.name.equals(prototype.name)) {
+                            failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
+                                                       "Cannot change group type from " +
+                                                       existing.resourcePrototype.name +
+                                                       " to " + prototype.name)
+                        }
+                    }
                 }
             }
 
@@ -153,6 +162,15 @@ class GroupController extends ApiController {
                                                "Unable to find resource with id " +
                                                xmlResource.'@id')
                 } else {
+                    if (prototype) {
+                        if (!resource.prototype.name.equals(prototype.name)) {
+                            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                                       "Resource " + resource.name +
+                                                       " is not of type " +
+                                                       prototype.name)
+                        }
+                    }
+
                     resources.add(resource)
                 }
             }
