@@ -36,7 +36,13 @@ public enum ErrorCode {
      * The requested API is not implemented.
      */
     NOT_IMPLEMENTED("NotImplemented",
-                    "The requested API is not available");
+                    "The requested API is not available"),
+
+    /**
+     * Operation not supported.
+     */
+    NOT_SUPPORTED("NotSupported",
+                  "The requested operation is not supported");
 
     private final String _errorCode;
     private final String _reasonText;

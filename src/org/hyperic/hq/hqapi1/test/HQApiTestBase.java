@@ -197,4 +197,11 @@ public class HQApiTestBase  extends TestCase {
                      ErrorCode.NOT_IMPLEMENTED.getErrorCode(),
                      response.getError().getErrorCode());
     }
+
+    void hqAssertFailureNotSupported(Response response) {
+        assertEquals(ResponseStatus.FAILURE, response.getStatus());
+        assertEquals(response.getError().getReasonText(),
+                     ErrorCode.NOT_SUPPORTED.getErrorCode(),
+                     response.getError().getErrorCode());
+    }
 }
