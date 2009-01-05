@@ -7,16 +7,19 @@ import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.ResourceResponse;
 
 import java.util.Arrays;
 
 public class ResourceList extends ToolsBase {
 
     private static String OPT_PROTOTYPE = "prototype";
+    private static String OPT_PLATFORM = "platform";
+
     private static String OPT_CONFIG = "config";
     private static String OPT_CHILDREN = "children";
 
-    private static String[] ONE_REQUIRED = { OPT_PROTOTYPE };
+    private static String[] ONE_REQUIRED = { OPT_PROTOTYPE, OPT_PLATFORM };
 
     private static void listRoles(String[] args) throws Exception {
 
@@ -25,6 +28,8 @@ public class ResourceList extends ToolsBase {
         p.accepts(OPT_PROTOTYPE, "If specified, return only resources with the " +
                   "specified resource prototype").
                 withRequiredArg().ofType(String.class);
+        p.accepts(OPT_PLATFORM, "If specified, return only resources with the " +
+                  "specified platform name").withRequiredArg().ofType(String.class);
         
         p.accepts(OPT_CONFIG, "Include resource configuration");
         p.accepts(OPT_CHILDREN, "Include child resources");
@@ -33,8 +38,6 @@ public class ResourceList extends ToolsBase {
 
         HQApi api = getApi(options);
         ResourceApi resourceApi = api.getResourceApi();
-
-        ResourcesResponse resources;
 
         boolean config = false;
         if (options.has(OPT_CONFIG)) {
@@ -46,18 +49,41 @@ public class ResourceList extends ToolsBase {
             children = true;
         }
 
+        int criteria = 0;
+        for (String opt : ONE_REQUIRED) {
+            if (options.has(opt)) {
+                criteria++;
+            }
+        }
+
+        if (criteria > 1) {
+            System.err.println("Only one of " + Arrays.toString(ONE_REQUIRED) + " may be specified");
+            System.exit(-1);
+        } else if (criteria == 0) {
+            System.err.println("One of " + Arrays.toString(ONE_REQUIRED) + " required");
+            System.exit(-1);
+        }
+
         if (options.has(OPT_PROTOTYPE)) {
             String prototype = (String) options.valueOf(OPT_PROTOTYPE);
             ResourcePrototypeResponse protoResponse =
                     resourceApi.getResourcePrototype(prototype);
             checkSuccess(protoResponse);
-            resources = resourceApi.getResources(protoResponse.getResourcePrototype(),
-                                                 config, children);
+            ResourcesResponse resources =
+                    resourceApi.getResources(protoResponse.getResourcePrototype(),
+                                             config, children);
             checkSuccess(resources);
             XmlUtil.serialize(resources, System.out, Boolean.TRUE);            
-        } else {
-            System.err.println("One of " + Arrays.toString(ONE_REQUIRED) + " required");
-            System.exit(-1);
+        } else if (options.has(OPT_PLATFORM)) {
+            String platform = (String)options.valueOf(OPT_PLATFORM);
+            ResourceResponse resource =
+                    resourceApi.getPlatformResource(platform, config, children);
+            checkSuccess(resource);
+
+            ResourcesResponse resources = new ResourcesResponse();
+            resources.setStatus(resource.getStatus());
+            resources.getResource().add(resource.getResource());
+            XmlUtil.serialize(resources, System.out, Boolean.TRUE);            
         }
     }
 
