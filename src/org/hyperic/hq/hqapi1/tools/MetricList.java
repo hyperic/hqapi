@@ -14,7 +14,7 @@ public class MetricList extends ToolsBase {
     private static final String OPT_RESOURCE_ID = "id";
     private static final String OPT_ENABLED = "enabled";
 
-    private static void listEscalations(String[] args) throws Exception {
+    private static void listMetrics(String[] args) throws Exception {
 
         OptionParser p = getOptionParser();
 
@@ -52,7 +52,7 @@ public class MetricList extends ToolsBase {
 
     public static void main(String[] args) throws Exception {
         try {
-            listEscalations(args);
+            listMetrics(args);
         } catch (Exception e) {
             System.err.println("Error listing metrics: " + e.getMessage());
             System.exit(-1);

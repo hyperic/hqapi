@@ -13,7 +13,7 @@ import java.util.List;
 
 public class MetricSync extends ToolsBase {
 
-    private static void syncEscalations(String[] args) throws Exception {
+    private static void syncMetrics(String[] args) throws Exception {
 
         OptionParser p = getOptionParser();
         OptionSet options = getOptions(p, args);
@@ -35,7 +35,7 @@ public class MetricSync extends ToolsBase {
 
     public static void main(String[] args) throws Exception {
         try {
-            syncEscalations(args);
+            syncMetrics(args);
         } catch (Exception e) {
             System.err.println("Error syncing metrics: " + e.getMessage());
             System.exit(-1);
