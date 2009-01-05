@@ -27,20 +27,16 @@ public class GroupSync_test extends GroupTestBase {
     public void testCreateMixed() throws Exception {
 
         HQApi api = getApi();
-        ResourceApi resourceApi = api.getResourceApi();
         GroupApi groupApi = api.getGroupApi();
 
         Resource platform = getLocalPlatformResource();
 
-        ResourcesResponse resourceResponse =
-                resourceApi.getResourceChildren(platform);
-        hqAssertSuccess(resourceResponse);
-        List<Resource> resources = resourceResponse.getResource();
-        assertTrue("No servers found on platform " + platform.getName(),
-                   resources.size() > 0);
+        List<Resource> children = platform.getResource();
+        assertTrue("No child resources for platform " + platform.getName(),
+                   children.size() > 0);
 
         Group g = generateTestGroup();
-        g.getResource().addAll(resources);
+        g.getResource().addAll(children);
 
         GroupResponse createResponse = groupApi.createGroup(g);
         hqAssertSuccess(createResponse);
@@ -69,7 +65,8 @@ public class GroupSync_test extends GroupTestBase {
         hqAssertSuccess(prototypeResponse);
 
         ResourcesResponse resourceResponse =
-                resourceApi.getResources(prototypeResponse.getResourcePrototype());
+                resourceApi.getResources(prototypeResponse.getResourcePrototype(),
+                                         false, false);
         hqAssertSuccess(resourceResponse);
 
         // Find all Roles
@@ -198,7 +195,8 @@ public class GroupSync_test extends GroupTestBase {
         hqAssertSuccess(prototypeResponse);
 
         ResourcesResponse resourceResponse =
-                resourceApi.getResources(prototypeResponse.getResourcePrototype());
+                resourceApi.getResources(prototypeResponse.getResourcePrototype(),
+                                         false, false);
         hqAssertSuccess(resourceResponse);
 
         // Create
@@ -245,7 +243,8 @@ public class GroupSync_test extends GroupTestBase {
         hqAssertSuccess(fileServerFileResponse);
 
         ResourcesResponse resourceResponse =
-                resourceApi.getResources(cpuPrototypeResponse.getResourcePrototype());
+                resourceApi.getResources(cpuPrototypeResponse.getResourcePrototype(),
+                                         false, false);
         hqAssertSuccess(resourceResponse);
 
         // Create

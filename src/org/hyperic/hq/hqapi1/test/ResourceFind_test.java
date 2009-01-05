@@ -18,7 +18,7 @@ public class ResourceFind_test extends ResourceTestBase {
         Agent a = getRunningAgent();
         
         ResourceApi api = getApi().getResourceApi();
-        ResourcesResponse resp = api.getResources(a);
+        ResourcesResponse resp = api.getResources(a, false, false);
         hqAssertSuccess(resp);
 
         // This test assumes if you have a local agent that is pingable that
@@ -39,7 +39,7 @@ public class ResourceFind_test extends ResourceTestBase {
         a.setVersion("4.0");
 
         ResourceApi api = getApi().getResourceApi();
-        ResourcesResponse resp = api.getResources(a);
+        ResourcesResponse resp = api.getResources(a, false, false);
         hqAssertFailureObjectNotFound(resp);
     }
 
@@ -53,7 +53,7 @@ public class ResourceFind_test extends ResourceTestBase {
 
         ResourcePrototype pt = protoResponse.getResourcePrototype();
 
-        ResourcesResponse resp = api.getResources(pt);
+        ResourcesResponse resp = api.getResources(pt, false, false);
         hqAssertSuccess(resp);
 
         // We assume we're running against a server with valid resources
@@ -74,47 +74,5 @@ public class ResourceFind_test extends ResourceTestBase {
         ResourcePrototypeResponse protoResponse =
             api.getResourcePrototype(INVALID_TYPE);
         hqAssertFailureObjectNotFound(protoResponse);
-    }
-
-    public void testFindChildren() throws Exception {
-
-        Agent a = getRunningAgent();
-
-        ResourceApi api = getApi().getResourceApi();
-        ResourcesResponse resp = api.getResources(a);
-        hqAssertSuccess(resp);
-
-        // This test assumes if you have a local agent that is pingable that
-        // there will be at least one platform servicing it.
-        assertTrue("Found 0 platform resources for agent " + a.getId(),
-                   resp.getResource().size() > 0);
-
-        for (Resource platform : resp.getResource()) {
-            // For each platform resource, loop through it's viewable children.
-            validateResource(platform);
-
-            ResourcesResponse serverResponse = api.getResourceChildren(platform);
-            hqAssertSuccess(serverResponse);
-
-            assertTrue("Found no servers for platform " + platform.getName(),
-                       serverResponse.getResource().size() > 0);
-              
-            Resource server = serverResponse.getResource().get(0);
-
-            ResourcesResponse servicesResponse =
-                    api.getResourceChildren(server);
-            hqAssertSuccess(servicesResponse);
-        }
-    }
-
-    public void testFindChildrenInvalidResource() throws Exception {
-
-        Resource r = new Resource();
-        r.setId(Integer.MAX_VALUE);
-        r.setName("Invalid resource");
-
-        ResourceApi api = getApi().getResourceApi();
-        ResourcesResponse resp = api.getResourceChildren(r);
-        hqAssertFailureObjectNotFound(resp);
     }
 }

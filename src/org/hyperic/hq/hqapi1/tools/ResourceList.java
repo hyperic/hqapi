@@ -13,6 +13,8 @@ import java.util.Arrays;
 public class ResourceList extends ToolsBase {
 
     private static String OPT_PROTOTYPE = "prototype";
+    private static String OPT_CONFIG = "config";
+    private static String OPT_CHILDREN = "children";
 
     private static String[] ONE_REQUIRED = { OPT_PROTOTYPE };
 
@@ -23,6 +25,9 @@ public class ResourceList extends ToolsBase {
         p.accepts(OPT_PROTOTYPE, "If specified, return only resources with the " +
                   "specified resource prototype").
                 withRequiredArg().ofType(String.class);
+        
+        p.accepts(OPT_CONFIG, "Include resource configuration");
+        p.accepts(OPT_CHILDREN, "Include child resources");
 
         OptionSet options = getOptions(p, args);
 
@@ -31,12 +36,23 @@ public class ResourceList extends ToolsBase {
 
         ResourcesResponse resources;
 
+        boolean config = false;
+        if (options.has(OPT_CONFIG)) {
+            config = true;
+        }
+
+        boolean children = false;
+        if (options.has(OPT_CHILDREN)) {
+            children = true;
+        }
+
         if (options.has(OPT_PROTOTYPE)) {
             String prototype = (String) options.valueOf(OPT_PROTOTYPE);
             ResourcePrototypeResponse protoResponse =
                     resourceApi.getResourcePrototype(prototype);
             checkSuccess(protoResponse);
-            resources = resourceApi.getResources(protoResponse.getResourcePrototype());
+            resources = resourceApi.getResources(protoResponse.getResourcePrototype(),
+                                                 config, children);
             checkSuccess(resources);
             XmlUtil.serialize(resources, System.out, Boolean.TRUE);            
         } else {

@@ -40,7 +40,8 @@ public class ResourceCreateService extends ToolsBase {
 
         ResourceResponse resourceResponse =
                 resourceApi.getResource((Integer)getRequired(options,
-                                                             OPT_RESOURCEID));
+                                                             OPT_RESOURCEID),
+                                        false, true);
         checkSuccess(resourceResponse);
 
         String name = (String)getRequired(options ,OPT_NAME);

@@ -22,6 +22,8 @@
     <!-- Resource objects -->
     <xs:complexType name="Resource">
         <xs:sequence>
+            <!-- Child resources -->
+            <xs:element name="Resource" maxOccurs="unbounded" type="Resource"/>
             <xs:element name="ResourceConfig" maxOccurs="unbounded" type="ResourceConfig"/>
             <xs:element name="ResourcePrototype" maxOccurs="1" type="ResourcePrototype"/>
         </xs:sequence>

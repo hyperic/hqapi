@@ -16,7 +16,7 @@ public class ResourceGet_test extends ResourceTestBase {
 
         ResourceApi api = getApi().getResourceApi();
 
-        ResourceResponse resp = api.getResource(Integer.MAX_VALUE);
+        ResourceResponse resp = api.getResource(Integer.MAX_VALUE, false, false);
         hqAssertFailureObjectNotFound(resp);
     }
 
@@ -26,105 +26,113 @@ public class ResourceGet_test extends ResourceTestBase {
 
         ResourceApi api = getApi().getResourceApi();
 
-        ResourcesResponse findResponse = api.getResources(a);
+        ResourcesResponse findResponse = api.getResources(a, false, false);
         hqAssertSuccess(findResponse);
 
-        // This test assumes if you have a local agent that is pingable that
-        // there will be at least one platform servicing it.
         assertTrue("Found 0 platform resources for agent " + a.getId(),
                    findResponse.getResource().size() > 0);
-        for (Resource r : findResponse.getResource()) {
-            // Now that we have valid resource ids, query each
-            Integer rid = r.getId();
 
-            ResourceResponse getResponse = api.getResource(rid);
-            hqAssertSuccess(getResponse);
-            Resource resource = getResponse.getResource();
-            validateResource(resource);
-        }
+        Resource r = findResponse.getResource().get(0);
+
+        ResourceResponse getResponse = api.getResource(r.getId(), false, false);
+        hqAssertSuccess(getResponse);
+        Resource resource = getResponse.getResource();
+        validateResource(resource);
     }
 
-    final Integer ID_10001 = 10001;
+    public void testGetResourceWithConfigAndChildren() throws Exception {
 
-    public void testGetResourceByPlatformId() throws Exception {
+        Agent a = getRunningAgent();
 
         ResourceApi api = getApi().getResourceApi();
 
-        // TODO: Get a valid id?
-        //GetResourceResponse resp = api.getResourceForPlatform(ID_10001);
-        //hqAssertSuccess(resp);
-        //validateResource(resp.getResource());
+        ResourcesResponse findResponse = api.getResources(a, false, false);
+        hqAssertSuccess(findResponse);
+
+        assertTrue("Found 0 platform resources for agent " + a.getId(),
+                   findResponse.getResource().size() > 0);
+
+        Resource r = findResponse.getResource().get(0);
+
+        ResourceResponse getResponse = api.getResource(r.getId(), true, true);
+        hqAssertSuccess(getResponse);
+        Resource resource = getResponse.getResource();
+        validateResource(resource);
+        assertTrue("No configuration found for resource " + r.getName(),
+                   resource.getResourceConfig().size() > 0);
+        assertTrue("No child resources found for resource " + r.getName(),
+                   resource.getResource().size() > 0);
     }
 
-    public void testGetResourceByInvalidPlatformId() throws Exception {
+    public void testGetResourceNoConfigNoChildren() throws Exception {
+
+        Agent a = getRunningAgent();
 
         ResourceApi api = getApi().getResourceApi();
 
-        ResourceResponse resp = api.getResourceForPlatform(Integer.MAX_VALUE);
-        hqAssertFailureObjectNotFound(resp);
+        ResourcesResponse findResponse = api.getResources(a, false, false);
+        hqAssertSuccess(findResponse);
+
+        assertTrue("Found 0 platform resources for agent " + a.getId(),
+                   findResponse.getResource().size() > 0);
+
+        Resource r = findResponse.getResource().get(0);
+
+        ResourceResponse getResponse = api.getResource(r.getId(), false, false);
+        hqAssertSuccess(getResponse);
+        Resource resource = getResponse.getResource();
+        validateResource(resource);
+        assertTrue("Configuration found for resource " + r.getName(),
+                   resource.getResourceConfig().size() == 0);
+        assertTrue("Child resources found for resource " + r.getName(),
+                   resource.getResource().size() == 0);
     }
 
-    public void testGetResourceByPlatformName() throws Exception {
+    public void testGetResourceConfigOnly() throws Exception {
 
-        //ResourceApi api = getApi().getResourceApi();
-
-        // TODO: Get a valid id.
-        //GetResourceResponse resp = api.getResourceForPlatform(ID_10001);
-        //hqAssertSuccess(resp);
-        //Resource r1 = resp.getResource();
-        //validateResource(r1);
-
-        //String name = resp.getResource().getName();
-        //GetResourceResponse respByName = api.getResourceForPlatform(name);
-        //hqAssertSuccess(respByName);
-        //Resource r2 = resp.getResource();
-        //validateResource(r2);
-
-        //assertEquals(r1.getId(), r2.getId());
-        //assertEquals(r1.getDescription(), r2.getDescription());
-        //assertEquals(r1.getName(), r2.getName());
-    }
-
-    public void testGetResourceByInvalidPlatformName() throws Exception {
-
-        final String name = "Non-existant platform name";
-        ResourceApi api = getApi().getResourceApi();
-        ResourceResponse resp = api.getResourceForPlatform(name);
-        hqAssertFailureObjectNotFound(resp);
-    }
-
-    public void testGetResourceByServer() throws Exception {
+        Agent a = getRunningAgent();
 
         ResourceApi api = getApi().getResourceApi();
 
-        // TODO: Get a valid id?
-        //GetResourceResponse resp = api.getResourceForServer(ID_10001);
-        //hqAssertSuccess(resp);
-        //validateResource(resp.getResource());
+        ResourcesResponse findResponse = api.getResources(a, false, false);
+        hqAssertSuccess(findResponse);
+
+        assertTrue("Found 0 platform resources for agent " + a.getId(),
+                   findResponse.getResource().size() > 0);
+
+        Resource r = findResponse.getResource().get(0);
+
+        ResourceResponse getResponse = api.getResource(r.getId(), true, false);
+        hqAssertSuccess(getResponse);
+        Resource resource = getResponse.getResource();
+        validateResource(resource);
+        assertTrue("No configuration found for reosurce " + r.getName(),
+                   resource.getResourceConfig().size() > 0);
+        assertTrue("Child resources found for resource " + r.getName(),
+                   resource.getResource().size() == 0);
     }
 
-    public void testGetResourceByInvalidServer() throws Exception {
+    public void testGetResourceChildrenOnly() throws Exception {
+
+        Agent a = getRunningAgent();
 
         ResourceApi api = getApi().getResourceApi();
 
-        ResourceResponse resp = api.getResourceForServer(Integer.MAX_VALUE);
-        hqAssertFailureObjectNotFound(resp);
-    }
+        ResourcesResponse findResponse = api.getResources(a, false, false);
+        hqAssertSuccess(findResponse);
 
-    public void testGetResourceByService() throws Exception {
+        assertTrue("Found 0 platform resources for agent " + a.getId(),
+                   findResponse.getResource().size() > 0);
 
-        ResourceApi api = getApi().getResourceApi();
-        // TODO: Get a valid id?
-        //GetResourceResponse resp = api.getResourceForService(ID_10001);
-        //hqAssertSuccess(resp);
-        //validateResource(resp.getResource());
-    }
+        Resource r = findResponse.getResource().get(0);
 
-    public void testGetResourceByInvalidService() throws Exception {
-
-        ResourceApi api = getApi().getResourceApi();
-
-        ResourceResponse resp = api.getResourceForService(Integer.MAX_VALUE);
-        hqAssertFailureObjectNotFound(resp);
+        ResourceResponse getResponse = api.getResource(r.getId(), false, true);
+        hqAssertSuccess(getResponse);
+        Resource resource = getResponse.getResource();
+        validateResource(resource);
+        assertTrue("Configuration found for reosurce " + r.getName(),
+                   resource.getResourceConfig().size() == 0);
+        assertTrue("No child resources found for resource " + r.getName(),
+                   resource.getResource().size() > 0);
     }
 }

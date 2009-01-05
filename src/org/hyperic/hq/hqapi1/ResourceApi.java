@@ -205,38 +205,22 @@ public class ResourceApi extends BaseApi {
      * Get a {@link Resource} by id.
      *
      * @param id The resource id to look up.
-     *
+     * @param config Flag to indicate if resource configuration should be included.
+     * @param children Flag to control whether child resources of this resource
+     * will be included.
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the Resource is returned via
      * {@link org.hyperic.hq.hqapi1.types.ResourceResponse#getResource()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public ResourceResponse getResource(int id)
+    public ResourceResponse getResource(int id, boolean config, boolean children)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id) });
-        return doGet("resource/get.hqu", params,
-                     ResourceResponse.class);
-    }
-
-    /**
-     * Get a {@link Resource} by it's platform id.
-     *
-     * @param id The platform id to look up.
-     *
-     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
-     * the Resource is returned via
-     * {@link org.hyperic.hq.hqapi1.types.ResourceResponse#getResource()}.
-     *
-     * @throws java.io.IOException If a network error occurs while making the request.
-     */
-    public ResourceResponse getResourceForPlatform(int id)
-        throws IOException
-    {
-        Map<String, String[]> params = new HashMap<String, String[]>();
-        params.put("platformId", new String[] { Integer.toString(id) });
+        params.put("config", new String[] { Boolean.toString(config) });
+        params.put("children", new String[] { Boolean.toString(children)});
         return doGet("resource/get.hqu", params,
                      ResourceResponse.class);
     }
@@ -245,59 +229,23 @@ public class ResourceApi extends BaseApi {
      * Get a {@link Resource} by it's platform name.
      *
      * @param name The platform name to look up.
-     *
+     * @param config Flag to indicate if resource configuration should be included.
+     * @param children Flag to control whether child resources of this resource
+     * will be included.
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the Resource is returned via
      * {@link org.hyperic.hq.hqapi1.types.ResourceResponse#getResource()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public ResourceResponse getResourceForPlatform(String name)
+    public ResourceResponse getPlatformResource(String name, boolean config,
+                                                boolean children)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("platformName", new String[] { name });
-        return doGet("resource/get.hqu", params,
-                     ResourceResponse.class);
-    }
-
-
-    /**
-     * Get a {@link Resource} by it's server id.
-     *
-     * @param id The platform id to look up.
-     *
-     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
-     * the Resource is returned via
-     * {@link org.hyperic.hq.hqapi1.types.ResourceResponse#getResource()}.
-     *
-     * @throws java.io.IOException If a network error occurs while making the request.
-     */
-    public ResourceResponse getResourceForServer(int id)
-        throws IOException
-    {
-        Map<String, String[]> params = new HashMap<String, String[]>();
-        params.put("serverId", new String[] { Integer.toString(id) });
-        return doGet("resource/get.hqu", params,
-                     ResourceResponse.class);
-    }
-
-    /**
-     * Get a {@link Resource} by it's service id.
-     *
-     * @param id The platform id to look up.
-     *
-     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
-     * the Resource is returned via
-     * {@link org.hyperic.hq.hqapi1.types.ResourceResponse#getResource()}.
-     *
-     * @throws java.io.IOException If a network error occurs while making the request.
-     */
-    public ResourceResponse getResourceForService(int id)
-        throws IOException
-    {
-        Map<String, String[]> params = new HashMap<String, String[]>();
-        params.put("serviceId", new String[] { Integer.toString(id) });
+        params.put("config", new String[] { Boolean.toString(config) });
+        params.put("children", new String[] { Boolean.toString(children)});
         return doGet("resource/get.hqu", params,
                      ResourceResponse.class);
     }
@@ -307,7 +255,9 @@ public class ResourceApi extends BaseApi {
      * {@link org.hyperic.hq.hqapi1.types.Agent}.
      *
      * @param agent The {@link org.hyperic.hq.hqapi1.types.Agent} to query.
-     *
+     * @param config Flag to indicate if resource configuration should be included.
+     * @param children Flag to control whether child resources of this resource
+     * will be included.
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the list of Resources are returned via
      * {@link org.hyperic.hq.hqapi1.types.ResourcesResponse#getResource()}.
@@ -315,11 +265,14 @@ public class ResourceApi extends BaseApi {
      * @throws java.io.IOException If a network error occurs while making the request.
      *
      */
-    public ResourcesResponse getResources(Agent agent)
+    public ResourcesResponse getResources(Agent agent, boolean config,
+                                          boolean children)
         throws IOException
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("agentId", new String[] { Integer.toString(agent.getId()) });
+        params.put("config", new String[] { Boolean.toString(config) });
+        params.put("children", new String[] { Boolean.toString(children)});
         return doGet("resource/find.hqu", params,
                      ResourcesResponse.class);
     }
@@ -329,39 +282,23 @@ public class ResourceApi extends BaseApi {
      * given {@link org.hyperic.hq.hqapi1.types.ResourcePrototype}.
      *
      * @param pt The {@link ResourcePrototype} to search for.
-     *
+     * @param config Flag to indicate if resource configuration should be included.
+     * @param children Flag to control whether child resources of this resource
+     * will be included.
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * the list of Resources are returned via
      * {@link org.hyperic.hq.hqapi1.types.ResourcesResponse#getResource()}.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public ResourcesResponse getResources(ResourcePrototype pt)
+    public ResourcesResponse getResources(ResourcePrototype pt, boolean config,
+                                          boolean children)
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String, String[]>();
         params.put("prototype", new String[] { pt.getName() });
-        return doGet("resource/find.hqu", params,
-                     ResourcesResponse.class);
-    }
-
-    /**
-     * Find the child {@link org.hyperic.hq.hqapi1.types.Resource}s for the
-     * given {@link org.hyperic.hq.hqapi1.types.Resource}.
-     *
-     * @param r The {@link org.hyperic.hq.hqapi1.types.Resource} to search for children.
-     *
-     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
-     * the list of Resources are returned via
-     * {@link org.hyperic.hq.hqapi1.types.ResourcesResponse#getResource()}.
-     *
-     * @throws java.io.IOException If a network error occurs while making the request.
-     */
-    public ResourcesResponse getResourceChildren(Resource r)
-        throws IOException
-    {
-        Map<String,String[]> params = new HashMap<String, String[]>();
-        params.put("childrenOfId", new String[] { Integer.toString(r.getId()) });
+        params.put("config", new String[] { Boolean.toString(config) });
+        params.put("children", new String[] { Boolean.toString(children)});
         return doGet("resource/find.hqu", params,
                      ResourcesResponse.class);
     }

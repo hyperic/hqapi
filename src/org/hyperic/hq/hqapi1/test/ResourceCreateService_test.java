@@ -31,7 +31,7 @@ public class ResourceCreateService_test extends ResourceTestBase {
         ResourcePrototype pt = protoResponse.getResourcePrototype();
 
         // Find local platform
-        ResourcesResponse resourcesResponse = api.getResources(a);
+        ResourcesResponse resourcesResponse = api.getResources(a, false, false);
         hqAssertSuccess(resourcesResponse);
         assertTrue("Did not find a single platform for " + a.getAddress() + ":" +
                    a.getPort(), resourcesResponse.getResource().size() == 1);

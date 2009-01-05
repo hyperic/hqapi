@@ -29,7 +29,7 @@ public class ResourceGetPrototype_test extends HQApiTestBase {
 
         ResourceApi api = getApi().getResourceApi();
 
-        final String TYPE = "Some unkonwn type";
+        final String TYPE = "Some unknown type";
         ResourcePrototypeResponse response = api.getResourcePrototype(TYPE);
         hqAssertFailureObjectNotFound(response);
     }

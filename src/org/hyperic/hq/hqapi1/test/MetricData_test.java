@@ -407,7 +407,8 @@ public class MetricData_test extends MetricTestBase {
 
         // Find resources to query
         ResourcesResponse findResponse =
-                resourceApi.getResources(prototypeResponse.getResourcePrototype());
+                resourceApi.getResources(prototypeResponse.getResourcePrototype(),
+                                         false, false);
         hqAssertSuccess(findResponse);
         assertTrue("No resources found to query",
                    findResponse.getResource().size() > 0);

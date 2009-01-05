@@ -124,8 +124,7 @@ public class HQApiTestBase  extends TestCase {
         Agent a = getRunningAgent();
 
         ResourceApi api = getApi().getResourceApi();
-        ResourcesResponse resourceResponse =
-            api.getResources(a);
+        ResourcesResponse resourceResponse = api.getResources(a, false, true);
         hqAssertSuccess(resourceResponse);
 
         List<Resource> localPlatforms = resourceResponse.getResource();

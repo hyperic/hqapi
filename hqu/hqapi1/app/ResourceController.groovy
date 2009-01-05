@@ -2,6 +2,30 @@ import org.hyperic.hq.hqapi1.ErrorCode;
 
 class ResourceController extends ApiController {
 
+
+    private Closure getResourceXML(user, r, boolean config, boolean children) {
+        { doc ->
+            Resource(id : r.id,
+                     name : r.name,
+                     description : r.description) {
+                if (config) {
+                    r.getConfig().each { k, v ->
+                        if (v.type.equals("configResponse")) {
+                            ResourceConfig(key: k, value: v.value)
+                        }
+                    }
+                }
+                if (children) {
+                    r.getViewableChildren(user).each { child ->
+                        out << getResourceXML(user, child, config, children)
+                    }
+                }
+                ResourcePrototype(id : r.prototype.id,
+                                  name : r.prototype.name)
+            }
+        }
+    }
+
     private Closure getPrototypeXML(p) {
         { doc -> 
             ResourcePrototype(id   : p.id,
@@ -124,17 +148,16 @@ class ResourceController extends ApiController {
         renderXml() {
             ResourceResponse() {
                 out << getSuccessXML()                
-                out << getResourceXML(service)
+                out << getResourceXML(user, service, true, true)
             }
         }
     }
 
     def get(params) {
         def id = params.getOne("id")?.toInteger()
-        def platformId = params.getOne("platformId")?.toInteger()
         def platformName = params.getOne("platformName")
-        def serverId = params.getOne("serverId")?.toInteger()
-        def serviceId = params.getOne("serviceId")?.toInteger()
+        def children = params.getOne("children")?.toBoolean()
+        def config = params.getOne("config")?.toBoolean()
 
         def resource = null
         def failureXml
@@ -143,14 +166,8 @@ class ResourceController extends ApiController {
         } else {
             if (id) {
                 resource = getResource(id)
-            } else if (platformId) {
-                resource = resourceHelper.find('platform':platformId)
             } else if (platformName) {
                 resource = resourceHelper.find('platform':platformName)
-            } else if (serverId) {
-                resource = resourceHelper.find('server':serverId)
-            } else if (serviceId) {
-                resource = resourceHelper.find('service':serviceId)
             }
 
             if (!resource) {
@@ -164,7 +181,7 @@ class ResourceController extends ApiController {
                     out << failureXml
                 } else {
                     out << getSuccessXML()
-                    out << getResourceXML(resource)
+                    out << getResourceXML(user, resource, config, children)
                 }
             }
         }
@@ -173,12 +190,13 @@ class ResourceController extends ApiController {
     def find(params) {
         def agentId = params.getOne("agentId")?.toInteger()
         def prototype = params.getOne("prototype")
-        def childrenOfId = params.getOne("childrenOfId")?.toInteger()
+        def children = params.getOne("children")?.toBoolean()
+        def config = params.getOne("config")?.toBoolean()
 
         def resources = []
         def failureXml
         
-        if (!agentId && !prototype && !childrenOfId) {
+        if (!agentId && !prototype ) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             if (agentId) {
@@ -191,13 +209,6 @@ class ResourceController extends ApiController {
                 }
             } else if (prototype) {
                 resources = resourceHelper.find('byPrototype': prototype)
-            } else if (childrenOfId) {
-                def resource = getResource(childrenOfId)
-                if (!resource) {
-                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
-                } else {
-                    resources = resource.getViewableChildren(user)
-                }
             } else {
                 // Shouldn't happen
                 failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
@@ -211,7 +222,7 @@ class ResourceController extends ApiController {
                 } else {
                     out << getSuccessXML()
                     for (resource in resources.sort {a, b -> a.name <=> b.name}) {
-                        out << getResourceXML(resource)
+                        out << getResourceXML(user, resource, config, children)
                     }
                 }
             }

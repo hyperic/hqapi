@@ -52,22 +52,6 @@ class ApiController extends BaseController {
         }
     }
 
-    protected Closure getResourceXML(r) {
-        { doc ->
-            Resource(id : r.id,
-                     name : r.name,
-                     description : r.description) {
-                r.getConfig().each { k, v ->
-                    if (v.type.equals("configResponse")) {
-                        ResourceConfig(key: k, value: v.value)
-                    }
-                }
-                ResourcePrototype(id : r.prototype.id,
-                                  name : r.prototype.name)
-            }
-        }
-    }
-
     /**
      * Get the resource based on the given id.  If the resource is not found,
      * null is returned.
