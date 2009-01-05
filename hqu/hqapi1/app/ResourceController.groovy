@@ -142,7 +142,7 @@ class ResourceController extends ApiController {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             if (id) {
-                resource = resourceHelper.findById(id)
+                resource = getResource(id)
             } else if (platformId) {
                 resource = resourceHelper.find('platform':platformId)
             } else if (platformName) {
@@ -155,14 +155,6 @@ class ResourceController extends ApiController {
 
             if (!resource) {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
-            } else {
-                //XXX: ResourceHelper needs some work here..
-                try {
-                    resource.name // Check the object really exists
-                    resource.entityId // Check the object is an appdef object
-                } catch (Throwable t) {
-                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
-                }
             }
         }
 
