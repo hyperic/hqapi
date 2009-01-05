@@ -135,4 +135,34 @@ public class ResourceGet_test extends ResourceTestBase {
         assertTrue("No child resources found for resource " + r.getName(),
                    resource.getResource().size() > 0);
     }
+
+    public void testGetPlatformResource() throws Exception {
+
+        Agent a = getRunningAgent();
+
+        ResourceApi api = getApi().getResourceApi();
+
+        ResourcesResponse findResponse = api.getResources(a, false, false);
+        hqAssertSuccess(findResponse);
+
+        assertTrue("Found 0 platform resources for agent " + a.getId(),
+                   findResponse.getResource().size() > 0);
+
+        Resource r = findResponse.getResource().get(0);
+
+        ResourceResponse getResponse = api.getPlatformResource(r.getName(),
+                                                               false, false);
+        hqAssertSuccess(getResponse);
+        Resource resource = getResponse.getResource();
+        validateResource(resource);
+    }
+
+    public void testGetInvalidPlatformResource() throws Exception {
+
+        ResourceApi api = getApi().getResourceApi();
+
+        ResourceResponse getResponse = api.getPlatformResource("Invalid platform",
+                                                               false, false);
+        hqAssertFailureObjectNotFound(getResponse);
+    }
 }

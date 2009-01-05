@@ -161,7 +161,7 @@ class ResourceController extends ApiController {
 
         def resource = null
         def failureXml
-        if (!id && !platformId && !platformName && !serverId && !serviceId) {
+        if (!id && !platformName) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             if (id) {
