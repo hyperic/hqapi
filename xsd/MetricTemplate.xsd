@@ -11,7 +11,6 @@
         <xs:attribute name="alias"           type="xs:string"  use="required"/>
         <xs:attribute name="units"           type="xs:string"  use="required"/>
         <xs:attribute name="plugin"          type="xs:string"  use="required"/>
-        <xs:attribute name="enabled"         type="xs:boolean" use="required"/>
         <xs:attribute name="indicator"       type="xs:boolean" use="required"/>
         <xs:attribute name="defaultOn"       type="xs:boolean" use="required"/>
         <xs:attribute name="collectionType"  type="xs:string"  use="required"/>
