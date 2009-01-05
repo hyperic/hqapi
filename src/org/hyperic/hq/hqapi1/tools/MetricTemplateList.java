@@ -43,7 +43,7 @@ public class MetricTemplateList extends ToolsBase {
         try {
             listMetricTemplates(args);
         } catch (Exception e) {
-            System.err.println("Error listing resources: " + e.getMessage());
+            System.err.println("Error listing templates: " + e.getMessage());
             System.exit(-1);
         }
     }

@@ -28,7 +28,7 @@ public class AutodiscoveryList extends ToolsBase {
         try {
             listQueue(args);
         } catch (Exception e) {
-            System.err.println("Error listing resources: " + e.getMessage());
+            System.err.println("Error listing queue: " + e.getMessage());
             System.exit(-1);
         }
     }

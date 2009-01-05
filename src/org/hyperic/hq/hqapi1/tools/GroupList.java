@@ -47,7 +47,7 @@ public class GroupList extends ToolsBase {
         try {
             listGroups(args);
         } catch (Exception e) {
-            System.err.println("Error listing users: " + e.getMessage());
+            System.err.println("Error listing groups: " + e.getMessage());
             System.exit(-1);
         }
     }
