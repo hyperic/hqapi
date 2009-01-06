@@ -21,50 +21,11 @@ public class ResourceCreateService_test extends ResourceTestBase {
 
     public void testServiceCreate() throws Exception {
 
-        Agent a = getRunningAgent();
-
         ResourceApi api = getApi().getResourceApi();
-
-        // Find HTTP resource type
-        ResourcePrototypeResponse protoResponse = api.getResourcePrototype("HTTP");
-        hqAssertSuccess(protoResponse);
-        ResourcePrototype pt = protoResponse.getResourcePrototype();
-
-        // Find local platform
-        ResourcesResponse resourcesResponse = api.getResources(a, false, false);
-        hqAssertSuccess(resourcesResponse);
-        assertTrue("Did not find a single platform for " + a.getAddress() + ":" +
-                   a.getPort(), resourcesResponse.getResource().size() == 1);
-        Resource platform = resourcesResponse.getResource().get(0);
-
-        // Configure service
-        Map<String,String> params = new HashMap<String,String>();
-        params.put("hostname", "www.hyperic.com");
-        params.put("port", "80");
-        params.put("sotimeout", "10");
-        params.put("path", "/");
-        params.put("method", "GET");
-
-        Random r = new Random();
-        String name = "My HTTP Check " + r.nextInt();
-
-        ResourceResponse resp = api.createService(pt, platform, name, params);
-        hqAssertSuccess(resp);
-        Resource createdResource = resp.getResource();
-        assertEquals(createdResource.getName(), name);
+        Resource createdResource = createTestHTTPService();
 
         // Clean up
-
-        // TODO: XXX: HQ periodically fails when a resource is deleted so
-        // quickly after it's been created.
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            // Ignore
-        }
-        
-        StatusResponse deleteResponse =
-                api.deleteResource(createdResource.getId());
+        StatusResponse deleteResponse = api.deleteResource(createdResource.getId());
         hqAssertSuccess(deleteResponse);
     }
 }

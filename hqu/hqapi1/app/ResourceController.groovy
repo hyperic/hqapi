@@ -147,8 +147,9 @@ class ResourceController extends ApiController {
         
         renderXml() {
             ResourceResponse() {
-                out << getSuccessXML()                
-                out << getResourceXML(user, service, true, true)
+                out << getSuccessXML()
+                // Only return this resource w/ it's config
+                out << getResourceXML(user, service, true, false)
             }
         }
     }
@@ -224,6 +225,75 @@ class ResourceController extends ApiController {
                     for (resource in resources.sort {a, b -> a.name <=> b.name}) {
                         out << getResourceXML(user, resource, config, children)
                     }
+                }
+            }
+        }
+    }
+
+    // TODO: ResourceConfig does not properly handle unchanged configs.. 
+    private configsEqual(existingConfig, newConfig) {
+        def config = [:] + newConfig // Don't modify callers map
+        existingConfig.each { k, v ->
+            if (config.containsKey(k) && config[k] == v.value) {
+                config.remove(k)
+            }
+        }
+        return config.size() == 0;
+    }
+
+    private syncResource(xmlResource) {
+        def id = xmlResource.'@id'?.toInteger()
+        if (!id) {
+            return getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+        } else {
+            def resource = getResource(id)
+
+            if (!resource) {
+                return getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                     "Resource with id " + id + " not found")
+            }
+            
+            def name        = xmlResource.'@name'
+            def description = xmlResource.'@description'
+
+            def config = [name: name,
+                          description: description]
+            
+            xmlResource['ResourceConfig'].each {
+                config[it.'@key'] = it.'@value'
+            }
+
+            if (!configsEqual(resource.getConfig(), config)) {
+                resource.setConfig(config, user)
+            }
+
+            def xmlChildren = xmlResource['Resource']
+            for (xmlChild in xmlChildren) {
+                def res = syncResource(xmlChild)
+                // Exit early on errors
+                if (res != null) {
+                    return res
+                }
+            }
+        }
+
+        return null
+    }
+
+    def sync(params) {
+
+        def failureXml = null
+        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+        for (xmlResource in syncRequest['Resource']) {
+            failureXml = syncResource(xmlResource)
+        }
+
+        renderXml() {
+            StatusResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
                 }
             }
         }

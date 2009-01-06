@@ -3,6 +3,7 @@ package org.hyperic.hq.hqapi1;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.Resource;
@@ -16,6 +17,7 @@ import org.hyperic.hq.hqapi1.types.ResourcePrototypesResponse;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.ResourcesRequest;
 
 /**
  * The Hyperic HQ Resource API.
@@ -301,6 +303,44 @@ public class ResourceApi extends BaseApi {
         params.put("children", new String[] { Boolean.toString(children)});
         return doGet("resource/find.hqu", params,
                      ResourcesResponse.class);
+    }
+
+    /**
+     * Update a {@link org.hyperic.hq.hqapi1.types.Resource}
+     *
+     * @param resource The Resource to update
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * users were updated successfully.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public StatusResponse updateResource(Resource resource)
+        throws IOException
+    {
+        ResourcesRequest request = new ResourcesRequest();
+        request.getResource().add(resource);
+
+        return doPost("resource/sync.hqu", request, StatusResponse.class);
+    }
+
+    /**
+     * Sync a list of {@link org.hyperic.hq.hqapi1.types.Resource}s.
+     *
+     * @param resources The list of resources to sync.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * users were updated successfully.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public StatusResponse syncResources(List<Resource> resources)
+        throws IOException
+    {
+        ResourcesRequest request = new ResourcesRequest();
+        request.getResource().addAll(resources);
+
+        return doPost("resource/sync.hqu", request, StatusResponse.class);
     }
 
     /**
