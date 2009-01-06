@@ -6,6 +6,7 @@ import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.ResourceConfig;
+import org.hyperic.hq.hqapi1.types.ResourceProperty;
 import org.hyperic.hq.hqapi1.ResourceApi;
 
 import java.util.ArrayList;
@@ -90,6 +91,43 @@ public class ResourceUpdate_test extends ResourceTestBase {
         // Cleanup
         StatusResponse deleteResponse = api.deleteResource(updatedResource.getId());
         hqAssertSuccess(deleteResponse);
+    }
+
+    public void testUpdateProperties() throws Exception {
+
+        ResourceApi api = getApi().getResourceApi();
+        Resource platform = getLocalPlatformResource(true, false);
+
+        final String UPDATED_GW = "1.2.3.4";
+        String origGw = null;
+
+        for (ResourceProperty p : platform.getResourceProperty()) {
+            if (p.getKey().equals("defaultGateway")) {
+                origGw = p.getValue();
+                p.setValue(UPDATED_GW);
+                break;
+            }
+        }
+
+        assertNotNull(origGw);
+
+        StatusResponse updateResponse = api.updateResource(platform);
+        hqAssertSuccess(updateResponse);
+
+        ResourceResponse getRequest = api.getResource(platform.getId(), false,
+                                                      false);
+        hqAssertSuccess(getRequest);
+
+        for (ResourceProperty p : platform.getResourceProperty()) {
+            if (p.getKey().equals("defaultGateway")) {
+                assertEquals(p.getValue(), UPDATED_GW);
+                p.setValue(origGw);
+                break;
+            }
+        }
+
+        updateResponse = api.updateResource(platform);
+        hqAssertSuccess(updateResponse);
     }
 
     public void testUpdateInvalidResource() throws Exception {

@@ -24,24 +24,18 @@ import java.util.List;
 
 public class MetricData_test extends MetricTestBase {
 
-    Resource _r;
-
     public MetricData_test(String name) {
         super(name);
-    }
-
-    public void setUp() throws Exception {
-        super.setUp();
-        _r = getLocalPlatformResource();
     }
 
     public void testGetEnabledMetricData() throws Exception {
 
         MetricApi api = getApi().getMetricApi();
-        MetricsResponse resp = api.getEnabledMetrics(_r);
+        Resource r = getLocalPlatformResource(false, false);
+        MetricsResponse resp = api.getEnabledMetrics(r);
         hqAssertSuccess(resp);
 
-        assertTrue("No enabled metrics found for " + _r.getName(),
+        assertTrue("No enabled metrics found for " + r.getName(),
                    resp.getMetric().size() > 0);
         Metric m = resp.getMetric().get(0);
 
@@ -69,10 +63,11 @@ public class MetricData_test extends MetricTestBase {
     public void testGetDisabledMetricData() throws Exception {
 
         MetricApi api = getApi().getMetricApi();
-        MetricsResponse resp = api.getMetrics(_r);
+        Resource r = getLocalPlatformResource(false, false);
+        MetricsResponse resp = api.getMetrics(r);
         hqAssertSuccess(resp);
 
-        assertTrue("No metrics found for " + _r.getName(),
+        assertTrue("No metrics found for " + r.getName(),
                    resp.getMetric().size() > 0);
 
         Metric m = null;
@@ -91,7 +86,7 @@ public class MetricData_test extends MetricTestBase {
         hqAssertSuccess(dataResponse);
 
         assertTrue("Metric data found for " + m.getName() + " on " +
-                   _r.getName() + " (" + dataResponse.getMetricData().getDataPoint().size() +
+                   r.getName() + " (" + dataResponse.getMetricData().getDataPoint().size() +
                    " datapoints)",
                    dataResponse.getMetricData().getDataPoint().size() == 0);
     }
@@ -109,13 +104,14 @@ public class MetricData_test extends MetricTestBase {
     public void testGetMetricDataInvalidRange() throws Exception {
 
         MetricApi api = getApi().getMetricApi();
-        MetricsResponse resp = api.getMetrics(_r);
+        Resource r = getLocalPlatformResource(false, false);
+        MetricsResponse resp = api.getMetrics(r);
         hqAssertSuccess(resp);
 
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
 
-        assertTrue("No metrics found for " + _r.getName(),
+        assertTrue("No metrics found for " + r.getName(),
                    resp.getMetric().size() > 0);
         Metric m = resp.getMetric().get(0);
 

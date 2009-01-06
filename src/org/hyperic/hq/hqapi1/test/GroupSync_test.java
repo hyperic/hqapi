@@ -29,7 +29,7 @@ public class GroupSync_test extends GroupTestBase {
         HQApi api = getApi();
         GroupApi groupApi = api.getGroupApi();
 
-        Resource platform = getLocalPlatformResource();
+        Resource platform = getLocalPlatformResource(false, true);
 
         List<Resource> children = platform.getResource();
         assertTrue("No child resources for platform " + platform.getName(),

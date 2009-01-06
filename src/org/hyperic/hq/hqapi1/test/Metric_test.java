@@ -13,15 +13,8 @@ import java.util.ArrayList;
 
 public class Metric_test extends MetricTestBase {
 
-    private Resource _r;
-
     public Metric_test(String name) {
         super(name);
-    }
-
-    public void setUp() throws Exception {
-        super.setUp();
-        _r = getLocalPlatformResource();
     }
 
     protected void validateMetric(Metric m) throws Exception {
@@ -38,7 +31,8 @@ public class Metric_test extends MetricTestBase {
     public void testListMetrics() throws Exception {
 
         MetricApi api = getApi().getMetricApi();
-        MetricsResponse resp = api.getMetrics(_r);
+        Resource r = getLocalPlatformResource(false, false);
+        MetricsResponse resp = api.getMetrics(r);
         hqAssertSuccess(resp);
 
         int numNotDefaultOn = 0;
@@ -54,7 +48,8 @@ public class Metric_test extends MetricTestBase {
     public void testListEnabledMetrics() throws Exception {
 
         MetricApi api = getApi().getMetricApi();
-        MetricsResponse resp = api.getEnabledMetrics(_r);
+        Resource r = getLocalPlatformResource(false, false);
+        MetricsResponse resp = api.getEnabledMetrics(r);
         hqAssertSuccess(resp);
 
         for (Metric m : resp.getMetric()) {
@@ -76,10 +71,11 @@ public class Metric_test extends MetricTestBase {
     public void testMetricById() throws Exception {
 
         MetricApi api = getApi().getMetricApi();
-        MetricsResponse resp = api.getMetrics(_r);
+        Resource r = getLocalPlatformResource(false, false);
+        MetricsResponse resp = api.getMetrics(r);
         hqAssertSuccess(resp);
 
-        assertFalse("Resource " + _r.getName() + " has no metrics",
+        assertFalse("Resource " + r.getName() + " has no metrics",
                    resp.getMetric().size() == 0);
 
         Metric m = resp.getMetric().get(0);
@@ -99,11 +95,12 @@ public class Metric_test extends MetricTestBase {
 
         HQApi api = getApi();
         MetricApi metricApi = api.getMetricApi();
+        Resource r = getLocalPlatformResource(false, false);
 
         // Keep a copy of the old metrics.
-        MetricsResponse orignalMetrics = metricApi.getMetrics(_r);
+        MetricsResponse orignalMetrics = metricApi.getMetrics(r);
 
-        MetricsResponse metrics = metricApi.getMetrics(_r);
+        MetricsResponse metrics = metricApi.getMetrics(r);
         hqAssertSuccess(metrics);
 
         Metric enabledMetric = null;
@@ -115,7 +112,7 @@ public class Metric_test extends MetricTestBase {
             }
         }
 
-        assertNotNull("Unable to find enabled metric for " + _r.getName(),
+        assertNotNull("Unable to find enabled metric for " + r.getName(),
                       enabledMetric);
 
         final long newInterval = enabledMetric.getInterval() * 60000;
@@ -140,11 +137,12 @@ public class Metric_test extends MetricTestBase {
 
         HQApi api = getApi();
         MetricApi metricApi = api.getMetricApi();
+        Resource r = getLocalPlatformResource(false, false);
 
         // Keep a copy of the old metrics.
-        MetricsResponse orignalMetrics = metricApi.getMetrics(_r);
+        MetricsResponse orignalMetrics = metricApi.getMetrics(r);
 
-        MetricsResponse metrics = metricApi.getMetrics(_r);
+        MetricsResponse metrics = metricApi.getMetrics(r);
         hqAssertSuccess(metrics);
 
         Metric disabledMetric = null;
@@ -156,7 +154,7 @@ public class Metric_test extends MetricTestBase {
             }
         }
 
-        assertNotNull("Unable to find enabled metric for " + _r.getName(),
+        assertNotNull("Unable to find enabled metric for " + r.getName(),
                       disabledMetric);
 
         disabledMetric.setEnabled(true);
@@ -195,11 +193,12 @@ public class Metric_test extends MetricTestBase {
 
         HQApi api = getApi();
         MetricApi metricApi = api.getMetricApi();
+        Resource r = getLocalPlatformResource(false, false);
 
-        MetricsResponse metrics = metricApi.getMetrics(_r);
+        MetricsResponse metrics = metricApi.getMetrics(r);
         hqAssertSuccess(metrics);
 
-        assertTrue("No metrics found for " + _r.getName(),
+        assertTrue("No metrics found for " + r.getName(),
                    metrics.getMetric().size() > 0);
 
         Metric enabledMetric = null;
@@ -211,7 +210,7 @@ public class Metric_test extends MetricTestBase {
             }
         }
 
-        assertNotNull("Unable to find default on metric for " + _r.getName(),
+        assertNotNull("Unable to find default on metric for " + r.getName(),
                       enabledMetric);
         
         final long  BAD_INTERVALS[] = { -1, 0, 1, 1000, 59999 };

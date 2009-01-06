@@ -119,12 +119,15 @@ public class HQApiTestBase  extends TestCase {
         throw new Exception(err);
     }
 
-    protected Resource getLocalPlatformResource() throws Exception {
-
+    protected Resource getLocalPlatformResource(boolean verbose,
+                                                boolean children)
+            throws Exception
+    {
         Agent a = getRunningAgent();
 
         ResourceApi api = getApi().getResourceApi();
-        ResourcesResponse resourceResponse = api.getResources(a, false, true);
+        ResourcesResponse resourceResponse = api.getResources(a, verbose,
+                                                              children);
         hqAssertSuccess(resourceResponse);
 
         List<Resource> localPlatforms = resourceResponse.getResource();
