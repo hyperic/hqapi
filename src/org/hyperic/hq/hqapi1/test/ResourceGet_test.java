@@ -40,7 +40,7 @@ public class ResourceGet_test extends ResourceTestBase {
         validateResource(resource);
     }
 
-    public void testGetResourceWithConfigAndChildren() throws Exception {
+    public void testGetResourceVerboseWithChildren() throws Exception {
 
         Agent a = getRunningAgent();
 
@@ -60,6 +60,8 @@ public class ResourceGet_test extends ResourceTestBase {
         validateResource(resource);
         assertTrue("No configuration found for resource " + r.getName(),
                    resource.getResourceConfig().size() > 0);
+        assertTrue("No properties found for resource " + r.getName(),
+                   resource.getResourceProperty().size() > 0);
         assertTrue("No child resources found for resource " + r.getName(),
                    resource.getResource().size() > 0);
     }
@@ -84,6 +86,8 @@ public class ResourceGet_test extends ResourceTestBase {
         validateResource(resource);
         assertTrue("Configuration found for resource " + r.getName(),
                    resource.getResourceConfig().size() == 0);
+        assertTrue("Properties found for resource " + r.getName(),
+                   resource.getResourceProperty().size() == 0);
         assertTrue("Child resources found for resource " + r.getName(),
                    resource.getResource().size() == 0);
     }
@@ -106,8 +110,10 @@ public class ResourceGet_test extends ResourceTestBase {
         hqAssertSuccess(getResponse);
         Resource resource = getResponse.getResource();
         validateResource(resource);
-        assertTrue("No configuration found for reosurce " + r.getName(),
+        assertTrue("No configuration found for resource " + r.getName(),
                    resource.getResourceConfig().size() > 0);
+        assertTrue("No properties found for resource " + r.getName(),
+                   resource.getResourceProperty().size() > 0);
         assertTrue("Child resources found for resource " + r.getName(),
                    resource.getResource().size() == 0);
     }
@@ -130,8 +136,10 @@ public class ResourceGet_test extends ResourceTestBase {
         hqAssertSuccess(getResponse);
         Resource resource = getResponse.getResource();
         validateResource(resource);
-        assertTrue("Configuration found for reosurce " + r.getName(),
+        assertTrue("Configuration found for resource " + r.getName(),
                    resource.getResourceConfig().size() == 0);
+        assertTrue("Properties found for resource " + r.getName(),
+                   resource.getResourceProperty().size() == 0);
         assertTrue("No child resources found for resource " + r.getName(),
                    resource.getResource().size() > 0);
     }

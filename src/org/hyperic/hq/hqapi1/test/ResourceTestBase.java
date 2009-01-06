@@ -7,6 +7,7 @@ import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
+import org.hyperic.hq.hqapi1.types.ResourceProperty;
 import org.hyperic.hq.hqapi1.ResourceApi;
 
 import java.util.Map;
@@ -34,6 +35,13 @@ public class ResourceTestBase extends HQApiTestBase {
                           config.getKey());
             assertNotNull("Null value found for key " + config.getKey() +
                           " on resource id " + r.getId(), config.getValue());
+        }
+
+        for (ResourceProperty p : r.getResourceProperty()) {
+            assertNotNull("Null key found for resoruce id + " + r.getId(),
+                          p.getKey());
+            assertNotNull("Null value found for key " + p.getKey() +
+                          " on resource id " + r.getId(), p.getValue());
         }
 
         for (Resource child : r.getResource()) {

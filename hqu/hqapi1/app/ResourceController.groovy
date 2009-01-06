@@ -2,22 +2,27 @@ import org.hyperic.hq.hqapi1.ErrorCode;
 
 class ResourceController extends ApiController {
 
-
-    private Closure getResourceXML(user, r, boolean config, boolean children) {
+    private Closure getResourceXML(user, r, boolean verbose, boolean children) {
         { doc ->
             Resource(id : r.id,
                      name : r.name,
                      description : r.description) {
-                if (config) {
-                    r.getConfig().each { k, v ->
+                if (verbose) {
+                    def config = r.getConfig()
+                    config.each { k, v ->
                         if (v.type.equals("configResponse")) {
                             ResourceConfig(key: k, value: v.value)
+                        }
+                    }
+                    config.each { k, v ->
+                        if (v.type.equals("cprop")) {
+                            ResourceProperty(key: k, value: v.value)
                         }
                     }
                 }
                 if (children) {
                     r.getViewableChildren(user).each { child ->
-                        out << getResourceXML(user, child, config, children)
+                        out << getResourceXML(user, child, verbose, children)
                     }
                 }
                 ResourcePrototype(id : r.prototype.id,
@@ -158,7 +163,7 @@ class ResourceController extends ApiController {
         def id = params.getOne("id")?.toInteger()
         def platformName = params.getOne("platformName")
         def children = params.getOne("children")?.toBoolean()
-        def config = params.getOne("config")?.toBoolean()
+        def verbose = params.getOne("verbose")?.toBoolean()
 
         def resource = null
         def failureXml
@@ -182,7 +187,7 @@ class ResourceController extends ApiController {
                     out << failureXml
                 } else {
                     out << getSuccessXML()
-                    out << getResourceXML(user, resource, config, children)
+                    out << getResourceXML(user, resource, verbose, children)
                 }
             }
         }
@@ -192,7 +197,7 @@ class ResourceController extends ApiController {
         def agentId = params.getOne("agentId")?.toInteger()
         def prototype = params.getOne("prototype")
         def children = params.getOne("children")?.toBoolean()
-        def config = params.getOne("config")?.toBoolean()
+        def verbose = params.getOne("verbose")?.toBoolean()
 
         def resources = []
         def failureXml
@@ -223,7 +228,7 @@ class ResourceController extends ApiController {
                 } else {
                     out << getSuccessXML()
                     for (resource in resources.sort {a, b -> a.name <=> b.name}) {
-                        out << getResourceXML(user, resource, config, children)
+                        out << getResourceXML(user, resource, verbose, children)
                     }
                 }
             }
@@ -260,6 +265,10 @@ class ResourceController extends ApiController {
                           description: description]
             
             xmlResource['ResourceConfig'].each {
+                config[it.'@key'] = it.'@value'
+            }
+
+            xmlResource['ResourceProperty'].each {
                 config[it.'@key'] = it.'@value'
             }
 

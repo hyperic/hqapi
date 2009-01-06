@@ -16,12 +16,12 @@ public class ResourceList extends ToolsBase {
     private static String OPT_PROTOTYPE = "prototype";
     private static String OPT_PLATFORM = "platform";
 
-    private static String OPT_CONFIG = "config";
+    private static String OPT_VERBOSE = "verbose";
     private static String OPT_CHILDREN = "children";
 
     private static String[] ONE_REQUIRED = { OPT_PROTOTYPE, OPT_PLATFORM };
 
-    private static void listRoles(String[] args) throws Exception {
+    private static void listResources(String[] args) throws Exception {
 
         OptionParser p = getOptionParser();
 
@@ -31,7 +31,7 @@ public class ResourceList extends ToolsBase {
         p.accepts(OPT_PLATFORM, "If specified, return only resources with the " +
                   "specified platform name").withRequiredArg().ofType(String.class);
         
-        p.accepts(OPT_CONFIG, "Include resource configuration");
+        p.accepts(OPT_VERBOSE, "Include resource configuration and properties");
         p.accepts(OPT_CHILDREN, "Include child resources");
 
         OptionSet options = getOptions(p, args);
@@ -39,9 +39,9 @@ public class ResourceList extends ToolsBase {
         HQApi api = getApi(options);
         ResourceApi resourceApi = api.getResourceApi();
 
-        boolean config = false;
-        if (options.has(OPT_CONFIG)) {
-            config = true;
+        boolean verbose = false;
+        if (options.has(OPT_VERBOSE)) {
+            verbose = true;
         }
 
         boolean children = false;
@@ -71,13 +71,13 @@ public class ResourceList extends ToolsBase {
             checkSuccess(protoResponse);
             ResourcesResponse resources =
                     resourceApi.getResources(protoResponse.getResourcePrototype(),
-                                             config, children);
+                                             verbose, children);
             checkSuccess(resources);
             XmlUtil.serialize(resources, System.out, Boolean.TRUE);            
         } else if (options.has(OPT_PLATFORM)) {
             String platform = (String)options.valueOf(OPT_PLATFORM);
             ResourceResponse resource =
-                    resourceApi.getPlatformResource(platform, config, children);
+                    resourceApi.getPlatformResource(platform, verbose, children);
             checkSuccess(resource);
 
             ResourcesResponse resources = new ResourcesResponse();
@@ -89,7 +89,7 @@ public class ResourceList extends ToolsBase {
 
     public static void main(String[] args) throws Exception {
         try {
-            listRoles(args);
+            listResources(args);
         } catch (Exception e) {
             System.err.println("Error listing resources: " + e.getMessage());
             System.exit(-1);
