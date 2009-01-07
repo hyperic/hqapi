@@ -18,7 +18,7 @@ public class GroupTestBase extends HQApiTestBase {
     }
 
     protected void validateGroup(Group g) {
-        assertTrue("Invalid id for Group.", g.getId() > 0);
+        assertTrue("Invalid id for Group.", g.getId() >= 0);
         assertTrue("Found invalid name for Group with id=" + g.getId(),
                    g.getName().length() > 0);
 

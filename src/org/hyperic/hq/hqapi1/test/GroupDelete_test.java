@@ -36,4 +36,12 @@ public class GroupDelete_test extends GroupTestBase {
         StatusResponse deleteResponse = groupApi.deleteGroup(createdGroup.getId());
         hqAssertSuccess(deleteResponse);
     }
+
+    public void testDeleteSystemGroup() throws Exception {
+
+        GroupApi groupApi = getApi().getGroupApi();
+
+        StatusResponse deleteResponse = groupApi.deleteGroup(0);
+        hqAssertFailureNotSupported(deleteResponse);        
+    }
 }

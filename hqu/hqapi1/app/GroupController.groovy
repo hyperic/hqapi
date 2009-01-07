@@ -26,7 +26,7 @@ class GroupController extends ApiController {
     }
 
     private getGroup(Integer id, String name) {
-        if (id) {
+        if (id != null) {
             return resourceHelper.findGroup(id)
         } else {
             return resourceHelper.findGroupByName(name)
@@ -39,7 +39,7 @@ class GroupController extends ApiController {
 
         def group
         def failureXml = null
-        if (!id && !name) {
+        if (id == null && name == null) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             group = getGroup(id, name)
@@ -63,7 +63,7 @@ class GroupController extends ApiController {
     def delete(params) {
         def id = params.getOne('id')?.toInteger()
 
-        if (!id) {
+        if (id == null) {
             renderXml() {
                 out << StatusResponse() {
                     out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
@@ -78,12 +78,19 @@ class GroupController extends ApiController {
             failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                        "Group with id " + id + " not found")
         } else {
-            try {
-                group.remove(user)
-            } catch (PermissionException e) {
-                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
-            } catch (Exception e) {
-                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+
+            if (group.system) {
+                failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
+                                           "Cannot delete system group " +
+                                           group.name)
+            } else {
+                try {
+                    group.remove(user)
+                } catch (PermissionException e) {
+                    failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+                } catch (Exception e) {
+                    failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+                }
             }
         }
 
