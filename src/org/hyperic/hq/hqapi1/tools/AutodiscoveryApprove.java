@@ -30,7 +30,7 @@ public class AutodiscoveryApprove extends ToolsBase {
         if (options.has(OPT_REGEX)) {
             pattern = Pattern.compile((String)options.valueOf(OPT_REGEX));
         } else {
-            pattern = Pattern.compile(".");
+            pattern = Pattern.compile(".*");
         }
 
         HQApi api = getApi(options);
