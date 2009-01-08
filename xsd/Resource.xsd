@@ -3,7 +3,7 @@
     <xs:include schemaLocation="Response.xsd"/>
     <xs:include schemaLocation="Agent.xsd"/>
 
-    <xs:complexType name="IP">
+    <xs:complexType name="Ip">
         <xs:attribute name="address" type="xs:string" use="required"/>
         <xs:attribute name="netmask" type="xs:string" use="optional"/>
         <xs:attribute name="mac"     type="xs:string" use="optional"/>
@@ -71,8 +71,10 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="Agent" type="Agent"/>
-                <xs:element name="PlatformPrototype" type="ResourcePrototype"/>
-                <!-- XXX: More to do here.. -->
+                <xs:element name="Resource" type="Resource"/>
+                <xs:element name="Prototype" type="ResourcePrototype"/>
+                <xs:element name="Ip" type="Ip" maxOccurs="unbounded"/>
+                <xs:element name="Fqdn" type="xs:string"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

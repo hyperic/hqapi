@@ -12,6 +12,7 @@ import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesRequest;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.Ip;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -100,13 +101,13 @@ public class ResourceApi extends BaseApi {
     }
 
     /**
-     * Create a Platform {@link Resource} with the given name.<br><b>This API is
-     * not yet availabile.  It will return an not implemented error.</b>
+     * Create a Platform {@link Resource} with the given name.
      *
      * @param agent The {@link org.hyperic.hq.hqapi1.types.Agent} which will service this platform.
      * @param type The resource prototype for the resource to be created.
      * @param name The name of the resource to create.
      * @param fqdn The FQDN for the platform.
+     * @param ips The list of {@link org.hyperic.hq.hqapi1.types.Ip}s for this platform.
      * @param config The configuration for the platform.
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
@@ -119,13 +120,25 @@ public class ResourceApi extends BaseApi {
                                            ResourcePrototype type,
                                            String name,
                                            String fqdn,
-                                           Map config)
+                                           List<Ip> ips,
+                                           Map<String,String> config)
         throws IOException
     {
+        Resource platform = new Resource();
+        platform.setName(name);
+        for (String k : config.keySet()) {
+            ResourceConfig c = new ResourceConfig();
+            c.setKey(k);
+            c.setValue(config.get(k));
+            platform.getResourceConfig().add(c);
+        }
 
         CreatePlatformRequest request = new CreatePlatformRequest();
         request.setAgent(agent);
-        request.setPlatformPrototype(type);
+        request.setResource(platform);
+        request.setPrototype(type);
+        request.setFqdn(fqdn);
+        request.getIp().addAll(ips);
 
         return doPost("resource/createPlatform.hqu", request,
                       ResourceResponse.class);
@@ -137,19 +150,19 @@ public class ResourceApi extends BaseApi {
                                             Map<String,String> config)
         throws IOException
     {
-        Resource server = new Resource();
-        server.setName(name);
+        Resource resource = new Resource();
+        resource.setName(name);
         for (String k : config.keySet()) {
             ResourceConfig c = new ResourceConfig();
             c.setKey(k);
             c.setValue(config.get(k));
-            server.getResourceConfig().add(c);
+            resource.getResourceConfig().add(c);
         }
 
 
         CreateResourceRequest request = new CreateResourceRequest();
         request.setParent(parent);
-        request.setResource(server);
+        request.setResource(resource);
         request.setPrototype(type);
 
         return doPost("resource/createResource.hqu", request,

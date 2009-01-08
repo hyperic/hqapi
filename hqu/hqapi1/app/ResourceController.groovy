@@ -81,11 +81,73 @@ class ResourceController extends ApiController {
         }
     }
 
-    // TODO: Implement
     def createPlatform(params) {
+        def createRequest = new XmlParser().parseText(getUpload('postdata'))
+        def xmlResource = createRequest['Resource']
+        def xmlPrototype = createRequest['Prototype']
+        def xmlIps = createRequest['Ip']
+        def xmlAgent = createRequest['Agent']
+        def fqdn = createRequest['Fqdn']?.text();
+
+        if (!xmlResource || xmlResource.size() != 1 ||
+            !xmlPrototype || xmlPrototype.size() != 1 ||
+            !xmlIps || xmlIps.size() < 1 ||
+            !xmlAgent || xmlAgent.size() != 1 ||
+            !fqdn)
+        {
+            renderXml() {
+                ResourceResponse() {
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                }
+            }
+            return
+        }
+
+        def parent = resourceHelper.findRootResource()
+        def agent = agentHelper.getAgent(xmlAgent[0].'@id'?.toInteger())
+        def prototype = resourceHelper.find(prototype: xmlPrototype[0].'@name')
+
+        if (!parent || !prototype) {
+            renderXml() {
+                ResourceResponse() {
+                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                }
+            }
+        }
+
+        def resourceXml = xmlResource[0]
+        def cfgXml = resourceXml['ResourceConfig']
+        def cfg = [:]
+        cfgXml.each { c ->
+            cfg.put(c.'@key', c.'@value')
+        }
+        cfg.put('fqdn', fqdn)
+
+        def ips = []
+        xmlIps.each { ip ->
+            ips << [address: ip.'@address', netmask: ip.'@netmask', mac: ip.'@mac']
+        }
+
+        def resource
+        try {
+            resource = prototype.createInstance(parent, resourceXml.'@name',
+                                                user, cfg, agent, ips)
+        } catch (Exception e) {
+            // TODO: Fix this
+            renderXml() {
+                ResourceResponse() {
+                    out << getFailureXML(ErrorCode.OBJECT_EXISTS);
+                }
+            }
+            log.info("Error creating resource", e)
+            return
+        }
+
         renderXml() {
-            out << ResourceResponse() {
-                out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
+            ResourceResponse() {
+                out << getSuccessXML()
+                // Only return this resource w/ it's config
+                out << getResourceXML(user, resource, true, false)
             }
         }
     }
