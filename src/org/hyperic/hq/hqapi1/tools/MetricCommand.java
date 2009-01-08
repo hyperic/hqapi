@@ -61,13 +61,8 @@ public class MetricCommand extends Command {
         ResourceApi resourceApi = api.getResourceApi();
         MetricApi metricApi = api.getMetricApi();
 
-        if (!options.has(OPT_RESOURCE_ID)) {
-            System.out.println(OPT_RESOURCE_ID + " argument required.");
-            System.exit(-1);
-        }
-
         ResourceResponse resourceResponse =
-                resourceApi.getResource((Integer)options.valueOf(OPT_RESOURCE_ID),
+                resourceApi.getResource((Integer)getRequired(options, OPT_RESOURCE_ID),
                                         false, false);
         checkSuccess(resourceResponse);
 

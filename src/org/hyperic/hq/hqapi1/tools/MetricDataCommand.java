@@ -49,15 +49,10 @@ public class MetricDataCommand extends Command {
         HQApi api = getApi(options);
         MetricApi metricApi = api.getMetricApi();
 
-        if (!options.has(OPT_METRIC_ID)) {
-            System.out.println(OPT_METRIC_ID + " argument required.");
-            System.exit(-1);
-        }
-
         long end = System.currentTimeMillis();
         long start = end - 8 * 60 * 60 * 1000;
         MetricDataResponse data =
-                metricApi.getMetricData((Integer)options.valueOf(OPT_METRIC_ID),
+                metricApi.getMetricData((Integer)getRequired(options, OPT_METRIC_ID),
                                         start, end);
 
         XmlUtil.serialize(data, System.out, Boolean.TRUE);
