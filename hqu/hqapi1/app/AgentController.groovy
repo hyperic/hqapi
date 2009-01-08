@@ -28,16 +28,19 @@ class AgentController extends ApiController {
     }
 
     def getAgent(params) {
+        def id = params.getOne("id")?.toInteger()
         def address = params.getOne("address")
         def port = params.getOne("port")?.toInteger()
 
         def failureXml
         def agent
-        try {
+
+        if (id) {
+            agent = agentHelper.getAgent(id)
+        } else if (address && port) {
             agent = agentHelper.getAgent(address, port)
-        } catch (Exception e) {
-            log.error("UnexpectedError: " + e.getMessage(), e);
-            failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+        } else {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         }
 
         renderXml() {

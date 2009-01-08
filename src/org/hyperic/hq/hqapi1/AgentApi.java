@@ -26,6 +26,25 @@ public class AgentApi extends BaseApi {
     }
 
     /**
+     * Get an {@link Agent} by id.
+     *
+     * @param id The id of the Agent to get
+     *
+     * @return  On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * a the requested agent is returned via
+     * {@link org.hyperic.hq.hqapi1.types.AgentResponse#getAgent()}.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public AgentResponse getAgent(int id)
+        throws IOException
+    {
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("id", new String[] { String.valueOf(id) });
+        return doGet("agent/getAgent.hqu", params, AgentResponse.class);
+    }
+
+    /**
      * Get an {@link Agent} by address and port.
      *
      * @param address The address of the requested agent.  This can be a hostname
