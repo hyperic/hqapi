@@ -90,24 +90,15 @@ class ResourceController extends ApiController {
         }
     }
 
-    // TODO: Implement
-    def createServer(params) {
-        renderXml() {
-            out << ResourceResponse() {
-                out << getFailureXML(ErrorCode.NOT_IMPLEMENTED)
-            }
-        }
-    }
-
-    def createService(params) {
+    def createResource(params) {
         def createRequest = new XmlParser().parseText(getUpload('postdata'))
         def xmlParent = createRequest['Parent']
-        def xmlService = createRequest['Service']
-        def xmlServicePrototype = createRequest['ServicePrototype']
+        def xmlResource = createRequest['Resource']
+        def xmlPrototype = createRequest['Prototype']
 
         if (!xmlParent || xmlParent.size() != 1 ||
-            !xmlService || xmlService.size() != 1 ||
-            !xmlServicePrototype || xmlServicePrototype.size() != 1) {
+            !xmlResource || xmlResource.size() != 1 ||
+            !xmlPrototype || xmlPrototype.size() != 1) {
             renderXml() {
                 ResourceResponse() {
                     out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
@@ -117,7 +108,7 @@ class ResourceController extends ApiController {
         }
 
         def parent = getResource(xmlParent[0].'@id'.toInteger())
-        def prototype = resourceHelper.find(prototype: xmlServicePrototype[0].'@name')
+        def prototype = resourceHelper.find(prototype: xmlPrototype[0].'@name')
 
         if (!parent || !prototype) {
             renderXml() {
@@ -127,26 +118,25 @@ class ResourceController extends ApiController {
             }
         }
 
-        def serviceXml = xmlService[0]
-        def cfgXml = serviceXml['ResourceConfig']
+        def resourceXml = xmlResource[0]
+        def cfgXml = resourceXml['ResourceConfig']
         def cfg = [:]
         cfgXml.each { c ->
             cfg.put(c.'@key', c.'@value')
         }
 
-        def service
+        def resource
         try {
-            service = prototype.createInstance(parent, serviceXml.'@name',
-                                               user, cfg)
+            resource = prototype.createInstance(parent, resourceXml.'@name',
+                                                user, cfg)
         } catch (Exception e) {
-            // XXX: duplicate service not handled properly, but assume that's
-            //      the case.
+            // TODO: Fix this
             renderXml() {
                 ResourceResponse() {
                     out << getFailureXML(ErrorCode.OBJECT_EXISTS);
                 }
             }
-            log.debug("Error creating service", e)
+            log.debug("Error creating resource", e)
             return
         }
         
@@ -154,7 +144,7 @@ class ResourceController extends ApiController {
             ResourceResponse() {
                 out << getSuccessXML()
                 // Only return this resource w/ it's config
-                out << getResourceXML(user, service, true, false)
+                out << getResourceXML(user, resource, true, false)
             }
         }
     }

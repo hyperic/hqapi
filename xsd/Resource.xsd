@@ -77,22 +77,12 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="CreateServerRequest">
+    <xs:element name="CreateResourceRequest">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="Parent" type="Resource"/>
-                <xs:element name="ServerPrototype" type="ResourcePrototype"/>
-                <!-- XXX: More to do here.. -->
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-
-    <xs:element name="CreateServiceRequest">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="Parent" type="Resource"/>
-                <xs:element name="Service" type="Resource"/>
-                <xs:element name="ServicePrototype" type="ResourcePrototype"/>
+                <xs:element name="Resource" type="Resource"/>
+                <xs:element name="Prototype" type="ResourcePrototype"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

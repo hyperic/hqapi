@@ -1,23 +1,22 @@
 package org.hyperic.hq.hqapi1;
 
+import org.hyperic.hq.hqapi1.types.Agent;
+import org.hyperic.hq.hqapi1.types.CreatePlatformRequest;
+import org.hyperic.hq.hqapi1.types.CreateResourceRequest;
+import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourceConfig;
+import org.hyperic.hq.hqapi1.types.ResourcePrototype;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypesResponse;
+import org.hyperic.hq.hqapi1.types.ResourceResponse;
+import org.hyperic.hq.hqapi1.types.ResourcesRequest;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
+
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
-
-import org.hyperic.hq.hqapi1.types.Agent;
-import org.hyperic.hq.hqapi1.types.Resource;
-import org.hyperic.hq.hqapi1.types.ResourcePrototype;
-import org.hyperic.hq.hqapi1.types.CreateServiceRequest;
-import org.hyperic.hq.hqapi1.types.ResourceConfig;
-import org.hyperic.hq.hqapi1.types.CreatePlatformRequest;
-import org.hyperic.hq.hqapi1.types.CreateServerRequest;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
-import org.hyperic.hq.hqapi1.types.ResourcePrototypesResponse;
-import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
-import org.hyperic.hq.hqapi1.types.ResourceResponse;
-import org.hyperic.hq.hqapi1.types.ResourcesResponse;
-import org.hyperic.hq.hqapi1.types.ResourcesRequest;
+import java.util.Map;
 
 /**
  * The Hyperic HQ Resource API.
@@ -132,14 +131,37 @@ public class ResourceApi extends BaseApi {
                       ResourceResponse.class);
     }
 
+    private ResourceResponse createResource(ResourcePrototype type,
+                                            Resource parent,
+                                            String name,
+                                            Map<String,String> config)
+        throws IOException
+    {
+        Resource server = new Resource();
+        server.setName(name);
+        for (String k : config.keySet()) {
+            ResourceConfig c = new ResourceConfig();
+            c.setKey(k);
+            c.setValue(config.get(k));
+            server.getResourceConfig().add(c);
+        }
+
+
+        CreateResourceRequest request = new CreateResourceRequest();
+        request.setParent(parent);
+        request.setResource(server);
+        request.setPrototype(type);
+
+        return doPost("resource/createResource.hqu", request,
+                      ResourceResponse.class);
+    }
+
     /**
-     * Create a Server {@link Resource} with the given name.<br><b>This API is
-     * not yet availabile.  It will return an not implemented error.</b>
+     * Create a Server {@link Resource} with the given name.
      *
      * @param type The resource prototype for the resource to be created.
      * @param parent The parent resource for the created resource.
      * @param name The name of the resource to create.
-     * @param installPath The install path for the server.
      * @param config The configuration for the server.
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
@@ -151,16 +173,10 @@ public class ResourceApi extends BaseApi {
     public ResourceResponse createServer(ResourcePrototype type,
                                          Resource parent,
                                          String name,
-                                         String installPath,
-                                         Map config)
+                                         Map<String,String> config)
         throws IOException
     {
-        CreateServerRequest request = new CreateServerRequest();
-        request.setParent(parent);
-        request.setServerPrototype(type);
-
-        return doPost("resource/createServer.hqu", request,
-                      ResourceResponse.class);
+        return createResource(type, parent, name, config);
     }
 
     /**
@@ -185,22 +201,7 @@ public class ResourceApi extends BaseApi {
                                           Map<String,String> config)
         throws IOException
     {
-        Resource service = new Resource();
-        service.setName(name);
-        for (String k : config.keySet()) {
-            ResourceConfig c = new ResourceConfig();
-            c.setKey(k);
-            c.setValue(config.get(k));
-            service.getResourceConfig().add(c);
-        }
-
-        CreateServiceRequest request = new CreateServiceRequest();
-        request.setParent(parent);
-        request.setService(service);
-        request.setServicePrototype(type);
-
-        return doPost("resource/createService.hqu", request,
-                      ResourceResponse.class);
+        return createResource(type, parent, name, config);
     }
 
     /**
