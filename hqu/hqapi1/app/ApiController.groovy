@@ -5,6 +5,10 @@ import org.hyperic.hq.hqapi1.ErrorCode
 
 class ApiController extends BaseController {
 
+    // Statistics object
+    private static _methodStats = [:]
+    private static final STATS_LOCK = new Object()
+    
     /**
      * Get the ResponseStatus Success XML.
      */
@@ -102,7 +106,35 @@ class ApiController extends BaseController {
         }
     }
 
+    def dispatchRequest() {
+
+        long start = System.currentTimeMillis()
+        super.dispatchRequest()
+        long total = System.currentTimeMillis() - start;
+
+        synchronized(STATS_LOCK) {
+            def method = controllerName + "." + action
+            def stats = _methodStats[method]
+            if (!stats) {
+                stats = [calls: 0, maxTime: 0, minTime: Integer.MAX_VALUE,
+                         totalTime: 0]
+            }
+
+            stats.calls++
+            stats.totalTime += total
+            if (stats.maxTime < total) {
+                stats.maxTime = total
+            }
+            if (stats.minTime > total) {
+                stats.minTime = total
+            }
+
+            _methodStats[method] = stats
+        }
+    }
+        
     def index(params) {
-        render(locals:[plugin: getPlugin()])
+        render(locals:[plugin: getPlugin(),
+               stats: _methodStats])
     }
 }
