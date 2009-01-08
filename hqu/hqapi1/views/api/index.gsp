@@ -18,18 +18,23 @@
         </script>
     </head>
 
-    <h2>Hyperic HQ API Version <%= plugin.descriptor.get('plugin.version') %></h2>
+    <%
+        def version = plugin.descriptor.get('plugin.version')
+        def clientPackage = "hqapi1-" + version + ".tar.gz"
+    %>
+
+    <h2>Hyperic HQ API Version ${version}</h2>
 
     <%
         def javadocUrl = "/" + urlFor(asset:'javadoc') + "/index.html"
-        def apijarUrl = "/" + urlFor(asset:'hqapi1.tar.gz')
+        def apijarUrl = "/" + urlFor(asset:clientPackage)
     %>
 
     This page provides resources and documentation for the Hyperic HQ API.
 
     <ul>
         <li>
-            Download <a href="${apijarUrl}">hqapi1.tar.gz</a>
+            Download <a href="${apijarUrl}">${clientPackage}</a>
         </li>
         <!-- li>
             View <a href="${javadocUrl}" onclick="return popup(this, 'Hyperic HQ Api Javadoc')">Javadoc Documentation</a> for this API.

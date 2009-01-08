@@ -5,6 +5,8 @@
     <property name="dist.dir" location="${build.dir}/dist"/>
     <property name="javadoc.dir" location="${build.dir}/javadoc"/>
 
+    <property file="hqu/hqapi1/plugin.properties"/>
+
     <path id="compile.classpath">
         <fileset dir="lib" includes="*.jar"/>
     </path>
@@ -63,55 +65,57 @@
             </fileset>
         </copy>
 
-        <!-- Bundle hqapi1.tar.gz in plugin public directory with all
+        <!-- Bundle client package in plugin public directory with all
              necessary jars, javadoc and xsds. -->
-        <mkdir dir="${build.dir}/hqapi1"/>
-        <mkdir dir="${build.dir}/hqapi1/lib"/>
-        <copy todir="${build.dir}/hqapi1/lib">
+        <property name="client.dir" value="${build.dir}/hqapi1-${plugin.version}"/>
+
+        <mkdir dir="${client.dir}"/>
+        <mkdir dir="${client.dir}/lib"/>
+        <copy todir="${client.dir}/lib">
             <fileset dir="${basedir}/lib">
                 <include name="*.jar"/>
             </fileset>
         </copy>
-        <copy todir="${build.dir}/hqapi1">
+        <copy todir="${client.dir}">
             <fileset dir="${build.dir}">
                 <include name="javadoc/**"/>
             </fileset>            
         </copy>
-        <jar file="${build.dir}/hqapi1/hqapi1.jar">
+        <jar file="${client.dir}/hqapi1-${plugin.version}.jar">
             <fileset dir="${build.dir}/classes">
                 <include name="**"/>
                 <exclude name="**/*_test.class"/>
             </fileset>
         </jar>
-        <mkdir dir="${build.dir}/hqapi1/xsd"/>
-        <copy toDir="${build.dir}/hqapi1/xsd">
+        <mkdir dir="${client.dir}/xsd"/>
+        <copy toDir="${client.dir}/xsd">
             <fileset dir="${basedir}/xsd">
                 <include name="*.xsd"/>
             </fileset>
         </copy>
-        <mkdir dir="${build.dir}/hqapi1/bin"/>
-        <copy todir="${build.dir}/hqapi1/bin">
+        <mkdir dir="${client.dir}/bin"/>
+        <copy todir="${client.dir}/bin">
             <fileset dir="${basedir}/bin">
                 <include name="*.sh"/>
             </fileset>
         </copy>
         <chmod perm="+x" type="file">
-            <fileset dir="${build.dir}/hqapi1/bin">
+            <fileset dir="${client.dir}/bin">
               <include name="*.sh"/>
             </fileset>
         </chmod>
         
-        <tar tarfile="${dist.dir}/hqapi1/public/hqapi1.tar.gz"
+        <tar tarfile="${dist.dir}/hqapi1/public/hqapi1-${plugin.version}.tar.gz"
              longfile="gnu"
              compression="gzip">
             <tarfileset dir="${build.dir}" mode="755">
-                <include name="hqapi1/**"/>
+                <include name="hqapi1-${plugin.version}/**"/>
             </tarfileset>
         </tar>
 
         <!-- Include hqapi1.jar in plugin classpath -->
         <copy toDir="${dist.dir}/hqapi1/lib"
-              file="${build.dir}/hqapi1/hqapi1.jar"/>
+              file="${client.dir}/hqapi1-${plugin.version}.jar"/>
 
     </target>
 
