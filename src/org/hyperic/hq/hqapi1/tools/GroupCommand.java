@@ -2,16 +2,15 @@ package org.hyperic.hq.hqapi1.tools;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-
-import java.util.Arrays;
-import java.util.List;
-
 import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
-import org.hyperic.hq.hqapi1.types.GroupsResponse;
 import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.GroupsResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class GroupCommand extends Command {
 

@@ -1,23 +1,23 @@
 package org.hyperic.hq.hqapi1;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-
 import org.hyperic.hq.hqapi1.types.Metric;
+import org.hyperic.hq.hqapi1.types.MetricDataResponse;
+import org.hyperic.hq.hqapi1.types.MetricResponse;
 import org.hyperic.hq.hqapi1.types.MetricTemplate;
+import org.hyperic.hq.hqapi1.types.MetricTemplateResponse;
+import org.hyperic.hq.hqapi1.types.MetricTemplatesRequest;
+import org.hyperic.hq.hqapi1.types.MetricTemplatesResponse;
+import org.hyperic.hq.hqapi1.types.MetricsDataResponse;
+import org.hyperic.hq.hqapi1.types.MetricsRequest;
+import org.hyperic.hq.hqapi1.types.MetricsResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
-import org.hyperic.hq.hqapi1.types.MetricsResponse;
-import org.hyperic.hq.hqapi1.types.MetricTemplatesResponse;
-import org.hyperic.hq.hqapi1.types.MetricResponse;
-import org.hyperic.hq.hqapi1.types.MetricTemplateResponse;
-import org.hyperic.hq.hqapi1.types.MetricDataResponse;
-import org.hyperic.hq.hqapi1.types.MetricsDataResponse;
-import org.hyperic.hq.hqapi1.types.MetricTemplatesRequest;
-import org.hyperic.hq.hqapi1.types.MetricsRequest;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The Hyperic HQ Metric API.

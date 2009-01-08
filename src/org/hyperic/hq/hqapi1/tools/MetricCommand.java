@@ -2,18 +2,17 @@ package org.hyperic.hq.hqapi1.tools;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import org.hyperic.hq.hqapi1.HQApi;
+import org.hyperic.hq.hqapi1.MetricApi;
+import org.hyperic.hq.hqapi1.ResourceApi;
+import org.hyperic.hq.hqapi1.XmlUtil;
+import org.hyperic.hq.hqapi1.types.Metric;
+import org.hyperic.hq.hqapi1.types.MetricsResponse;
+import org.hyperic.hq.hqapi1.types.ResourceResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 import java.util.Arrays;
 import java.util.List;
-
-import org.hyperic.hq.hqapi1.HQApi;
-import org.hyperic.hq.hqapi1.ResourceApi;
-import org.hyperic.hq.hqapi1.MetricApi;
-import org.hyperic.hq.hqapi1.XmlUtil;
-import org.hyperic.hq.hqapi1.types.ResourceResponse;
-import org.hyperic.hq.hqapi1.types.MetricsResponse;
-import org.hyperic.hq.hqapi1.types.Metric;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 public class MetricCommand extends Command {
 

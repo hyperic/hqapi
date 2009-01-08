@@ -1,9 +1,9 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.RoleApi;
-import org.hyperic.hq.hqapi1.types.RolesResponse;
-import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.Operation;
+import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.RolesResponse;
 
 import java.util.List;
 

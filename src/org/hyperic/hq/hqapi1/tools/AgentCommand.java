@@ -2,13 +2,12 @@ package org.hyperic.hq.hqapi1.tools;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-
-import java.util.Arrays;
-
-import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.AgentApi;
+import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.types.AgentsResponse;
+
+import java.util.Arrays;
 
 public class AgentCommand extends Command {
 

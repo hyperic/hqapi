@@ -1,9 +1,9 @@
 package org.hyperic.hq.hqapi1;
 
-import org.hyperic.hq.hqapi1.types.PingAgentResponse;
 import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.AgentResponse;
 import org.hyperic.hq.hqapi1.types.AgentsResponse;
+import org.hyperic.hq.hqapi1.types.PingAgentResponse;
 
 import java.io.IOException;
 import java.util.HashMap;

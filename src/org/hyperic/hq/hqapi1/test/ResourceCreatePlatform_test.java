@@ -2,18 +2,16 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.types.Agent;
-import org.hyperic.hq.hqapi1.types.ResourcePrototype;
-import org.hyperic.hq.hqapi1.types.ResourceResponse;
-import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
-import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.Ip;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 
-import java.util.HashMap;
-import java.util.Random;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class ResourceCreatePlatform_test extends ResourceTestBase {
 

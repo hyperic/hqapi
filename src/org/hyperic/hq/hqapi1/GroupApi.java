@@ -1,17 +1,17 @@
 package org.hyperic.hq.hqapi1;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
-
 import org.hyperic.hq.hqapi1.types.Group;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
-import org.hyperic.hq.hqapi1.types.GroupsResponse;
 import org.hyperic.hq.hqapi1.types.GroupsRequest;
+import org.hyperic.hq.hqapi1.types.GroupsResponse;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The Hyperic HQ Group API.

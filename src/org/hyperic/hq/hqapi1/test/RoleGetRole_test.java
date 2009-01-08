@@ -1,8 +1,8 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.RoleApi;
-import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.RoleResponse;
 
 public class RoleGetRole_test extends RoleTestBase {
 

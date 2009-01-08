@@ -1,24 +1,24 @@
 package org.hyperic.hq.hqapi1.test;
 
-import org.hyperic.hq.hqapi1.types.Metric;
-import org.hyperic.hq.hqapi1.types.MetricData;
-import org.hyperic.hq.hqapi1.types.Resource;
-import org.hyperic.hq.hqapi1.types.GroupsResponse;
-import org.hyperic.hq.hqapi1.types.Group;
-import org.hyperic.hq.hqapi1.types.MetricTemplate;
-import org.hyperic.hq.hqapi1.types.ResourcePrototype;
-import org.hyperic.hq.hqapi1.types.DataPoint;
-import org.hyperic.hq.hqapi1.types.ResourcesResponse;
-import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
-import org.hyperic.hq.hqapi1.types.MetricsResponse;
-import org.hyperic.hq.hqapi1.types.MetricDataResponse;
-import org.hyperic.hq.hqapi1.types.MetricTemplatesResponse;
-import org.hyperic.hq.hqapi1.types.MetricsDataResponse;
-import org.hyperic.hq.hqapi1.types.MetricTemplateResponse;
-import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.HQApi;
+import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
+import org.hyperic.hq.hqapi1.types.DataPoint;
+import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.GroupsResponse;
+import org.hyperic.hq.hqapi1.types.Metric;
+import org.hyperic.hq.hqapi1.types.MetricData;
+import org.hyperic.hq.hqapi1.types.MetricDataResponse;
+import org.hyperic.hq.hqapi1.types.MetricTemplate;
+import org.hyperic.hq.hqapi1.types.MetricTemplateResponse;
+import org.hyperic.hq.hqapi1.types.MetricTemplatesResponse;
+import org.hyperic.hq.hqapi1.types.MetricsDataResponse;
+import org.hyperic.hq.hqapi1.types.MetricsResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourcePrototype;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 
 import java.util.List;
 

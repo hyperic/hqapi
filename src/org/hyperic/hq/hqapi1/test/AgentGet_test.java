@@ -1,8 +1,8 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.AgentApi;
-import org.hyperic.hq.hqapi1.types.AgentResponse;
 import org.hyperic.hq.hqapi1.types.Agent;
+import org.hyperic.hq.hqapi1.types.AgentResponse;
 
 public class AgentGet_test extends HQApiTestBase {
 

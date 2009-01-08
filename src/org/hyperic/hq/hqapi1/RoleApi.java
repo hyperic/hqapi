@@ -1,19 +1,16 @@
 package org.hyperic.hq.hqapi1;
 
 import org.hyperic.hq.hqapi1.types.Role;
-import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.RoleRequest;
-import org.hyperic.hq.hqapi1.types.SetUsersRequest;
-import org.hyperic.hq.hqapi1.types.RolesRequest;
-import org.hyperic.hq.hqapi1.types.UsersResponse;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.RoleResponse;
+import org.hyperic.hq.hqapi1.types.RolesRequest;
 import org.hyperic.hq.hqapi1.types.RolesResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The Hyperic HQ Role API.

@@ -2,17 +2,16 @@ package org.hyperic.hq.hqapi1.tools;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import org.hyperic.hq.hqapi1.AutodiscoveryApi;
+import org.hyperic.hq.hqapi1.HQApi;
+import org.hyperic.hq.hqapi1.XmlUtil;
+import org.hyperic.hq.hqapi1.types.AIPlatform;
+import org.hyperic.hq.hqapi1.types.QueueResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 import java.util.Arrays;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-
-import org.hyperic.hq.hqapi1.HQApi;
-import org.hyperic.hq.hqapi1.AutodiscoveryApi;
-import org.hyperic.hq.hqapi1.XmlUtil;
-import org.hyperic.hq.hqapi1.types.QueueResponse;
-import org.hyperic.hq.hqapi1.types.AIPlatform;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
+import java.util.regex.Pattern;
 
 public class AutoDiscoveryCommand extends Command {
 

@@ -1,8 +1,8 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.AgentApi;
-import org.hyperic.hq.hqapi1.types.PingAgentResponse;
 import org.hyperic.hq.hqapi1.types.Agent;
+import org.hyperic.hq.hqapi1.types.PingAgentResponse;
 
 public class AgentPing_test extends HQApiTestBase {
 

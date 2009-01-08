@@ -1,18 +1,17 @@
 package org.hyperic.hq.hqapi1.tools;
 
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 import org.apache.log4j.PropertyConfigurator;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.types.Response;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
 
-import java.util.Properties;
-import java.util.Arrays;
-import java.io.IOException;
 import java.io.File;
 import java.io.FileInputStream;
-
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Properties;
 
 public abstract class Command {
 

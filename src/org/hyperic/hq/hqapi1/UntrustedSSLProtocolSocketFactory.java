@@ -1,20 +1,19 @@
 package org.hyperic.hq.hqapi1;
 
-import org.apache.commons.httpclient.protocol.SSLProtocolSocketFactory;
+import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
-import org.apache.commons.httpclient.params.HttpConnectionParams;
-import org.apache.commons.httpclient.ConnectTimeoutException;
+import org.apache.commons.httpclient.protocol.SSLProtocolSocketFactory;
 
-import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
-import java.security.NoSuchAlgorithmException;
-import java.security.KeyManagementException;
-import java.security.cert.X509Certificate;
-import java.net.Socket;
-import java.net.InetAddress;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 
 // For use with Commons-HTTPClient
 class UntrustedSSLProtocolSocketFactory

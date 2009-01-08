@@ -1,35 +1,34 @@
 package org.hyperic.hq.hqapi1;
 
-import org.apache.commons.httpclient.URI;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
+import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.httpclient.URI;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import javax.xml.bind.JAXBException;
-import java.util.Map;
-import java.util.Iterator;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ByteArrayOutputStream;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.net.SocketException;
-import java.lang.reflect.Method;
-
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.ServiceError;
+
+import javax.xml.bind.JAXBException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.net.SocketException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Iterator;
+import java.util.Map;
 
 class HQConnection {
 

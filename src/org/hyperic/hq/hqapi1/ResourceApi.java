@@ -3,6 +3,7 @@ package org.hyperic.hq.hqapi1;
 import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.CreatePlatformRequest;
 import org.hyperic.hq.hqapi1.types.CreateResourceRequest;
+import org.hyperic.hq.hqapi1.types.Ip;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourceConfig;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
@@ -12,7 +13,6 @@ import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesRequest;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
-import org.hyperic.hq.hqapi1.types.Ip;
 
 import java.io.IOException;
 import java.util.HashMap;

@@ -1,13 +1,13 @@
 package org.hyperic.hq.hqapi1.test;
 
+import org.hyperic.hq.hqapi1.UserApi;
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.UserResponse;
 import org.hyperic.hq.hqapi1.types.UsersResponse;
-import org.hyperic.hq.hqapi1.UserApi;
 
-import java.util.Random;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class UserTestBase extends HQApiTestBase {
 

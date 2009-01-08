@@ -2,18 +2,17 @@ package org.hyperic.hq.hqapi1.tools;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-
-import java.util.Arrays;
-import java.util.List;
-
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.RoleApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
-import org.hyperic.hq.hqapi1.types.RolesResponse;
-import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.RoleResponse;
+import org.hyperic.hq.hqapi1.types.RolesResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class RoleCommand extends Command {
 

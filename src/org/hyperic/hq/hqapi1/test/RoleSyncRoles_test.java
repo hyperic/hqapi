@@ -1,17 +1,17 @@
 package org.hyperic.hq.hqapi1.test;
 
+import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.RoleApi;
 import org.hyperic.hq.hqapi1.UserApi;
-import org.hyperic.hq.hqapi1.HQApi;
+import org.hyperic.hq.hqapi1.types.Operation;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.RoleResponse;
-import org.hyperic.hq.hqapi1.types.Operation;
-import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.UsersResponse;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class RoleSyncRoles_test extends RoleTestBase {
 

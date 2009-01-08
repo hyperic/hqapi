@@ -1,18 +1,18 @@
 package org.hyperic.hq.hqapi1;
 
+import org.hyperic.hq.hqapi1.types.EmailAction;
+import org.hyperic.hq.hqapi1.types.Escalation;
+import org.hyperic.hq.hqapi1.types.EscalationResponse;
+import org.hyperic.hq.hqapi1.types.EscalationsRequest;
+import org.hyperic.hq.hqapi1.types.EscalationsResponse;
+import org.hyperic.hq.hqapi1.types.FullEscalationAction;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.SuppressAction;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.hyperic.hq.hqapi1.types.EmailAction;
-import org.hyperic.hq.hqapi1.types.Escalation;
-import org.hyperic.hq.hqapi1.types.FullEscalationAction;
-import org.hyperic.hq.hqapi1.types.SuppressAction;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
-import org.hyperic.hq.hqapi1.types.EscalationResponse;
-import org.hyperic.hq.hqapi1.types.EscalationsResponse;
-import org.hyperic.hq.hqapi1.types.EscalationsRequest;
 
 /**
  * The Hyperic HQ Escalation API.

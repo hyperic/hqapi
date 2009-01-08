@@ -1,23 +1,23 @@
 package org.hyperic.hq.hqapi1.test;
 
 import junit.framework.TestCase;
-import org.hyperic.hq.hqapi1.HQApi;
-import org.hyperic.hq.hqapi1.ErrorCode;
-import org.hyperic.hq.hqapi1.AgentApi;
-import org.hyperic.hq.hqapi1.ResourceApi;
-import org.hyperic.hq.hqapi1.types.ResponseStatus;
-import org.hyperic.hq.hqapi1.types.Response;
-import org.hyperic.hq.hqapi1.types.Agent;
-import org.hyperic.hq.hqapi1.types.PingAgentResponse;
-import org.hyperic.hq.hqapi1.types.AgentsResponse;
-import org.hyperic.hq.hqapi1.types.Resource;
-import org.hyperic.hq.hqapi1.types.ResourcesResponse;
-import org.apache.log4j.PropertyConfigurator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.PropertyConfigurator;
+import org.hyperic.hq.hqapi1.AgentApi;
+import org.hyperic.hq.hqapi1.ErrorCode;
+import org.hyperic.hq.hqapi1.HQApi;
+import org.hyperic.hq.hqapi1.ResourceApi;
+import org.hyperic.hq.hqapi1.types.Agent;
+import org.hyperic.hq.hqapi1.types.AgentsResponse;
+import org.hyperic.hq.hqapi1.types.PingAgentResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.Response;
+import org.hyperic.hq.hqapi1.types.ResponseStatus;
 
-import java.util.Properties;
 import java.util.List;
+import java.util.Properties;
 
 public class HQApiTestBase  extends TestCase {
 

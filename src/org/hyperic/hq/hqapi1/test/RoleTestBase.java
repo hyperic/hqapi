@@ -1,13 +1,13 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.RoleApi;
+import org.hyperic.hq.hqapi1.types.Operation;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.RolesResponse;
-import org.hyperic.hq.hqapi1.types.Operation;
 
-import java.util.Random;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class RoleTestBase extends UserTestBase {
 

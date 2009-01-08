@@ -1,10 +1,10 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.UserApi;
-import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
-import org.hyperic.hq.hqapi1.types.UserResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.User;
+import org.hyperic.hq.hqapi1.types.UserResponse;
 import org.hyperic.hq.hqapi1.types.UsersRequest;
 import org.hyperic.hq.hqapi1.types.UsersResponse;
 

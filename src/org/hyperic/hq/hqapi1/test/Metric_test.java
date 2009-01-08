@@ -1,15 +1,15 @@
 package org.hyperic.hq.hqapi1.test;
 
-import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.HQApi;
+import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.types.Metric;
-import org.hyperic.hq.hqapi1.types.Resource;
-import org.hyperic.hq.hqapi1.types.MetricsResponse;
 import org.hyperic.hq.hqapi1.types.MetricResponse;
+import org.hyperic.hq.hqapi1.types.MetricsResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Metric_test extends MetricTestBase {
 

@@ -2,24 +2,23 @@ package org.hyperic.hq.hqapi1.tools;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-
-import java.util.Arrays;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-
+import org.hyperic.hq.hqapi1.AgentApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
-import org.hyperic.hq.hqapi1.AgentApi;
-import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
-import org.hyperic.hq.hqapi1.types.ResourceResponse;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
-import org.hyperic.hq.hqapi1.types.ResourcesResponse;
-import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.AgentResponse;
 import org.hyperic.hq.hqapi1.types.Ip;
+import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.ResourceResponse;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ResourceCommand extends Command {
 

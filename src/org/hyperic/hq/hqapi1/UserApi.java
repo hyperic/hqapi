@@ -1,16 +1,15 @@
 package org.hyperic.hq.hqapi1;
 
-import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
-import org.hyperic.hq.hqapi1.types.UsersResponse;
+import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.UserResponse;
-import org.hyperic.hq.hqapi1.types.UserRequest;
 import org.hyperic.hq.hqapi1.types.UsersRequest;
+import org.hyperic.hq.hqapi1.types.UsersResponse;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The Hyperic HQ User API.

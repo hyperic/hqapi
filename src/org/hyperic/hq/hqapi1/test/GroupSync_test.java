@@ -1,17 +1,17 @@
 package org.hyperic.hq.hqapi1.test;
 
+import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.RoleApi;
-import org.hyperic.hq.hqapi1.GroupApi;
-import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
-import org.hyperic.hq.hqapi1.types.ResourcesResponse;
-import org.hyperic.hq.hqapi1.types.RolesResponse;
 import org.hyperic.hq.hqapi1.types.Group;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.RolesResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 import java.util.List;
 

@@ -2,7 +2,6 @@ package org.hyperic.hq.hqapi1;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.HashMap;
 
 abstract class BaseApi {
     private static final String BASE_URI = "/hqu/hqapi1/";
