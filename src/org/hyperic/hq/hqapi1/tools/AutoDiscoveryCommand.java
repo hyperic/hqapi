@@ -2,20 +2,63 @@ package org.hyperic.hq.hqapi1.tools;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+
+import java.util.Arrays;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.AutodiscoveryApi;
+import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.types.QueueResponse;
 import org.hyperic.hq.hqapi1.types.AIPlatform;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
+public class AutoDiscoveryCommand extends Command {
 
-public class AutodiscoveryApprove extends ToolsBase {
+    private static String CMD_LIST    = "list";
+    private static String CMD_APPROVE = "approve";
+
+    private static String[] COMMANDS = { CMD_LIST, CMD_APPROVE };
 
     private static String OPT_REGEX = "regex";
 
-    private static void approve(String[] args) throws Exception {
+    private void printUsage() {
+        System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
+    }
+
+    protected void handleCommand(String[] args) throws Exception {
+        if (args.length == 0) {
+            printUsage();
+            System.exit(-1);
+        }
+
+        if (args[0].equals(CMD_LIST)) {
+            list(trim(args));
+        } else if (args[0].equals(CMD_APPROVE)) {
+            approve(trim(args));
+        } else {
+            printUsage();
+            System.exit(-1);
+        }
+    }
+
+    private void list(String[] args) throws Exception {
+
+        OptionParser p = getOptionParser();
+
+        OptionSet options = getOptions(p, args);
+
+        HQApi api = getApi(options);
+
+        AutodiscoveryApi autodiscoveryApi = api.getAutodiscoveryApi();
+
+        QueueResponse queue = autodiscoveryApi.getQueue();
+
+        XmlUtil.serialize(queue, System.out, Boolean.TRUE);
+    }
+
+    private void approve(String[] args) throws Exception {
 
         OptionParser p = getOptionParser();
 
@@ -48,16 +91,7 @@ public class AutodiscoveryApprove extends ToolsBase {
                 checkSuccess(approveResponse);
                 num++;
             }
-        }  
-        System.out.println("Approved " + num + " platforms.");
-    }
-
-    public static void main(String[] args) throws Exception {
-        try {
-            approve(args);
-        } catch (Exception e) {
-            System.err.println("Error approving resources: " + e.getMessage());
-            System.exit(-1);
         }
+        System.out.println("Approved " + num + " platforms.");
     }
 }

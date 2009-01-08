@@ -1,9 +1,9 @@
 package org.hyperic.hq.hqapi1.tools;
 
+import org.apache.log4j.PropertyConfigurator;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.types.Response;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
-import org.apache.log4j.PropertyConfigurator;
 
 import java.util.Properties;
 import java.util.Arrays;
@@ -11,10 +11,10 @@ import java.io.IOException;
 import java.io.File;
 import java.io.FileInputStream;
 
-import joptsimple.OptionSet;
 import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 
-public abstract class ToolsBase {
+public abstract class Command {
 
     static final String OPT_HOST     = "host";
     static final String OPT_PORT     = "port";
@@ -68,9 +68,9 @@ public abstract class ToolsBase {
         return parser;
     }
 
-    static OptionSet getOptions(OptionParser p, String[] args) throws IOException {
+    protected OptionSet getOptions(OptionParser p, String[] args) throws IOException {
         OptionSet o = p.parse(args);
-        
+
         if (o.has(OPT_HELP[0]) || o.has(OPT_HELP[1])) {
             p.printHelpOn(System.err);
             System.exit(0);
@@ -79,7 +79,7 @@ public abstract class ToolsBase {
         return o;
     }
 
-    static Properties getClientProperties() {
+    private Properties getClientProperties() {
         Properties props = new Properties();
 
         String home = System.getProperty("user.home");
@@ -97,7 +97,7 @@ public abstract class ToolsBase {
         return props;
     }
 
-    static HQApi getApi(OptionSet s) {
+    protected HQApi getApi(OptionSet s) {
 
         Properties clientProps = getClientProperties();
 
@@ -130,7 +130,7 @@ public abstract class ToolsBase {
         return new HQApi(host, port, secure, user, password);
     }
 
-    static Object getRequired(OptionSet s, String opt) {
+    protected Object getRequired(OptionSet s, String opt) {
 
         Object o = s.valueOf(opt);
 
@@ -142,10 +142,24 @@ public abstract class ToolsBase {
         return o;
     }
 
-    static void checkSuccess(Response r) {
+    protected void checkSuccess(Response r) {
         if (r.getStatus() != ResponseStatus.SUCCESS) {
             System.err.println("Error running command: " + r.getError().getReasonText());
             System.exit(-1);
         }
     }
+
+    /**
+     * Trim the first argument from an array returning the resulting elements.
+     * 
+     * @param args The argument array to trim.
+     * @return The trimmed array as defined as Array[1..len]
+     */
+    protected static String[] trim(String[] args) {
+        String[] cmdArgs = new String[args.length -1];
+        System.arraycopy(args, 1, cmdArgs, 0, args.length -1);
+        return cmdArgs;
+    }
+
+    protected abstract void handleCommand(String[] args) throws Exception;
 }

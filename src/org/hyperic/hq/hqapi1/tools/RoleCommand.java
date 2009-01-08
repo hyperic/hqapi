@@ -2,19 +2,50 @@ package org.hyperic.hq.hqapi1.tools;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+
+import java.util.Arrays;
+import java.util.List;
+
 import org.hyperic.hq.hqapi1.HQApi;
-import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.RoleApi;
-import org.hyperic.hq.hqapi1.types.ResponseStatus;
+import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.types.RolesResponse;
 import org.hyperic.hq.hqapi1.types.RoleResponse;
+import org.hyperic.hq.hqapi1.types.ResponseStatus;
+import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
-public class RoleList extends ToolsBase {
+public class RoleCommand extends Command {
 
-    private static String OPT_ID = "id";
+    private static String CMD_LIST = "list";
+    private static String CMD_SYNC = "sync";
+
+    private static String[] COMMANDS = { CMD_LIST, CMD_SYNC };
+
+    private static String OPT_ID   = "id";
     private static String OPT_NAME = "name";
 
-    private static void listRoles(String[] args) throws Exception {
+    private void printUsage() {
+        System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
+    }
+
+    protected void handleCommand(String[] args) throws Exception {
+        if (args.length == 0) {
+            printUsage();
+            System.exit(-1);
+        }
+
+        if (args[0].equals(CMD_LIST)) {
+            list(trim(args));
+        } else if (args[0].equals(CMD_SYNC)) {
+            sync(trim(args));
+        } else {
+            printUsage();
+            System.exit(-1);
+        }
+    }
+
+    private void list(String[] args) throws Exception {
 
         OptionParser p = getOptionParser();
 
@@ -52,13 +83,22 @@ public class RoleList extends ToolsBase {
         XmlUtil.serialize(roles, System.out, Boolean.TRUE);
     }
 
-    public static void main(String[] args) throws Exception {
-        try {
-            listRoles(args);
-        } catch (Exception e) {
-            System.err.println("Error listing roles: " + e.getMessage());
-            System.exit(-1);
-        }
+    private void sync(String[] args) throws Exception {
+
+        OptionParser p = getOptionParser();
+        OptionSet options = getOptions(p, args);
+
+        HQApi api = getApi(options);
+
+        RoleApi roleApi = api.getRoleApi();
+
+        RolesResponse resp = XmlUtil.deserialize(RolesResponse.class,
+                                                 System.in);
+        List<Role> roles = resp.getRole();
+
+        StatusResponse syncResponse = roleApi.syncRoles(roles);
+        checkSuccess(syncResponse);
+
+        System.out.println("Successfully synced " + roles.size() + " roles.");
     }
 }
-

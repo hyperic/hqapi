@@ -2,16 +2,42 @@ package org.hyperic.hq.hqapi1.tools;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+
+import java.util.Arrays;
+
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.types.MetricDataResponse;
 
-public class MetricDataList extends ToolsBase {
+public class MetricDataCommand extends Command {
+
+    private static String CMD_LIST = "list";
+
+    private static String[] COMMANDS = { CMD_LIST };
 
     private static final String OPT_METRIC_ID = "metricId";
 
-    private static void listMetricData(String[] args) throws Exception {
+    private void printUsage() {
+        System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
+    }
+
+    protected void handleCommand(String[] args) throws Exception {
+        
+        if (args.length == 0) {
+            printUsage();
+            System.exit(-1);
+        }
+
+        if (args[0].equals(CMD_LIST)) {
+            list(trim(args));
+        } else {
+            printUsage();
+            System.exit(-1);
+        }
+    }
+
+    private void list(String[] args) throws Exception {
 
         OptionParser p = getOptionParser();
 
@@ -35,14 +61,5 @@ public class MetricDataList extends ToolsBase {
                                         start, end);
 
         XmlUtil.serialize(data, System.out, Boolean.TRUE);
-    }
-
-    public static void main(String[] args) throws Exception {
-        try {
-            listMetricData(args);
-        } catch (Exception e) {
-            System.err.println("Error listing metrics: " + e.getMessage());
-            System.exit(-1);
-        }
     }
 }
