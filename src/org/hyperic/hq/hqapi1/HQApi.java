@@ -7,14 +7,15 @@ package org.hyperic.hq.hqapi1;
  */
 public class HQApi {
 
-    private final UserApi          _userApi;
-    private final RoleApi          _roleApi;
-    private final MetricApi        _metricApi;
-    private final GroupApi         _groupApi;
-    private final EscalationApi    _escalationApi;
-    private final AutodiscoveryApi _autodiscoveryApi;
-    private final ResourceApi      _resourceApi;
-    private final AgentApi         _agentApi;
+    private final UserApi            _userApi;
+    private final RoleApi            _roleApi;
+    private final MetricApi          _metricApi;
+    private final GroupApi           _groupApi;
+    private final EscalationApi      _escalationApi;
+    private final AutodiscoveryApi   _autodiscoveryApi;
+    private final ResourceApi        _resourceApi;
+    private final AgentApi           _agentApi;
+    private final AlertDefinitionApi _alertDefinitionApi;
     
     /**
      * @param host The hostname of the HQ Server to connect to.
@@ -35,6 +36,7 @@ public class HQApi {
         _autodiscoveryApi = new AutodiscoveryApi(connection);
         _resourceApi      = new ResourceApi(connection);
         _agentApi         = new AgentApi(connection);
+        _alertDefinitionApi = new AlertDefinitionApi(connection);
     }
 
     /**
@@ -107,5 +109,14 @@ public class HQApi {
      */
     public AgentApi getAgentApi() {
         return _agentApi;
+    }
+
+    /**
+     * Add, remove and list alert definitons.
+     *
+     * @return The API for operating on alert definitions.
+     */
+    public AlertDefinitionApi getAlertDefinitionApi() {
+        return _alertDefinitionApi;
     }
 }
