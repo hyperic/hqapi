@@ -62,63 +62,69 @@ public class AlertdefinitionController extends ApiController {
                     Escalation(id : d.escalation.id,
                                name : d.escalation.name)
                 }
-                d.conditions.each { c ->
+                for (c in d.conditions) {
+                    // Attributes common to all conditions
+                    def conditionAttrs = [required: c.required,
+                                          type: c.type]
+
                     if (c.type == EventConstants.TYPE_THRESHOLD) {
                         def metric = getTemplate(c.measurementId, d.typeBased)
                         if (!metric) {
-                            log.warn "Unable to find metric " + c.measurementId +
-                                     "for definition " + d.name
+                            log.warn("Unable to find metric " + c.measurementId +
+                                     "for definition " + d.name)
+                            continue
                         } else {
-                            AlertConditionThresholdCondition(required: c.required,
-                                                             metric: metric.name,
-                                                             comparator: c.comparator,
-                                                             absolute: c.threshold)
+                            conditionAttrs["thresholdMetric"] = metric.name
+                            conditionAttrs["thresholdComparator"] = c.comparator
+                            conditionAttrs["thresholdValue"] = c.threshold
                         }
                     } else if (c.type == EventConstants.TYPE_BASELINE) {
                         def metric = getTemplate(c.measurementId, d.typeBased)
                         if (!metric) {
-                            log.warn "Unable to find metric " + c.measurementId +
-                                     "for definition " + d.name
+                            log.warn("Unable to find metric " + c.measurementId +
+                                     "for definition " + d.name)
+                            continue
                         } else {
-                            AlertConditionBaselineCondition(required: c.required,
-                                                            metric: metric.name,
-                                                            comparator: c.comparator,
-                                                            percentage: c.threshold,
-                                                            baseline: c.optionStatus)
+                            conditionAttrs["baselineMetric"] = metric.name
+                            conditionAttrs["baselineComparator"] = c.comparator
+                            conditionAttrs["baselinePercentage"] = c.threshold
+                            conditionAttrs["baselineType"] = c.optionStatus
                         }
                     } else if (c.type == EventConstants.TYPE_CHANGE) {
                         def metric = getTemplate(c.measurementId, d.typeBased)
                         if (!metric) {
-                            log.warn "Unable to find metric " + c.measurementId +
-                                     "for definition " + d.name
+                            log.warn("Unable to find metric " + c.measurementId +
+                                     "for definition " + d.name)
+                            continue
                         } else {
-                            AlertConditionChangeCondition(required: c.required,
-                                                          metric: metric.name)
+                            conditionAttrs["metricChange"] = metric.name
                         }
                     } else if (c.type == EventConstants.TYPE_CUST_PROP) {
-                        AlertConditionPropertyCondition(required: c.required,
-                                                        property: c.name)
+                        conditionAttrs["property"] = c.name
                     } else if (c.type == EventConstants.TYPE_LOG) {
                         int level = c.name.toInteger()
-                        AlertConditionLogCondition(required: c.required,
-                                                   level: ResourceLogEvent.getLevelString(level),
-                                       matches: c.optionStatus)
+                        conditionAttrs["logLevel"] = ResourceLogEvent.getLevelString(level)
+                        conditionAttrs["logMatches"] = c.optionStatus
                     } else if (c.type == EventConstants.TYPE_ALERT) {
                         def alert = alertHelper.getById(c.measurementId)
                         if (alert == null) {
                             log.warn("Unable to find recover condition " +
                                      c.measurementId + " for " + c.name)
+                            continue
                         } else {
-                            AlertConditionRecoveryCondition(required: c.required,
-                                                            recover: alert?.name)
+                            conditionAttrs["recover"] = alert.name
                         }
                     } else if (c.type == EventConstants.TYPE_CFG_CHG) {
-                            AlertConditionConfigCondition(required: c.required,
-                                                          match: c.optionStatus)
+                        conditionAttrs["configMatch"] = c.optionStatus
+                    } else if (c.type == EventConstants.TYPE_CONTROL) {
+                        conditionAttrs["controlAction"] = c.name
+                        conditionAttrs["controlStatus"] = c.optionStatus
                     } else {
                         log.warn("Unhandled condition type " + c.type +
                                  " for condition " + c.name)
                     }
+                    // Write it out
+                    AlertCondition(conditionAttrs)
                 }
             }
         }
