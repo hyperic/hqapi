@@ -59,6 +59,18 @@
         <xs:attribute name="controlFiltered" type="xs:boolean" use="required" />
     </xs:complexType>
 
+    <xs:element name="AlertDefinitionResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="AlertDefinition" type="AlertDefinition" maxOccurs="1"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="AlertDefinitionsResponse">
         <xs:complexType>
             <xs:complexContent>
@@ -68,6 +80,22 @@
                     </xs:sequence>
                 </xs:extension>
             </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="AlertDefinitionRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="AlertDefinition" maxOccurs="1" type="AlertDefinition"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="AlertDefinitionsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="AlertDefinition" maxOccurs="unbounded" type="AlertDefinition"/>
+            </xs:sequence>
         </xs:complexType>
     </xs:element>
 
