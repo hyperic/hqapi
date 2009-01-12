@@ -193,11 +193,13 @@ class GroupController extends ApiController {
                                          xmlGroup.'@location')
                     groups << existing
                 } else {
+                    // TODO: private groups
                     def group = resourceHelper.createGroup(xmlGroup.'@name',
                                                            xmlGroup.'@description',
                                                            xmlGroup.'@location',
                                                            prototype, roles,
-                                                           resources)
+                                                           resources,
+                                                           false)
                     groups << group
                 }
             }
