@@ -1,9 +1,10 @@
 
 import org.hyperic.hq.hqapi1.ErrorCode
 
+import org.hyperic.hq.authz.shared.PermissionException
 import org.hyperic.hq.events.AlertSeverity
-import org.hyperic.hq.measurement.shared.ResourceLogEvent
 import org.hyperic.hq.events.EventConstants
+import org.hyperic.hq.measurement.shared.ResourceLogEvent
 
 public class AlertdefinitionController extends ApiController {
 
@@ -158,6 +159,37 @@ public class AlertdefinitionController extends ApiController {
                 out << getSuccessXML()
                 for (definition in definitions) {
                     out << getAlertDefinitionXML(definition)
+                }
+            }
+        }
+    }
+
+    def delete(params) {
+        def id   = params.getOne("id")?.toInteger()
+
+        def alertdefinition = alertHelper.getById(id)
+        def failureXml = null
+
+        if (!alertdefinition) {
+            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                       "Alert definition with id " + id +
+                                       " not found")
+        } else {
+            try {
+                alertdefinition.delete(user)
+            } catch (PermissionException e) {
+                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+            } catch (Exception e) {
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+            }
+        }
+
+        renderXml() {
+            StatusResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
                 }
             }
         }

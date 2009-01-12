@@ -1,9 +1,11 @@
 package org.hyperic.hq.hqapi1;
 
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The Hyperic HQ Alert Definition API.
@@ -35,7 +37,7 @@ public class AlertDefinitionApi extends BaseApi {
     public AlertDefinitionsResponse getAlertDefinitions(boolean excludeTypeBased)
         throws IOException
     {
-        HashMap<String,String[]> params = new HashMap<String,String[]>();
+        Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("excludeTypeBased", new String[] { Boolean.toString(excludeTypeBased)});
 
         return doGet("alertdefinition/listDefinitions.hqu", params,
@@ -53,9 +55,28 @@ public class AlertDefinitionApi extends BaseApi {
     public AlertDefinitionsResponse getTypeAlertDefinitions()
         throws IOException
     {
-        HashMap<String,String[]> params = new HashMap<String,String[]>();
+        Map<String,String[]> params = new HashMap<String,String[]>();
 
         return doGet("alertdefinition/listTypeDefinitions.hqu", params,
                      AlertDefinitionsResponse.class);
+    }
+
+    /**
+     * Delete an {@link org.hyperic.hq.hqapi1.types.AlertDefinition}
+     *
+     * @param id The alert definition id to delete.
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * definition was deleted successfully.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public StatusResponse deleteAlertDefinition(int id)
+        throws IOException
+    {
+        Map<String, String[]> params = new HashMap<String, String[]>();
+
+        params.put("id", new String[] { Integer.toString(id) });
+
+        return doGet("alertdefinition/delete.hqu", params, StatusResponse.class);
     }
 }
