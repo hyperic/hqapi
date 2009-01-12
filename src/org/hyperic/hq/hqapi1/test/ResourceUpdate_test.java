@@ -106,7 +106,8 @@ public class ResourceUpdate_test extends ResourceTestBase {
             }
         }
 
-        assertNotNull(origGw);
+        assertNotNull("Unable to find default gateway property for resource " +
+                      platform.getName() + origGw);
 
         StatusResponse updateResponse = api.updateResource(platform);
         hqAssertSuccess(updateResponse);
