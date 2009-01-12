@@ -9,6 +9,7 @@ public class Shell {
 
     static {
         _commands.put("agent", new AgentCommand());
+        _commands.put("alertdefinition", new AlertDefinitionCommand());
         _commands.put("autodiscovery", new AutoDiscoveryCommand());
         _commands.put("escalation", new EscalationCommand());
         _commands.put("group", new GroupCommand());
