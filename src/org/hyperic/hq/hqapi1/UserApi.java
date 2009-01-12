@@ -155,7 +155,7 @@ public class UserApi extends BaseApi {
      * @param users The list of users to sync.
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
-     * users were updated successfully.
+     * users were synced successfully.
      *
      * @throws IOException If a network error occurs while making the request.
      */

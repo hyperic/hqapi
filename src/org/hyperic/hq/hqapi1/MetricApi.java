@@ -108,7 +108,7 @@ public class MetricApi extends BaseApi {
      * @param metrics The List of Metrics to sync.
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
-     * MetricTemplates were synced successfully.
+     * Metrics were synced successfully.
      *
      * @throws IOException If a network error occurs while making the request.
      */

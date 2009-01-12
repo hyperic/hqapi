@@ -352,7 +352,7 @@ public class ResourceApi extends BaseApi {
      * @param resources The list of resources to sync.
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
-     * users were updated successfully.
+     * resources were synced successfully.
      *
      * @throws IOException If a network error occurs while making the request.
      */
