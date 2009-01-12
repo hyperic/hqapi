@@ -32,6 +32,9 @@ public class HQApiTestBase  extends TestCase {
 
     private Log _log = LogFactory.getLog(HQApiTestBase.class);
 
+    private static Agent    _localAgent = null;
+    private static Resource _localPlatform = null;
+
     public HQApiTestBase(String name) {
         super(name);
     }
@@ -96,6 +99,10 @@ public class HQApiTestBase  extends TestCase {
      */
     protected Agent getRunningAgent() throws Exception {
 
+        if (_localAgent != null) {
+            return _localAgent;
+        }
+
         AgentApi api = getApi().getAgentApi();
 
         AgentsResponse response = api.getAgents();
@@ -110,7 +117,8 @@ public class HQApiTestBase  extends TestCase {
             PingAgentResponse pingRespnse = api.pingAgent(a);
             if (pingRespnse.getStatus().equals(ResponseStatus.SUCCESS) &&
                 pingRespnse.isUp()) {
-                return a;
+                _localAgent = a;
+                return _localAgent;
             }
         }
 
@@ -123,6 +131,10 @@ public class HQApiTestBase  extends TestCase {
                                                 boolean children)
             throws Exception
     {
+        if (_localPlatform != null) {
+            return _localPlatform;
+        }
+
         Agent a = getRunningAgent();
 
         ResourceApi api = getApi().getResourceApi();
@@ -137,7 +149,9 @@ public class HQApiTestBase  extends TestCase {
             getLog().error(err);
             throw new Exception(err);
         }
-        return localPlatforms.get(0);
+
+        _localPlatform = localPlatforms.get(0);
+        return _localPlatform;
     }
 
     // Assert SUCCESS
