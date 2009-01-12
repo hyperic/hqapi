@@ -139,7 +139,7 @@ class ResourceController extends ApiController {
                     out << getFailureXML(ErrorCode.OBJECT_EXISTS);
                 }
             }
-            log.info("Error creating resource", e)
+            log.warn("Error creating resource", e)
             return
         }
 
@@ -198,7 +198,7 @@ class ResourceController extends ApiController {
                     out << getFailureXML(ErrorCode.OBJECT_EXISTS);
                 }
             }
-            log.debug("Error creating resource", e)
+            log.warn("Error creating resource", e)
             return
         }
         
