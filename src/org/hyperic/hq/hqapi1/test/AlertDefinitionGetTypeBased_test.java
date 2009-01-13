@@ -23,6 +23,8 @@ public class AlertDefinitionGetTypeBased_test extends AlertDefinitionTestBase {
             assertTrue("Invalid parent id " + d.getParent() +
                        " for type definition " + d.getName(),
                        d.getParent() == 0);
+            assertTrue("No ResourcePrototype found for type based alert",
+                       d.getResourcePrototype() != null);
         }
     }
 }

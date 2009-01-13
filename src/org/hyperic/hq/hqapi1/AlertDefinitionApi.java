@@ -2,10 +2,13 @@ package org.hyperic.hq.hqapi1;
 
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.AlertDefinition;
+import org.hyperic.hq.hqapi1.types.AlertDefinitionsRequest;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 /**
  * The Hyperic HQ Alert Definition API.
@@ -65,6 +68,7 @@ public class AlertDefinitionApi extends BaseApi {
      * Delete an {@link org.hyperic.hq.hqapi1.types.AlertDefinition}
      *
      * @param id The alert definition id to delete.
+     *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
      * definition was deleted successfully.
      *
@@ -78,5 +82,24 @@ public class AlertDefinitionApi extends BaseApi {
         params.put("id", new String[] { Integer.toString(id) });
 
         return doGet("alertdefinition/delete.hqu", params, StatusResponse.class);
+    }
+
+    /**
+     * Sync a list of {@link org.hyperic.hq.hqapi1.types.AlertDefinition}s.
+     *
+     * @param definitions The list of alert definitions to sync.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * definitions were synced successfully.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public StatusResponse syncAlertDefinitions(List<AlertDefinition> definitions)
+        throws IOException
+    {
+        AlertDefinitionsRequest request = new AlertDefinitionsRequest();
+        request.getAlertDefinition().addAll(definitions);
+
+        return doPost("alertdefinition/sync.hqu", request, StatusResponse.class);
     }
 }

@@ -23,6 +23,8 @@ public class AlertDefinitionGet_test extends AlertDefinitionTestBase {
             assertTrue("Invalid parent id " + d.getParent() +
                        " for definition " + d.getName(),
                        (d.getParent() == null || d.getParent() != 0));
+            assertTrue("No Resource found for AlertDefinition",
+                       d.getResource() != null);
         }
     }
 
@@ -38,6 +40,8 @@ public class AlertDefinitionGet_test extends AlertDefinitionTestBase {
             // Non-resource type alerts will have parent == null.
             assertTrue("Alert definition " + d.getName() + " has parent " +
                        d.getParent(), d.getParent() == null);
+            assertTrue("No Resource found for AlertDefinition",
+                       d.getResource() != null);            
         }
     }
 }

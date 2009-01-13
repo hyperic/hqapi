@@ -5,17 +5,23 @@ import joptsimple.OptionSet;
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
+import org.hyperic.hq.hqapi1.UserApi;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.UsersResponse;
+import org.hyperic.hq.hqapi1.types.User;
+import org.hyperic.hq.hqapi1.types.AlertDefinition;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class AlertDefinitionCommand extends Command {
 
-    private static String CMD_LIST = "list";
+    private static String CMD_LIST   = "list";
+    private static String CMD_SYNC   = "sync";
     private static String CMD_DELETE = "delete";
 
-    private static String[] COMMANDS = { CMD_LIST, CMD_DELETE };
+    private static String[] COMMANDS = { CMD_LIST, CMD_DELETE, CMD_SYNC };
 
     private static String OPT_TYPEALERTS = "typeAlerts";
     private static String OPT_EXCLUDE_TYPEALERTS = "excludeTypeAlerts";
@@ -35,6 +41,8 @@ public class AlertDefinitionCommand extends Command {
             list(trim(args));
         } else if (args[0].equals(CMD_DELETE)) {
             delete(trim(args));
+        } else if (args[0].equals(CMD_SYNC)) {
+            sync(trim(args));
         } else {
             printUsage();
             System.exit(-1);
@@ -91,5 +99,24 @@ public class AlertDefinitionCommand extends Command {
         checkSuccess(deleteResponse);
 
         System.out.println("Successfully deleted alert definition id " + id);
+    }
+
+    private void sync(String[] args) throws Exception {
+
+        OptionParser p = getOptionParser();
+        OptionSet options = getOptions(p, args);
+
+        AlertDefinitionApi api = getApi(options).getAlertDefinitionApi();
+
+        AlertDefinitionsResponse resp =
+                XmlUtil.deserialize(AlertDefinitionsResponse.class,
+                                    System.in);
+        List<AlertDefinition> definitions = resp.getAlertDefinition();
+
+        StatusResponse syncResponse = api.syncAlertDefinitions(definitions);
+        checkSuccess(syncResponse);
+
+        System.out.println("Successfully synced " + definitions.size() +
+                           " alert definitions.");
     }
 }

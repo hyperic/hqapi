@@ -40,6 +40,7 @@
     <xs:complexType name="AlertDefinition">
         <xs:sequence>
             <xs:element name="Resource" type="Resource" maxOccurs="1"/>
+            <xs:element name="ResourcePrototype" type="ResourcePrototype" maxOccurs="1"/>
             <xs:element name="Escalation" type="Escalation" maxOccurs="1"/>
             <!-- The ordering of this this is important -->
             <xs:element name="AlertCondition" type="AlertCondition" maxOccurs="unbounded"/>
