@@ -8,7 +8,7 @@ import org.hyperic.hq.hqapi1.types.AlertDefinition;
  */
 public class AlertConditionBuilder {
 
-    private AlertCondition createBaseCondition(boolean required) {
+    private static AlertCondition createBaseCondition(boolean required) {
         AlertCondition c = new AlertCondition();
         c.setRequired(required);
         return c;
@@ -32,10 +32,10 @@ public class AlertConditionBuilder {
         }
     }
 
-    public AlertCondition createThresholdCondition(boolean required,
-                                                   String metric,
-                                                   AlertComparator comparator,
-                                                   double threshold) {
+    public static AlertCondition createThresholdCondition(boolean required,
+                                                         String metric,
+                                                         AlertComparator comparator,
+                                                         double threshold) {
         AlertCondition c = createBaseCondition(required);
         c.setType(1);
         c.setThresholdMetric(metric);
@@ -62,11 +62,11 @@ public class AlertConditionBuilder {
         }
     }
 
-    public AlertCondition createBaselineCondition(boolean required,
-                                                  String metric,
-                                                  AlertComparator comparator,
-                                                  double percentage,
-                                                  AlertBaseline type) {
+    public static AlertCondition createBaselineCondition(boolean required,
+                                                         String metric,
+                                                         AlertComparator comparator,
+                                                         double percentage,
+                                                         AlertBaseline type) {
         AlertCondition c = createBaseCondition(required);
         c.setType(2);
         c.setBaselineMetric(metric);
@@ -93,9 +93,9 @@ public class AlertConditionBuilder {
         }
     }
 
-    public AlertCondition createControlCondition(boolean required,
-                                                 String action,
-                                                 AlertControlStatus status) {
+    public static AlertCondition createControlCondition(boolean required,
+                                                        String action,
+                                                        AlertControlStatus status) {
         AlertCondition c = createBaseCondition(required);
         c.setType(3);
         c.setControlAction(action);
@@ -104,24 +104,24 @@ public class AlertConditionBuilder {
         return c;
     }
 
-    public AlertCondition createChangeCondition(boolean required,
-                                                String metric) {
+    public static AlertCondition createChangeCondition(boolean required,
+                                                       String metric) {
         AlertCondition c = createBaseCondition(required);
         c.setType(4);
         c.setMetricChange(metric);
         return c;
     }
 
-    public AlertCondition createRecoveryCondition(boolean required,
-                                                  AlertDefinition recover) {
+    public static AlertCondition createRecoveryCondition(boolean required,
+                                                         AlertDefinition recover) {
         AlertCondition c = createBaseCondition(required);
         c.setType(5);
         c.setRecover(recover.getName());
         return c;
     }
 
-    public AlertCondition createPropertyCondition(boolean required,
-                                                  String property) {
+    public static AlertCondition createPropertyCondition(boolean required,
+                                                         String property) {
         AlertCondition c = createBaseCondition(required);
         c.setType(6);
         c.setProperty(property);
@@ -147,9 +147,9 @@ public class AlertConditionBuilder {
         }
     }
 
-    public AlertCondition createLogCondition(boolean required,
-                                             AlertLogLevel logLevel ,
-                                             String matches) {
+    public static AlertCondition createLogCondition(boolean required,
+                                                    AlertLogLevel logLevel ,
+                                                    String matches) {
         AlertCondition c = createBaseCondition(required);
         c.setType(7);
         c.setLogLevel(logLevel.getLevel());
@@ -157,8 +157,8 @@ public class AlertConditionBuilder {
         return c;
     }
 
-    public AlertCondition createConfigCondition(boolean required,
-                                                String matches) {
+    public static AlertCondition createConfigCondition(boolean required,
+                                                       String matches) {
         AlertCondition c = createBaseCondition(required);
         c.setType(8);
         c.setConfigMatch(matches);
