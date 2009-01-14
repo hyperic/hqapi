@@ -43,6 +43,11 @@ public class Shell {
             System.exit(-1);
         }
 
-        cmd.handleCommand(Command.trim(args));
+        try {
+            cmd.handleCommand(Command.trim(args));
+        } catch (Exception e) {
+            System.out.println("Error running command: " + e.getMessage());
+            System.exit(-1);
+        }
     }
 }
