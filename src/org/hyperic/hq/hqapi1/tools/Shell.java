@@ -1,11 +1,11 @@
 package org.hyperic.hq.hqapi1.tools;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Shell {
 
-    private static Map<String,Command> _commands = new HashMap<String,Command>();
+    private static Map<String,Command> _commands = new TreeMap<String,Command>();
 
     static {
         _commands.put("agent", new AgentCommand());
