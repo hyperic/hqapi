@@ -80,6 +80,7 @@ public class AlertConditionBuilder {
     public enum AlertControlStatus {
 
         COMPLETED("Completed"),
+        FAILED("Failed"),
         IN_PROGRESS("In Progress");
 
         private final String _controlStatus;
