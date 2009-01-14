@@ -1,15 +1,17 @@
 package org.hyperic.hq.hqapi1.test;
 
-import org.hyperic.hq.hqapi1.AlertDefinitionApi;
 import org.hyperic.hq.hqapi1.AlertConditionBuilder;
+import org.hyperic.hq.hqapi1.AlertDefinitionApi;
+import org.hyperic.hq.hqapi1.types.AlertCondition;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.Escalation;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
-import java.util.Random;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
 
@@ -17,12 +19,15 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         super(name);
     }
 
+    // Generic AlertDefinition tests
+    
     private AlertDefinition createTestDefinition() {
         AlertDefinition d = new AlertDefinition();
 
         Random r = new Random();
         d.setName("Test Alert Definition" + r.nextInt());
         d.setDescription("Test Alert Description");
+        d.setPriority(2);
         d.setEnabled(true);
         return d;
     }
@@ -52,6 +57,22 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
 
         StatusResponse response = api.syncAlertDefinitions(definitions);
         hqAssertFailureInvalidParameters(response);
+    }
+
+    public void testSyncInvalidAlertId() throws Exception {
+
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = createTestDefinition();
+        d.setId(Integer.MAX_VALUE);
+        d.setResourcePrototype(platform.getResourcePrototype());
+        d.getAlertCondition().add(AlertConditionBuilder.createPropertyCondition(true, "myProp"));
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        StatusResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertFailureObjectNotFound(response);
     }
 
     public void testSyncResourceAndResourcePrototype() throws Exception {
@@ -101,5 +122,91 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
 
         StatusResponse response = api.syncAlertDefinitions(definitions);
         hqAssertFailureObjectNotFound(response);
+    }
+
+    public void testSyncInvalidEscalation() throws Exception {
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = createTestDefinition();
+        d.setResourcePrototype(platform.getResourcePrototype());
+        d.getAlertCondition().add(AlertConditionBuilder.createPropertyCondition(true, "myProp"));
+        Escalation e = new Escalation();
+        e.setName("Invalid Escalation");
+        d.setEscalation(e);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        StatusResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertFailureObjectNotFound(response);
+    }
+
+    public void testSyncEmptyEscalation() throws Exception {
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = createTestDefinition();
+        d.setResourcePrototype(platform.getResourcePrototype());
+        d.getAlertCondition().add(AlertConditionBuilder.createPropertyCondition(true, "myProp"));
+        Escalation e = new Escalation();
+        d.setEscalation(e);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        StatusResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertFailureObjectNotFound(response);
+    }
+
+    public void testSyncInvalidPriority() throws Exception {
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = createTestDefinition();
+        d.setResourcePrototype(platform.getResourcePrototype());
+        d.getAlertCondition().add(AlertConditionBuilder.createPropertyCondition(true, "myProp"));
+        d.setPriority(4);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        StatusResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertFailureInvalidParameters(response);
+    }
+
+    public void testSyncCountAndRange() throws Exception {
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = createTestDefinition();
+        d.setResourcePrototype(platform.getResourcePrototype());
+        d.getAlertCondition().add(AlertConditionBuilder.createPropertyCondition(true, "myProp"));
+        d.setCount(3);
+        d.setRange(1800);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        StatusResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+    }
+
+    // AlertCondition tests
+
+    public void testInvalidAlertConditionType() throws Exception {
+
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = createTestDefinition();
+        d.setResourcePrototype(platform.getResourcePrototype());
+
+        AlertCondition cond = new AlertCondition();
+        cond.setRequired(true);
+        cond.setType(10); // Types range from 1-8.. See EventsConstants
+
+        d.getAlertCondition().add(cond);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        StatusResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertFailureInvalidParameters(response);
     }
 }
