@@ -2,6 +2,7 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.AlertDefinitionBuilder;
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
+import org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertPriority;
 import org.hyperic.hq.hqapi1.types.AlertCondition;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.Escalation;
@@ -27,7 +28,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         Random r = new Random();
         d.setName("Test Alert Definition" + r.nextInt());
         d.setDescription("Test Alert Description");
-        d.setPriority(2);
+        d.setPriority(AlertPriority.MEDIUM.getPriority());
         d.setEnabled(true);
         return d;
     }

@@ -14,6 +14,23 @@ public class AlertDefinitionBuilder {
         return c;
     }
 
+    public enum AlertPriority {
+
+        HIGH(3),
+        MEDIUM(2),
+        LOW(1);
+
+        private final int _priority;
+
+        AlertPriority(int priority) {
+            _priority = priority;
+        }
+
+        public int getPriority() {
+            return _priority;
+        }
+    }
+
     public enum AlertComparator {
 
         EQUALS("="),
