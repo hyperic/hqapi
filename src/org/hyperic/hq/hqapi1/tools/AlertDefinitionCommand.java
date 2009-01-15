@@ -122,7 +122,7 @@ public class AlertDefinitionCommand extends Command {
                                     System.in);
         List<AlertDefinition> definitions = resp.getAlertDefinition();
 
-        StatusResponse syncResponse = api.syncAlertDefinitions(definitions);
+        AlertDefinitionsResponse syncResponse = api.syncAlertDefinitions(definitions);
         checkSuccess(syncResponse);
 
         System.out.println("Successfully synced " + definitions.size() +

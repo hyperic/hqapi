@@ -92,17 +92,18 @@ public class AlertDefinitionApi extends BaseApi {
      *
      * @param definitions The list of alert definitions to sync.
      *
-     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
-     * definitions were synced successfully.
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * this list of synced AlertDefinitions are returned.
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public StatusResponse syncAlertDefinitions(List<AlertDefinition> definitions)
+    public AlertDefinitionsResponse syncAlertDefinitions(List<AlertDefinition> definitions)
         throws IOException
     {
         AlertDefinitionsRequest request = new AlertDefinitionsRequest();
         request.getAlertDefinition().addAll(definitions);
 
-        return doPost("alertdefinition/sync.hqu", request, StatusResponse.class);
+        return doPost("alertdefinition/sync.hqu", request,
+                      AlertDefinitionsResponse.class);
     }
 }

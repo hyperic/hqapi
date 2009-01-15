@@ -1,14 +1,14 @@
 package org.hyperic.hq.hqapi1.test;
 
-import org.hyperic.hq.hqapi1.AlertDefinitionBuilder;
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
+import org.hyperic.hq.hqapi1.AlertDefinitionBuilder;
 import org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertPriority;
 import org.hyperic.hq.hqapi1.types.AlertCondition;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
+import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.Escalation;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
 
-        StatusResponse response = api.syncAlertDefinitions(definitions);
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
         hqAssertFailureInvalidParameters(response);
     }
 
@@ -56,7 +56,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
 
-        StatusResponse response = api.syncAlertDefinitions(definitions);
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
         hqAssertFailureInvalidParameters(response);
     }
 
@@ -72,7 +72,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
 
-        StatusResponse response = api.syncAlertDefinitions(definitions);
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
         hqAssertFailureObjectNotFound(response);
     }
 
@@ -88,7 +88,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
 
-        StatusResponse response = api.syncAlertDefinitions(definitions);
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
         hqAssertFailureInvalidParameters(response);
     }
 
@@ -105,7 +105,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
 
-        StatusResponse response = api.syncAlertDefinitions(definitions);
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
         hqAssertFailureObjectNotFound(response);
     }
 
@@ -121,7 +121,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
 
-        StatusResponse response = api.syncAlertDefinitions(definitions);
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
         hqAssertFailureObjectNotFound(response);
     }
 
@@ -138,7 +138,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
 
-        StatusResponse response = api.syncAlertDefinitions(definitions);
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
         hqAssertFailureObjectNotFound(response);
     }
 
@@ -154,7 +154,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
 
-        StatusResponse response = api.syncAlertDefinitions(definitions);
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
         hqAssertFailureObjectNotFound(response);
     }
 
@@ -169,8 +169,26 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
 
-        StatusResponse response = api.syncAlertDefinitions(definitions);
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
         hqAssertFailureInvalidParameters(response);
+    }
+
+    public void testSyncBasicDefinition() throws Exception {
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = createTestDefinition();
+        d.setResourcePrototype(platform.getResourcePrototype());
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+        assertEquals(response.getAlertDefinition().size(), 1);        
+        for (AlertDefinition def : response.getAlertDefinition()) {
+            validateDefinition(def);
+        }
     }
 
     public void testSyncCountAndRange() throws Exception {
@@ -185,8 +203,12 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
 
-        StatusResponse response = api.syncAlertDefinitions(definitions);
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
         hqAssertSuccess(response);
+        assertEquals(response.getAlertDefinition().size(), 1);
+        for (AlertDefinition def : response.getAlertDefinition()) {
+            validateDefinition(def);
+        }
     }
 
     // AlertCondition tests
@@ -207,7 +229,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
 
-        StatusResponse response = api.syncAlertDefinitions(definitions);
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
         hqAssertFailureInvalidParameters(response);
     }
 }

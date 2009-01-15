@@ -236,7 +236,7 @@ public class AlertdefinitionController extends ApiController {
 
     def sync(params) {
         def syncRequest = new XmlParser().parseText(getUpload('postdata'))
-        def defintionsByName = [:]
+        def definitionsByName = [:]
 
         for (xmlDef in syncRequest['AlertDefinition']) {
             def failureXml = null
@@ -347,7 +347,7 @@ public class AlertdefinitionController extends ApiController {
             // Error with AlertDefinition attributes
             if (failureXml) {
                 renderXml() {
-                    StatusResponse() {
+                    AlertDefinitionsResponse() {
                         out << failureXml
                     }
                 }
@@ -500,7 +500,7 @@ public class AlertdefinitionController extends ApiController {
                         }
 
                         // TODO: This requires both recovery alerts to be in the sync. (And ordered)
-                        def recoveryDef = defintionsByName[xmlCond.'@recover']
+                        def recoveryDef = definitionsByName[xmlCond.'@recover']
                         if (recoveryDef) {
                             if (aeid.type == recoveryDef.appdefType &&
                                 aeid.id == recoveryDef.appdefId) {
@@ -567,7 +567,7 @@ public class AlertdefinitionController extends ApiController {
                 // Error with AlertCondition
                 if (failureXml) {
                     renderXml() {
-                        StatusResponse() {
+                        AlertDefinitionsResponse() {
                             out << failureXml
                         }
                     }
@@ -579,9 +579,10 @@ public class AlertdefinitionController extends ApiController {
             // TODO: Migrate this to AlertHelper
             try {
                 def sessionId = SessionManager.instance.put(user)
-                if (typeBased) {
-                    eventBoss.createResourceTypeAlertDefinition(sessionId,
-                                                                aeid, adv)
+                if (adv.id == null) {
+                    def newDef = eventBoss.createResourceTypeAlertDefinition(sessionId,
+                                                                             aeid, adv)
+                    adv.id = newDef.id
                 } else {
                     eventBoss.updateAlertDefinition(sessionId, adv)
                 }
@@ -594,7 +595,7 @@ public class AlertdefinitionController extends ApiController {
             // Error with save/update
             if (failureXml) {
                 renderXml() {
-                    StatusResponse() {
+                    AlertDefinitionsResponse() {
                         out << failureXml
                     }
                 }
@@ -602,12 +603,16 @@ public class AlertdefinitionController extends ApiController {
             }
 
             // Keep defs around so we don't need to look up recovery alerts
-            defintionsByName[adv.name] = adv
+            def pojo = alertHelper.getById(adv.id)
+            definitionsByName[pojo.name] = pojo
         }
 
         renderXml() {
-            StatusResponse() {
+            out << AlertDefinitionsResponse() {
                 out << getSuccessXML()
+                for (alertdef in definitionsByName.values()) {
+                    out << getAlertDefinitionXML(alertdef, false)
+                }
             }
         }
     }
