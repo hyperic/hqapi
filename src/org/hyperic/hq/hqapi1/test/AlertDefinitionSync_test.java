@@ -3,12 +3,15 @@ package org.hyperic.hq.hqapi1.test;
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
 import org.hyperic.hq.hqapi1.AlertDefinitionBuilder;
 import org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertPriority;
+import org.hyperic.hq.hqapi1.EscalationApi;
+import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.types.AlertCondition;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.Escalation;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
+import org.hyperic.hq.hqapi1.types.EscalationResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,20 +34,6 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         d.setPriority(AlertPriority.MEDIUM.getPriority());
         d.setEnabled(true);
         return d;
-    }
-
-    public void testSyncNoConditions() throws Exception {
-
-        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
-        Resource platform = getLocalPlatformResource(false, false);
-
-        AlertDefinition d = createTestDefinition();
-        d.setResourcePrototype(platform.getResourcePrototype());
-        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
-        definitions.add(d);
-
-        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
-        hqAssertFailureInvalidParameters(response);
     }
 
     public void testSyncNoResource() throws Exception {
@@ -125,39 +114,6 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         hqAssertFailureObjectNotFound(response);
     }
 
-    public void testSyncInvalidEscalation() throws Exception {
-        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
-        Resource platform = getLocalPlatformResource(false, false);
-
-        AlertDefinition d = createTestDefinition();
-        d.setResourcePrototype(platform.getResourcePrototype());
-        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
-        Escalation e = new Escalation();
-        e.setName("Invalid Escalation");
-        d.setEscalation(e);
-        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
-        definitions.add(d);
-
-        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
-        hqAssertFailureObjectNotFound(response);
-    }
-
-    public void testSyncEmptyEscalation() throws Exception {
-        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
-        Resource platform = getLocalPlatformResource(false, false);
-
-        AlertDefinition d = createTestDefinition();
-        d.setResourcePrototype(platform.getResourcePrototype());
-        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
-        Escalation e = new Escalation();
-        d.setEscalation(e);
-        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
-        definitions.add(d);
-
-        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
-        hqAssertFailureObjectNotFound(response);
-    }
-
     public void testSyncInvalidPriority() throws Exception {
         AlertDefinitionApi api = getApi().getAlertDefinitionApi();
         Resource platform = getLocalPlatformResource(false, false);
@@ -217,7 +173,91 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         cleanup(response.getAlertDefinition());
     }
 
+    // Escalation tests
+
+    public void testSyncInvalidEscalation() throws Exception {
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = createTestDefinition();
+        d.setResourcePrototype(platform.getResourcePrototype());
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
+        Escalation e = new Escalation();
+        e.setName("Invalid Escalation");
+        d.setEscalation(e);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertFailureObjectNotFound(response);
+    }
+
+    public void testSyncEmptyEscalation() throws Exception {
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = createTestDefinition();
+        d.setResourcePrototype(platform.getResourcePrototype());
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
+        Escalation e = new Escalation();
+        d.setEscalation(e);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertFailureObjectNotFound(response);
+    }
+
+    public void testSyncEscalation() throws Exception {
+        HQApi api = getApi();
+        AlertDefinitionApi defApi = api.getAlertDefinitionApi();
+        EscalationApi escApi = api.getEscalationApi();
+
+        Resource platform = getLocalPlatformResource(false, false);
+
+        Random r = new Random();
+        Escalation e = new Escalation();
+        e.setName("Test Escalation" + r.nextInt());
+        EscalationResponse escalationResponse =
+                escApi.createEscalation(e);
+        hqAssertSuccess(escalationResponse);
+
+        AlertDefinition d = createTestDefinition();
+        d.setResourcePrototype(platform.getResourcePrototype());
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
+        d.setEscalation(e);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+        assertEquals(response.getAlertDefinition().size(), 1);
+        for (AlertDefinition def : response.getAlertDefinition()) {
+            validateDefinition(def);
+            assertEquals(def.getEscalation().getId(),
+                         escalationResponse.getEscalation().getId());
+        }
+
+        // Cleanup
+        cleanup(response.getAlertDefinition());
+        escApi.deleteEscalation(escalationResponse.getEscalation().getId());
+    }
+
     // AlertCondition tests
+
+    public void testSyncNoConditions() throws Exception {
+
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = createTestDefinition();
+        d.setResourcePrototype(platform.getResourcePrototype());
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertFailureInvalidParameters(response);
+    }
 
     public void testInvalidAlertConditionType() throws Exception {
 
