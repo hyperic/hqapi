@@ -10,5 +10,9 @@ public class AlertDefinitionTestBase extends HQApiTestBase {
 
     protected void validateDefinition(AlertDefinition d) {
         assertNotNull(d.getName());
+        assertTrue("Invalid frequency " + d.getFrequency(),
+                   d.getFrequency() >= 0 && d.getFrequency() <= 4);
+        assertTrue("Invalid priority " + d.getPriority(),
+                   d.getPriority() >= 1 & d.getPriority() <= 3);
     }
 }
