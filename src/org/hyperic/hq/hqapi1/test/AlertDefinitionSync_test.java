@@ -173,6 +173,30 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         cleanup(response.getAlertDefinition());
     }
 
+    public void testSyncMulti() throws Exception {
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+        Resource platform = getLocalPlatformResource(false, false);
+
+        final int NUM_DEFS = 10;
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        for (int i = 0; i < NUM_DEFS; i++) {
+            AlertDefinition d = createTestDefinition();
+            d.setResourcePrototype(platform.getResourcePrototype());
+            d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
+            definitions.add(d);
+        }
+
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+        assertEquals(response.getAlertDefinition().size(), NUM_DEFS);        
+        for (AlertDefinition def : response.getAlertDefinition()) {
+            validateDefinition(def);
+        }
+
+        // Cleanup
+        cleanup(response.getAlertDefinition());
+    }
+
     // Escalation tests
 
     public void testSyncInvalidEscalation() throws Exception {
