@@ -1,6 +1,6 @@
 package org.hyperic.hq.hqapi1.test;
 
-import org.hyperic.hq.hqapi1.AlertConditionBuilder;
+import org.hyperic.hq.hqapi1.AlertDefinitionBuilder;
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
 import org.hyperic.hq.hqapi1.types.AlertCondition;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
@@ -51,7 +51,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         AlertDefinitionApi api = getApi().getAlertDefinitionApi();
 
         AlertDefinition d = createTestDefinition();
-        d.getAlertCondition().add(AlertConditionBuilder.createPropertyCondition(true, "myProp"));
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
 
@@ -67,7 +67,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         AlertDefinition d = createTestDefinition();
         d.setId(Integer.MAX_VALUE);
         d.setResourcePrototype(platform.getResourcePrototype());
-        d.getAlertCondition().add(AlertConditionBuilder.createPropertyCondition(true, "myProp"));
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
 
@@ -83,7 +83,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         AlertDefinition d = createTestDefinition();
         d.setResourcePrototype(platform.getResourcePrototype());
         d.setResource(platform); // Can't have Resource & ResourcePrototype
-        d.getAlertCondition().add(AlertConditionBuilder.createPropertyCondition(true, "myProp"));
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
 
@@ -100,7 +100,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
 
         AlertDefinition d = createTestDefinition();
         d.setResource(platform); // Invalid Resource
-        d.getAlertCondition().add(AlertConditionBuilder.createPropertyCondition(true, "myProp"));
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
 
@@ -116,7 +116,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
 
         AlertDefinition d = createTestDefinition();
         d.setResourcePrototype(proto);
-        d.getAlertCondition().add(AlertConditionBuilder.createPropertyCondition(true, "myProp"));
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
 
@@ -130,7 +130,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
 
         AlertDefinition d = createTestDefinition();
         d.setResourcePrototype(platform.getResourcePrototype());
-        d.getAlertCondition().add(AlertConditionBuilder.createPropertyCondition(true, "myProp"));
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
         Escalation e = new Escalation();
         e.setName("Invalid Escalation");
         d.setEscalation(e);
@@ -147,7 +147,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
 
         AlertDefinition d = createTestDefinition();
         d.setResourcePrototype(platform.getResourcePrototype());
-        d.getAlertCondition().add(AlertConditionBuilder.createPropertyCondition(true, "myProp"));
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
         Escalation e = new Escalation();
         d.setEscalation(e);
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
@@ -163,7 +163,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
 
         AlertDefinition d = createTestDefinition();
         d.setResourcePrototype(platform.getResourcePrototype());
-        d.getAlertCondition().add(AlertConditionBuilder.createPropertyCondition(true, "myProp"));
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
         d.setPriority(4);
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
@@ -178,7 +178,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
 
         AlertDefinition d = createTestDefinition();
         d.setResourcePrototype(platform.getResourcePrototype());
-        d.getAlertCondition().add(AlertConditionBuilder.createPropertyCondition(true, "myProp"));
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
         d.setCount(3);
         d.setRange(1800);
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();

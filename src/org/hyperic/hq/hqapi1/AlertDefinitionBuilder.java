@@ -6,7 +6,7 @@ import org.hyperic.hq.hqapi1.types.AlertDefinition;
 /**
  * This class is used to create an @{link AlertCondition}.
  */
-public class AlertConditionBuilder {
+public class AlertDefinitionBuilder {
 
     private static AlertCondition createBaseCondition(boolean required) {
         AlertCondition c = new AlertCondition();
