@@ -33,7 +33,6 @@ public class HQApiTestBase  extends TestCase {
     private Log _log = LogFactory.getLog(HQApiTestBase.class);
 
     private static Agent    _localAgent = null;
-    private static Resource _localPlatform = null;
 
     public HQApiTestBase(String name) {
         super(name);
@@ -131,10 +130,6 @@ public class HQApiTestBase  extends TestCase {
                                                 boolean children)
             throws Exception
     {
-        if (_localPlatform != null) {
-            return _localPlatform;
-        }
-
         Agent a = getRunningAgent();
 
         ResourceApi api = getApi().getResourceApi();
@@ -150,8 +145,7 @@ public class HQApiTestBase  extends TestCase {
             throw new Exception(err);
         }
 
-        _localPlatform = localPlatforms.get(0);
-        return _localPlatform;
+        return localPlatforms.get(0);
     }
 
     // Assert SUCCESS
