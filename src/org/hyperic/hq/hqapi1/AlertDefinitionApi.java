@@ -50,15 +50,18 @@ public class AlertDefinitionApi extends BaseApi {
     /**
      * Find all type based {@link org.hyperic.hq.hqapi1.types.AlertDefinition}s in the system.
      *
+     * @param excludeIds If specified the returned {@link org.hyperic.hq.hqapi1.types.AlertDefinition}s
+     * will not have id's included.
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * a list of AlertDefinitions are returned.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public AlertDefinitionsResponse getTypeAlertDefinitions()
+    public AlertDefinitionsResponse getTypeAlertDefinitions(boolean excludeIds)
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("excludeIds", new String[] { Boolean.toString(excludeIds)});
 
         return doGet("alertdefinition/listTypeDefinitions.hqu", params,
                      AlertDefinitionsResponse.class);

@@ -5,12 +5,9 @@ import joptsimple.OptionSet;
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
-import org.hyperic.hq.hqapi1.UserApi;
+import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
-import org.hyperic.hq.hqapi1.types.UsersResponse;
-import org.hyperic.hq.hqapi1.types.User;
-import org.hyperic.hq.hqapi1.types.AlertDefinition;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +22,7 @@ public class AlertDefinitionCommand extends Command {
 
     private static String OPT_TYPEALERTS = "typeAlerts";
     private static String OPT_EXCLUDE_TYPEALERTS = "excludeTypeAlerts";
+    private static String OPT_EXCLUDE_IDS = "excludeTypeIds";
     private static String OPT_ID   = "id";
 
     private void printUsage() {
@@ -57,7 +55,9 @@ public class AlertDefinitionCommand extends Command {
                                   "alerts will be returned.");
         p.accepts(OPT_EXCLUDE_TYPEALERTS, "If specified, individual alerts " +
                                           "based on resource type alerts will " +
-                                          "be excluded");
+                                          "be excluded.");
+        p.accepts(OPT_EXCLUDE_IDS, "If specified, parent alert definitions will " +
+                                   "not include alert ids.");
 
         OptionSet options = getOptions(p, args);
 
@@ -65,15 +65,24 @@ public class AlertDefinitionCommand extends Command {
         AlertDefinitionApi definitionApi = api.getAlertDefinitionApi();
 
         AlertDefinitionsResponse alertDefs;
-
+        
         if (options.has(OPT_TYPEALERTS)) {
-            alertDefs = definitionApi.getTypeAlertDefinitions();
+            boolean excludeIds = false;
+            if (options.has(OPT_EXCLUDE_IDS)) {
+                excludeIds = true;
+            }
+            
+            alertDefs = definitionApi.getTypeAlertDefinitions(excludeIds);
         } else {
             boolean excludeTypeAlerts = false;
             if (options.has(OPT_EXCLUDE_TYPEALERTS)) {
                 excludeTypeAlerts = true;
             }
-
+            if (options.has(OPT_EXCLUDE_IDS)) {
+                System.err.println("Option " + OPT_EXCLUDE_IDS + " only valid " +
+                                   " when " + OPT_TYPEALERTS + " is specified.");
+                System.exit(-1);
+            }
             alertDefs = definitionApi.getAlertDefinitions(excludeTypeAlerts);
         }
 

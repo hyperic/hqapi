@@ -48,10 +48,9 @@ public class AlertdefinitionController extends ApiController {
         return null
     }
 
-    private Closure getAlertDefinitionXML(d) {
+    private Closure getAlertDefinitionXML(d, excludeIds) {
         { out ->
-            def attrs = [id: d.id,
-                         name: d.name,
+            def attrs = [name: d.name,
                          description: d.description,
                          priority: d.priority,
                          active: d.active,
@@ -62,6 +61,10 @@ public class AlertdefinitionController extends ApiController {
                          willRecover: d.willRecover,
                          notifyFiltered: d.notifyFiltered,
                          controlFiltered: d.controlFiltered]
+
+            if (!excludeIds) {
+                attrs['id'] = d.id
+            }
 
             // parent is nullable.
             if (d.parent != null) {
@@ -164,21 +167,26 @@ public class AlertdefinitionController extends ApiController {
             out << AlertDefinitionsResponse() {
                 out << getSuccessXML()
                 for (definition in definitions) {
-                    out << getAlertDefinitionXML(definition)
+                    out << getAlertDefinitionXML(definition, false)
                 }
             }
         }
     }
 
     def listTypeDefinitions(params) {
-
+        def excludeIds = params.getOne('excludeIds')?.toBoolean()
         def definitions = alertHelper.findTypeBasedDefinitions()
+
+        def noIds = false
+        if (excludeIds) {
+            noIds = true
+        }
 
         renderXml() {
             out << AlertDefinitionsResponse() {
                 out << getSuccessXML()
                 for (definition in definitions) {
-                    out << getAlertDefinitionXML(definition)
+                    out << getAlertDefinitionXML(definition, noIds)
                 }
             }
         }
