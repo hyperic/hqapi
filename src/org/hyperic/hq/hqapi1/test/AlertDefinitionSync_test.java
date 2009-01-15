@@ -189,6 +189,9 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         for (AlertDefinition def : response.getAlertDefinition()) {
             validateDefinition(def);
         }
+
+        // Cleanup
+        cleanup(response.getAlertDefinition());
     }
 
     public void testSyncCountAndRange() throws Exception {
@@ -209,6 +212,9 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         for (AlertDefinition def : response.getAlertDefinition()) {
             validateDefinition(def);
         }
+
+        // Cleanup
+        cleanup(response.getAlertDefinition());
     }
 
     // AlertCondition tests
