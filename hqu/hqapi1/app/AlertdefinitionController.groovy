@@ -139,7 +139,7 @@ public class AlertdefinitionController extends ApiController {
                             conditionAttrs["recover"] = alert.name
                         }
                     } else if (c.type == EventConstants.TYPE_CFG_CHG) {
-                        conditionAttrs["configMatch"] = c.optionStatus
+                        conditionAttrs["configMatch"] = c.name
                     } else if (c.type == EventConstants.TYPE_CONTROL) {
                         conditionAttrs["controlAction"] = c.name
                         conditionAttrs["controlStatus"] = c.optionStatus
@@ -570,14 +570,11 @@ public class AlertdefinitionController extends ApiController {
                         acv.option = xmlDef.'@logMatches'
                         break
                     case EventConstants.TYPE_CFG_CHG:
-                        acError = checkRequiredAttributes(adv.name, xmlCond,
-                                                          ['configMatch'])
-                        if (acError != null) {
-                            failureXml = acError
-                            break
-                        }
 
-                        acv.name = xmlCond.'@configMatch'
+                        def configMatch = xmlCond.'@configMatch'
+                        if (configMatch) {
+                            acv.name = configMatch
+                        }
                         break
                     default:
                         failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
