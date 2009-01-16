@@ -182,6 +182,38 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         cleanup(response.getAlertDefinition());
     }
 
+    public void testSyncManyConditions()  throws Exception {
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = generateTestDefinition();
+        d.setResource(platform);
+
+        final int NUM_CONDITIONS = 10;
+        for (int i = 0; i < NUM_CONDITIONS; i++) {
+            AlertCondition c = AlertDefinitionBuilder.createPropertyCondition(false, "prop" + i);
+            d.getAlertCondition().add(c);
+        }
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+        assertEquals(response.getAlertDefinition().size(), 1);
+        for (AlertDefinition def : response.getAlertDefinition()) {
+            validateDefinition(def);
+            assertEquals(def.getAlertCondition().size(), NUM_CONDITIONS);
+            // Ordering here is important
+            for (int i = 0; i < NUM_CONDITIONS; i++) {
+                assertEquals(def.getAlertCondition().get(i).getProperty(),
+                             "prop" + i);
+            }
+        }
+
+        // Cleanup
+        cleanup(response.getAlertDefinition());
+    }
+
     // TODO: test sync multi broken with type alerts
 
     public void testSyncMulti() throws Exception {
