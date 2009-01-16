@@ -580,10 +580,18 @@ public class AlertdefinitionController extends ApiController {
             try {
                 def sessionId = SessionManager.instance.put(user)
                 if (adv.id == null) {
-                    def newDef = eventBoss.createResourceTypeAlertDefinition(sessionId,
-                                                                             aeid, adv)
+                    def newDef
+                    if (typeBased) {
+                        newDef =
+                            eventBoss.createResourceTypeAlertDefinition(sessionId,
+                                                                        aeid, adv)
+                    } else {
+                        newDef = eventBoss.createAlertDefinition(sessionId,
+                                                                     adv)
+                    }
                     adv.id = newDef.id
                 } else {
+                    log.info "Updating alert definition with id = " + adv.id
                     eventBoss.updateAlertDefinition(sessionId, adv)
                 }
             } catch (Exception e) {
