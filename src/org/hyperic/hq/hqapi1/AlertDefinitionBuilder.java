@@ -14,6 +14,28 @@ public class AlertDefinitionBuilder {
         return c;
     }
 
+    public enum AlertConditionType {
+
+        THRESHOLD(1),
+        BASELINE(2),
+        CONTROL(3),
+        METRIC_CHANGE(4),
+        RECOVERY(5),
+        CUSTOM_PROP(6),
+        LOG(7),
+        CONFIG_CHANGE(8);
+
+        private final int _type;
+
+        AlertConditionType(int type) {
+            _type = type;
+        }
+
+        public int getType() {
+            return _type;
+        }
+    }
+
     public enum AlertPriority {
 
         HIGH(3),
@@ -54,7 +76,7 @@ public class AlertDefinitionBuilder {
                                                          AlertComparator comparator,
                                                          double threshold) {
         AlertCondition c = createBaseCondition(required);
-        c.setType(1);
+        c.setType(AlertConditionType.THRESHOLD.getType());
         c.setThresholdMetric(metric);
         c.setThresholdComparator(comparator.getComparator());
         c.setThresholdValue(threshold);
@@ -85,7 +107,7 @@ public class AlertDefinitionBuilder {
                                                          double percentage,
                                                          AlertBaseline type) {
         AlertCondition c = createBaseCondition(required);
-        c.setType(2);
+        c.setType(AlertConditionType.BASELINE.getType());
         c.setBaselineMetric(metric);
         c.setBaselineComparator(comparator.getComparator());
         c.setBaselinePercentage(percentage);
@@ -115,7 +137,7 @@ public class AlertDefinitionBuilder {
                                                         String action,
                                                         AlertControlStatus status) {
         AlertCondition c = createBaseCondition(required);
-        c.setType(3);
+        c.setType(AlertConditionType.CONTROL.getType());
         c.setControlAction(action);
         c.setControlStatus(status.getControlStatus());
 
@@ -125,7 +147,7 @@ public class AlertDefinitionBuilder {
     public static AlertCondition createChangeCondition(boolean required,
                                                        String metric) {
         AlertCondition c = createBaseCondition(required);
-        c.setType(4);
+        c.setType(AlertConditionType.METRIC_CHANGE.getType());
         c.setMetricChange(metric);
         return c;
     }
@@ -133,7 +155,7 @@ public class AlertDefinitionBuilder {
     public static AlertCondition createRecoveryCondition(boolean required,
                                                          AlertDefinition recover) {
         AlertCondition c = createBaseCondition(required);
-        c.setType(5);
+        c.setType(AlertConditionType.RECOVERY.getType());
         c.setRecover(recover.getName());
         return c;
     }
@@ -141,7 +163,7 @@ public class AlertDefinitionBuilder {
     public static AlertCondition createPropertyCondition(boolean required,
                                                          String property) {
         AlertCondition c = createBaseCondition(required);
-        c.setType(6);
+        c.setType(AlertConditionType.CUSTOM_PROP.getType());
         c.setProperty(property);
         return c;
     }
@@ -169,7 +191,7 @@ public class AlertDefinitionBuilder {
                                                     AlertLogLevel logLevel ,
                                                     String matches) {
         AlertCondition c = createBaseCondition(required);
-        c.setType(7);
+        c.setType(AlertConditionType.LOG.getType());
         c.setLogLevel(logLevel.getLevel());
         c.setLogMatches(matches);
         return c;
@@ -178,7 +200,7 @@ public class AlertDefinitionBuilder {
     public static AlertCondition createConfigCondition(boolean required,
                                                        String matches) {
         AlertCondition c = createBaseCondition(required);
-        c.setType(8);
+        c.setType(AlertConditionType.CONFIG_CHANGE.getType());
         c.setConfigMatch(matches);
         return c;
     }
