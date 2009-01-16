@@ -88,7 +88,7 @@ public class AlertDefinitionBuilder {
 
         MEAN("mean"),
         MIN("min"),
-        MAX("max;");
+        MAX("max");
 
         private final String _baselineType;
 
