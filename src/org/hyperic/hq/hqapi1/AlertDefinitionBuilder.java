@@ -57,8 +57,8 @@ public class AlertDefinitionBuilder {
 
         EQUALS("="),
         NOT_EQUALS("!="),
-        LESS_THAN("&lt;"),
-        GREATER_THAN("&gt");
+        LESS_THAN("<"),
+        GREATER_THAN(">");
 
         private final String _comparator;
 
