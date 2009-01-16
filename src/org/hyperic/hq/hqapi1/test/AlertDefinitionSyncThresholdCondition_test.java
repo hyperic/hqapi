@@ -80,7 +80,7 @@ public class AlertDefinitionSyncThresholdCondition_test extends AlertDefinitionT
         Metric m = metricsResponse.getMetric().get(0);
 
         AlertDefinition d = generateTestDefinition();
-        d.setResource(platform);
+        d.setResourcePrototype(platform.getResourcePrototype());
         final double THRESHOLD = 0;
         d.getAlertCondition().add(
                 AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
