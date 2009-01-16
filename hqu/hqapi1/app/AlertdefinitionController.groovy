@@ -496,7 +496,7 @@ public class AlertdefinitionController extends ApiController {
                         acError = checkRequiredAttributes(adv.name, xmlCond,
                                                           ['metricChange'])
                         if (acError != null) {
-                            faiureXml = acError
+                            failureXml = acError
                             break
                         }
 
