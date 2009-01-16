@@ -452,10 +452,21 @@ public class AlertdefinitionController extends ApiController {
                             break
                         }
 
+                        def baselineType = xmlCond.'@baselineType'
+                        if (!baselineType.equals("min") &&
+                            !baselineType.equals("max")&&
+                            !baselineType.equals("mean")) {
+                            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                                       "Invalid baseline type '" +
+                                                       baselineType + "'")
+                            break
+                        }
+
+
                         acv.measurementId = template.id
                         acv.comparator    = xmlCond.'@baselineComparator'
                         acv.threshold     = Double.valueOf(xmlCond.'@baselinePercentage')
-                        acv.option        = xmlCond.'@baselineType'
+                        acv.option        = baselineType
                         break
                     case EventConstants.TYPE_CONTROL:
                         acError = checkRequiredAttributes(adv.name, xmlCond,
