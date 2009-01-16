@@ -251,7 +251,6 @@ public class AlertdefinitionController extends ApiController {
                                                "Definition with id " + id +
                                                " not found")
                 } else {
-                    log.info "Found existing def=" + existing.id
                     typeBased = (existing.parent != null && existing.parent.id == 0)
                     resource = existing.resource
                 }
@@ -388,7 +387,6 @@ public class AlertdefinitionController extends ApiController {
                 // TODO: This gets all metrics, should warn if that metric is disabled?
                 templs = resource.metrics
             }
-            log.info "Found " + templs.size() + " templates for " + adv.name
 
             for (xmlCond in xmlDef['AlertCondition']) {
                 AlertConditionValue acv = new AlertConditionValue()
@@ -591,7 +589,6 @@ public class AlertdefinitionController extends ApiController {
                     }
                     adv.id = newDef.id
                 } else {
-                    log.info "Updating alert definition with id = " + adv.id
                     eventBoss.updateAlertDefinition(sessionId, adv)
                 }
             } catch (Exception e) {
