@@ -476,8 +476,21 @@ public class AlertdefinitionController extends ApiController {
                             failureXml = acError
                             break
                         }
+
+                        def controlStatus = xmlCond.'@controlStatus'
+                        log.info "Status is " + controlStatus
+                        if (!controlStatus.equals("Completed") &&
+                            !controlStatus.equals("In Progress") &&
+                            !controlStatus.equals("Failed")) {
+                            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                                       "Invalid control condition " +
+                                                       "status " + controlStatus)
+                            break
+                        }
+
+                        // TODO: Check resource for given control action
                         acv.name   = xmlCond.'@controlAction'
-                        acv.option = xmlCond.'@controlStatus'
+                        acv.option = controlStatus
                         break
                     case EventConstants.TYPE_CHANGE:
                         acError = checkRequiredAttributes(adv.name, xmlCond,
