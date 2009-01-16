@@ -226,7 +226,7 @@ public class AlertdefinitionController extends ApiController {
     private checkRequiredAttributes(name, xml, attrs) {
         for (attr in attrs) {
             if (xml."@${attr}" == null) {
-                return getFailureXml(ErrorCode.INVALID_PARAMETERS,
+                return getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                      "Required attribute '" + attr +
                                      "' not given for " + name)
             }
