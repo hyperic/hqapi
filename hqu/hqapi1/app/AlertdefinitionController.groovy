@@ -567,7 +567,7 @@ public class AlertdefinitionController extends ApiController {
                         }
 
                         acv.name = level.toString()
-                        acv.option = xmlDef.'@logMatches'
+                        acv.option = xmlCond.'@logMatches'
                         break
                     case EventConstants.TYPE_CFG_CHG:
 
