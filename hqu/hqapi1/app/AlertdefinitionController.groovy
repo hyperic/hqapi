@@ -376,6 +376,10 @@ public class AlertdefinitionController extends ApiController {
             adv.count = xmlDef.'@count'.toLong()
             adv.range = xmlDef.'@range'.toLong()
             adv.escalationId = escalation?.id
+            if (existing) {
+                // If the alert is pre-existing, set the parent id.
+                adv.parentId = existing.parent.id
+            }
 
             def templs
             if (typeBased) {
