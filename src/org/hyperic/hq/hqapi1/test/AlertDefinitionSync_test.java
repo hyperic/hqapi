@@ -214,8 +214,6 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         cleanup(response.getAlertDefinition());
     }
 
-    // TODO: test sync multi broken with type alerts
-
     public void testSyncMulti() throws Exception {
         AlertDefinitionApi api = getApi().getAlertDefinitionApi();
         Resource platform = getLocalPlatformResource(false, false);
@@ -234,6 +232,52 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         assertEquals(response.getAlertDefinition().size(), NUM_DEFS);        
         for (AlertDefinition def : response.getAlertDefinition()) {
             validateDefinition(def);
+        }
+
+        // Re-sync for update
+        definitions = response.getAlertDefinition();
+        final String UPDATED_DESCRIPTION = "Updated Alert Description";
+        final AlertCondition newCond =
+                AlertDefinitionBuilder.createPropertyCondition(true, "otherProp");
+        for (AlertDefinition d : definitions) {
+            d.setDescription(UPDATED_DESCRIPTION);
+            d.getAlertCondition().clear();
+            d.getAlertCondition().add(newCond);
+        }
+
+        response = api.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+        for (AlertDefinition d: definitions) {
+            assertEquals(d.getDescription(), UPDATED_DESCRIPTION);
+            for (AlertCondition c : d.getAlertCondition()) {
+                assertTrue(c.getProperty().equals("otherProp"));
+            }
+        }
+
+        // Cleanup
+        cleanup(response.getAlertDefinition());
+    }
+
+    public void testSyncMultiTypeAlert() throws Exception {
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+        Resource platform = getLocalPlatformResource(false, false);
+
+        final int NUM_DEFS = 10;
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        for (int i = 0; i < NUM_DEFS; i++) {
+            AlertDefinition d = generateTestDefinition();
+            d.setResourcePrototype(platform.getResourcePrototype());
+            d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
+            definitions.add(d);
+        }
+
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+        assertEquals(response.getAlertDefinition().size(), NUM_DEFS);
+        for (AlertDefinition def : response.getAlertDefinition()) {
+            validateDefinition(def);
+            assertNotNull("ResourcePrototype was null", def.getResourcePrototype());
+            assertNull("Resource was not null", def.getResource());
         }
 
         // Re-sync for update
@@ -330,8 +374,6 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         escApi.deleteEscalation(escalationResponse.getEscalation().getId());
     }
 
-    // TODO: sync update with esclation broken with type alerts
-
     public void testSyncUpdateWithEscalation() throws Exception {
 
         HQApi api = getApi();
@@ -378,6 +420,58 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
             //assertEquals(d.getEscalation().getName(), e.getName());
         }
         
+        // Cleanup
+        cleanup(response.getAlertDefinition());
+        escApi.deleteEscalation(escalationResponse.getEscalation().getId());
+    }
+
+    public void testSyncUpdateWithEscalationTypeAlert() throws Exception {
+
+        HQApi api = getApi();
+        AlertDefinitionApi defApi = api.getAlertDefinitionApi();
+        EscalationApi escApi = api.getEscalationApi();
+
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = generateTestDefinition();
+        d.setResourcePrototype(platform.getResourcePrototype());
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+        assertEquals(response.getAlertDefinition().size(), 1);
+        for (AlertDefinition def : response.getAlertDefinition()) {
+            validateDefinition(def);
+            assertNotNull("ResourcePrototype was null", def.getResourcePrototype());
+            assertNull("Resource was not null", def.getResource());
+            assertNull("Escalation was not null", def.getEscalation());
+        }
+
+        // Re-sync with escalation
+        Random r = new Random();
+        Escalation e = new Escalation();
+        e.setName("Test Escalation" + r.nextInt());
+        EscalationResponse escalationResponse =
+                escApi.createEscalation(e);
+        hqAssertSuccess(escalationResponse);
+
+        definitions = response.getAlertDefinition();
+        for (AlertDefinition def : definitions) {
+            def.setEscalation(e);
+        }
+
+        response = defApi.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+        assertEquals(response.getAlertDefinition().size(), 1);
+        for (AlertDefinition def : response.getAlertDefinition()) {
+            validateDefinition(def);
+            // TODO: Fix me
+            //assertNotNull("Escalation was null", def.getEscalation());
+            //assertEquals(d.getEscalation().getName(), e.getName());
+        }
+
         // Cleanup
         cleanup(response.getAlertDefinition());
         escApi.deleteEscalation(escalationResponse.getEscalation().getId());
