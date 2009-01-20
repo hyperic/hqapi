@@ -378,7 +378,7 @@ public class AlertdefinitionController extends ApiController {
             adv.escalationId = escalation?.id
             if (existing) {
                 // If the alert is pre-existing, set the parent id.
-                adv.parentId = existing.parent.id
+                adv.parentId = existing.parent?.id
             }
 
             def templs
