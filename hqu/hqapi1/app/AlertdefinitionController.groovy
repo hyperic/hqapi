@@ -632,8 +632,16 @@ public class AlertdefinitionController extends ApiController {
                 return
             }
 
-            // Keep defs around so we don't need to look up recovery alerts
             def pojo = alertHelper.getById(adv.id)
+
+            // Deal with Escalations
+            if (escalation) {
+                pojo.setEscalation(user, escalation)
+            } else {
+                pojo.unsetEscalation(user)
+            }
+
+            // Keep defs around so we don't need to look up recovery alerts            
             definitionsByName[pojo.name] = pojo
         }
 
