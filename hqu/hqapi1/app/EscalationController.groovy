@@ -188,10 +188,10 @@ class EscalationController extends ApiController {
                 action.setSms(xmlAct.'@sms'.toBoolean())
 
                 switch (xmlAct.'@notifyType') {
-                case 'notifyRoles' :
+                case '3' :
                     action.setType(EmailActionConfig.TYPE_ROLES)
                     break
-                case 'notifyUsers' :
+                case '2' :
                     action.setType(EmailActionConfig.TYPE_USERS)
                     break
                 default :
@@ -204,10 +204,12 @@ class EscalationController extends ApiController {
                     def name = notifyDef.'@name'
                     switch (action.getType()) {
                         case EmailActionConfig.TYPE_ROLES:
-                            name = roleHelper.findRoleByName(name).id
+                            name = roleHelper.getRoleById(name.toInteger()).id
+                            log.info("Setting role to " + name)
                             break;
                         case EmailActionConfig.TYPE_USERS:
-                            name = userHelper.findUser(name).id
+                            name = userHelper.getUser(name.toInteger()).id
+                            log.info("Setting user to " + name)
                             break;
                         case EmailActionConfig.TYPE_EMAILS:
                         default:
