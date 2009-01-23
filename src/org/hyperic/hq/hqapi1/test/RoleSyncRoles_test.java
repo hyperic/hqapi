@@ -44,8 +44,11 @@ public class RoleSyncRoles_test extends RoleTestBase {
         for (Role r : roles) {
             RoleResponse getResponse = roleApi.getRole(r.getName());
             hqAssertSuccess(getResponse);
-            assertTrue(r.getOperation().size() == VIEW_OPS.size());
-            assertTrue(r.getUser().size() == users.getUser().size());
+            Role role = getResponse.getRole();
+            // Created roles will have a valid id
+            assertNotNull("Role id was null", role.getId());
+            assertTrue(role.getOperation().size() == VIEW_OPS.size());
+            assertTrue(role.getUser().size() == users.getUser().size());
         }
     }
 

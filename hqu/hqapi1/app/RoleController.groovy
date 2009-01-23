@@ -89,21 +89,22 @@ class RoleController extends ApiController {
                     operations << o.text()
                 }
 
-                def userIds = []
+                def users = []
                 def subjects = xmlIn['User']
                 subjects.each{subj ->
                     def u = getUser(subj.'@id'?.toInteger(), subj.'@name')
                     if (u) {
-                        log.info("Found user " + u.name)
-                        userIds << u.id
+                        users << u
                     }
                 }
-                
+
                 createdRole = roleHelper.createRole(xmlIn.'@name',
                                                     xmlIn.'@description',
                                                     operations as String[],
-                                                    userIds as Integer[],
+                                                    users*.id as Integer[],
                                                     [] as Integer[])
+                // TODO: Setting subjects via createRole broken?
+                createdRole.setSubjects(user, users)
             }
         } catch (PermissionException e) {
             log.debug("Permission denied [${user.name}]", e)
@@ -157,7 +158,6 @@ class RoleController extends ApiController {
                 subjects.each{subj ->
                     def u = getUser(subj.'@id'?.toInteger(), subj.'@name')
                     if (u) {
-                        log.info("Found user " + u.name)
                         users << u
                     }
                 }
@@ -210,7 +210,6 @@ class RoleController extends ApiController {
                     subjects.each{subj ->
                         def u = getUser(subj.'@id'?.toInteger(), subj.'@name')
                         if (u) {
-                            log.info("Found user " + u.name)
                             users << u
                         }
                     }
@@ -227,11 +226,23 @@ class RoleController extends ApiController {
                         operations << o.text()
                     }
 
-                    roleHelper.createRole(xmlRole.'@name',
+                    def users = []
+                    def subjects = xmlRole['User']
+                    subjects.each{subj ->
+                        def u = getUser(subj.'@id'?.toInteger(), subj.'@name')
+                        if (u) {
+                            users << u
+                        }
+                    }
+
+                    def createdRole = roleHelper.createRole(xmlRole.'@name',
                                           xmlRole.'@description',
                                           operations as String[],
                                           [] as Integer[],
                                           [] as Integer[])
+
+                    // TODO: Setting subjects via createRole broken?
+                    createdRole.setSubjects(user, users)
                 }
             }
         } catch (PermissionException e) {

@@ -93,7 +93,21 @@ public class RoleCreate_test extends RoleTestBase {
         }
         assertTrue(role.getUser().size() == users.getUser().size());
         for (User u : role.getUser()) {
-            // TODO: validateUser()
+            assertNotNull(u.getName());
+        }
+
+        // Assert a later look up of this Role is correct
+        RoleResponse roleResponse = api.getRole(role.getId());
+        hqAssertSuccess(roleResponse);
+
+        role = roleResponse.getRole();
+        for (Operation o : VIEW_OPS) {
+            assertTrue("Looked up role does not contain operation " + o.value(),
+                       role.getOperation().contains(o));
+        }
+
+        assertTrue(role.getUser().size() == users.getUser().size());
+        for (User u : role.getUser()) {
             assertNotNull(u.getName());
         }
     }
