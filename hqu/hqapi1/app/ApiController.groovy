@@ -39,24 +39,6 @@ class ApiController extends BaseController {
     }
 
     /**
-     * Get the XML for a User
-     */
-    protected Closure getUserXML(u) {
-        { doc ->
-            User(id          : u.id,
-                 name        : u.name,
-                 firstName   : u.firstName,
-                 lastName    : u.lastName,
-                 department  : (u.department ? u.department : ''),
-                 emailAddress: u.emailAddress,
-                 SMSAddress  : (u.SMSAddress ? u.SMSAddress : ''),
-                 phoneNumber : (u.phoneNumber ? u.phoneNumber : ''),
-                 active      : u.active,
-                 htmlEmail   : u.htmlEmail)
-        }
-    }
-
-    /**
      * Get the resource based on the given id.  If the resource is not found,
      * null is returned.
      */
