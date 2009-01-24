@@ -7,6 +7,21 @@ import org.hyperic.hq.hqapi1.ErrorCode
 import org.hyperic.util.config.ConfigResponse
 
 class EscalationController extends ApiController {
+
+    private EMAIL_NOTIFY_TYPE = [1:"email", 2:"users", 3:"roles"]
+
+    private String getNotification(type, id) {
+        if (type == 1) {
+            return id
+        } else if (type == 2) {
+            return getUser(id.toInteger(), null)?.name
+        } else if (type == 3) {
+            log.info("Looking role id " + id)
+            return getRole(id.toInteger(), null)?.name
+        }
+        return null
+    }
+
     private Closure getEscalationXML(e) {
         { doc -> 
             Escalation(id :           e.id,
@@ -27,10 +42,10 @@ class EscalationController extends ApiController {
                                wait :       ea.waitTime,
                                actionType : actionType,
                                sms :        cfg.sms,
-                               notifyType : cfg.type) {
+                               notifyType : EMAIL_NOTIFY_TYPE[cfg.type]) {
                             for (n in cfg.names.split(',')) {
                                 if (n.length() > 0)
-                                    Notify(name : n)
+                                    Notify(name : getNotification(cfg.type, n))
                             }
                         }
                         break;
@@ -77,7 +92,7 @@ class EscalationController extends ApiController {
 
     def delete(params) {
         def id = params.getOne("id").toInteger()
-        def esc = escalationHelper.deleteEscalation(id)
+        escalationHelper.deleteEscalation(id)
         renderXml() {
             out << StatusResponse() {
                 out << getSuccessXML()
@@ -187,16 +202,13 @@ class EscalationController extends ApiController {
                     Class.forName(EmailActionConfig.implementor).newInstance()
                 action.setSms(xmlAct.'@sms'.toBoolean())
 
-                switch (xmlAct.'@notifyType') {
-                case '3' :
+                def type = xmlAct.'@notifyType'
+                if (type == EMAIL_NOTIFY_TYPE[3]) {
                     action.setType(EmailActionConfig.TYPE_ROLES)
-                    break
-                case '2' :
+                } else if (type == EMAIL_NOTIFY_TYPE[2]) {
                     action.setType(EmailActionConfig.TYPE_USERS)
-                    break
-                default :
+                } else if (type == EMAIL_NOTIFY_TYPE[1]) {
                     action.setType(EmailActionConfig.TYPE_EMAILS)
-                    break
                 }
 
                 // Get all of the names to notify
@@ -204,12 +216,10 @@ class EscalationController extends ApiController {
                     def name = notifyDef.'@name'
                     switch (action.getType()) {
                         case EmailActionConfig.TYPE_ROLES:
-                            name = roleHelper.getRoleById(name.toInteger()).id
-                            log.info("Setting role to " + name)
+                            name = getRole(null, name).id
                             break;
                         case EmailActionConfig.TYPE_USERS:
-                            name = userHelper.getUser(name.toInteger()).id
-                            log.info("Setting user to " + name)
+                            name = getUser(null, name).id
                             break;
                         case EmailActionConfig.TYPE_EMAILS:
                         default:
