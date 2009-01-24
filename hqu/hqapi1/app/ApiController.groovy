@@ -66,7 +66,7 @@ class ApiController extends BaseController {
      * for either the id or name, null is returned.
      */
     protected getUser(Integer id, String name) {
-        if (id) {
+        if (id != null) {
             return userHelper.getUser(id)
         } else {
             return userHelper.findUser(name)
@@ -81,7 +81,7 @@ class ApiController extends BaseController {
      * for either the id or name, null is returned.
      */
     protected getRole(Integer id, String name) {
-        if (id) {
+        if (id != null) {
             return roleHelper.getRoleById(id)
         } else {
             return roleHelper.findRoleByName(name)
