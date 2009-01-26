@@ -16,7 +16,6 @@ class EscalationController extends ApiController {
         } else if (type == 2) {
             return getUser(id.toInteger(), null)?.name
         } else if (type == 3) {
-            log.info("Looking role id " + id)
             return getRole(id.toInteger(), null)?.name
         }
         return null
