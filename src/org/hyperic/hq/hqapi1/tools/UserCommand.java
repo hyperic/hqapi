@@ -11,6 +11,7 @@ import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.UserResponse;
 import org.hyperic.hq.hqapi1.types.UsersResponse;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -91,8 +92,8 @@ public class UserCommand extends Command {
 
         UserApi userApi = api.getUserApi();
 
-        UsersResponse resp = XmlUtil.deserialize(UsersResponse.class,
-                                                 System.in);
+        InputStream is = getInputStream(options);
+        UsersResponse resp = XmlUtil.deserialize(UsersResponse.class, is);
         List<User> users = resp.getUser();
 
         StatusResponse syncResponse = userApi.syncUsers(users);

@@ -11,6 +11,7 @@ import org.hyperic.hq.hqapi1.types.MetricsResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -84,8 +85,9 @@ public class MetricCommand extends Command {
 
         MetricApi metricApi = api.getMetricApi();
 
-        MetricsResponse resp = XmlUtil.deserialize(MetricsResponse.class,
-                                                   System.in);
+        InputStream is = getInputStream(options);
+
+        MetricsResponse resp = XmlUtil.deserialize(MetricsResponse.class, is);
 
         List<Metric> metrics = resp.getMetric();
 

@@ -9,6 +9,7 @@ import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.GroupsResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -86,8 +87,9 @@ public class GroupCommand extends Command {
 
         GroupApi groupApi = api.getGroupApi();
 
-        GroupsResponse resp = XmlUtil.deserialize(GroupsResponse.class,
-                                                  System.in);
+        InputStream is = getInputStream(options);
+
+        GroupsResponse resp = XmlUtil.deserialize(GroupsResponse.class, is);
         List<Group> groups = resp.getGroup();
 
         GroupsResponse syncResponse = groupApi.syncGroups(groups);

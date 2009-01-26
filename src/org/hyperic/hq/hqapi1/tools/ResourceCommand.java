@@ -14,6 +14,7 @@ import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -149,8 +150,9 @@ public class ResourceCommand extends Command {
 
         ResourceApi resourceApi = api.getResourceApi();
 
-        ResourcesResponse resp = XmlUtil.deserialize(ResourcesResponse.class,
-                                                     System.in);
+        InputStream is = getInputStream(options);
+
+        ResourcesResponse resp = XmlUtil.deserialize(ResourcesResponse.class, is);
         List<Resource> resources = resp.getResource();
 
         StatusResponse syncResponse = resourceApi.syncResources(resources);

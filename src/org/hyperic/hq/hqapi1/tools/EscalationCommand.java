@@ -9,6 +9,7 @@ import org.hyperic.hq.hqapi1.types.Escalation;
 import org.hyperic.hq.hqapi1.types.EscalationsResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -63,8 +64,10 @@ public class EscalationCommand extends Command {
 
         EscalationApi escApi = api.getEscalationApi();
 
+        InputStream is = getInputStream(options);
+
         EscalationsResponse resp = XmlUtil.deserialize(EscalationsResponse.class,
-                                                       System.in);
+                                                       is);
         List<Escalation> escalations = resp.getEscalation();
 
         StatusResponse syncResponse = escApi.syncEscalations(escalations);

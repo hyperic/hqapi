@@ -11,6 +11,7 @@ import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.RolesResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -91,8 +92,8 @@ public class RoleCommand extends Command {
 
         RoleApi roleApi = api.getRoleApi();
 
-        RolesResponse resp = XmlUtil.deserialize(RolesResponse.class,
-                                                 System.in);
+        InputStream is = getInputStream(options);
+        RolesResponse resp = XmlUtil.deserialize(RolesResponse.class, is);
         List<Role> roles = resp.getRole();
 
         StatusResponse syncResponse = roleApi.syncRoles(roles);

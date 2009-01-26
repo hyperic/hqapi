@@ -9,6 +9,7 @@ import org.hyperic.hq.hqapi1.types.ResponseStatus;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
@@ -21,6 +22,7 @@ public abstract class Command {
     static final String OPT_PASS     = "password";
     static final String[] OPT_SECURE = {"s", "secure"};
     static final String[] OPT_HELP   = {"h","help"};
+    static final String OPT_FILE     = "f";
 
     // Ripped out from PluginMain.java
     private static final String[][] LOG_PROPS = {
@@ -63,6 +65,10 @@ public abstract class Command {
 
         parser.acceptsAll(Arrays.asList(OPT_SECURE), "Connect using SSL");
         parser.acceptsAll(Arrays.asList(OPT_HELP), "Show this message");
+        parser.accepts(OPT_FILE, "Specify file to read for " +
+                                 "commands that take input.  If " +
+                                 "not specified, stdin will be used.").
+                withRequiredArg().ofType(String.class);
 
         return parser;
     }
@@ -94,6 +100,19 @@ public abstract class Command {
             }
         }
         return props;
+    }
+
+    protected InputStream getInputStream(OptionSet s) throws Exception {
+        String file = (String)s.valueOf(OPT_FILE);
+        if (file == null) {
+            return System.in;
+        } else {
+            File f = new File(file);
+            if (!f.exists()) {
+                throw new Exception("Input file " + file + " does not exist.");
+            }
+            return new FileInputStream(f);
+        }
     }
 
     protected HQApi getApi(OptionSet s) {

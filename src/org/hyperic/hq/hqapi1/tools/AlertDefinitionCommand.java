@@ -9,6 +9,7 @@ import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -117,9 +118,11 @@ public class AlertDefinitionCommand extends Command {
 
         AlertDefinitionApi api = getApi(options).getAlertDefinitionApi();
 
+        InputStream is = getInputStream(options);
+
         AlertDefinitionsResponse resp =
-                XmlUtil.deserialize(AlertDefinitionsResponse.class,
-                                    System.in);
+                XmlUtil.deserialize(AlertDefinitionsResponse.class, is);
+        
         List<AlertDefinition> definitions = resp.getAlertDefinition();
 
         AlertDefinitionsResponse syncResponse = api.syncAlertDefinitions(definitions);

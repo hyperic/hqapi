@@ -10,6 +10,7 @@ import org.hyperic.hq.hqapi1.types.MetricTemplatesResponse;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -79,8 +80,10 @@ public class MetricTemplateCommand extends Command {
 
         MetricApi metricApi = api.getMetricApi();
 
+        InputStream is = getInputStream(options);
+
         MetricTemplatesResponse resp =
-                XmlUtil.deserialize(MetricTemplatesResponse.class, System.in);
+                XmlUtil.deserialize(MetricTemplatesResponse.class, is);
 
         List<MetricTemplate> metricTemplates = resp.getMetricTemplate();
 
