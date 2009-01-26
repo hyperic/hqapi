@@ -12,6 +12,7 @@ import org.hyperic.hq.events.shared.AlertConditionValue
 import org.hyperic.hq.events.shared.AlertDefinitionValue
 import org.hyperic.hq.measurement.shared.ResourceLogEvent
 import org.hyperic.hq.product.LogTrackPlugin
+import ApiController
 
 public class AlertdefinitionController extends ApiController {
     private eventBoss   = EventsBoss.one
@@ -139,7 +140,7 @@ public class AlertdefinitionController extends ApiController {
                             conditionAttrs["recover"] = alert.name
                         }
                     } else if (c.type == EventConstants.TYPE_CFG_CHG) {
-                        conditionAttrs["configMatch"] = c.name
+                        conditionAttrs["configMatch"] = c.optionStatus
                     } else if (c.type == EventConstants.TYPE_CONTROL) {
                         conditionAttrs["controlAction"] = c.name
                         conditionAttrs["controlStatus"] = c.optionStatus
@@ -608,7 +609,7 @@ public class AlertdefinitionController extends ApiController {
 
                         def configMatch = xmlCond.'@configMatch'
                         if (configMatch) {
-                            acv.name = configMatch
+                            acv.option = configMatch
                         }
                         break
                     default:
