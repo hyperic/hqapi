@@ -18,8 +18,13 @@
     			<xs:sequence>
     				<xs:element name="Notify" type="Who" maxOccurs="unbounded" />
     			</xs:sequence>
+                <!-- Email or SMS -->
     			<xs:attribute name="notifyType" type="xs:string" use="required" />
     			<xs:attribute name="sms" type="xs:boolean" use="required" />
+                <!-- Syslog attributes -->
+                <xs:attribute name="syslogMeta" use="optional"/>
+                <xs:attribute name="syslogProduct" use="optional"/>
+                <xs:attribute name="syslogVersion" use="optional"/>
     		</xs:extension>
     	</xs:complexContent>
     </xs:complexType>

@@ -2,6 +2,7 @@ import org.hyperic.hq.hqu.rendit.BaseController
 
 import org.hyperic.hq.authz.shared.PermissionException
 import org.hyperic.hq.bizapp.shared.action.EmailActionConfig
+import org.hyperic.hq.bizapp.shared.action.SyslogActionConfig
 import org.hyperic.hq.events.NoOpAction
 import org.hyperic.hq.hqapi1.ErrorCode
 import org.hyperic.util.config.ConfigResponse
@@ -47,6 +48,16 @@ class EscalationController extends ApiController {
                                     Notify(name : getNotification(cfg.type, n))
                             }
                         }
+                        break;
+                    case 'SyslogAction':
+                        SyslogActionConfig cfg = new SyslogActionConfig()
+                        cfg.init(ConfigResponse.decode(a.config))
+                        Action(id : a.id,
+                               wait : ea.waitTime,
+                               actionType: actionType,
+                               syslogMeta: cfg.meta,
+                               syslogProduct: cfg.product,
+                               syslogVersion: cfg.version)
                         break;
                     default :
                         Action(id :         a.id,
@@ -228,6 +239,13 @@ class EscalationController extends ApiController {
                 }
 
                 action.setNames(names.join(","))
+                break
+            case 'SyslogAction' :
+                action =
+                    Class.forName(SyslogActionConfig._implementor).newInstance()
+                action.setMeta(xmlAct.'@syslogMeta')
+                action.setProduct(xmlAct.'@syslogProduct')
+                action.setVersion(xmlAct.'@syslogVersion')
                 break
             case 'NoOpAction' :
                 action = new NoOpAction()
