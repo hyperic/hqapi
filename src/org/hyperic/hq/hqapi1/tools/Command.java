@@ -22,7 +22,7 @@ public abstract class Command {
     static final String OPT_PASS     = "password";
     static final String[] OPT_SECURE = {"s", "secure"};
     static final String[] OPT_HELP   = {"h","help"};
-    static final String OPT_FILE     = "f";
+    static final String OPT_FILE     = "file";
 
     // Ripped out from PluginMain.java
     private static final String[][] LOG_PROPS = {
@@ -65,8 +65,8 @@ public abstract class Command {
 
         parser.acceptsAll(Arrays.asList(OPT_SECURE), "Connect using SSL");
         parser.acceptsAll(Arrays.asList(OPT_HELP), "Show this message");
-        parser.accepts(OPT_FILE, "Specify file to read for " +
-                                 "commands that take input.  If " +
+        parser.accepts(OPT_FILE, "If specified, use the given file for " +
+                                 "commands that take XML input.  If " +
                                  "not specified, stdin will be used.").
                 withRequiredArg().ofType(String.class);
 
