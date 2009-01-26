@@ -160,14 +160,40 @@ public class AlertdefinitionController extends ApiController {
         if (excludeTypeBased == null) {
             excludeTypeBased = false;
         }
-        def definitions = alertHelper.findDefinitions(AlertSeverity.LOW, null,
-                                                      excludeTypeBased)
 
+        def parentId = params.getOne('parentId')?.toInteger()
+
+        def failureXml
+        def definitions
+
+        if (parentId) {
+            def typeAlert = alertHelper.getById(parentId)
+            if (!typeAlert) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Unable to find parent alert definition " +
+                                           "with id " + parentId)
+            } else if (!typeAlert.parent || typeAlert.parent.id > 0) {
+                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                           "Alert definition with id " +
+                                           parentId + " is not a type based " +
+                                           "definition")
+            } else {
+                definitions = typeAlert.children
+            }
+        } else {
+            definitions = alertHelper.findDefinitions(AlertSeverity.LOW, null,
+                                                      excludeTypeBased)
+        }
+        
         renderXml() {
             out << AlertDefinitionsResponse() {
-                out << getSuccessXML()
-                for (definition in definitions) {
-                    out << getAlertDefinitionXML(definition, false)
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    for (definition in definitions) {
+                        out << getAlertDefinitionXML(definition, false)
+                    }
                 }
             }
         }
@@ -202,6 +228,11 @@ public class AlertdefinitionController extends ApiController {
             failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                        "Alert definition with id " + id +
                                        " not found")
+        } else if (alertdefinition.parent && alertdefinition.parent.id > 0) {
+            failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
+                                       "Unable to delete alert definition based on " +
+                                       "type alert definition " + 
+                                       alertdefinition.parent.id)
         } else {
             try {
                 alertdefinition.delete(user)

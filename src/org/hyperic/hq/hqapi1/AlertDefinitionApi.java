@@ -48,6 +48,27 @@ public class AlertDefinitionApi extends BaseApi {
     }
 
     /**
+     * Find all {@link org.hyperic.hq.hqapi1.types.AlertDefinition}s based on
+     * the given parent resource type alert
+     *
+     * @param parent The parent AlertDefinition
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * a list of AlertDefinitions are returned.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public AlertDefinitionsResponse getAlertDefinitions(AlertDefinition parent)
+        throws IOException {
+
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("parentId", new String[] { Integer.toString(parent.getId()) });
+
+        return doGet("alertdefinition/listDefinitions.hqu", params,
+                     AlertDefinitionsResponse.class); 
+    }
+
+    /**
      * Find all type based {@link org.hyperic.hq.hqapi1.types.AlertDefinition}s in the system.
      *
      * @param excludeIds If specified the returned {@link org.hyperic.hq.hqapi1.types.AlertDefinition}s
