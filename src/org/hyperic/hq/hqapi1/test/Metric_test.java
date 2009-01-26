@@ -170,6 +170,13 @@ public class Metric_test extends MetricTestBase {
                    metric.getMetric().isEnabled());
 
         // Reset
+        try {
+            Thread.sleep(2000);
+        } catch (Exception e) {
+            // Cannot re-enable so quickly without getting ObjectNotFoundException
+            // for ScheduleRevNum
+        }
+
         syncResponse = metricApi.syncMetrics(orignalMetrics.getMetric());
         hqAssertSuccess(syncResponse);
     }
