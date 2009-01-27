@@ -1,10 +1,14 @@
 package org.hyperic.hq.hqapi1.test;
 
+import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 
 public class GroupTestBase extends HQApiTestBase {
@@ -50,7 +54,7 @@ public class GroupTestBase extends HQApiTestBase {
      *
      * @return A valid Group object.
      */
-    public Group generateTestGroup() {
+    protected Group generateTestGroup() {
 
         Random r = new Random();
 
@@ -60,5 +64,13 @@ public class GroupTestBase extends HQApiTestBase {
         group.setLocation(GROUP_LOCATION);
 
         return group;
+    }
+
+    protected void cleanup(List<Group> groups) throws IOException {
+        GroupApi api = getApi().getGroupApi();
+        for (Group g : groups) {
+            StatusResponse response = api.deleteGroup(g.getId());
+            hqAssertSuccess(response);     
+        }
     }
 }

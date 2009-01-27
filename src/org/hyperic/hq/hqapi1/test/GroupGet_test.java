@@ -4,10 +4,14 @@ import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.GroupsResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GroupGet_test extends GroupTestBase {
+
+    private final int SYNC_NUM = 3;
 
     public GroupGet_test(String name) {
         super(name);
@@ -16,36 +20,47 @@ public class GroupGet_test extends GroupTestBase {
     public void testGet() throws Exception {
         GroupApi api = getApi().getGroupApi();
 
-        GroupsResponse resp = api.getGroups();
-        hqAssertSuccess(resp);
-
-        List<Group> groups = resp.getGroup();
-        if (groups.size() == 0) {
-            getLog().warn("No groups found, skipping test");
-            return;
+        List<Group> groups = new ArrayList<Group>();
+        for (int i = 0; i < SYNC_NUM; i++) {
+            Group g = generateTestGroup();
+            groups.add(g);
         }
 
-        for (Group g : groups) {
+        GroupsResponse response = api.syncGroups(groups);
+        hqAssertSuccess(response);
+
+        GroupsResponse getResponse = api.getGroups();
+        hqAssertSuccess(response);
+
+        for (Group g : getResponse.getGroup()) {
             validateGroup(g);
         }
+
+        // Remove original synced groups
+        cleanup(response.getGroup());
     }
 
     public void testGetGroupById() throws Exception {
+
         GroupApi api = getApi().getGroupApi();
 
-        GroupsResponse resp = api.getGroups();
-        hqAssertSuccess(resp);
-
-        List<Group> groups = resp.getGroup();
-        if (groups.size() == 0) {
-            throw new Exception("No groups found.");
+        List<Group> groups = new ArrayList<Group>();
+        for (int i = 0; i < SYNC_NUM; i++) {
+            Group g = generateTestGroup();
+            groups.add(g);
         }
 
-        Group g = resp.getGroup().get(0);
+        GroupsResponse response = api.syncGroups(groups);
+        hqAssertSuccess(response);
 
-        GroupResponse groupResponse = api.getGroup(g.getId());
-        hqAssertSuccess(groupResponse);
-        validateGroup(groupResponse.getGroup());
+        for (Group g : response.getGroup()) {
+            // Re-lookup the group by id
+            GroupResponse gResponse = api.getGroup(g.getId());
+            hqAssertSuccess(gResponse);
+            validateGroup(gResponse.getGroup());
+        }
+
+        cleanup(response.getGroup());
     }
 
     public void testGetGroupInvalidId() throws Exception {
@@ -60,19 +75,23 @@ public class GroupGet_test extends GroupTestBase {
 
         GroupApi api = getApi().getGroupApi();
 
-        GroupsResponse resp = api.getGroups();
-        hqAssertSuccess(resp);
-
-        List<Group> groups = resp.getGroup();
-        if (groups.size() == 0) {
-            throw new Exception("No groups found.");
+        List<Group> groups = new ArrayList<Group>();
+        for (int i = 0; i < SYNC_NUM; i++) {
+            Group g = generateTestGroup();
+            groups.add(g);
         }
 
-        Group g = resp.getGroup().get(0);
+        GroupsResponse response = api.syncGroups(groups);
+        hqAssertSuccess(response);
 
-        GroupResponse groupResponse = api.getGroup(g.getName());
-        hqAssertSuccess(groupResponse);
-        validateGroup(groupResponse.getGroup());
+        for (Group g : response.getGroup()) {
+            // Re-lookup the group by name
+            GroupResponse gResponse = api.getGroup(g.getName());
+            hqAssertSuccess(gResponse);
+            validateGroup(gResponse.getGroup());
+        }
+
+        cleanup(response.getGroup());
     }
 
     public void getGetGroupByInvalidName() throws Exception {
@@ -86,38 +105,55 @@ public class GroupGet_test extends GroupTestBase {
     public void testGetCompatibleGroups() throws Exception {
 
         GroupApi api = getApi().getGroupApi();
+        Resource platform = getLocalPlatformResource(false, false);
 
-        GroupsResponse response = api.getCompatibleGroups();
-        hqAssertSuccess(response);
-
-        List<Group> groups = response.getGroup();
-        if (groups.size() == 0) {
-            throw new Exception("No compatible groups found in inventory.");
+        List<Group> groups = new ArrayList<Group>();
+        for (int i = 0; i < SYNC_NUM; i++) {
+            Group g = generateTestGroup();
+            g.setResourcePrototype(platform.getResourcePrototype());
+            groups.add(g);
         }
 
-        for (Group g : groups) {
-            // All compatible groups will have a prototype.
-            assertNotNull(g.getResourcePrototype());
+        GroupsResponse syncResponse = api.syncGroups(groups);
+        hqAssertSuccess(syncResponse);
+
+        GroupsResponse getCompatibleResponse = api.getCompatibleGroups();
+        hqAssertSuccess(getCompatibleResponse);
+        assertTrue("No compatible groups found!",
+                   getCompatibleResponse.getGroup().size() > 0);
+        for (Group g : getCompatibleResponse.getGroup()) {
             validateGroup(g);
+            // All compatible groups have prototypes
+            assertNotNull("No prototype found for " + g.getName(),
+                          g.getResourcePrototype());
         }
+
+        cleanup(syncResponse.getGroup());
     }
 
     public void testGetMixedGroups() throws Exception {
 
         GroupApi api = getApi().getGroupApi();
 
-        GroupsResponse response = api.getMixedGroups();
-        hqAssertSuccess(response);
-
-        List<Group> groups = response.getGroup();
-        if (groups.size() == 0) {
-            throw new Exception("No mixed groups found in inventory.");
+        List<Group> groups = new ArrayList<Group>();
+        for (int i = 0; i < SYNC_NUM; i++) {
+            Group g = generateTestGroup();
+            groups.add(g);
         }
 
-        for (Group g : groups) {
-            // All mixed groups will not have a prototype.
-            assertNull(g.getResourcePrototype());
+        GroupsResponse syncResponse = api.syncGroups(groups);
+        hqAssertSuccess(syncResponse);
+
+        GroupsResponse getMixedResponse = api.getMixedGroups();
+        hqAssertSuccess(getMixedResponse);
+        assertTrue("No compatible groups found!",
+                   getMixedResponse.getGroup().size() > 0);
+        for (Group g : getMixedResponse.getGroup()) {
             validateGroup(g);
+            assertNull("Prototype is set for mixed group " + g.getName(),
+                       g.getResourcePrototype());
         }
+
+        cleanup(syncResponse.getGroup());
     }
 }

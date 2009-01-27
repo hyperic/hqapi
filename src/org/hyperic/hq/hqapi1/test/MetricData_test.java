@@ -6,6 +6,7 @@ import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.types.DataPoint;
 import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.GroupsResponse;
 import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.MetricData;
@@ -19,8 +20,10 @@ import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 import java.util.List;
+import java.util.Random;
 
 public class MetricData_test extends MetricTestBase {
 
@@ -121,18 +124,68 @@ public class MetricData_test extends MetricTestBase {
         hqAssertFailureInvalidParameters(dataResponse);
     }
 
+    private Group getCompatibleGroup() throws Exception {
+
+        HQApi api = getApi();
+        ResourceApi resourceApi = api.getResourceApi();
+        GroupApi groupApi = api.getGroupApi();
+
+        ResourcePrototypeResponse protoResponse =
+                resourceApi.getResourcePrototype("FileServer Mount");
+        hqAssertSuccess(protoResponse);
+
+        ResourcesResponse resources = resourceApi.getResources(protoResponse.getResourcePrototype(),
+                                                               false, false);
+        hqAssertSuccess(resources);
+        assertTrue("Unable to find resources of type " +
+                   protoResponse.getResourcePrototype().getName(),
+                   resources.getResource().size() > 0);
+
+        Random r = new Random();
+        Group g = new Group();
+        g.setName("Compatible Group for MetricData_test" + r.nextInt());
+        g.setResourcePrototype(protoResponse.getResourcePrototype());
+        g.getResource().addAll(resources.getResource());
+
+        GroupResponse groupResponse = groupApi.createGroup(g);
+        hqAssertSuccess(groupResponse);
+
+        return groupResponse.getGroup();
+    }
+
+    private Group getMixedGroup() throws Exception {
+
+        HQApi api = getApi();
+        GroupApi groupApi = api.getGroupApi();
+
+        Resource platform = getLocalPlatformResource(false, true);
+
+        assertTrue("Unable to find child resources for " +
+                   platform.getName(),
+                   platform.getResource().size() > 0);
+
+        Random r = new Random();
+        Group g = new Group();
+        g.setName("Mixed Group for MetricData_test" + r.nextInt());
+        g.getResource().addAll(platform.getResource());
+
+        GroupResponse groupResponse = groupApi.createGroup(g);
+        hqAssertSuccess(groupResponse);
+
+        return groupResponse.getGroup();
+    }
+
+    private void cleanupGroup(Group g) throws Exception {
+        GroupApi api = getApi().getGroupApi();
+        StatusResponse response = api.deleteGroup(g.getId());
+        hqAssertSuccess(response);
+    }
+
     public void testGetMetricGroupData() throws Exception {
 
         HQApi api = getApi();
 
-        GroupApi groupApi = api.getGroupApi();
-
-        GroupsResponse groupsResponse = groupApi.getCompatibleGroups();
-        hqAssertSuccess(groupsResponse);
-        List<Group> compatGroups = groupsResponse.getGroup();
-        assertTrue("No compatible groups found", compatGroups.size() > 0);
-        Group g = compatGroups.get(0);
-
+        Group g = getCompatibleGroup();
         ResourcePrototype pt = g.getResourcePrototype();
         MetricApi metricApi = api.getMetricApi();
         MetricTemplatesResponse templatesResponse = metricApi.getMetricTemplates(pt);
@@ -174,20 +227,15 @@ public class MetricData_test extends MetricTestBase {
             assertTrue(m.getResourceName().length() > 0);
             assertTrue(m.getDataPoint().size() > 0);
         }
+
+        cleanupGroup(g);
     }
 
     public void testGetMetricGroupDataInvalidRange() throws Exception {
 
         HQApi api = getApi();
 
-        GroupApi groupApi = api.getGroupApi();
-
-        GroupsResponse groupsResponse = groupApi.getCompatibleGroups();
-        hqAssertSuccess(groupsResponse);
-        List<Group> compatGroups = groupsResponse.getGroup();
-        assertTrue("No compatible groups found", compatGroups.size() > 0);
-        Group g = compatGroups.get(0);
-
+        Group g = getCompatibleGroup();
         ResourcePrototype pt = g.getResourcePrototype();
         MetricApi metricApi = api.getMetricApi();
         MetricTemplatesResponse templatesResponse = metricApi.getMetricTemplates(pt);
@@ -215,21 +263,15 @@ public class MetricData_test extends MetricTestBase {
         MetricsDataResponse response = metricApi.getMetricData(g.getId(),
                                                                template.getId(),
                                                                end, start);
-        hqAssertFailureInvalidParameters(response);      
+        hqAssertFailureInvalidParameters(response);
+        cleanupGroup(g);
     }
 
     public void testGetMetricGroupDataInvalidTemplate() throws Exception {
 
         HQApi api = getApi();
 
-        GroupApi groupApi = api.getGroupApi();
-
-        GroupsResponse groupsResponse = groupApi.getCompatibleGroups();
-        hqAssertSuccess(groupsResponse);
-        List<Group> compatGroups = groupsResponse.getGroup();
-        assertTrue("No compatible groups found", compatGroups.size() > 0);
-        Group g = compatGroups.get(0);
-
+        Group g = getCompatibleGroup();
         MetricApi metricApi = api.getMetricApi();
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
@@ -237,20 +279,14 @@ public class MetricData_test extends MetricTestBase {
                                                                Integer.MAX_VALUE,
                                                                start, end);
         hqAssertFailureObjectNotFound(response);
+        cleanupGroup(g);
     }
 
     public void testGetMetricGroupDataWrongTemplate() throws Exception {
 
         HQApi api = getApi();
 
-        GroupApi groupApi = api.getGroupApi();
-
-        GroupsResponse groupsResponse = groupApi.getCompatibleGroups();
-        hqAssertSuccess(groupsResponse);
-        List<Group> compatGroups = groupsResponse.getGroup();
-        assertTrue("No compatible groups found", compatGroups.size() > 0);
-        Group g = compatGroups.get(0);
-
+        Group g = getCompatibleGroup();
         MetricApi metricApi = api.getMetricApi();
 
         MetricTemplateResponse getTemplateResponse =
@@ -264,20 +300,14 @@ public class MetricData_test extends MetricTestBase {
                                                                t.getId(),
                                                                start, end);
         hqAssertFailureInvalidParameters(response);
+        cleanupGroup(g);
     }
 
     public void testGetMetricGroupDataMixedGroup() throws Exception {
 
         HQApi api = getApi();
 
-        GroupApi groupApi = api.getGroupApi();
-
-        GroupsResponse groupsResponse = groupApi.getMixedGroups();
-        hqAssertSuccess(groupsResponse);
-        List<Group> mixedGroups = groupsResponse.getGroup();
-        assertTrue("No mixed groups found", mixedGroups.size() > 0);
-        Group g = mixedGroups.get(0);
-
+        Group g = getMixedGroup();
         MetricApi metricApi = api.getMetricApi();
 
         MetricTemplateResponse getTemplateResponse =
@@ -291,6 +321,7 @@ public class MetricData_test extends MetricTestBase {
                                                                t.getId(),
                                                                start, end);
         hqAssertFailureInvalidParameters(response);
+        cleanupGroup(g);
     }
 
 
@@ -298,14 +329,7 @@ public class MetricData_test extends MetricTestBase {
 
         HQApi api = getApi();
 
-        GroupApi groupApi = api.getGroupApi();
-
-        GroupsResponse groupsResponse = groupApi.getCompatibleGroups();
-        hqAssertSuccess(groupsResponse);
-        List<Group> compatGroups = groupsResponse.getGroup();
-        assertTrue("No compatible groups found", compatGroups.size() > 0);
-        Group g = compatGroups.get(0);
-
+        Group g = getCompatibleGroup();
         ResourcePrototype pt = g.getResourcePrototype();
         MetricApi metricApi = api.getMetricApi();
         MetricTemplatesResponse templatesResponse = metricApi.getMetricTemplates(pt);
@@ -333,20 +357,14 @@ public class MetricData_test extends MetricTestBase {
                                                                template.getId(),
                                                                start, end);
         hqAssertFailureObjectNotFound(response);
+        cleanupGroup(g);
     }
 
     public void testGetMetricGroupDataDefaultOffTemplate() throws Exception {
 
         HQApi api = getApi();
 
-        GroupApi groupApi = api.getGroupApi();
-
-        GroupsResponse groupsResponse = groupApi.getCompatibleGroups();
-        hqAssertSuccess(groupsResponse);
-        List<Group> compatGroups = groupsResponse.getGroup();
-        assertTrue("No compatible groups found", compatGroups.size() > 0);
-        Group g = compatGroups.get(0);
-
+        Group g = getCompatibleGroup();
         ResourcePrototype pt = g.getResourcePrototype();
         MetricApi metricApi = api.getMetricApi();
         MetricTemplatesResponse templatesResponse = metricApi.getMetricTemplates(pt);
@@ -388,6 +406,7 @@ public class MetricData_test extends MetricTestBase {
             assertTrue(m.getResourceName().length() > 0);
             assertTrue(m.getDataPoint().size() == 0);
         }
+        cleanupGroup(g);
     }
 
     public void testResourceMetrics() throws Exception {
