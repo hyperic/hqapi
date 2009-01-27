@@ -111,9 +111,18 @@ class EscalationController extends ApiController {
     }
     
     def create(params) {
-        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
 
-        for (xmlEsc in syncRequest['Escalation']) {
+        def failureXml
+        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+        def esc
+
+        if (syncRequest['Escalation'].size() != 1) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Single escalation not passed to create");
+        } else {
+
+            def xmlEsc       = syncRequest['Escalation'][0]
+            def id           = xmlEsc.'@id'?.toInteger()
             def name         = xmlEsc.'@name'
             def desc         = xmlEsc.'@description'
             def pauseAllowed = xmlEsc.'@pauseAllowed'.toBoolean()
@@ -121,14 +130,27 @@ class EscalationController extends ApiController {
             def notifyAll    = xmlEsc.'@notifyAll'.toBoolean()
             def repeat       = xmlEsc.'@repeat'.toBoolean()
 
-            def esc = escalationHelper.createEscalation(name, desc,
+            esc = escalationHelper.getEscalation(id, name)
+
+            if (!name || name.length() == 0) {
+                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                           "Invalid name " + name + " for " +
+                                           "escalation")
+            } else {
+                esc = escalationHelper.createEscalation(name, desc,
                                                         pauseAllowed,
                                                         maxWaitTime, notifyAll,
                                                         repeat)
-            syncActions(esc, xmlEsc['Action'])
 
-            renderXml() {
-                out << EscalationResponse() {
+                syncActions(esc, xmlEsc['Action'])
+            }
+        }
+
+        renderXml() {
+            out << EscalationResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
                     out << getSuccessXML()
                     out << getEscalationXML(esc)
                 }
