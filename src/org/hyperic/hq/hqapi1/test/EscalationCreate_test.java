@@ -19,6 +19,7 @@ public class EscalationCreate_test extends EscalationTestBase {
         e.getAction().add(EscalationActionBuilder.createNoOpAction(1000));
         EscalationResponse createResponse = api.createEscalation(e);
         hqAssertSuccess(createResponse);
+        cleanup(createResponse.getEscalation());
     }
 
     public void testCreateEscalationNoActions() throws Exception {
@@ -28,6 +29,7 @@ public class EscalationCreate_test extends EscalationTestBase {
         Escalation e = generateEscalation();
         EscalationResponse createResponse = api.createEscalation(e);
         hqAssertSuccess(createResponse);
+        cleanup(createResponse.getEscalation());
     }
 
     public void testCreateEscalationEmptyName() throws Exception {
@@ -61,6 +63,8 @@ public class EscalationCreate_test extends EscalationTestBase {
         hqAssertSuccess(createResponse);
 
         EscalationResponse duplicateResponse = api.createEscalation(e);
-        hqAssertFailureObjectExists(duplicateResponse);        
+        hqAssertFailureObjectExists(duplicateResponse);
+
+        cleanup(createResponse.getEscalation());
     }
 }
