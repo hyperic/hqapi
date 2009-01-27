@@ -59,4 +59,23 @@ public class EscalationUpdateEscalation_test extends EscalationTestBase {
 
         cleanup(updated);  
     }
+
+    public void testUpdateNonExistantEscalation() throws Exception {
+
+        EscalationApi api = getEscalationApi();
+
+        Escalation e = generateEscalation();
+        e.getAction().add(EscalationActionBuilder.createNoOpAction(1000));
+        EscalationResponse createResponse = api.updateEscalation(e);
+        hqAssertFailureObjectNotFound(createResponse);       
+    }
+
+    public void testUpdateEmptyEscalation() throws Exception {
+
+        EscalationApi api = getEscalationApi();
+
+        Escalation e = generateEscalation();
+        EscalationResponse createResponse = api.updateEscalation(e);
+        hqAssertFailureObjectNotFound(createResponse);
+    }
 }

@@ -137,9 +137,16 @@ class EscalationController extends ApiController {
     }
     
     def update(params) {
+        def failureXml
         def syncRequest = new XmlParser().parseText(getUpload('postdata'))
-        
-        for (xmlEsc in syncRequest['Escalation']) {
+        def esc
+
+        if (syncRequest['Escalation'].size() != 1) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Single escalation not passed to update");
+        } else {
+
+            def xmlEsc       = syncRequest['Escalation'][0]
             def id           = xmlEsc.'@id'?.toInteger()
             def name         = xmlEsc.'@name'
             def desc         = xmlEsc.'@description'
@@ -148,14 +155,25 @@ class EscalationController extends ApiController {
             def notifyAll    = xmlEsc.'@notifyAll'.toBoolean()
             def repeat       = xmlEsc.'@repeat'.toBoolean()
         
-            def esc = escalationHelper.getEscalation(id, name)
-            escalationHelper.updateEscalation(esc, name, desc, pauseAllowed,
-                                              maxWaitTime, notifyAll, repeat)
+            esc = escalationHelper.getEscalation(id, name)
+
+            if (!esc) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Unable to find escalation with id=" +
+                                           id + " name=" + name)
+            } else {
+                escalationHelper.updateEscalation(esc, name, desc, pauseAllowed,
+                                                  maxWaitTime, notifyAll, repeat)
             
-            syncActions(esc, xmlEsc['Action'])
-            
-            renderXml() {
-                out << EscalationResponse() {
+                syncActions(esc, xmlEsc['Action'])
+            }
+        }
+
+        renderXml() {
+            out << EscalationResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
                     out << getSuccessXML()
                     out << getEscalationXML(esc)
                 }
