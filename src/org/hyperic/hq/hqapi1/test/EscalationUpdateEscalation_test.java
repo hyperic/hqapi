@@ -41,7 +41,7 @@ public class EscalationUpdateEscalation_test extends EscalationTestBase {
         e.setPauseAllowed(U_PAUSE_ALLOWED);
         e.setRepeat(U_REPEAT);
         e.getAction().clear();
-        e.getAction().add(EscalationActionBuilder.createEmailAction(1000, false, new ArrayList<Notify>()));
+        e.getAction().add(EscalationActionBuilder.createEmailAction(1000, false, new ArrayList<String>()));
 
         EscalationResponse updateResponse = api.updateEscalation(e);
         hqAssertSuccess(updateResponse);
