@@ -26,6 +26,7 @@ public class EscalationUpdateEscalation_test extends EscalationTestBase {
 
         e = createResponse.getEscalation();
 
+        final Integer ID = e.getId();
         final String U_NAME = e.getName() + "Updated";
         final String U_DESC = e.getDescription() + "Updated";
         final long   U_PAUSE = e.getMaxPauseTime() * 2;
@@ -47,6 +48,7 @@ public class EscalationUpdateEscalation_test extends EscalationTestBase {
         hqAssertSuccess(updateResponse);
 
         Escalation updated = updateResponse.getEscalation();
+        assertEquals(ID, updated.getId());
         assertEquals(updated.getName(), U_NAME);
         assertEquals(updated.getDescription(), U_DESC);
         assertEquals(updated.getMaxPauseTime(), U_PAUSE);
