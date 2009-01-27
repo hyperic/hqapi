@@ -1,13 +1,10 @@
 package org.hyperic.hq.hqapi1;
 
-import org.hyperic.hq.hqapi1.types.EmailAction;
 import org.hyperic.hq.hqapi1.types.Escalation;
 import org.hyperic.hq.hqapi1.types.EscalationResponse;
 import org.hyperic.hq.hqapi1.types.EscalationsRequest;
 import org.hyperic.hq.hqapi1.types.EscalationsResponse;
-import org.hyperic.hq.hqapi1.types.FullEscalationAction;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
-import org.hyperic.hq.hqapi1.types.SuppressAction;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -151,27 +148,5 @@ public class EscalationApi extends BaseApi {
         params.put("id", new String[] { Integer.toString(id) });
         return doGet("escalation/delete.hqu",
                      params, StatusResponse.class);
-    }
-
-    /**
-     * Create a new EmailAction
-     * 
-     * @return an EmailAction
-     */
-    public FullEscalationAction createEmailAction() {
-        FullEscalationAction ea = new FullEscalationAction();
-        ea.setActionType(new EmailAction().getTypeName());
-        return ea;
-    }
-    
-    /**
-     * Create a new SuppressAction
-     *
-     * @return a SuppressAction
-     */
-    public FullEscalationAction createSuppressAction() {
-        FullEscalationAction sa = new FullEscalationAction();
-        sa.setActionType(new SuppressAction().getTypeName());
-        return sa;
     }
 }
