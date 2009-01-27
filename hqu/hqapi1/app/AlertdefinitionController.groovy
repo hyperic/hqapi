@@ -403,7 +403,8 @@ public class AlertdefinitionController extends ApiController {
             adv.enabled     = xmlDef.'@enabled'.toBoolean()
             adv.active      = xmlDef.'@active'.toBoolean()
             adv.willRecover = xmlDef.'@willRecover'.toBoolean()
-            adv.notifyFiltered = xmlDef.'@notifyFiltered'
+            adv.notifyFiltered = xmlDef.'@notifyFiltered'?.toBoolean()
+            adv.controlFiltered = xmlDef.'@controlFiltered'?.toBoolean()
             adv.frequencyType  = xmlDef.'@frequency'.toInteger()
             adv.count = xmlDef.'@count'.toLong()
             adv.range = xmlDef.'@range'.toLong()

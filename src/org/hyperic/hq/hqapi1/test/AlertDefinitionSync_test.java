@@ -182,6 +182,111 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         cleanup(response.getAlertDefinition());
     }
 
+    public void testSyncNofityFiltered() throws Exception {
+
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = generateTestDefinition();
+        d.setNotifyFiltered(false);
+        d.setResource(platform);
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+
+        assertEquals(response.getAlertDefinition().size(), 1);
+        d = response.getAlertDefinition().get(0);
+        validateDefinition(d);
+        assertTrue("Notify filtered is not false", !d.isNotifyFiltered());
+
+        d.setNotifyFiltered(true);
+        definitions.clear();
+        definitions.add(d);
+        response = api.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+
+        assertEquals(response.getAlertDefinition().size(), 1);
+        d = response.getAlertDefinition().get(0);
+        validateDefinition(d);
+        assertTrue("Notify filtered is not true", d.isNotifyFiltered());
+
+        // Cleanup
+        cleanup(response.getAlertDefinition());
+    }
+
+    public void testSyncControlFiltered() throws Exception {
+
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = generateTestDefinition();
+        d.setControlFiltered(false);
+        d.setResource(platform);
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+
+        assertEquals(response.getAlertDefinition().size(), 1);
+        d = response.getAlertDefinition().get(0);
+        validateDefinition(d);
+        assertTrue("Control filtered is not false", !d.isControlFiltered());
+
+        d.setControlFiltered(true);
+        definitions.clear();
+        definitions.add(d);
+        response = api.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+
+        assertEquals(response.getAlertDefinition().size(), 1);
+        d = response.getAlertDefinition().get(0);
+        validateDefinition(d);
+        assertTrue("Control filtered is not true", d.isControlFiltered());
+
+        // Cleanup
+        cleanup(response.getAlertDefinition());
+    }
+
+    public void testSyncEnable() throws Exception {
+
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = generateTestDefinition();
+        d.setEnabled(false);
+        d.setResource(platform);
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+
+        assertEquals(response.getAlertDefinition().size(), 1);
+        d = response.getAlertDefinition().get(0);
+        validateDefinition(d);
+        assertTrue("Enabled is not false", !d.isEnabled());
+
+        d.setEnabled(true);
+        definitions.clear();
+        definitions.add(d);
+        response = api.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+
+        assertEquals(response.getAlertDefinition().size(), 1);
+        d = response.getAlertDefinition().get(0);
+        validateDefinition(d);
+        assertTrue("Enabled is not true", d.isEnabled());
+
+        // Cleanup
+        cleanup(response.getAlertDefinition());
+    }
+
     public void testSyncManyConditions()  throws Exception {
         AlertDefinitionApi api = getApi().getAlertDefinitionApi();
         Resource platform = getLocalPlatformResource(false, false);
