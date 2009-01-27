@@ -49,4 +49,13 @@ public class RoleGetRole_test extends RoleTestBase {
         RoleResponse response = api.getRole(Integer.MAX_VALUE);
         hqAssertFailureObjectNotFound(response);
     }
+
+    public void testGetSystemRole() throws Exception {
+        // System roles may not be modified
+
+        RoleApi api = getRoleApi();
+
+        RoleResponse response = api.getRole(0);
+        hqAssertFailureNotSupported(response);
+    }
 }

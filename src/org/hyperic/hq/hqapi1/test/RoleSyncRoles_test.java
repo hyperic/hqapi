@@ -166,4 +166,19 @@ public class RoleSyncRoles_test extends RoleTestBase {
         StatusResponse response = roleapi.syncRoles(createdRoles);
         hqAssertFailurePermissionDenied(response);
     }
+
+    public void testSyncSystemRole() throws Exception {
+
+        RoleApi api = getRoleApi();
+
+        Role r = new Role();
+        r.setId(0);
+        r.setName("Updated Super User Role!");
+
+        List<Role> roles = new ArrayList<Role>();
+        roles.add(r);
+
+        StatusResponse response = api.syncRoles(roles);
+        hqAssertFailureNotSupported(response);              
+    }
 }

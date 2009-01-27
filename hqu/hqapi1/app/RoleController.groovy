@@ -54,6 +54,9 @@ class RoleController extends ApiController {
             RoleResponse() {
                 if (!r) {
                     out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                } else if (r.system) {
+                    out << getFailureXML(ErrorCode.NOT_SUPPORTED,
+                                         "Cannot get system role " + r.name)
                 } else {
                     out << getSuccessXML()
                     out << getRoleXML(r)
@@ -145,6 +148,10 @@ class RoleController extends ApiController {
             def existing = getRole(xmlIn.'@id'?.toInteger(), xmlIn.'@name')
             if (!existing) {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+            } else if (existing.system) {
+                failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
+                                           "Cannot update system role " +
+                                           existing.name)
             } else {
                 def opMap = roleHelper.operationMap
                 def operations = []
@@ -197,6 +204,14 @@ class RoleController extends ApiController {
             for (xmlRole in syncRequest['Role']) {
                 def existing = getRole(xmlRole.'@id'?.toInteger(),
                                        xmlRole.'@name')
+                // Break early if a system role is being synced.
+                if (existing?.system) {
+                    failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
+                                               "Cannot sync system role " +
+                                               existing.name)
+                    break
+                }
+
                 if (existing) {
                     def opMap = roleHelper.operationMap
                     def operations = []

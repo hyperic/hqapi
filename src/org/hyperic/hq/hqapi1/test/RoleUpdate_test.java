@@ -181,6 +181,18 @@ public class RoleUpdate_test extends RoleTestBase {
         hqAssertFailurePermissionDenied(updateResponse);
     }
 
+    public void testUpdateSystemRole() throws Exception {
+
+        RoleApi api = getRoleApi();
+
+        Role r = new Role();
+        r.setId(0);
+        r.setName("Updated Super User Role!");
+
+        StatusResponse response = api.updateRole(r);
+        hqAssertFailureNotSupported(response);
+    }
+
     public void testUpdateValidUsers() throws Exception {
 
         HQApi api = getApi();
