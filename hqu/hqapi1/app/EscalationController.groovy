@@ -136,6 +136,10 @@ class EscalationController extends ApiController {
                 failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                            "Invalid name " + name + " for " +
                                            "escalation")
+            } else if (esc) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_EXISTS,
+                                           "Escalation " + esc.name + " already " +
+                                           "exists with id = " + esc.id)
             } else {
                 esc = escalationHelper.createEscalation(name, desc,
                                                         pauseAllowed,

@@ -49,4 +49,18 @@ public class EscalationCreate_test extends EscalationTestBase {
         EscalationResponse createResponse = api.createEscalation(e);
         hqAssertFailureInvalidParameters(createResponse);
     }
+
+    public void testCreateDuplicate() throws Exception {
+
+        EscalationApi api = getEscalationApi();
+
+        Escalation e = generateEscalation();
+        e.getAction().add(EscalationActionBuilder.createNoOpAction(1000));
+
+        EscalationResponse createResponse = api.createEscalation(e);
+        hqAssertSuccess(createResponse);
+
+        EscalationResponse duplicateResponse = api.createEscalation(e);
+        hqAssertFailureObjectExists(duplicateResponse);        
+    }
 }
