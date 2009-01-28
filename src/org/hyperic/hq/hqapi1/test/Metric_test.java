@@ -97,16 +97,13 @@ public class Metric_test extends MetricTestBase {
         MetricApi metricApi = api.getMetricApi();
         Resource r = getLocalPlatformResource(false, false);
 
-        // Keep a copy of the old metrics.
-        MetricsResponse orignalMetrics = metricApi.getMetrics(r);
-
         MetricsResponse metrics = metricApi.getMetrics(r);
         hqAssertSuccess(metrics);
 
         Metric enabledMetric = null;
 
         for (Metric m : metrics.getMetric()) {
-            if (m.isEnabled()) {
+            if (m.isEnabled() && !m.getName().equals("Availability")) {
                 enabledMetric = m;
                 break;
             }
@@ -115,7 +112,8 @@ public class Metric_test extends MetricTestBase {
         assertNotNull("Unable to find enabled metric for " + r.getName(),
                       enabledMetric);
 
-        final long newInterval = enabledMetric.getInterval() * 60000;
+        final long interval = enabledMetric.getInterval();
+        final long newInterval = interval * 2;
         enabledMetric.setInterval(newInterval);
 
         List<Metric> syncMetrics = new ArrayList<Metric>();
@@ -129,7 +127,15 @@ public class Metric_test extends MetricTestBase {
                    "updated.", metric.getMetric().getInterval() == newInterval);
 
         // Reset
-        syncResponse = metricApi.syncMetrics(orignalMetrics.getMetric());
+        try {
+            Thread.sleep(2000);
+        } catch (Exception e) {
+            // Cannot reschedule so quickly without getting ObjectNotFoundException
+            // for ScheduleRevNum
+        }
+
+        enabledMetric.setInterval(interval);
+        syncResponse = metricApi.syncMetrics(syncMetrics);
         hqAssertSuccess(syncResponse);
     }
 
