@@ -84,12 +84,12 @@ public class EscalationActionBuilder {
                                                           List<User> users) {
         EscalationAction a = new EscalationAction();
         a.setActionType(EscalationActionType.EMAIL.getType());
-        a.setActionType(EscalationNotifyType.USERS.getType());
+        a.setNotifyType(EscalationNotifyType.USERS.getType());
         a.setWait(wait);
         a.setSms(sms);
-        for (User r : users) {
+        for (User u : users) {
             Notify n = new Notify();
-            n.setName(r.getName());
+            n.setName(u.getName());
             a.getNotify().add(n);
         }
 
@@ -151,6 +151,7 @@ public class EscalationActionBuilder {
      */
     public static EscalationAction createNoOpAction(long wait) {
         EscalationAction a = new EscalationAction();
+        a.setActionType(EscalationActionType.NOOP.getType());
         a.setWait(wait);
         return a;
     }

@@ -146,7 +146,7 @@ class EscalationController extends ApiController {
                                                         maxWaitTime, notifyAll,
                                                         repeat)
 
-                syncActions(esc, xmlEsc['Action'])
+                failureXml = syncActions(esc, xmlEsc['Action'])
             }
         }
 
@@ -191,7 +191,7 @@ class EscalationController extends ApiController {
                 escalationHelper.updateEscalation(esc, name, desc, pauseAllowed,
                                                   maxWaitTime, notifyAll, repeat)
             
-                syncActions(esc, xmlEsc['Action'])
+                failureXml = syncActions(esc, xmlEsc['Action'])
             }
         }
 
@@ -208,6 +208,7 @@ class EscalationController extends ApiController {
     }
     
     def sync(params) {
+        def failureXml
         def data = getUpload('postdata')
         def syncRequest = new XmlParser().parseText(data)
         
@@ -221,39 +222,51 @@ class EscalationController extends ApiController {
             def repeat       = xmlEsc.'@repeat'.toBoolean()
         
             def esc = escalationHelper.getEscalation(id, name)
-            if (esc)
+
+            if (!name || name.length() == 0) {
+                failureXml = getFailureXml(ErrorCode.INVALID_PARAMETERS,
+                                           "Name not given")
+            } else if (esc) {
                 escalationHelper.updateEscalation(esc, name, desc, pauseAllowed,
                                                   maxWaitTime, notifyAll,
                                                   repeat)
-            else
+            } else {
                 esc = escalationHelper.createEscalation(name, desc,
                                                         pauseAllowed,
                                                         maxWaitTime, notifyAll,
                                                         repeat)
-            syncActions(esc, xmlEsc['Action'])
-            
+            }
+
+            failureXml = syncActions(esc, xmlEsc['Action'])
         }
 
         renderXml() {
             out << StatusResponse() {
-                out << getSuccessXML()
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                }
             }
         }
     }
     
     def syncActions(esc, actions) {
+
+        def failureXml = null
+
         // Remove all actions
         while (esc.actions.size() > 0) {
             escalationHelper.deleteAction(esc, esc.actions.get(0).action.id)
         }
 
         for (xmlAct in actions) {
+
             def action = null
             switch (xmlAct.'@actionType') {
             case 'EmailAction' :
                 // Create Email action
-                action =
-                    Class.forName(EmailActionConfig.implementor).newInstance()
+                action = Class.forName(EmailActionConfig.implementor).newInstance()
                 action.setSms(xmlAct.'@sms'.toBoolean())
 
                 def type = xmlAct.'@notifyType'
@@ -270,10 +283,22 @@ class EscalationController extends ApiController {
                     def name = notifyDef.'@name'
                     switch (action.getType()) {
                         case EmailActionConfig.TYPE_ROLES:
-                            name = getRole(null, name).id
+                            def role = getRole(null, name)
+                            if (!role) {
+                                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                                           "Cannot find role " + name)
+                            } else {
+                                name = role.id
+                            }
                             break;
                         case EmailActionConfig.TYPE_USERS:
-                            name = getUser(null, name).id
+                            def u = getUser(null, name)
+                            if (!u) {
+                                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                                           "Cannot find user " + name)
+                            } else {
+                                name = u.id
+                            }
                             break;
                         case EmailActionConfig.TYPE_EMAILS:
                         default:
@@ -285,8 +310,7 @@ class EscalationController extends ApiController {
                 action.setNames(names.join(","))
                 break
             case 'SyslogAction' :
-                action =
-                    Class.forName(SyslogActionConfig._implementor).newInstance()
+                action = Class.forName(SyslogActionConfig._implementor).newInstance()
                 action.setMeta(xmlAct.'@syslogMeta')
                 action.setProduct(xmlAct.'@syslogProduct')
                 action.setVersion(xmlAct.'@syslogVersion')
@@ -296,8 +320,15 @@ class EscalationController extends ApiController {
                 break
             }
 
-            if (action != null)
+            if (failureXml != null) {
+                return failureXml
+            }
+
+            if (action != null) {
                 escalationHelper.addAction(esc, action, xmlAct.'@wait'.toLong())
+            }
         }
+
+        return null
     }
 }
