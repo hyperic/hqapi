@@ -225,7 +225,7 @@ public class Metric_test extends MetricTestBase {
 
         assertNotNull("Unable to find default on metric for " + r.getName(),
                       enabledMetric);
-        
+
         final long  BAD_INTERVALS[] = { -1, 0, 1, 1000, 59999 };
         for (long BAD_INTERVAL : BAD_INTERVALS) {
             enabledMetric.setInterval(BAD_INTERVAL);
