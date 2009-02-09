@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class AlertDefinitionCommand extends Command {
 
@@ -30,6 +32,7 @@ public class AlertDefinitionCommand extends Command {
     private static String OPT_EXCLUDE_TYPEALERTS = "excludeTypeAlerts";
     private static String OPT_EXCLUDE_IDS = "excludeTypeIds";
     private static String OPT_GROUP = "group";
+    private static String OPT_RESOURCE_NAME = "resourceName";
     private static String OPT_ID   = "id";
 
     private void printUsage() {
@@ -68,24 +71,16 @@ public class AlertDefinitionCommand extends Command {
         p.accepts(OPT_GROUP, "If specified, only show alert definitions for " +
                              "resources that belong to the specified group.").
                 withRequiredArg().ofType(String.class);
+        p.accepts(OPT_RESOURCE_NAME, "If specified, only show alert definitions " +
+                                     "belonging to a resource with the given " +
+                                     "resource name regex.").
+                withRequiredArg().ofType(String.class);
 
         OptionSet options = getOptions(p, args);
 
         HQApi api = getApi(options);
         AlertDefinitionApi definitionApi = api.getAlertDefinitionApi();
         GroupApi groupApi = api.getGroupApi();
-
-        // A list of resource id's for filtering based on groups.
-        List<Integer> includedResources = new ArrayList<Integer>();
-        if (options.has(OPT_GROUP)) {
-            GroupResponse group =
-                    groupApi.getGroup((String)options.valueOf(OPT_GROUP));
-            checkSuccess(group);
-
-            for (Resource r : group.getGroup().getResource()) {
-                includedResources.add(r.getId());
-            }
-        }
 
         AlertDefinitionsResponse alertDefs;
         
@@ -109,14 +104,37 @@ public class AlertDefinitionCommand extends Command {
             alertDefs = definitionApi.getAlertDefinitions(excludeTypeAlerts);
         }
 
-        // Filter if necessary
-        if (includedResources.size() > 0) {
+        // Filter on group if necessary
+        if (options.has(OPT_GROUP)) {
+            GroupResponse group =
+                    groupApi.getGroup((String)options.valueOf(OPT_GROUP));
+            checkSuccess(group);
+
+            List<Integer> includedResources = new ArrayList<Integer>();
+            for (Resource r : group.getGroup().getResource()) {
+                includedResources.add(r.getId());
+            }
+
             for (Iterator<AlertDefinition> i = alertDefs.getAlertDefinition().iterator();
                  i.hasNext(); ) {
                 AlertDefinition d = i.next();
                 Integer rid = d.getResource().getId();
-                if (includedResources.contains(rid)) {
+                if (!includedResources.contains(rid)) {
                     System.out.println("Removing def " + d.getId());
+                    i.remove();
+                }
+            }
+        }
+
+        // Filter on resource name if necessary
+        if (options.has(OPT_RESOURCE_NAME)) {
+            Pattern pattern = Pattern.compile((String)options.valueOf(OPT_RESOURCE_NAME));
+
+            for (Iterator<AlertDefinition> i = alertDefs.getAlertDefinition().iterator();
+                 i.hasNext(); ) {
+                AlertDefinition d = i.next();
+                Matcher m = pattern.matcher(d.getResource().getName());
+                if (!m.matches()) {
                     i.remove();
                 }
             }
