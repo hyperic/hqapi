@@ -5,13 +5,18 @@ import joptsimple.OptionSet;
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
+import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.GroupResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
 
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class AlertDefinitionCommand extends Command {
 
@@ -24,6 +29,7 @@ public class AlertDefinitionCommand extends Command {
     private static String OPT_TYPEALERTS = "typeAlerts";
     private static String OPT_EXCLUDE_TYPEALERTS = "excludeTypeAlerts";
     private static String OPT_EXCLUDE_IDS = "excludeTypeIds";
+    private static String OPT_GROUP = "group";
     private static String OPT_ID   = "id";
 
     private void printUsage() {
@@ -59,11 +65,27 @@ public class AlertDefinitionCommand extends Command {
                                           "be excluded.");
         p.accepts(OPT_EXCLUDE_IDS, "If specified, parent alert definitions will " +
                                    "not include alert ids.");
+        p.accepts(OPT_GROUP, "If specified, only show alert definitions for " +
+                             "resources that belong to the specified group.").
+                withRequiredArg().ofType(String.class);
 
         OptionSet options = getOptions(p, args);
 
         HQApi api = getApi(options);
         AlertDefinitionApi definitionApi = api.getAlertDefinitionApi();
+        GroupApi groupApi = api.getGroupApi();
+
+        // A list of resource id's for filtering based on groups.
+        List<Integer> includedResources = new ArrayList<Integer>();
+        if (options.has(OPT_GROUP)) {
+            GroupResponse group =
+                    groupApi.getGroup((String)options.valueOf(OPT_GROUP));
+            checkSuccess(group);
+
+            for (Resource r : group.getGroup().getResource()) {
+                includedResources.add(r.getId());
+            }
+        }
 
         AlertDefinitionsResponse alertDefs;
         
@@ -85,6 +107,19 @@ public class AlertDefinitionCommand extends Command {
                 System.exit(-1);
             }
             alertDefs = definitionApi.getAlertDefinitions(excludeTypeAlerts);
+        }
+
+        // Filter if necessary
+        if (includedResources.size() > 0) {
+            for (Iterator<AlertDefinition> i = alertDefs.getAlertDefinition().iterator();
+                 i.hasNext(); ) {
+                AlertDefinition d = i.next();
+                Integer rid = d.getResource().getId();
+                if (includedResources.contains(rid)) {
+                    System.out.println("Removing def " + d.getId());
+                    i.remove();
+                }
+            }
         }
 
         checkSuccess(alertDefs);
