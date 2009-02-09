@@ -4,8 +4,6 @@ import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
 import org.hyperic.hq.hqapi1.AlertDefinitionBuilder;
 import org.hyperic.hq.hqapi1.MetricApi;
-import org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertLogLevel;
-import org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertConditionType;
 import org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertComparator;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
@@ -41,13 +39,13 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
         def.setResource(platform);
         final double THRESHOLD = 0;
         def.getAlertCondition().add(
-                AlertDefinitionBuilder.createThresholdCondition(true, m.getMetricTemplate(),
+                AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
                                                                 AlertComparator.GREATER_THAN,
                                                                 THRESHOLD));
         AlertDefinition recoveryDef = generateTestDefinition();
         recoveryDef.setResource(platform);
         AlertCondition threshold =
-                AlertDefinitionBuilder.createThresholdCondition(true, m.getMetricTemplate(),
+                AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
                                                                 AlertComparator.LESS_THAN,
                                                                 THRESHOLD);
         AlertCondition recovery =
@@ -96,7 +94,7 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
         recoveryDef.setResource(platform);
 
         AlertCondition thresholdCond =
-                AlertDefinitionBuilder.createThresholdCondition(true, m.getMetricTemplate(),
+                AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
                                                                 AlertComparator.EQUALS, 1);
         AlertCondition recoveryCond =
                 AlertDefinitionBuilder.createRecoveryCondition(true, problemDef);

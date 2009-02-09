@@ -2,7 +2,6 @@ package org.hyperic.hq.hqapi1;
 
 import org.hyperic.hq.hqapi1.types.AlertCondition;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
-import org.hyperic.hq.hqapi1.types.MetricTemplate;
 
 /**
  * This class is used to create {@link org.hyperic.hq.hqapi1.types.AlertCondition}s.
@@ -103,19 +102,19 @@ public class AlertDefinitionBuilder {
      *
      * @param required Indicates if this condition is required or optional for
      * this alert to fire.
-     * @param metric The metric to evaluate.
+     * @param metric The metric name to evaluate.
      * @param comparator The comparison to perform.
      * @param threshold The threshold value that will be compared.
      *
      * @return A threshold AlertCondition.
      */
     public static AlertCondition createThresholdCondition(boolean required,
-                                                          MetricTemplate metric,
+                                                          String metric,
                                                           AlertComparator comparator,
                                                           double threshold) {
         AlertCondition c = createBaseCondition(required);
         c.setType(AlertConditionType.THRESHOLD.getType());
-        c.setThresholdMetric(metric.getName());
+        c.setThresholdMetric(metric);
         c.setThresholdComparator(comparator.getComparator());
         c.setThresholdValue(threshold);
 
@@ -124,7 +123,7 @@ public class AlertDefinitionBuilder {
 
     /**
      * Indicates the type of Baseline condition to create.
-     * @see org.hyperic.hq.hqapi1.AlertDefinitionBuilder#createBaselineCondition(boolean, org.hyperic.hq.hqapi1.types.MetricTemplate, org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertComparator, double, org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertBaseline)
+     * @see org.hyperic.hq.hqapi1.AlertDefinitionBuilder#createBaselineCondition(boolean, String, org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertComparator, double, org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertBaseline)
      */
     public enum AlertBaseline {
 
@@ -148,7 +147,7 @@ public class AlertDefinitionBuilder {
      *
      * @param required Indicates if this condition is required or optional for
      * this alert to fire.
-     * @param metric The metric to evaluate.
+     * @param metric The metric name to evaluate.
      * @param comparator The comparison to perform.
      * @param percentage The percentage value to use in comparison.
      * @param type The type of baseline to compare against.
@@ -156,13 +155,13 @@ public class AlertDefinitionBuilder {
      * @return A baseline AlertCondition.
      */
     public static AlertCondition createBaselineCondition(boolean required,
-                                                         MetricTemplate metric,
+                                                         String metric,
                                                          AlertComparator comparator,
                                                          double percentage,
                                                          AlertBaseline type) {
         AlertCondition c = createBaseCondition(required);
         c.setType(AlertConditionType.BASELINE.getType());
-        c.setBaselineMetric(metric.getName());
+        c.setBaselineMetric(metric);
         c.setBaselineComparator(comparator.getComparator());
         c.setBaselinePercentage(percentage);
         c.setBaselineType(type.getBaselineType());
@@ -217,15 +216,15 @@ public class AlertDefinitionBuilder {
      *
      * @param required Indicates if this condition is required or optional for
      * this alert to fire.
-     * @param metric The metric to evaluate.
+     * @param metric The metric name to evaluate.
      *
      * @return A metric change AlertCondition.
      */
     public static AlertCondition createChangeCondition(boolean required,
-                                                       MetricTemplate metric) {
+                                                       String metric) {
         AlertCondition c = createBaseCondition(required);
         c.setType(AlertConditionType.METRIC_CHANGE.getType());
-        c.setMetricChange(metric.getName());
+        c.setMetricChange(metric);
         return c;
     }
 
@@ -298,7 +297,7 @@ public class AlertDefinitionBuilder {
      * @return A log AlertCondition.
      */
     public static AlertCondition createLogCondition(boolean required,
-                                                    AlertLogLevel logLevel ,
+                                                    AlertLogLevel logLevel,
                                                     String matches) {
         AlertCondition c = createBaseCondition(required);
         c.setType(AlertConditionType.LOG.getType());

@@ -12,7 +12,6 @@ import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.MetricsResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
-import org.hyperic.hq.hqapi1.types.MetricTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +40,7 @@ public class AlertDefinitionSyncThresholdCondition_test extends AlertDefinitionT
         d.setResource(platform);
         final double THRESHOLD = 0;
         d.getAlertCondition().add(
-                AlertDefinitionBuilder.createThresholdCondition(true, m.getMetricTemplate(),
+                AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
                                                                 AlertComparator.GREATER_THAN,
                                                                 THRESHOLD));
 
@@ -84,7 +83,7 @@ public class AlertDefinitionSyncThresholdCondition_test extends AlertDefinitionT
         d.setResourcePrototype(platform.getResourcePrototype());
         final double THRESHOLD = 0;
         d.getAlertCondition().add(
-                AlertDefinitionBuilder.createThresholdCondition(true, m.getMetricTemplate(),
+                AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
                                                                 AlertComparator.GREATER_THAN,
                                                                 THRESHOLD));
 
@@ -161,10 +160,8 @@ public class AlertDefinitionSyncThresholdCondition_test extends AlertDefinitionT
         AlertDefinition d = generateTestDefinition();
         d.setResource(platform);
         final double THRESHOLD = 0;
-        MetricTemplate invalidMetric = new MetricTemplate();
-        invalidMetric.setName("Invalid Metric Name");
         d.getAlertCondition().add(
-                AlertDefinitionBuilder.createThresholdCondition(true, invalidMetric,
+                AlertDefinitionBuilder.createThresholdCondition(true, "Invalid Metric",
                                                                 AlertComparator.GREATER_THAN,
                                                                 THRESHOLD));
 

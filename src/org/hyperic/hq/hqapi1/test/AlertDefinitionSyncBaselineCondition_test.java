@@ -13,7 +13,6 @@ import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.AlertCondition;
-import org.hyperic.hq.hqapi1.types.MetricTemplate;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -42,7 +41,7 @@ public class AlertDefinitionSyncBaselineCondition_test extends AlertDefinitionTe
         d.setResource(platform);
         final double PERCENTAGE = 0;
         d.getAlertCondition().add(
-                AlertDefinitionBuilder.createBaselineCondition(true, m.getMetricTemplate(),
+                AlertDefinitionBuilder.createBaselineCondition(true, m.getName(),
                                                                AlertComparator.GREATER_THAN,
                                                                PERCENTAGE,
                                                                AlertBaseline.MEAN));
@@ -88,7 +87,7 @@ public class AlertDefinitionSyncBaselineCondition_test extends AlertDefinitionTe
         d.setResourcePrototype(platform.getResourcePrototype());
         final double PERCENTAGE = 0;
         d.getAlertCondition().add(
-                AlertDefinitionBuilder.createBaselineCondition(true, m.getMetricTemplate(),
+                AlertDefinitionBuilder.createBaselineCondition(true, m.getName(),
                                                                AlertComparator.GREATER_THAN,
                                                                PERCENTAGE,
                                                                AlertBaseline.MEAN));
@@ -171,11 +170,9 @@ public class AlertDefinitionSyncBaselineCondition_test extends AlertDefinitionTe
 
         AlertDefinition d = generateTestDefinition();
         d.setResource(platform);
-        MetricTemplate invalidMetric = new MetricTemplate();
-        invalidMetric.setName("Invalid Metric Name");
         final double PERCENTAGE = 0;
         d.getAlertCondition().add(
-                AlertDefinitionBuilder.createBaselineCondition(true, invalidMetric,
+                AlertDefinitionBuilder.createBaselineCondition(true, "Invalid Metric",
                                                                AlertComparator.GREATER_THAN,
                                                                PERCENTAGE,
                                                                AlertBaseline.MEAN));
@@ -204,7 +201,7 @@ public class AlertDefinitionSyncBaselineCondition_test extends AlertDefinitionTe
         d.setResource(platform);
         final double PERCENTAGE = 0;
         AlertCondition c =
-            AlertDefinitionBuilder.createBaselineCondition(true, m.getMetricTemplate(),
+            AlertDefinitionBuilder.createBaselineCondition(true, m.getName(),
                                                            AlertComparator.GREATER_THAN,
                                                            PERCENTAGE,
                                                            AlertBaseline.MEAN);
