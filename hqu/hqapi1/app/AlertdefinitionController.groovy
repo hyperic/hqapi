@@ -133,6 +133,8 @@ public class AlertdefinitionController extends ApiController {
                     } else if (c.type == EventConstants.TYPE_ALERT) {
                         def alert = alertHelper.getById(c.measurementId)
                         if (alert == null) {
+                            // TODO: This is not handled correctly in HQ.  NPE
+                            //       is thrown rather than null returned.
                             log.warn("Unable to find recover condition " +
                                      c.measurementId + " for " + c.name)
                             continue
@@ -565,13 +567,11 @@ public class AlertdefinitionController extends ApiController {
                                 aeid.id == recoveryDef.appdefId) {
                                 acv.measurementId = recoveryDef.id
                             }
-                        }
-
-                        if (acv.measurementId == null) {
+                        } else {
                             failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                                        "Unable to find recovery " +
-                                                       " with name " +
-                                                       xmlCond.'@recover')
+                                                       " with name '" +
+                                                       xmlCond.'@recover' + "'")
                             break
                         }
 
