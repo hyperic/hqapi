@@ -20,6 +20,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Iterator;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class ResourceCommand extends Command {
 
@@ -75,7 +78,7 @@ public class ResourceCommand extends Command {
     }
 
     private void list(String[] args) throws Exception {
-        String[] ONE_REQUIRED = { OPT_PROTOTYPE, OPT_PLATFORM };
+        String[] ONE_REQUIRED = { OPT_PROTOTYPE, OPT_PLATFORM, OPT_ID };
 
         OptionParser p = getOptionParser();
 
@@ -84,6 +87,10 @@ public class ResourceCommand extends Command {
                 withRequiredArg().ofType(String.class);
         p.accepts(OPT_PLATFORM, "If specified, return only resources with the " +
                   "specified platform name").withRequiredArg().ofType(String.class);
+        p.accepts(OPT_ID, "If specified, return the resource with the given id.").
+                withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_NAME, "If specified, return resources that match the " +
+                            "given regex.").withRequiredArg().ofType(String.class);
 
         p.accepts(OPT_VERBOSE, "Include resource configuration and properties");
         p.accepts(OPT_CHILDREN, "Include child resources");
@@ -113,32 +120,53 @@ public class ResourceCommand extends Command {
         if (criteria > 1) {
             System.err.println("Only one of " + Arrays.toString(ONE_REQUIRED) + " may be specified");
             System.exit(-1);
-        } else if (criteria == 0) {
-            System.err.println("One of " + Arrays.toString(ONE_REQUIRED) + " required");
-            System.exit(-1);
         }
 
+        ResourcesResponse resources;
         if (options.has(OPT_PROTOTYPE)) {
             String prototype = (String) options.valueOf(OPT_PROTOTYPE);
             ResourcePrototypeResponse protoResponse =
                     resourceApi.getResourcePrototype(prototype);
             checkSuccess(protoResponse);
-            ResourcesResponse resources =
-                    resourceApi.getResources(protoResponse.getResourcePrototype(),
-                                             verbose, children);
+            resources = resourceApi.getResources(protoResponse.getResourcePrototype(),
+                                                 verbose, children);
             checkSuccess(resources);
-            XmlUtil.serialize(resources, System.out, Boolean.TRUE);
         } else if (options.has(OPT_PLATFORM)) {
             String platform = (String)options.valueOf(OPT_PLATFORM);
             ResourceResponse resource =
                     resourceApi.getPlatformResource(platform, verbose, children);
             checkSuccess(resource);
 
-            ResourcesResponse resources = new ResourcesResponse();
+            resources = new ResourcesResponse();
             resources.setStatus(resource.getStatus());
             resources.getResource().add(resource.getResource());
-            XmlUtil.serialize(resources, System.out, Boolean.TRUE);
+        } else if (options.has(OPT_ID)) {
+            Integer id = (Integer)options.valueOf(OPT_ID);
+            ResourceResponse resource = resourceApi.getResource(id, verbose, children);
+            checkSuccess(resource);
+
+            resources = new ResourcesResponse();
+            resources.setStatus(resource.getStatus());
+            resources.getResource().add(resource.getResource());
+        } else {
+            System.err.println("One of " + Arrays.toString(ONE_REQUIRED) + " required");
+            return;
         }
+
+        // Optional filtering by name
+        if (options.has(OPT_NAME)) {
+            Pattern pattern = Pattern.compile((String)options.valueOf(OPT_NAME));
+
+            for (Iterator<Resource> i = resources.getResource().iterator(); i.hasNext();) {
+                Resource r = i.next();
+                Matcher m = pattern.matcher(r.getName());
+                if (!m.matches()) {
+                    i.remove();
+                }
+            }
+        }
+
+        XmlUtil.serialize(resources, System.out, Boolean.TRUE);
     }
 
     private void sync(String[] args) throws Exception {
