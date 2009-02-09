@@ -11,6 +11,7 @@ import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.MetricsResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.MetricTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class AlertDefinitionSyncMetricChangeCondition_test extends AlertDefiniti
         AlertDefinition d = generateTestDefinition();
         d.setResource(platform);
         d.getAlertCondition().add(
-                AlertDefinitionBuilder.createChangeCondition(true, m.getName()));
+                AlertDefinitionBuilder.createChangeCondition(true, m.getMetricTemplate()));
 
         List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
         defintions.add(d);
@@ -75,7 +76,7 @@ public class AlertDefinitionSyncMetricChangeCondition_test extends AlertDefiniti
         AlertDefinition d = generateTestDefinition();
         d.setResourcePrototype(platform.getResourcePrototype());
         d.getAlertCondition().add(
-                AlertDefinitionBuilder.createChangeCondition(true, m.getName()));
+                AlertDefinitionBuilder.createChangeCondition(true, m.getMetricTemplate()));
 
         List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
         defintions.add(d);
@@ -138,8 +139,10 @@ public class AlertDefinitionSyncMetricChangeCondition_test extends AlertDefiniti
 
         AlertDefinition d = generateTestDefinition();
         d.setResourcePrototype(platform.getResourcePrototype());
+        MetricTemplate invalidMetric = new MetricTemplate();
+        invalidMetric.setName("Invalid Metric");
         d.getAlertCondition().add(
-                AlertDefinitionBuilder.createChangeCondition(true, "Invalid Metric"));
+                AlertDefinitionBuilder.createChangeCondition(true, invalidMetric));
 
         List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
         defintions.add(d);

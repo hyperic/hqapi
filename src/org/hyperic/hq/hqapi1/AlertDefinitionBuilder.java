@@ -2,6 +2,7 @@ package org.hyperic.hq.hqapi1;
 
 import org.hyperic.hq.hqapi1.types.AlertCondition;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
+import org.hyperic.hq.hqapi1.types.MetricTemplate;
 
 /**
  * This class is used to create an @{link AlertCondition}.
@@ -72,12 +73,12 @@ public class AlertDefinitionBuilder {
     }
 
     public static AlertCondition createThresholdCondition(boolean required,
-                                                         String metric,
-                                                         AlertComparator comparator,
-                                                         double threshold) {
+                                                          MetricTemplate metric,
+                                                          AlertComparator comparator,
+                                                          double threshold) {
         AlertCondition c = createBaseCondition(required);
         c.setType(AlertConditionType.THRESHOLD.getType());
-        c.setThresholdMetric(metric);
+        c.setThresholdMetric(metric.getName());
         c.setThresholdComparator(comparator.getComparator());
         c.setThresholdValue(threshold);
 
@@ -102,13 +103,13 @@ public class AlertDefinitionBuilder {
     }
 
     public static AlertCondition createBaselineCondition(boolean required,
-                                                         String metric,
+                                                         MetricTemplate metric,
                                                          AlertComparator comparator,
                                                          double percentage,
                                                          AlertBaseline type) {
         AlertCondition c = createBaseCondition(required);
         c.setType(AlertConditionType.BASELINE.getType());
-        c.setBaselineMetric(metric);
+        c.setBaselineMetric(metric.getName());
         c.setBaselineComparator(comparator.getComparator());
         c.setBaselinePercentage(percentage);
         c.setBaselineType(type.getBaselineType());
@@ -145,10 +146,10 @@ public class AlertDefinitionBuilder {
     }
 
     public static AlertCondition createChangeCondition(boolean required,
-                                                       String metric) {
+                                                       MetricTemplate metric) {
         AlertCondition c = createBaseCondition(required);
         c.setType(AlertConditionType.METRIC_CHANGE.getType());
-        c.setMetricChange(metric);
+        c.setMetricChange(metric.getName());
         return c;
     }
 
