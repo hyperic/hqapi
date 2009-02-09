@@ -120,7 +120,6 @@ public class AlertDefinitionCommand extends Command {
                 AlertDefinition d = i.next();
                 Integer rid = d.getResource().getId();
                 if (!includedResources.contains(rid)) {
-                    System.out.println("Removing def " + d.getId());
                     i.remove();
                 }
             }
