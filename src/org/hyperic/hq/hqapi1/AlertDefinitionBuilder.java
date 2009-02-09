@@ -5,7 +5,16 @@ import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.MetricTemplate;
 
 /**
- * This class is used to create an @{link AlertCondition}.
+ * This class is used to create {@link org.hyperic.hq.hqapi1.types.AlertCondition}s.
+ *
+ * An AlertCondition is a check that done within the processing of an
+ * {@link org.hyperic.hq.hqapi1.types.AlertDefinition}.  Each AlertDefinition must
+ * have 1 or more AlertConditions associated with it.  When more than one AlertCondition is
+ * specified, the required flag will indicate if all or one of the conditions are
+ * required for the AlertDefinition to fire.
+ *
+ * @see org.hyperic.hq.hqapi1.types.AlertDefinition#getAlertCondition()
+ *
  */
 public class AlertDefinitionBuilder {
 
@@ -15,6 +24,13 @@ public class AlertDefinitionBuilder {
         return c;
     }
 
+    /**
+     * The {@link org.hyperic.hq.hqapi1.types.AlertCondition} type.  These
+     * should not be used directly.  Instead use the createCondition APIs
+     * provided in this class.
+     *
+     * @see org.hyperic.hq.hqapi1.types.AlertCondition#getType()
+     */
     public enum AlertConditionType {
 
         THRESHOLD(1),
@@ -37,6 +53,11 @@ public class AlertDefinitionBuilder {
         }
     }
 
+    /**
+     * The {@link org.hyperic.hq.hqapi1.types.AlertDefinition} priority.
+     *
+     * @see org.hyperic.hq.hqapi1.types.AlertDefinition#getPriority()
+     */
     public enum AlertPriority {
 
         HIGH(3),
@@ -54,6 +75,11 @@ public class AlertDefinitionBuilder {
         }
     }
 
+    /**
+     * Comparator used with {@link org.hyperic.hq.hqapi1.types.AlertCondition}s
+     * that use thresholds.  This should be used in conjunction with the static
+     * createCondition APIs in this class.
+     */
     public enum AlertComparator {
 
         EQUALS("="),
@@ -72,6 +98,17 @@ public class AlertDefinitionBuilder {
         }
     }
 
+    /**
+     * Create a threshold alert condition.  (i.e. When x > y)
+     *
+     * @param required Indicates if this condition is required or optional for
+     * this alert to fire.
+     * @param metric The metric to evaluate.
+     * @param comparator The comparison to perform.
+     * @param threshold The threshold value that will be compared.
+     *
+     * @return A threshold AlertCondition.
+     */
     public static AlertCondition createThresholdCondition(boolean required,
                                                           MetricTemplate metric,
                                                           AlertComparator comparator,
@@ -85,6 +122,10 @@ public class AlertDefinitionBuilder {
         return c;
     }
 
+    /**
+     * Indicates the type of Baseline condition to create.
+     * @see org.hyperic.hq.hqapi1.AlertDefinitionBuilder#createBaselineCondition(boolean, org.hyperic.hq.hqapi1.types.MetricTemplate, org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertComparator, double, org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertBaseline)
+     */
     public enum AlertBaseline {
 
         MEAN("mean"),
@@ -102,6 +143,18 @@ public class AlertDefinitionBuilder {
         }
     }
 
+    /**
+     * Create a baseline AlertCondition.
+     *
+     * @param required Indicates if this condition is required or optional for
+     * this alert to fire.
+     * @param metric The metric to evaluate.
+     * @param comparator The comparison to perform.
+     * @param percentage The percentage value to use in comparison.
+     * @param type The type of baseline to compare against.
+     *
+     * @return A baseline AlertCondition.
+     */
     public static AlertCondition createBaselineCondition(boolean required,
                                                          MetricTemplate metric,
                                                          AlertComparator comparator,
@@ -117,6 +170,10 @@ public class AlertDefinitionBuilder {
         return c;
     }
 
+    /**
+     * Indicates the control status to check.
+     * @see org.hyperic.hq.hqapi1.AlertDefinitionBuilder#createControlCondition(boolean, String, org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertControlStatus)
+     */
     public enum AlertControlStatus {
 
         COMPLETED("Completed"),
@@ -134,6 +191,16 @@ public class AlertDefinitionBuilder {
         }
     }
 
+    /**
+     * Create a control AlertCondition.
+     *
+     * @param required Indicates if this condition is required or optional for
+     * this alert to fire.
+     * @param action The control action name to evaluate.
+     * @param status The control action status to compare against.
+     *
+     * @return A control AlertCondition.
+     */
     public static AlertCondition createControlCondition(boolean required,
                                                         String action,
                                                         AlertControlStatus status) {
@@ -145,6 +212,15 @@ public class AlertDefinitionBuilder {
         return c;
     }
 
+    /**
+     * Create a metric change AlertCondition.
+     *
+     * @param required Indicates if this condition is required or optional for
+     * this alert to fire.
+     * @param metric The metric to evaluate.
+     *
+     * @return A metric change AlertCondition.
+     */
     public static AlertCondition createChangeCondition(boolean required,
                                                        MetricTemplate metric) {
         AlertCondition c = createBaseCondition(required);
@@ -153,6 +229,16 @@ public class AlertDefinitionBuilder {
         return c;
     }
 
+    /**
+     * Create a recovery AlertCondition.
+     *
+     * @param required Indicates if this condition is required or optional for
+     * this alert to fire.
+     * @param recover The {@link org.hyperic.hq.hqapi1.types.AlertDefinition} this
+     * condition will recover.
+     *
+     * @return A recovery AlertCondition.
+     */
     public static AlertCondition createRecoveryCondition(boolean required,
                                                          AlertDefinition recover) {
         AlertCondition c = createBaseCondition(required);
@@ -161,6 +247,15 @@ public class AlertDefinitionBuilder {
         return c;
     }
 
+    /**
+     * Create a property AlertCondition.
+     *
+     * @param required Indicates if this condition is required or optional for
+     * this alert to fire.
+     * @param property The custom property to evaluate for changes.
+     *
+     * @return A property AlertCondition.
+     */
     public static AlertCondition createPropertyCondition(boolean required,
                                                          String property) {
         AlertCondition c = createBaseCondition(required);
@@ -169,6 +264,10 @@ public class AlertDefinitionBuilder {
         return c;
     }
 
+    /**
+     * Indicates the event log level to check.
+     * @see org.hyperic.hq.hqapi1.AlertDefinitionBuilder#createLogCondition(boolean, org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertLogLevel, String)
+     */
     public enum AlertLogLevel {
 
         ANY("ANY"),
@@ -188,6 +287,16 @@ public class AlertDefinitionBuilder {
         }
     }
 
+    /**
+     * Create a log AlertCondition.
+     *
+     * @param required Indicates if this condition is required or optional for
+     * this alert to fire.
+     * @param logLevel The log level to evaluate.
+     * @param matches The string regex to search for.
+     *
+     * @return A log AlertCondition.
+     */
     public static AlertCondition createLogCondition(boolean required,
                                                     AlertLogLevel logLevel ,
                                                     String matches) {
@@ -198,6 +307,16 @@ public class AlertDefinitionBuilder {
         return c;
     }
 
+    /**
+     * Create a config change AlertCondition.
+     *
+     * @param required Indicates if this condition is required or optional for
+     * this alert to fire.
+     * @param matches Optional file name to check for changes.  Set this to null
+     * to evaluate against all items watched for configuration changes.
+     *
+     * @return A config change AlertCondition.
+     */
     public static AlertCondition createConfigCondition(boolean required,
                                                        String matches) {
         AlertCondition c = createBaseCondition(required);
