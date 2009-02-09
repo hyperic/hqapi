@@ -40,9 +40,9 @@ public class AlertDefinitionSyncMetricChangeCondition_test extends AlertDefiniti
         d.getAlertCondition().add(
                 AlertDefinitionBuilder.createChangeCondition(true, m.getName()));
 
-        List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
-        defintions.add(d);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(defintions);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertSuccess(response);
 
         for (AlertDefinition def : response.getAlertDefinition()) {
@@ -77,9 +77,9 @@ public class AlertDefinitionSyncMetricChangeCondition_test extends AlertDefiniti
         d.getAlertCondition().add(
                 AlertDefinitionBuilder.createChangeCondition(true, m.getName()));
 
-        List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
-        defintions.add(d);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(defintions);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertSuccess(response);
 
         for (AlertDefinition def : response.getAlertDefinition()) {
@@ -116,13 +116,13 @@ public class AlertDefinitionSyncMetricChangeCondition_test extends AlertDefiniti
         c.setType(AlertDefinitionBuilder.AlertConditionType.METRIC_CHANGE.getType());
         d.getAlertCondition().add(c);
 
-        List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
-        defintions.add(d);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(defintions);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertFailureInvalidParameters(response);
 
         c.setMetricChange(m.getName());
-        response = defApi.syncAlertDefinitions(defintions);
+        response = defApi.syncAlertDefinitions(definitions);
         hqAssertSuccess(response);
 
         // cleanup
@@ -141,9 +141,9 @@ public class AlertDefinitionSyncMetricChangeCondition_test extends AlertDefiniti
         d.getAlertCondition().add(
                 AlertDefinitionBuilder.createChangeCondition(true, "Invalid Metric"));
 
-        List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
-        defintions.add(d);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(defintions);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertFailureObjectNotFound(response);      
     }
 }

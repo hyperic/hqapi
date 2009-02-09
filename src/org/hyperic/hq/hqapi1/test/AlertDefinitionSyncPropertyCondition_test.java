@@ -31,9 +31,9 @@ public class AlertDefinitionSyncPropertyCondition_test extends AlertDefinitionTe
         d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, PROP_NAME));
 
 
-        List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
-        defintions.add(d);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(defintions);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertSuccess(response);
 
         for (AlertDefinition def : response.getAlertDefinition()) {
@@ -61,9 +61,9 @@ public class AlertDefinitionSyncPropertyCondition_test extends AlertDefinitionTe
         d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, PROP_NAME));
 
 
-        List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
-        defintions.add(d);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(defintions);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertSuccess(response);
 
         for (AlertDefinition def : response.getAlertDefinition()) {
@@ -91,9 +91,9 @@ public class AlertDefinitionSyncPropertyCondition_test extends AlertDefinitionTe
         c.setType(AlertConditionType.CUSTOM_PROP.getType());
         d.getAlertCondition().add(c);
 
-        List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
-        defintions.add(d);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(defintions);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertFailureInvalidParameters(response);
     }
 }

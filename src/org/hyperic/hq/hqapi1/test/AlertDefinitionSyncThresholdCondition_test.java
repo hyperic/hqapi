@@ -44,9 +44,9 @@ public class AlertDefinitionSyncThresholdCondition_test extends AlertDefinitionT
                                                                 AlertComparator.GREATER_THAN,
                                                                 THRESHOLD));
 
-        List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
-        defintions.add(d);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(defintions);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertSuccess(response);
 
         for (AlertDefinition def : response.getAlertDefinition()) {
@@ -87,9 +87,9 @@ public class AlertDefinitionSyncThresholdCondition_test extends AlertDefinitionT
                                                                 AlertComparator.GREATER_THAN,
                                                                 THRESHOLD));
 
-        List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
-        defintions.add(d);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(defintions);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertSuccess(response);
 
         for (AlertDefinition def : response.getAlertDefinition()) {
@@ -165,9 +165,9 @@ public class AlertDefinitionSyncThresholdCondition_test extends AlertDefinitionT
                                                                 AlertComparator.GREATER_THAN,
                                                                 THRESHOLD));
 
-        List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
-        defintions.add(d);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(defintions);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertFailureObjectNotFound(response);
     }
 }

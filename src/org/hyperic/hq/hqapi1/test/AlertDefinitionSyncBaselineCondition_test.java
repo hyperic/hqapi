@@ -46,9 +46,9 @@ public class AlertDefinitionSyncBaselineCondition_test extends AlertDefinitionTe
                                                                PERCENTAGE,
                                                                AlertBaseline.MEAN));
 
-        List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
-        defintions.add(d);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(defintions);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertSuccess(response);
 
         for (AlertDefinition def : response.getAlertDefinition()) {
@@ -92,9 +92,9 @@ public class AlertDefinitionSyncBaselineCondition_test extends AlertDefinitionTe
                                                                PERCENTAGE,
                                                                AlertBaseline.MEAN));
 
-        List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
-        defintions.add(d);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(defintions);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertSuccess(response);
 
         for (AlertDefinition def : response.getAlertDefinition()) {
@@ -177,9 +177,9 @@ public class AlertDefinitionSyncBaselineCondition_test extends AlertDefinitionTe
                                                                PERCENTAGE,
                                                                AlertBaseline.MEAN));
 
-        List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
-        defintions.add(d);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(defintions);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertFailureObjectNotFound(response);
     }
 
@@ -209,9 +209,9 @@ public class AlertDefinitionSyncBaselineCondition_test extends AlertDefinitionTe
         c.setBaselineType("badType");
         d.getAlertCondition().add(c);
 
-        List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
-        defintions.add(d);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(defintions);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertFailureInvalidParameters(response);
     }
 }

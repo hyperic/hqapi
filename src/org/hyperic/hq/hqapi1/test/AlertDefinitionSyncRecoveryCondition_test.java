@@ -53,10 +53,10 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
         recoveryDef.getAlertCondition().add(threshold);
         recoveryDef.getAlertCondition().add(recovery);
 
-        List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
-        defintions.add(def);
-        defintions.add(recoveryDef);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(defintions);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(def);
+        definitions.add(recoveryDef);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertSuccess(response);
 
         for (AlertDefinition d : response.getAlertDefinition()) {
@@ -102,9 +102,9 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
         recoveryDef.getAlertCondition().add(recoveryCond);
 
 
-        List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
-        defintions.add(recoveryDef);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(defintions);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(recoveryDef);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertFailureObjectNotFound(response);
     }
 

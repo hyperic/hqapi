@@ -112,7 +112,7 @@ public class HQApi {
     }
 
     /**
-     * Add, remove and list alert definitons.
+     * Add, remove and list alert definitions.
      *
      * @return The API for operating on alert definitions.
      */

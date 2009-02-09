@@ -32,9 +32,9 @@ public class AlertDefinitionSyncLogCondition_test extends AlertDefinitionTestBas
         d.getAlertCondition().add(AlertDefinitionBuilder.
                 createLogCondition(true, AlertLogLevel.INFO, LOG_MATCHES));
 
-        List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
-        defintions.add(d);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(defintions);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertSuccess(response);
 
         for (AlertDefinition def : response.getAlertDefinition()) {
@@ -64,9 +64,9 @@ public class AlertDefinitionSyncLogCondition_test extends AlertDefinitionTestBas
         d.getAlertCondition().add(AlertDefinitionBuilder.
                 createLogCondition(true, AlertLogLevel.INFO, LOG_MATCHES));
 
-        List<AlertDefinition> defintions = new ArrayList<AlertDefinition>();
-        defintions.add(d);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(defintions);
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertSuccess(response);
 
         for (AlertDefinition def : response.getAlertDefinition()) {
