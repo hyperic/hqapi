@@ -168,6 +168,57 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
         cleanup(recoveryResponse.getAlertDefinition());
     }
 
+    public void testSyncRecoveryWithoutProblemDefTypeAlert() throws Exception {
+
+        HQApi api = getApi();
+        AlertDefinitionApi defApi = api.getAlertDefinitionApi();
+        MetricApi metricApi = api.getMetricApi();
+
+        Resource platform = getLocalPlatformResource(false, false);
+
+        MetricsResponse metricsResponse = metricApi.getMetrics(platform);
+        hqAssertSuccess(metricsResponse);
+        assertTrue("No metrics found for " + platform.getName(),
+                metricsResponse.getMetric().size() > 0);
+        Metric m = metricsResponse.getMetric().get(0);
+
+
+        // First sync the problem definition
+        AlertDefinition def = generateTestDefinition();
+        def.setResourcePrototype(platform.getResourcePrototype());
+        final double THRESHOLD = 0;
+        def.getAlertCondition().add(
+                AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
+                                                                AlertComparator.GREATER_THAN,
+                                                                THRESHOLD));
+
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(def);
+        AlertDefinitionsResponse downResponse = defApi.syncAlertDefinitions(definitions);
+        hqAssertSuccess(downResponse);
+
+        // Next, sync the recovery
+        AlertDefinition recoveryDef = generateTestDefinition();
+        recoveryDef.setResourcePrototype(platform.getResourcePrototype());
+        AlertCondition threshold =
+                AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
+                                                                AlertComparator.LESS_THAN,
+                                                                THRESHOLD);
+        AlertCondition recovery =
+                AlertDefinitionBuilder.createRecoveryCondition(true, def);
+        recoveryDef.getAlertCondition().add(threshold);
+        recoveryDef.getAlertCondition().add(recovery);
+
+        definitions.clear();
+        definitions.add(recoveryDef);
+        AlertDefinitionsResponse recoveryResponse = defApi.syncAlertDefinitions(definitions);
+        hqAssertSuccess(recoveryResponse);
+
+        // cleanup
+        cleanup(downResponse.getAlertDefinition());
+        cleanup(recoveryResponse.getAlertDefinition());
+    }
+
     // TODO: Missing attributes
 
     // TODO: Missing condition (recovery requrires 2..)
