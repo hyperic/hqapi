@@ -33,6 +33,7 @@ public class AlertDefinitionCommand extends Command {
     private static String OPT_EXCLUDE_IDS = "excludeTypeIds";
     private static String OPT_GROUP = "group";
     private static String OPT_RESOURCE_NAME = "resourceName";
+    private static String OPT_ALERT_NAME = "alertName";
     private static String OPT_ID   = "id";
     private static String OPT_BATCH_SIZE = "batchSize";
 
@@ -75,6 +76,9 @@ public class AlertDefinitionCommand extends Command {
         p.accepts(OPT_RESOURCE_NAME, "If specified, only show alert definitions " +
                                      "belonging to a resource with the given " +
                                      "resource name regex.").
+                withRequiredArg().ofType(String.class);
+         p.accepts(OPT_ALERT_NAME, "If specified, only show alert definitions " +
+                                   "with names that match the given regex. ").
                 withRequiredArg().ofType(String.class);
 
         OptionSet options = getOptions(p, args);
@@ -134,6 +138,19 @@ public class AlertDefinitionCommand extends Command {
                  i.hasNext(); ) {
                 AlertDefinition d = i.next();
                 Matcher m = pattern.matcher(d.getResource().getName());
+                if (!m.matches()) {
+                    i.remove();
+                }
+            }
+        }
+
+        if (options.has(OPT_ALERT_NAME)) {
+            Pattern pattern = Pattern.compile((String)options.valueOf(OPT_ALERT_NAME));
+
+            for (Iterator<AlertDefinition> i = alertDefs.getAlertDefinition().iterator();
+                 i.hasNext(); ) {
+                AlertDefinition d = i.next();
+                Matcher m = pattern.matcher(d.getName());
                 if (!m.matches()) {
                     i.remove();
                 }
