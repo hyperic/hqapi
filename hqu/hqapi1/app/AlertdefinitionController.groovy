@@ -274,7 +274,7 @@ public class AlertdefinitionController extends ApiController {
 
         for (xmlDef in syncRequest['AlertDefinition']) {
             def failureXml = null
-            def resource // Can be a resource or a prototype in the case of type alerts
+            def resource = null // Can be a resource or a prototype in the case of type alerts
             boolean typeBased
             def existing = null
             Integer id = xmlDef.'@id'?.toInteger()
@@ -560,7 +560,6 @@ public class AlertdefinitionController extends ApiController {
                             break
                         }
 
-                        // TODO: This requires both recovery alerts to be in the sync. (And ordered)
                         def recoveryDef = definitionsByName[xmlCond.'@recover']
                         if (recoveryDef) {
                             if (aeid.type == recoveryDef.appdefType &&
@@ -568,9 +567,24 @@ public class AlertdefinitionController extends ApiController {
                                 acv.measurementId = recoveryDef.id
                             }
                         } else {
+                            // Attempt to look for the name of alert on the
+                            // given resource.
+                            if (resource) {
+                                log.warn("Recovery alert " +
+                                         xmlCond.'@recover' + " not found " +
+                                         "in sync XML, checking resource.")
+                                def resourceDefs = resource.getAlertDefinitions(user)
+                                def recovery = resourceDefs.find { it.name == xmlCond.'@recover' }
+                                if (recovery) {
+                                    log.info("Found definition " + recovery.id)
+                                    acv.measurementId = recovery.id
+                                    break
+                                }
+                            }
+
                             failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                                        "Unable to find recovery " +
-                                                       " with name '" +
+                                                       "with name '" +
                                                        xmlCond.'@recover' + "'")
                             break
                         }
