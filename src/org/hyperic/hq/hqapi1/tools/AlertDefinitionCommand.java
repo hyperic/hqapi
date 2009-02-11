@@ -34,6 +34,7 @@ public class AlertDefinitionCommand extends Command {
     private static String OPT_GROUP = "group";
     private static String OPT_RESOURCE_NAME = "resourceName";
     private static String OPT_ID   = "id";
+    private static String OPT_BATCH_SIZE = "batchSize";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -166,6 +167,10 @@ public class AlertDefinitionCommand extends Command {
     private void sync(String[] args) throws Exception {
 
         OptionParser p = getOptionParser();
+
+        p.accepts(OPT_BATCH_SIZE, "Process the sync in batches of the given size").
+                withRequiredArg().ofType(Integer.class);
+
         OptionSet options = getOptions(p, args);
 
         AlertDefinitionApi api = getApi(options).getAlertDefinitionApi();
@@ -177,10 +182,30 @@ public class AlertDefinitionCommand extends Command {
         
         List<AlertDefinition> definitions = resp.getAlertDefinition();
 
-        AlertDefinitionsResponse syncResponse = api.syncAlertDefinitions(definitions);
-        checkSuccess(syncResponse);
+        System.out.println("Syncing " + definitions.size() + " alert definitions");
 
-        System.out.println("Successfully synced " + definitions.size() +
-                           " alert definitions.");
+        int numSynced = 0;
+        if (options.has(OPT_BATCH_SIZE)) {
+            int batchSize = (Integer)options.valueOf(OPT_BATCH_SIZE);
+            int numBatches = (int)Math.ceil(definitions.size()/((double)batchSize));
+
+            for (int i = 0; i < numBatches; i++) {
+                System.out.println("Syncing batch " + (i + 1) + " of " + numBatches);
+                int fromIndex = i * batchSize;
+                int toIndex = (fromIndex + batchSize) > definitions.size() ? 
+                              definitions.size() : (fromIndex + batchSize);
+                AlertDefinitionsResponse syncResponse =
+                        api.syncAlertDefinitions(definitions.subList(fromIndex,
+                                                                     toIndex));
+                checkSuccess(syncResponse);
+                numSynced += (toIndex - fromIndex);
+            }
+        } else {
+            AlertDefinitionsResponse syncResponse = api.syncAlertDefinitions(definitions);
+            checkSuccess(syncResponse);
+            numSynced = definitions.size();
+        }
+
+        System.out.println("Successfully synced " + numSynced + " alert definitions.");
     }
 }
