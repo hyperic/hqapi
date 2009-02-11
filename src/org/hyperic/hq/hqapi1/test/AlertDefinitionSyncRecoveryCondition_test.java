@@ -69,6 +69,54 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
         cleanup(response.getAlertDefinition());
     }
 
+    public void testValidRecoveryConditionTypeAlert() throws Exception {
+
+        HQApi api = getApi();
+        AlertDefinitionApi defApi = api.getAlertDefinitionApi();
+        MetricApi metricApi = api.getMetricApi();
+
+        Resource platform = getLocalPlatformResource(false, false);
+
+        MetricsResponse metricsResponse = metricApi.getMetrics(platform);
+        hqAssertSuccess(metricsResponse);
+        assertTrue("No metrics found for " + platform.getName(),
+                metricsResponse.getMetric().size() > 0);
+        Metric m = metricsResponse.getMetric().get(0);
+
+        AlertDefinition def = generateTestDefinition();
+        def.setResourcePrototype(platform.getResourcePrototype());
+        final double THRESHOLD = 0;
+        def.getAlertCondition().add(
+                AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
+                                                                AlertComparator.GREATER_THAN,
+                                                                THRESHOLD));
+        AlertDefinition recoveryDef = generateTestDefinition();
+        recoveryDef.setResourcePrototype(platform.getResourcePrototype());
+        AlertCondition threshold =
+                AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
+                                                                AlertComparator.LESS_THAN,
+                                                                THRESHOLD);
+        AlertCondition recovery =
+                AlertDefinitionBuilder.createRecoveryCondition(true, def);
+        recoveryDef.getAlertCondition().add(threshold);
+        recoveryDef.getAlertCondition().add(recovery);
+
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(def);
+        definitions.add(recoveryDef);
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+
+        for (AlertDefinition d : response.getAlertDefinition()) {
+            validateDefinition(d);
+
+            // TODO: Validate defs & condition ordering
+        }
+
+        // cleanup
+        cleanup(response.getAlertDefinition());
+    }
+
     public void testSyncRecoveryWithoutProblemDef() throws Exception {
 
         HQApi api = getApi();
@@ -119,8 +167,6 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
         cleanup(downResponse.getAlertDefinition());
         cleanup(recoveryResponse.getAlertDefinition());
     }
-
-    // TODO: Type alert
 
     // TODO: Missing attributes
 
