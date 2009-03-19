@@ -517,7 +517,6 @@ public class AlertdefinitionController extends ApiController {
                         }
 
                         def controlStatus = xmlCond.'@controlStatus'
-                        log.info "Status is " + controlStatus
                         if (!controlStatus.equals("Completed") &&
                             !controlStatus.equals("In Progress") &&
                             !controlStatus.equals("Failed")) {
