@@ -73,7 +73,8 @@ public class Shell {
         try {
             cmd.handleCommand(Command.trim(args));
         } catch (Exception e) {
-            System.out.println("Error running command: " + e.getMessage());
+            System.err.println("Error running command: " + e.getMessage());
+            e.printStackTrace(System.err);
             System.exit(-1);
         }
     }
