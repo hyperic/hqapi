@@ -120,6 +120,11 @@ class GroupController extends ApiController {
             def resources = []
             def prototype = null
 
+            if (!xmlGroup.'@name') {
+                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                           "Group name required.")
+            }
+
             // Look up prototype
             def xmlPrototype = xmlGroup.'ResourcePrototype'
             if (!xmlPrototype) {

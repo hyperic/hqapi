@@ -126,6 +126,22 @@ public class GroupSync_test extends GroupTestBase {
         hqAssertSuccess(deleteResponse);
     }
 
+    public void testCreateNoName() throws Exception {
+
+        GroupApi groupApi = getApi().getGroupApi();
+
+        ResourcePrototype type = new ResourcePrototype();
+        type.setName("CPU");
+
+        // Create
+        Group g = generateTestGroup();
+        g.setName(null);
+        g.setResourcePrototype(type);
+
+        GroupResponse createResponse = groupApi.createGroup(g);
+        hqAssertFailureInvalidParameters(createResponse);
+    }
+
     public void testCreateCompatibleInvalidPrototype() throws Exception {
 
         GroupApi groupApi = getApi().getGroupApi();
