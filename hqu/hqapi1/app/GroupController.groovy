@@ -183,7 +183,11 @@ class GroupController extends ApiController {
                         }
                     }
 
-                    resources.add(resource)
+                    // Avoid duplicate resources which causes constraint violations
+                    // TODO: Backend should handle this case.
+                    if (!resources.contains(resource)) {
+                        resources.add(resource)
+                    }
                 }
             }
 

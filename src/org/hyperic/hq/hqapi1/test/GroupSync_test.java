@@ -226,7 +226,7 @@ public class GroupSync_test extends GroupTestBase {
         hqAssertSuccess(deleteResponse);
     }
 
-    public void testUpdateResources() throws Exception {
+    public void testClearResources() throws Exception {
 
         HQApi api = getApi();
         ResourceApi resourceApi = api.getResourceApi();
@@ -266,6 +266,56 @@ public class GroupSync_test extends GroupTestBase {
         hqAssertSuccess(updateResponse);
         updatedGroup = updateResponse.getGroup();
         assertTrue(updatedGroup.getResource().size() == 0);
+
+        // Cleanup
+        StatusResponse deleteResponse = groupApi.deleteGroup(createdGroup.getId());
+        hqAssertSuccess(deleteResponse);
+    }
+
+    public void testUpdateDuplicateResources() throws Exception {
+
+        HQApi api = getApi();
+        ResourceApi resourceApi = api.getResourceApi();
+        GroupApi groupApi = api.getGroupApi();
+
+        // Find CPU resources
+        ResourcePrototypeResponse prototypeResponse =
+                resourceApi.getResourcePrototype("CPU");
+        hqAssertSuccess(prototypeResponse);
+
+        ResourcesResponse resourceResponse =
+                resourceApi.getResources(prototypeResponse.getResourcePrototype(),
+                                         false, false);
+        hqAssertSuccess(resourceResponse);
+
+        // Create
+        Group g = generateTestGroup();
+        g.setResourcePrototype(prototypeResponse.getResourcePrototype());
+        GroupResponse createResponse = groupApi.createGroup(g);
+        hqAssertSuccess(createResponse);
+        Group createdGroup = createResponse.getGroup();
+        assertTrue(createdGroup.getResource().size() == 0);
+        assertEquals(createdGroup.getResourcePrototype().getName(),
+                     prototypeResponse.getResourcePrototype().getName());
+
+        // Update with resources
+        createdGroup.getResource().addAll(resourceResponse.getResource());
+        GroupResponse updateResponse = groupApi.updateGroup(createdGroup);
+        hqAssertSuccess(updateResponse);
+        Group updatedGroup = updateResponse.getGroup();
+        assertTrue(updatedGroup.getResource().size() ==
+                   resourceResponse.getResource().size());
+
+        // Update with same resources
+        updatedGroup.getResource().addAll(resourceResponse.getResource());
+        updateResponse = groupApi.updateGroup(updatedGroup);
+        hqAssertSuccess(updateResponse);
+        updatedGroup = updateResponse.getGroup();
+        // Ensure no duplicates
+        assertTrue("Unexpected member count expected = " + resourceResponse.getResource().size() +
+                   " found=" + updatedGroup.getResource().size(),
+                   updatedGroup.getResource().size() ==
+                   resourceResponse.getResource().size());
 
         // Cleanup
         StatusResponse deleteResponse = groupApi.deleteGroup(createdGroup.getId());
