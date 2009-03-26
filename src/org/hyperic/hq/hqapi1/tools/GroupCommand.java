@@ -66,6 +66,7 @@ public class GroupCommand extends Command {
     private static String OPT_PROTOTYPE     = "prototype";
     private static String OPT_REGEX         = "regex";
     private static String OPT_DELETEMISSING = "deleteMissing";
+    private static String OPT_DESC          = "description";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -133,6 +134,8 @@ public class GroupCommand extends Command {
         p.accepts(OPT_DELETEMISSING, "Remove resources in the group not included in " +
                   "the " + OPT_PROTOTYPE + " and " + OPT_REGEX);
         p.accepts(OPT_COMPAT, "If specified, attempt to make the group compatible");
+        p.accepts(OPT_DESC, "If specified, set the description for the group").
+                withRequiredArg().ofType(String.class);
 
         OptionSet options = getOptions(p, args);
 
@@ -164,6 +167,7 @@ public class GroupCommand extends Command {
         
         // Optional
         String regex = (String)s.valueOf(OPT_REGEX);
+        String description = (String)s.valueOf(OPT_DESC);
         boolean deleteMissing = s.has(OPT_DELETEMISSING);
         boolean compatible = s.has(OPT_COMPAT);
 
@@ -216,6 +220,10 @@ public class GroupCommand extends Command {
             System.out.println(name + ": Creating new group");
         }
 
+        if (s.hasArgument(OPT_DESC)) {
+            group.setDescription((String)s.valueOf(OPT_DESC));
+        }
+        
         group.getResource().addAll(resources);
         List<Group> groups = new ArrayList<Group>();
         groups.add(group);
