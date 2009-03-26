@@ -137,11 +137,14 @@ class GroupController extends ApiController {
                                                "name " + xmlPrototype.'@name')
                 } else {
                     if (existing) {
-                        if (!existing.resourcePrototype.name.equals(prototype.name)) {
-                            failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
-                                                       "Cannot change group type from " +
-                                                       existing.resourcePrototype.name +
-                                                       " to " + prototype.name)
+                        if (existing.resourcePrototype) {
+                            // If already compatible - ensure the same type.
+                            if (!existing.resourcePrototype.name.equals(prototype.name)) {
+                                failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
+                                                           "Cannot change group type from " +
+                                                           existing.resourcePrototype.name +
+                                                           " to " + prototype.name)
+                            }
                         }
                     }
                 }
