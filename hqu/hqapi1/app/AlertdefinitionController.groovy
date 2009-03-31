@@ -270,7 +270,7 @@ public class AlertdefinitionController extends ApiController {
 
     def sync(params) {
         def syncRequest = new XmlParser().parseText(getUpload('postdata'))
-        def definitionsByName = [:]
+        def definitions = []
 
         for (xmlDef in syncRequest['AlertDefinition']) {
             def failureXml = null
@@ -559,33 +559,23 @@ public class AlertdefinitionController extends ApiController {
                             break
                         }
 
-                        def recoveryDef = definitionsByName[xmlCond.'@recover']
-                        if (recoveryDef) {
-                            if (aeid.type == recoveryDef.appdefType &&
-                                aeid.id == recoveryDef.appdefId) {
-                                acv.measurementId = recoveryDef.id
+                        // If a resource alert, look up alert by name
+                        if (resource) {
+                            log.debug("Looking up alerts for resource=" + resource.id)
+                            def resourceDefs = resource.getAlertDefinitions(user)
+                            def recovery = resourceDefs.find { it.name == xmlCond.'@recover' }
+                            if (recovery) {
+                                log.info("Found recovery definition " + recovery.id)
+                                acv.measurementId = recovery.id
+                                break
                             }
-                        } else {
-                            // Attempt to look for the name of alert on the
-                            // given resource.
-                            if (resource) {
-                                log.warn("Recovery alert " +
-                                         xmlCond.'@recover' + " not found " +
-                                         "in sync XML, checking resource.")
-                                def resourceDefs = resource.getAlertDefinitions(user)
-                                def recovery = resourceDefs.find { it.name == xmlCond.'@recover' }
-                                if (recovery) {
-                                    log.info("Found definition " + recovery.id)
-                                    acv.measurementId = recovery.id
-                                    break
-                                }
-                            }
+                        }
 
+                        if (!acv.measurementId) {
                             failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                                        "Unable to find recovery " +
                                                        "with name '" +
                                                        xmlCond.'@recover' + "'")
-                            break
                         }
 
                         break
@@ -687,14 +677,14 @@ public class AlertdefinitionController extends ApiController {
                 pojo.unsetEscalation(user)
             }
 
-            // Keep defs around so we don't need to look up recovery alerts            
-            definitionsByName[pojo.name] = pojo
+            // Keep synced defintions for sync return XML
+            definitions << pojo
         }
 
         renderXml() {
             out << AlertDefinitionsResponse() {
                 out << getSuccessXML()
-                for (alertdef in definitionsByName.values()) {
+                for (alertdef in definitions) {
                     out << getAlertDefinitionXML(alertdef, false)
                 }
             }
