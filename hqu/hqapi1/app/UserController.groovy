@@ -40,7 +40,9 @@ class UserController extends ApiController {
         renderXml() {
             UserResponse() {
                 if (!u) {
-                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                         "User with id=" + id + " name='" +
+                                         name + "' not found")
                 } else {
                     out << getSuccessXML()
                     out << getUserXML(u)
@@ -75,7 +77,8 @@ class UserController extends ApiController {
             try {
                 def existing = getUser(null, name)
                 if (existing) {
-                    failureXml = getFailureXML(ErrorCode.OBJECT_EXISTS)
+                    failureXml = getFailureXML(ErrorCode.OBJECT_EXISTS,
+                                               "User '" + name + "' already exists")
                 } else {
                     newUser = userHelper.createUser(name, password, active,
                                                     dsn, dept, email, first,
@@ -109,7 +112,9 @@ class UserController extends ApiController {
         def failureXml
         
         if (!existing) {
-            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                       "Unable to find user id=" + id +
+                                       " name='" + name + "'")
         } else {
             try {
                 existing.remove(user)
@@ -207,7 +212,9 @@ class UserController extends ApiController {
 
             def existing = getUser(id, name)
             if (!existing) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Unable to find user id=" + id +
+                                           " name='" + name + "'")
             } else {
                 try {
                     existing.changePassword(user, password)

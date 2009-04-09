@@ -74,7 +74,8 @@ class ResourceController extends ApiController {
                     out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                          "Resource prototype not given")
                 } else if (!prototype) {
-                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                         "Unable to find type " + name)
                 } else {
                     out << getSuccessXML()
                     out << getPrototypeXML(prototype)
@@ -109,12 +110,26 @@ class ResourceController extends ApiController {
         def agent = agentHelper.getAgent(xmlAgent[0].'@id'?.toInteger())
         def prototype = resourceHelper.find(prototype: xmlPrototype[0].'@name')
 
-        if (!parent || !prototype) {
+        if (!parent) {
             renderXml() {
                 ResourceResponse() {
-                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                         "Parent resource not found")
                 }
             }
+            return
+        }
+
+        if (!prototype) {
+            renderXml() {
+                ResourceResponse() {
+                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                         "Resource type " +
+                                         xmlPrototype[0].'@name' +
+                                         " not found")
+                }
+            }
+            return
         }
 
         def resourceXml = xmlResource[0]
@@ -174,12 +189,28 @@ class ResourceController extends ApiController {
         def parent = getResource(xmlParent[0].'@id'.toInteger())
         def prototype = resourceHelper.find(prototype: xmlPrototype[0].'@name')
 
-        if (!parent || !prototype) {
+        if (!parent) {
             renderXml() {
                 ResourceResponse() {
-                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                         "Parent resource " +
+                                         xmlParent[0].'@id' +
+                                         " not found")
                 }
             }
+            return
+        }
+
+        if (!prototype) {
+            renderXml() {
+                ResourceResponse() {
+                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                         "Resource type " +
+                                         xmlPrototype[0].'@name' +
+                                         " not found")
+                }
+            }
+            return
         }
 
         def resourceXml = xmlResource[0]
@@ -226,12 +257,18 @@ class ResourceController extends ApiController {
         } else {
             if (id) {
                 resource = getResource(id)
+                if (!resource) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Resource id=" + id +
+                                               " not found")
+                }
             } else if (platformName) {
                 resource = resourceHelper.find('platform':platformName)
-            }
-
-            if (!resource) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                if (!resource) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Platform '" + platformName +
+                                               "' not found")
+                }
             }
         }
 
@@ -262,7 +299,9 @@ class ResourceController extends ApiController {
             if (agentId) {
                 def agent = agentHelper.getAgent(agentId)
                 if (!agent) {
-                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Agent id=" + agentId +
+                                               " not found")
                 } else {
                     def platforms = agent.platforms
                     resources = platforms*.resource
@@ -303,13 +342,14 @@ class ResourceController extends ApiController {
     private syncResource(xmlResource) {
         def id = xmlResource.'@id'?.toInteger()
         if (!id) {
-            return getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+            return getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                 "Resource id not given")
         } else {
             def resource = getResource(id)
 
             if (!resource) {
                 return getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                     "Resource with id " + id + " not found")
+                                     "Resource id=" + id + " not found")
             }
             
             def name        = xmlResource.'@name'
@@ -369,7 +409,8 @@ class ResourceController extends ApiController {
         if (!resource) {
             renderXml() {
                 StatusResponse() {
-                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                         "Resource id=" + id + " not found")
                 }
             }
             return

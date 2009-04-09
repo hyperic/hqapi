@@ -79,7 +79,9 @@ class EscalationController extends ApiController {
         renderXml() {
             out << EscalationResponse() {
                 if (!esc) {
-                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                         "Escalation with name='" + name +
+                                         "' id=" + id + " not found")
                 }
                 else {
                     out << getSuccessXML()

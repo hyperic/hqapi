@@ -45,7 +45,8 @@ class AutodiscoveryController extends ApiController {
             try {
                 def plat = autodiscoveryHelper.findById(id)
                 if (!plat) {
-                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Platform " + id + " not found")
                 } else {
                     autodiscoveryHelper.approve(plat)
                 }

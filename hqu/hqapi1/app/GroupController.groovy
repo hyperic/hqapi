@@ -44,7 +44,9 @@ class GroupController extends ApiController {
         } else {
             group = getGroup(id, name)
             if (!group) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Group with id=" + id + " name='" +
+                                           name + "' not found")
             }
         }
 

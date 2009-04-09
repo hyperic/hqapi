@@ -71,7 +71,8 @@ class MetricController extends ApiController {
             // Make sure the prototype exists.
             def proto = resourceHelper.find(prototype: prototype)
             if (!proto) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Unable to find type " + prototype)
             } else {
                 templates = metricHelper.find(all:'templates',
                                               resourceType: prototype)
@@ -102,7 +103,8 @@ class MetricController extends ApiController {
         } else {
             template = metricHelper.findTemplateById(id)
             if (!template) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Unable to find template id=" + id)
             }
         }
 
@@ -129,7 +131,8 @@ class MetricController extends ApiController {
         } else {
             def res = getResource(resourceId)
             if (!res) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Unable to find resource id=" + resourceId)
             } else {
                 try {
                     if (enabled != null && enabled) {
@@ -169,7 +172,8 @@ class MetricController extends ApiController {
             try {
                 metric = metricHelper.findMeasurementById(metricId);
                 if (!metric) {
-                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Unable to find metric id=" + metricId)
                 }
             } catch (Exception e) {
                 log.error("UnexpectedError: " + e.getMessage(), e)
@@ -342,7 +346,8 @@ class MetricController extends ApiController {
 
         def metric = metricHelper.findMeasurementById(metricId)
         if (!metric) {
-            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                       "Unable to find metric id=" + metricId)
         }
 
         def data;

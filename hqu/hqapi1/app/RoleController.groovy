@@ -53,7 +53,9 @@ class RoleController extends ApiController {
         renderXml() {
             RoleResponse() {
                 if (!r) {
-                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                         "Role with id=" + id + " name='" +
+                                         name + "' not found")
                 } else if (r.system) {
                     out << getFailureXML(ErrorCode.NOT_SUPPORTED,
                                          "Cannot get system role " + r.name)
@@ -84,7 +86,9 @@ class RoleController extends ApiController {
             def xmlIn = xmlRole[0]
             def existing = getRole(null, xmlIn.'@name')
             if (existing) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_EXISTS)
+                failureXml = getFailureXML(ErrorCode.OBJECT_EXISTS,
+                                           "Role with name='" + xmlIn.'@name' +
+                                           "' already exists")
             } else {
                 def operations = []
                 def ops = xmlIn['Operation']
@@ -286,7 +290,9 @@ class RoleController extends ApiController {
         def failureXml
         def existing = getRole(id, name)
         if (!existing) {
-            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                       "Unable to find role with id=" + id +
+                                       " name='" + name + "'")
         } else {
             try {
                 existing.remove(user)
