@@ -84,8 +84,14 @@ public class AlertdefinitionController extends ApiController {
                     }
                 }
                 if (d.escalation) {
-                    Escalation(id : d.escalation.id,
-                               name : d.escalation.name)
+                    def e = d.escalation
+                    Escalation(id :           e.id,
+                               name :         e.name,
+                               description :  e.description,
+                               pauseAllowed : e.pauseAllowed,
+                               maxPauseTime : e.maxPauseTime,
+                               notifyAll :    e.notifyAll,
+                               repeat :       e.repeat)
                 }
                 for (c in d.conditions) {
                     // Attributes common to all conditions
