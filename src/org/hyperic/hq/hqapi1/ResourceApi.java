@@ -410,4 +410,24 @@ public class ResourceApi extends BaseApi {
         params.put("id", new String[] { Integer.toString(id) });
         return doGet("resource/delete.hqu", params, StatusResponse.class);
     }
+
+    /**
+     * Move a Resource
+     *
+     * @param target The target {@link Resource} to move.
+     * @param destination The destination {@link Resource} for the move.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * Resource was successfully moved.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public StatusResponse moveResource(Resource target, Resource destination)
+        throws IOException
+    {
+        Map<String,String[]> params = new HashMap<String, String[]>();
+        params.put("targetId", new String[] { Integer.toString(target.getId()) });
+        params.put("destinationId", new String[] { Integer.toString(destination.getId() )});
+        return doGet("resource/move.hqu", params, StatusResponse.class);
+    }
 }

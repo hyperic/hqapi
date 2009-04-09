@@ -1,4 +1,6 @@
 import org.hyperic.hq.hqapi1.ErrorCode;
+import org.hyperic.hq.authz.shared.PermissionException
+import org.hyperic.hq.common.VetoException;
 
 class ResourceController extends ApiController {
 
@@ -388,6 +390,54 @@ class ResourceController extends ApiController {
         renderXml() {
             StatusResponse() {
                 out << getSuccessXML()
+            }
+        }
+    }
+
+    def move(params) {
+        def targetId = params.getOne("targetId")?.toInteger()
+        def destinationId = params.getOne("destinationId")?.toInteger()
+
+        def failureXml = null
+        def target = getResource(targetId)
+        if (!target) {
+            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                       "Unable to find target resource with " +
+                                       "id =" + targetId)
+        }
+
+        def destination = getResource(destinationId)
+        if (!destination) {
+            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                       "Unable to find destination resource with " +
+                                       "id =" + destinationId)
+        }
+
+        if (failureXml) {
+            renderXml() {
+                StatusResponse() {
+                    out << failureXml
+                }
+            }
+            return
+        }
+
+        try {
+            target.moveTo(user, destination)
+        } catch (VetoException e) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       e.getMessage())
+        } catch (PermissionException e) {
+            failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+        }
+
+        renderXml() {
+            StatusResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                }
             }
         }
     }

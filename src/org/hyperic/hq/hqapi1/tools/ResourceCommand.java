@@ -56,11 +56,13 @@ public class ResourceCommand extends Command {
     private static String CMD_LIST            = "list";
     private static String CMD_SYNC            = "sync";
     private static String CMD_DELETE          = "delete";
+    private static String CMD_MOVE            = "move";
     private static String CMD_CREATE_PLATFORM = "createPlatform";
     private static String CMD_CREATE_SERVER   = "createServer";
     private static String CMD_CREATE_SERVICE  = "createService";
 
     private static String[] COMMANDS = { CMD_LIST, CMD_SYNC, CMD_DELETE,
+                                         CMD_MOVE,
                                          CMD_CREATE_PLATFORM,
                                          CMD_CREATE_SERVER,
                                          CMD_CREATE_SERVICE };
@@ -75,6 +77,8 @@ public class ResourceCommand extends Command {
     private static String OPT_FQDN        = "fqdn";
     private static String OPT_IP          = "ip";
     private static String OPT_AGENT_ID    = "agentId";
+
+    private static String OPT_TO          = "to";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -92,6 +96,8 @@ public class ResourceCommand extends Command {
             sync(trim(args));
         } else if (args[0].equals(CMD_DELETE)) {
             delete(trim(args));
+        } else if (args[0].equals(CMD_MOVE)) {
+            move(trim(args));
         } else if (args[0].equals(CMD_CREATE_PLATFORM)) {
             createPlatform(trim(args));
         } else if (args[0].equals(CMD_CREATE_SERVER)) {
@@ -238,6 +244,37 @@ public class ResourceCommand extends Command {
         checkSuccess(response);
 
         System.out.println("Successfully deleted resource id " + id);
+    }
+
+    private void move(String[] args) throws Exception {
+
+        OptionParser p = getOptionParser();
+
+        p.accepts(OPT_ID, "The resource id to move").
+                withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_TO, "The destination resource id").
+                withRequiredArg().ofType(Integer.class);
+
+        OptionSet options = getOptions(p, args);
+
+        HQApi api = getApi(options);
+        ResourceApi resourceApi = api.getResourceApi();
+
+        Integer targetId = (Integer)getRequired(options, OPT_ID);
+        Integer destinationId = (Integer)getRequired(options, OPT_TO);
+
+        ResourceResponse targetResource = resourceApi.getResource(targetId, false, false);
+        checkSuccess(targetResource);
+
+        ResourceResponse destResource = resourceApi.getResource(destinationId, false, false);
+        checkSuccess(destResource);
+        
+        StatusResponse response = resourceApi.moveResource(targetResource.getResource(),
+                                                           destResource.getResource());
+        checkSuccess(response);
+
+        System.out.println("Sucessfully moved " + targetResource.getResource().getName() +
+                           " to " + destResource.getResource().getName());
     }
 
     private void createPlatform(String[] args) throws Exception {

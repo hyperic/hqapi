@@ -43,6 +43,11 @@ class ApiController extends BaseController {
      * null is returned.
      */
     protected getResource(id) {
+
+        if (id == null) {
+            return null
+        }
+
         def resource = resourceHelper.findById(id)
 
         if (!resource) {
