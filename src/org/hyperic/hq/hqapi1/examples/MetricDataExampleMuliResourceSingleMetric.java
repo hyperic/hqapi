@@ -39,7 +39,7 @@ public class MetricDataExampleMuliResourceSingleMetric {
 
     public static void main(String[] args) throws Exception {
 
-        HQApi api = new HQApi("localhost", 443, true, "hqadmin", "hqadmin");
+        HQApi api = new HQApi("localhost", 7443, true, "hqadmin", "hqadmin");
         ResourceApi resourceApi = api.getResourceApi();
         MetricApi metricApi = api.getMetricApi();
 
