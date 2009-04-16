@@ -97,11 +97,13 @@
         <copy todir="${client.dir}/bin">
             <fileset dir="${basedir}/bin">
                 <include name="*.sh"/>
+                <include name="*.bat"/>
             </fileset>
         </copy>
         <chmod perm="+x" type="file">
             <fileset dir="${client.dir}/bin">
               <include name="*.sh"/>
+              <include name="*.bat"/>
             </fileset>
         </chmod>
         
