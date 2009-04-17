@@ -341,6 +341,30 @@ public class AlertdefinitionController extends ApiController {
                                                    name + " for definition " +
                                                    xmlDef.'@name')
                     }
+
+                    // For type based alerts - attempt to look up by name
+                    // if no id was given.
+                    try {
+                        def allTypeAlerts = alertHelper.findTypeBasedDefinitions()
+                        def existingTypeAlerts = allTypeAlerts.grep {
+                            it.name == xmlDef.'@name' &&
+                            it.resource.name == name
+                        }
+
+                        if (existingTypeAlerts.size() > 1) {
+                            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                                       "Found multiple (" +
+                                                       existingTypeAlerts.size() +
+                                                       ") matches for alert " +
+                                                       "definition " +
+                                                       xmlDef.'@name')
+                        } else if (existingTypeAlerts.size() == 1) {
+                            existing = existingTypeAlerts[0]
+                            log.debug("Found existing type alert=" + existing)
+                        }
+                    } catch (PermissionException e) {
+                        failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+                    }
                 } else {
                     failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                                "A single Resource or " +
