@@ -40,6 +40,7 @@ import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public class ResourceCommand extends Command {
     private static String OPT_FQDN        = "fqdn";
     private static String OPT_IP          = "ip";
     private static String OPT_AGENT_ID    = "agentId";
-
+    private static String OPT_BATCH_SIZE  = "batchSize";
     private static String OPT_TO          = "to";
 
     private void printUsage() {
@@ -205,6 +206,10 @@ public class ResourceCommand extends Command {
     private void sync(String[] args) throws Exception {
    
         OptionParser p = getOptionParser();
+
+        p.accepts(OPT_BATCH_SIZE, "Process the sync in batches of the given size").
+                withRequiredArg().ofType(Integer.class);
+
         OptionSet options = getOptions(p, args);
 
         HQApi api = getApi(options);
@@ -212,14 +217,35 @@ public class ResourceCommand extends Command {
         ResourceApi resourceApi = api.getResourceApi();
 
         InputStream is = getInputStream(options);
-
         ResourcesResponse resp = XmlUtil.deserialize(ResourcesResponse.class, is);
         List<Resource> resources = resp.getResource();
 
-        StatusResponse syncResponse = resourceApi.syncResources(resources);
-        checkSuccess(syncResponse);
 
-        System.out.println("Successfully synced " + resources.size() + " resources.");
+        System.out.println("Syncing " + resources.size() + " resources");
+
+        int numSynced = 0;
+        if (options.has(OPT_BATCH_SIZE)) {
+            int batchSize = (Integer)options.valueOf(OPT_BATCH_SIZE);
+            int numBatches = (int)Math.ceil(resources.size()/((double)batchSize));
+
+            for (int i = 0; i < numBatches; i++) {
+                System.out.println("Syncing batch " + (i + 1) + " of " + numBatches);
+                int fromIndex = i * batchSize;
+                int toIndex = (fromIndex + batchSize) > resources.size() ?
+                              resources.size() : (fromIndex + batchSize);
+                StatusResponse syncResponse =
+                        resourceApi.syncResources(resources.subList(fromIndex,
+                                                                    toIndex));
+                checkSuccess(syncResponse);
+                numSynced += (toIndex - fromIndex);
+            }
+        } else {
+            StatusResponse syncResponse = resourceApi.syncResources(resources);
+            checkSuccess(syncResponse);
+            numSynced = resources.size();
+        }
+
+        System.out.println("Successfully synced " + numSynced + " resources");
     }
 
     private void delete(String[] args) throws Exception {

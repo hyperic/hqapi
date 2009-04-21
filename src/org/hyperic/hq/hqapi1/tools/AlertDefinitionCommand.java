@@ -104,8 +104,8 @@ public class AlertDefinitionCommand extends Command {
                                      "belonging to a resource with the given " +
                                      "resource name regex.").
                 withRequiredArg().ofType(String.class);
-         p.accepts(OPT_ALERT_NAME, "If specified, only show alert definitions " +
-                                   "with names that match the given regex. ").
+        p.accepts(OPT_ALERT_NAME, "If specified, only show alert definitions " +
+                                  "with names that match the given regex. ").
                 withRequiredArg().ofType(String.class);
 
         OptionSet options = getOptions(p, args);
