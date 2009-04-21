@@ -24,6 +24,11 @@
         <xs:attribute name="value"  type="xs:string" use="required"/>
     </xs:complexType>
 
+    <xs:complexType name="ResourceInfo">
+        <xs:attribute name="key"    type="xs:string" use="required"/>
+        <xs:attribute name="value"  type="xs:string" use="required"/>
+    </xs:complexType>
+
     <!-- Resource objects -->
     <xs:complexType name="Resource">
         <xs:sequence>
@@ -33,7 +38,15 @@
             <xs:element name="ResourceConfig" maxOccurs="unbounded" type="ResourceConfig"/>
             <!-- Custom Properties -->
             <xs:element name="ResourceProperty" maxOccurs="unbounded" type="ResourceProperty"/>
+            <!-- Resource type -->
             <xs:element name="ResourcePrototype" maxOccurs="1" type="ResourcePrototype"/>
+            <!-- Agent - Only applicable for platform resources -->
+            <xs:element name="Agent" maxOccurs="1" type="Agent"/>
+            <!-- Ip - Only applicable for platform resources -->
+            <xs:element name="Ip" maxOccurs="unbounded" type="Ip"/>
+            <!-- Resource info - other key/value attributes that may apply to this resource.
+                 e.g installpath, fqdn, autoinventory identifier -->
+            <xs:element name="ResourceInfo" maxOccurs="unbounded" type="ResourceInfo"/>          
         </xs:sequence>
         <xs:attribute name="id"          type="xs:int"    use="required"/>
         <xs:attribute name="name"        type="xs:string" use="required"/>

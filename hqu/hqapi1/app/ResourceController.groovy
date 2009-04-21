@@ -4,6 +4,10 @@ import org.hyperic.hq.common.VetoException;
 
 class ResourceController extends ApiController {
 
+    private static final String PROP_FQDN        = "fqdn"
+    private static final String PROP_INSTALLPATH = "installpath"
+    private static final String PROP_AIIDENIFIER = "autoinventoryIdentifier"
+
     private Closure getResourceXML(user, r, boolean verbose, boolean children) {
         { doc ->
             Resource(id : r.id,
@@ -29,6 +33,29 @@ class ResourceController extends ApiController {
                 }
                 ResourcePrototype(id : r.prototype.id,
                                   name : r.prototype.name)
+
+                if (r.isPlatform()) {
+                    def p = r.toPlatform()
+                    def a = p.agent
+                    Agent(id             : a.id,
+                          address        : a.address,
+                          port           : a.port,
+                          version        : a.version,
+                          unidirectional : a.unidirectional)
+                    for (ip in p.ips) {
+                        Ip(address : ip.address,
+                           netmask : ip.netmask,
+                           mac     : ip.macAddress)
+                    }
+
+                    ResourceInfo(key: PROP_FQDN, value: p.fqdn)
+                } else if (r.isServer()) {
+                    def s = r.toServer()
+                    ResourceInfo(key: PROP_INSTALLPATH, value: s.installPath)
+                    ResourceInfo(key: PROP_AIIDENIFIER, value: s.autoinventoryIdentifier)
+                } else if (r.isService()) {
+                    // Nothing yet.
+                }
             }
         }
     }
