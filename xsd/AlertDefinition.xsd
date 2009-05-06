@@ -51,7 +51,6 @@
         <xs:attribute name="parent"      type="xs:int"         use="optional" />
         <xs:attribute name="priority"    type="xs:int"         use="required" />
         <xs:attribute name="active"      type="xs:boolean"     use="required" />
-        <xs:attribute name="enabled"     type="xs:boolean"     use="required" />
         <xs:attribute name="frequency"   type="xs:int"         use="required" />
         <xs:attribute name="count"       type="xs:int"         use="required" />
         <xs:attribute name="range"       type="xs:int"         use="required" />
