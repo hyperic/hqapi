@@ -366,44 +366,124 @@ class ResourceController extends ApiController {
         return config.size() == 0;
     }
 
-    private syncResource(xmlResource) {
-        def id = xmlResource.'@id'?.toInteger()
-        if (!id) {
-            return getFailureXML(ErrorCode.INVALID_PARAMETERS,
-                                 "Resource id not given")
-        } else {
-            def resource = getResource(id)
+    private syncResource(xmlResource, parent) {
 
+        def id   = xmlResource.'@id'?.toInteger()
+        def name = xmlResource.'@name'
+        def description = xmlResource.'@description'
+
+        def config = [name: name,
+                      description: description]
+        xmlResource['ResourceConfig'].each {
+            config[it.'@key'] = it.'@value'
+        }
+        // TODO: Support cprops?
+        //xmlResource['ResourceProperty'].each {
+        //    config[it.'@key'] = it.'@value'
+        //}
+
+        def resource
+        if (id) {
+            resource = getResource(id)
             if (!resource) {
                 return getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                      "Resource id=" + id + " not found")
             }
-            
-            def name        = xmlResource.'@name'
-            def description = xmlResource.'@description'
-
-            def config = [name: name,
-                          description: description]
-            
-            xmlResource['ResourceConfig'].each {
-                config[it.'@key'] = it.'@value'
+        } else {
+            if (parent) {
+                // If parent is defined, look through existing children
+                def matches = parent.getViewableChildren(user).grep { it.name == name }
+                log.info "Found " + matches.size() + " matches for " + name
+                if (matches.size() == 1) {
+                    resource = matches[0]
+                } else if (matches.size() > 1) {
+                    return getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         "Found multiple matches for resource " + name)
+                }
+            } else {
+                // Assume platform
+                resource = resourceHelper.find('platform':name)
             }
+        }
 
-            xmlResource['ResourceProperty'].each {
-                config[it.'@key'] = it.'@value'
-            }
-
+        if (resource) {
+            // Update
             if (!configsEqual(resource.getConfig(), config)) {
                 resource.setConfig(config, user)
             }
+        } else {
+            // Create
+            def xmlPrototype = xmlResource['ResourcePrototype']
+            def prototype = resourceHelper.find(prototype: xmlPrototype.'@name')
 
-            def xmlChildren = xmlResource['Resource']
-            for (xmlChild in xmlChildren) {
-                def res = syncResource(xmlChild)
-                // Exit early on errors
-                if (res != null) {
-                    return res
+            if (!prototype) {
+                return getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                     "No ResourcePrototype found for " +
+                                     name)
+            }
+
+            if (prototype.isPlatformPrototype()) {
+                parent = resourceHelper.findRootResource()
+                def xmlAgent = xmlResource['Agent']
+                def agent = agentHelper.getAgent(xmlAgent[0].'@id'?.toInteger())
+                if (!agent) {
+                    return getFailureXML(ErrorCode.OBJECT_NOT_FOUND ,
+                                         "Unable to find agent id=" + xmlAgent[0].'@id')
                 }
+
+                def fqdn = xmlResource['ResourceInfo'].find { it.'@key' == PROP_FQDN }
+                if (!fqdn) {
+                    return getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         "No FQDN given for " + name)
+                } else {
+                    config.put(PROP_FQDN, fqdn.'@value')
+                }
+
+                def xmlIps = xmlResource['Ip']
+                def ips = []
+
+                xmlIps.each { ip ->
+                   ips << [address: ip.'@address', netmask: ip.'@netmask', mac: ip.'@mac']
+                }
+
+                try {
+                    resource = prototype.createInstance(parent, name,
+                                                        user, config, agent, ips)
+                } catch (Exception e) {
+                    log.warn("Error creating resource", e)
+                    return getFailureXML(ErrorCode.OBJECT_EXISTS);
+                }
+
+            } else if (prototype.isServerPrototype()) {
+                
+                try {
+                    // TODO: Add support for autoinventory identifier
+                    resource = prototype.createInstance(parent, name,
+                                                        user, config)
+                } catch (Exception e) {
+                    log.warn("Error creating resource", e)
+                    return getFailureXML(ErrorCode.OBJECT_EXISTS);
+                }
+            } else if (prototype.isServicePrototype()) {
+
+                try {
+                    resource = prototype.createInstance(parent, name,
+                                                        user, config)
+                } catch (Exception e) {
+                    log.warn("Error creating resource", e)
+                    return getFailureXML(ErrorCode.OBJECT_EXISTS);
+                }            
+            } else {
+                return getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                     "Invalid prototype=" + prototype.name)
+            }
+        }
+
+        def xmlChildren = xmlResource['Resource']
+        for (xmlChild in xmlChildren) {
+            def res = syncResource(xmlChild, resource)
+            if (res != null) {
+                return res  // Exit early on errors.
             }
         }
 
@@ -414,8 +494,12 @@ class ResourceController extends ApiController {
 
         def failureXml = null
         def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+
         for (xmlResource in syncRequest['Resource']) {
-            failureXml = syncResource(xmlResource)
+            failureXml = syncResource(xmlResource, null)
+            if (failureXml != null) {
+                break;
+            }
         }
 
         renderXml() {
