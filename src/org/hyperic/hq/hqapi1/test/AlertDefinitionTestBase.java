@@ -49,7 +49,7 @@ public class AlertDefinitionTestBase extends HQApiTestBase {
         d.setName("Test Alert Definition" + r.nextInt());
         d.setDescription("Test Alert Description");
         d.setPriority(AlertPriority.MEDIUM.getPriority());
-        d.setEnabled(true);
+        d.setActive(true);
         return d;
     }
 

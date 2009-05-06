@@ -279,13 +279,13 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         cleanup(response.getAlertDefinition());
     }
 
-    public void testSyncEnable() throws Exception {
+    public void testSyncActive() throws Exception {
 
         AlertDefinitionApi api = getApi().getAlertDefinitionApi();
         Resource platform = getLocalPlatformResource(false, false);
 
         AlertDefinition d = generateTestDefinition();
-        d.setEnabled(false);
+        d.setActive(false);
         d.setResource(platform);
         d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
@@ -297,9 +297,9 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         assertEquals(response.getAlertDefinition().size(), 1);
         d = response.getAlertDefinition().get(0);
         validateDefinition(d);
-        assertTrue("Enabled is not false", !d.isEnabled());
+        assertTrue("Enabled is not false", !d.isActive());
 
-        d.setEnabled(true);
+        d.setActive(true);
         definitions.clear();
         definitions.add(d);
         response = api.syncAlertDefinitions(definitions);
@@ -308,7 +308,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         assertEquals(response.getAlertDefinition().size(), 1);
         d = response.getAlertDefinition().get(0);
         validateDefinition(d);
-        assertTrue("Enabled is not true", d.isEnabled());
+        assertTrue("Enabled is not true", d.isActive());
 
         // Cleanup
         cleanup(response.getAlertDefinition());

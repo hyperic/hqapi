@@ -55,7 +55,6 @@ public class AlertdefinitionController extends ApiController {
                          description: d.description,
                          priority: d.priority,
                          active: d.active,
-                         enabled: d.enabled,
                          frequency: d.frequencyType,
                          count: d.count,
                          range: d.range,
@@ -354,7 +353,7 @@ public class AlertdefinitionController extends ApiController {
 
             // Required attributes, basically everything but description
             ['controlFiltered', 'notifyFiltered', 'willRecover', 'range', 'count',
-             'frequency', 'enabled', 'active', 'priority',
+             'frequency', 'active', 'priority',
              'name'].each { attr ->
                 if (xmlDef."@${attr}" == null) {
                     failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
@@ -432,7 +431,6 @@ public class AlertdefinitionController extends ApiController {
             adv.appdefType  = aeid.type
             adv.appdefId    = aeid.id
             adv.priority    = xmlDef.'@priority'?.toInteger()
-            adv.enabled     = xmlDef.'@enabled'.toBoolean()
             adv.active      = xmlDef.'@active'.toBoolean()
             adv.willRecover = xmlDef.'@willRecover'.toBoolean()
             adv.notifyFiltered = xmlDef.'@notifyFiltered'?.toBoolean()
