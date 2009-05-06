@@ -34,7 +34,6 @@ import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.types.DataPoint;
 import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
-import org.hyperic.hq.hqapi1.types.GroupsResponse;
 import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.MetricData;
 import org.hyperic.hq.hqapi1.types.MetricDataResponse;
@@ -51,6 +50,7 @@ import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 import java.util.List;
 import java.util.Random;
+import java.io.IOException;
 
 public class MetricData_test extends MetricTestBase {
 
@@ -88,6 +88,38 @@ public class MetricData_test extends MetricTestBase {
             assertTrue("Metric value less than zero",
                        d.getValue() >= 0);
         }
+    }
+
+    public void testGetMetricDataOldRange() throws Exception {
+
+        MetricApi api = getApi().getMetricApi();
+        Resource r = getLocalPlatformResource(false, false);
+        MetricsResponse resp = api.getEnabledMetrics(r);
+        hqAssertSuccess(resp);
+
+        assertTrue("No enabled metrics found for " + r.getName(),
+                   resp.getMetric().size() > 0);
+
+        Metric metric = null;
+        for (Metric m : resp.getMetric()) {
+            if (!m.getMetricTemplate().getAlias().equals("Availability")) {
+                metric = m;
+                break;
+            }
+        }
+
+        assertNotNull("No metric found for " + r.getName(), metric);
+
+        long end = 100;
+        long start = 0;
+
+        MetricDataResponse dataResponse = api.getMetricData(metric.getId(),
+                                                            start, end);
+        hqAssertSuccess(dataResponse);
+
+        assertTrue("Wrong number of data points, expected 0, got " +
+                   dataResponse.getMetricData().getDataPoint().size(),
+                   dataResponse.getMetricData().getDataPoint().size() == 0);
     }
 
     public void testGetDisabledMetricData() throws Exception {
@@ -151,7 +183,27 @@ public class MetricData_test extends MetricTestBase {
         hqAssertFailureInvalidParameters(dataResponse);
     }
 
-    private Group getCompatibleGroup() throws Exception {
+    // Helper method to get a MetricTemplate for the Linux ResourcePrototype
+    private MetricTemplate getLinuxTemplate() throws IOException
+    {
+        HQApi api = getApi();
+        ResourceApi resourceApi = api.getResourceApi();
+        MetricApi metricApi = api.getMetricApi();
+
+        ResourcePrototypeResponse protoResponse =
+                resourceApi.getResourcePrototype("Linux");
+        hqAssertSuccess(protoResponse);
+
+        MetricTemplatesResponse templatesResponse =
+                metricApi.getMetricTemplates(protoResponse.getResourcePrototype());
+        hqAssertSuccess(templatesResponse);
+
+        assertTrue("No templates found!", templatesResponse.getMetricTemplate().size() > 0);
+
+        return templatesResponse.getMetricTemplate().get(0);
+    }
+
+    private Group getFileServerMountCompatibleGroup() throws Exception {
 
         HQApi api = getApi();
         ResourceApi resourceApi = api.getResourceApi();
@@ -212,7 +264,7 @@ public class MetricData_test extends MetricTestBase {
 
         HQApi api = getApi();
 
-        Group g = getCompatibleGroup();
+        Group g = getFileServerMountCompatibleGroup();
         ResourcePrototype pt = g.getResourcePrototype();
         MetricApi metricApi = api.getMetricApi();
         MetricTemplatesResponse templatesResponse = metricApi.getMetricTemplates(pt);
@@ -262,7 +314,7 @@ public class MetricData_test extends MetricTestBase {
 
         HQApi api = getApi();
 
-        Group g = getCompatibleGroup();
+        Group g = getFileServerMountCompatibleGroup();
         ResourcePrototype pt = g.getResourcePrototype();
         MetricApi metricApi = api.getMetricApi();
         MetricTemplatesResponse templatesResponse = metricApi.getMetricTemplates(pt);
@@ -298,7 +350,7 @@ public class MetricData_test extends MetricTestBase {
 
         HQApi api = getApi();
 
-        Group g = getCompatibleGroup();
+        Group g = getFileServerMountCompatibleGroup();
         MetricApi metricApi = api.getMetricApi();
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
@@ -313,13 +365,10 @@ public class MetricData_test extends MetricTestBase {
 
         HQApi api = getApi();
 
-        Group g = getCompatibleGroup();
+        Group g = getFileServerMountCompatibleGroup();
         MetricApi metricApi = api.getMetricApi();
 
-        MetricTemplateResponse getTemplateResponse =
-                metricApi.getMetricTemplate(10001);
-        hqAssertSuccess(getTemplateResponse);
-        MetricTemplate t = getTemplateResponse.getMetricTemplate();
+        MetricTemplate t = getLinuxTemplate();
 
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
@@ -336,11 +385,7 @@ public class MetricData_test extends MetricTestBase {
 
         Group g = getMixedGroup();
         MetricApi metricApi = api.getMetricApi();
-
-        MetricTemplateResponse getTemplateResponse =
-                metricApi.getMetricTemplate(10001);
-        hqAssertSuccess(getTemplateResponse);
-        MetricTemplate t = getTemplateResponse.getMetricTemplate();
+        MetricTemplate t = getLinuxTemplate();
 
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
@@ -356,7 +401,7 @@ public class MetricData_test extends MetricTestBase {
 
         HQApi api = getApi();
 
-        Group g = getCompatibleGroup();
+        Group g = getFileServerMountCompatibleGroup();
         ResourcePrototype pt = g.getResourcePrototype();
         MetricApi metricApi = api.getMetricApi();
         MetricTemplatesResponse templatesResponse = metricApi.getMetricTemplates(pt);
@@ -391,7 +436,7 @@ public class MetricData_test extends MetricTestBase {
 
         HQApi api = getApi();
 
-        Group g = getCompatibleGroup();
+        Group g = getFileServerMountCompatibleGroup();
         ResourcePrototype pt = g.getResourcePrototype();
         MetricApi metricApi = api.getMetricApi();
         MetricTemplatesResponse templatesResponse = metricApi.getMetricTemplates(pt);
@@ -508,8 +553,9 @@ public class MetricData_test extends MetricTestBase {
         hqAssertFailureObjectNotFound(invalidTemplateResponse);
 
         // Retry with valid template, but belonging to this type
+        MetricTemplate linuxTemplate = getLinuxTemplate();
         MetricsDataResponse wrongTemplateResponse =
-                metricApi.getMetricData(resourceIds, 10001, start, end);
+                metricApi.getMetricData(resourceIds, linuxTemplate.getId(), start, end);
         hqAssertFailureInvalidParameters(wrongTemplateResponse);
 
         // Retry with empty resources array

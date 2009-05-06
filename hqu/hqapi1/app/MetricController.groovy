@@ -66,7 +66,8 @@ class MetricController extends ApiController {
         def failureXml = null
         def templates
         if (!prototype) {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "No prototype given")
         } else {
             // Make sure the prototype exists.
             def proto = resourceHelper.find(prototype: prototype)
@@ -99,7 +100,8 @@ class MetricController extends ApiController {
         def template
         def failureXml = null
         if (!id) {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Metric template id not given")
         } else {
             template = metricHelper.findTemplateById(id)
             if (!template) {
@@ -127,7 +129,8 @@ class MetricController extends ApiController {
         def enabled = params.getOne("enabled")?.toBoolean()
 
         if (!resourceId) {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Resource id not given")
         } else {
             def res = getResource(resourceId)
             if (!res) {
@@ -167,7 +170,8 @@ class MetricController extends ApiController {
         def metricId = params.getOne("id")?.toInteger()
 
         if (!metricId) {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Metric id not given")
         } else {
             try {
                 metric = metricHelper.findMeasurementById(metricId);
@@ -336,12 +340,14 @@ class MetricController extends ApiController {
         def end = params.getOne("end")?.toLong()
 
         def failureXml = null
-        if (!metricId || !start || !end) {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+        if (metricId == null || start == null || end == null) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Missing argument")
         }
 
         if (end < start) {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "End time cannot be < start time")
         }
 
         def metric = metricHelper.findMeasurementById(metricId)
