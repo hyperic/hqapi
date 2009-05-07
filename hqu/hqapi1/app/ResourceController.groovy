@@ -375,8 +375,12 @@ class ResourceController extends ApiController {
         def config = [name: name,
                       description: description]
         xmlResource['ResourceConfig'].each {
-            config[it.'@key'] = it.'@value'
+            // Do not set configs for empty keys
+            if (it.'@value' && it.'@value'.length() > 0) {
+                config[it.'@key'] = it.'@value'
+            }
         }
+        
         // TODO: Support cprops?
         //xmlResource['ResourceProperty'].each {
         //    config[it.'@key'] = it.'@value'
@@ -385,11 +389,9 @@ class ResourceController extends ApiController {
         def resource
         if (id) {
             resource = getResource(id)
-            if (!resource) {
-                return getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                     "Resource id=" + id + " not found")
-            }
-        } else {
+        }
+
+        if (!resource) {
             if (parent) {
                 // If parent is defined, look through existing children
                 def matches = parent.getViewableChildren(user).grep { it.name == name }
@@ -405,7 +407,7 @@ class ResourceController extends ApiController {
                 resource = resourceHelper.find('platform':name)
             }
         }
-
+        
         if (resource) {
             // Update
             if (!configsEqual(resource.getConfig(), config)) {
