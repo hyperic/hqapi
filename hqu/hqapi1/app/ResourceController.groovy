@@ -459,7 +459,20 @@ class ResourceController extends ApiController {
             } else if (prototype.isServerPrototype()) {
                 
                 try {
-                    // TODO: Add support for autoinventory identifier
+                    def aiid = xmlResource['ResourceInfo'].find {
+                        it.'@key' == PROP_AIIDENIFIER
+                    }
+                    if (aiid) {
+                        config.put(PROP_AIIDENIFIER, aiid.'@value')
+                    }
+
+                    def installpath = xmlResource['ResourceInfo'].find {
+                        it.'@key' == PROP_INSTALLPATH
+                    }
+                    if (installpath) {
+                        config.put(PROP_INSTALLPATH, aiid.'@value')
+                    }
+
                     resource = prototype.createInstance(parent, name,
                                                         user, config)
                 } catch (Exception e) {
