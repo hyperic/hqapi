@@ -538,6 +538,58 @@ class ResourceController extends ApiController {
         }
     }
 
+    // Walk the Resource tree ensuring all resources exist.
+    private ensureResourcesExist(xmlResource) {
+        def resource = getResource(xmlResource.'@id'?.toInteger())
+        if (!resource) {
+            return getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Unable to find resource with id = " +
+                                           xmlResource.'@id')
+        }
+
+        for (xmlChild in xmlResource['Resource']) {
+            def result = ensureResourcesExist(xmlChild)
+            if (result != null) {
+                return result
+            }
+        }
+
+        return null
+    }
+
+    // Uses sync(), but does extra checks to ensure the resource exists.
+    def update(params) {
+        def updateRequest = new XmlParser().parseText(getUpload('postdata'))
+        def xmlResources = updateRequest['Resource']
+        def failureXml = null
+
+        if (!xmlResources) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Resource not given to update")
+        } else if (xmlResources.size() != 1) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Single resource not passed to update")
+        } else {
+            def xmlResource = xmlResources[0]
+
+            failureXml = ensureResourcesExist(xmlResource)
+
+            if (!failureXml) {
+                failureXml = syncResource(xmlResource, null)
+            }
+        }
+
+        renderXml() {
+            StatusResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                }
+            }
+        }        
+    }
+
     def delete(params) {
         def id = params.getOne("id")?.toInteger()
         def resource = getResource(id)

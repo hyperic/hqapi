@@ -370,7 +370,7 @@ public class ResourceApi extends BaseApi {
         ResourcesRequest request = new ResourcesRequest();
         request.getResource().add(resource);
 
-        return doPost("resource/sync.hqu", request, StatusResponse.class);
+        return doPost("resource/update.hqu", request, StatusResponse.class);
     }
 
     /**
