@@ -25,23 +25,12 @@ class AgentController extends ApiController {
         def port = params.getOne("port")?.toInteger()
 
         def failureXml
-        def agent
+        def agent = getAgent(id, address, port)
 
-        if (id) {
-            agent = agentHelper.getAgent(id)
-            if (!agent) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                           "Agent with id=" + id + " not found")
-            }
-        } else if (address && port) {
-            agent = agentHelper.getAgent(address, port)
-            if (!agent) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                           "Agent with address='" + address +
-                                           "' port=" + port + " not found")
-            }
-        } else {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+        if (!agent) {
+            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                       "Unable to find agent with id=" + id +
+                                       " address=" + address + " port=" + port)
         }
 
         renderXml() {
@@ -76,7 +65,7 @@ class AgentController extends ApiController {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             try {
-                def agent = agentHelper.getAgent(id)
+                def agent = getAgent(id, null, null)
                 if (!agent) {
                     failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                                "Agent with id=" + id + " not found")

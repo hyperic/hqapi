@@ -39,6 +39,18 @@ class ApiController extends BaseController {
     }
 
     /**
+     * Get an Agent by id, address or port.
+     */
+    protected getAgent(id, address, port) {
+        if (id) {
+            return agentHelper.getAgent(id)
+        } else if (address && port) {
+            return agentHelper.getAgent(address, port)
+        }
+        return null
+    }
+
+    /**
      * Get the resource based on the given id.  If the resource is not found,
      * null is returned.
      */

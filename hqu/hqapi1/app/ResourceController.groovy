@@ -134,7 +134,9 @@ class ResourceController extends ApiController {
         }
 
         def parent = resourceHelper.findRootResource()
-        def agent = agentHelper.getAgent(xmlAgent[0].'@id'?.toInteger())
+        def agent = getAgent(xmlAgent[0].'@id'?.toInteger(),
+                             xmlAgent[0].'@address',
+                             xmlAgent[0].'@port'?.toInteger())
         def prototype = resourceHelper.find(prototype: xmlPrototype[0].'@name')
 
         if (!parent) {
@@ -145,6 +147,18 @@ class ResourceController extends ApiController {
                 }
             }
             return
+        }
+
+        if (!agent) {
+            renderXml() {
+                ResourceResponse() {
+                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                         "Agent with id=" + xmlAgent[0].'@id' +
+                                         " address=" + xmlAgent[0].'@address' +
+                                         " port=" + xmlAgent[0].'@port' +
+                                         " not found")
+                }
+            }
         }
 
         if (!prototype) {
@@ -324,7 +338,7 @@ class ResourceController extends ApiController {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             if (agentId) {
-                def agent = agentHelper.getAgent(agentId)
+                def agent = getAgent(agentId, null, null)
                 if (!agent) {
                     failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                                "Agent id=" + agentId +
@@ -437,10 +451,14 @@ class ResourceController extends ApiController {
             if (prototype.isPlatformPrototype()) {
                 parent = resourceHelper.findRootResource()
                 def xmlAgent = xmlResource['Agent']
-                def agent = agentHelper.getAgent(xmlAgent[0].'@id'?.toInteger())
+                def agent = getAgent(xmlAgent[0].'@id'?.toInteger(),
+                                     xmlAgent[0].'@address',
+                                     xmlAgent[0].'@port'?.toInteger())
                 if (!agent) {
                     return getFailureXML(ErrorCode.OBJECT_NOT_FOUND ,
-                                         "Unable to find agent id=" + xmlAgent[0].'@id')
+                                         "Unable to find agent id=" + xmlAgent[0].'@id' +
+                                         " address=" + xmlAgent[0].'@address' +
+                                         " port=" + xmlAgent[0].'@port')
                 }
 
                 def fqdn = xmlResource['ResourceInfo'].find { it.'@key' == PROP_FQDN }
