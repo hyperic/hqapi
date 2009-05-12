@@ -386,6 +386,11 @@ class ResourceController extends ApiController {
         //    config[it.'@key'] = it.'@value'
         //}
 
+        if (!name) {
+            return getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                 "Resource name not given")
+        }
+
         def resource
         if (id) {
             resource = getResource(id)
@@ -416,6 +421,11 @@ class ResourceController extends ApiController {
         } else {
             // Create
             def xmlPrototype = xmlResource['ResourcePrototype']
+            if (!xmlPrototype) {
+                return getFailureXML(ErrorCode.INVALID_PARAMETERS ,
+                                     "Resource prototype not given for " + name)
+            }
+
             def prototype = resourceHelper.find(prototype: xmlPrototype.'@name')
 
             if (!prototype) {
