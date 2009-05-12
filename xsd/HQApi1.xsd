@@ -11,4 +11,5 @@
     <xs:include schemaLocation="Autodiscovery.xsd"/>
     <xs:include schemaLocation="Agent.xsd"/>
     <xs:include schemaLocation="AlertDefinition.xsd"/>
+    <xs:include schemaLocation="Maintenance.xsd"/>
 </xs:schema>

@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:include schemaLocation="Response.xsd"/>
+
+    <xs:simpleType name="MaintenanceState">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="new"/>
+            <xs:enumeration value="running"/>
+            <xs:enumeration value="complete"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Maintenance objects -->
+    <xs:complexType name="MaintenanceEvent">
+        <xs:sequence>
+            <xs:element name="State" maxOccurs="1" type="MaintenanceState"/>
+        </xs:sequence>
+
+        <xs:attribute name="groupId"        type="xs:int"     use="required"/>
+        <xs:attribute name="startTime"      type="xs:long"    use="required"/>
+        <xs:attribute name="endTime"        type="xs:long"    use="required"/>
+
+    </xs:complexType>
+
+    <!-- Response objects -->
+    <xs:element name="MaintenanceResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="MaintenanceEvent" type="MaintenanceEvent" maxOccurs="1"/>
+                    </xs:sequence>                                           
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+
+</xs:schema>

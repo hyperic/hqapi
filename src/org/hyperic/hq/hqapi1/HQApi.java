@@ -43,6 +43,7 @@ public class HQApi {
     private final ResourceApi        _resourceApi;
     private final AgentApi           _agentApi;
     private final AlertDefinitionApi _alertDefinitionApi;
+    private final MaintenanceApi     _maintenanceApi;
     
     /**
      * @param host The hostname of the HQ Server to connect to.
@@ -64,6 +65,7 @@ public class HQApi {
         _resourceApi      = new ResourceApi(connection);
         _agentApi         = new AgentApi(connection);
         _alertDefinitionApi = new AlertDefinitionApi(connection);
+        _maintenanceApi   = new MaintenanceApi(connection);
     }
 
     /**
@@ -145,5 +147,15 @@ public class HQApi {
      */
     public AlertDefinitionApi getAlertDefinitionApi() {
         return _alertDefinitionApi;
+    }
+
+
+    /**
+     * Schedule maintenance for groups in HQ.
+     *
+     * @return The API for operating on alert definitions.
+     */
+    public MaintenanceApi getMaintenanceApi() {
+        return _maintenanceApi;
     }
 }
