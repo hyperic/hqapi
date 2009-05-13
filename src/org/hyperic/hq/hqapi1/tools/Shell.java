@@ -40,6 +40,7 @@ public class Shell {
         _commands.put("autodiscovery", new AutoDiscoveryCommand());
         _commands.put("escalation", new EscalationCommand());
         _commands.put("group", new GroupCommand());
+        _commands.put("maintenance", new MaintenanceCommand());
         _commands.put("metric", new MetricCommand());
         _commands.put("metricData", new MetricDataCommand());
         _commands.put("metricTemplate", new MetricTemplateCommand());

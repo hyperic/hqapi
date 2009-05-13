@@ -19,7 +19,7 @@ class AgentController extends ApiController {
         }
     }
 
-    def getAgent(params) {
+    def get(params) {
         def id = params.getOne("id")?.toInteger()
         def address = params.getOne("address")
         def port = params.getOne("port")?.toInteger()
@@ -56,7 +56,7 @@ class AgentController extends ApiController {
         }
     }
 
-    def pingAgent(params) {
+    def ping(params) {
         def id = params.getOne('id')?.toInteger()
 
         def failureXml
