@@ -214,8 +214,8 @@ class ResourceController extends ApiController {
     def get(params) {
         def id = params.getOne("id")?.toInteger()
         def platformName = params.getOne("platformName")
-        def children = params.getOne("children")?.toBoolean()
-        def verbose = params.getOne("verbose")?.toBoolean()
+        boolean children = params.getOne("children", "false")?.toBoolean()
+        boolean verbose = params.getOne("verbose", "false")?.toBoolean()
 
         def resource = null
         def failureXml
