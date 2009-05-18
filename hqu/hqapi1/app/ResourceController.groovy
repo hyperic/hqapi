@@ -288,8 +288,8 @@ class ResourceController extends ApiController {
     def get(params) {
         def id = params.getOne("id")?.toInteger()
         def platformName = params.getOne("platformName")
-        boolean children = params.getOne("children", "false")?.toBoolean()
-        boolean verbose = params.getOne("verbose", "false")?.toBoolean()
+        boolean children = params.getOne("children", "false").toBoolean()
+        boolean verbose = params.getOne("verbose", "false").toBoolean()
 
         def resource = null
         def failureXml
@@ -328,8 +328,8 @@ class ResourceController extends ApiController {
     def find(params) {
         def agentId = params.getOne("agentId")?.toInteger()
         def prototype = params.getOne("prototype")
-        def children = params.getOne("children")?.toBoolean()
-        def verbose = params.getOne("verbose")?.toBoolean()
+        def children = params.getOne("children", "false").toBoolean()
+        def verbose = params.getOne("verbose", "false").toBoolean()
 
         def resources = []
         def failureXml
