@@ -253,7 +253,7 @@ class EscalationController extends ApiController {
         }
     }
     
-    def syncActions(esc, actions) {
+    private syncActions(esc, actions) {
 
         def failureXml = null
 
