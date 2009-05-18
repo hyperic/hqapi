@@ -9,7 +9,9 @@ class MaintenanceController extends ApiController {
             MaintenanceEvent(state:     m.state,
                              groupId:   m.groupId,
                              startTime: m.startTime,
-                             endTime:   m.endTime)
+                             endTime:   m.endTime) {
+                State(m.state)
+            }
         }
     }
 
