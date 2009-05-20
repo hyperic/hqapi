@@ -106,7 +106,8 @@
               <include name="*.bat"/>
             </fileset>
         </chmod>
-        
+
+        <mkdir dir="${dist.dir}/hqapi1/public"/>
         <tar tarfile="${dist.dir}/hqapi1/public/hqapi1-${plugin.version}.tar.gz"
              longfile="gnu"
              compression="gzip">
