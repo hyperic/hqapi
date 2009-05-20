@@ -37,12 +37,21 @@ import java.io.OutputStream;
 
 public class XmlUtil {
 
+    private static JAXBContext CTX;
+
+    static {
+        try {
+            CTX = JAXBContext.newInstance("org.hyperic.hq.hqapi1.types");
+        } catch (JAXBException e) {
+            // Not going to happen
+            System.out.println("Error initializing context: " + e.getMessage());
+        }
+    }
+
     public static <T> T deserialize(Class<T> res, InputStream is)
         throws JAXBException
     {
-        String pkg = res.getPackage().getName();
-        JAXBContext jc = JAXBContext.newInstance(pkg);
-        Unmarshaller u = jc.createUnmarshaller();
+        Unmarshaller u = CTX.createUnmarshaller();
         u.setEventHandler(new DefaultValidationEventHandler());
         return res.cast(u.unmarshal(is));
     }
@@ -50,9 +59,7 @@ public class XmlUtil {
     public static void serialize(Object o, OutputStream os, Boolean format)
         throws JAXBException
     {
-        String pkg = o.getClass().getPackage().getName();
-        JAXBContext jc = JAXBContext.newInstance(pkg);
-        Marshaller m = jc.createMarshaller();
+        Marshaller m = CTX.createMarshaller();
         m.setEventHandler(new DefaultValidationEventHandler());
         m.setProperty("jaxb.formatted.output", format);
         m.marshal(o, os);
