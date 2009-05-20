@@ -120,6 +120,9 @@
         <copy toDir="${dist.dir}/hqapi1/lib"
               file="${client.dir}/hqapi1-${plugin.version}.jar"/>
 
+        <zip destfile="${dist.dir}/hqapi1-${plugin.version}.zip"
+             basedir="${dist.dir}"/>
+
     </target>
 
     <!-- Run a single test -->
