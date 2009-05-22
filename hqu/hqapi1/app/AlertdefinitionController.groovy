@@ -199,7 +199,7 @@ public class AlertdefinitionController extends ApiController {
                     out << failureXml
                 } else {
                     out << getSuccessXML()
-                    for (definition in definitions) {
+                    for (definition in definitions.sort {a, b -> a.id <=> b.id}) {
                         out << getAlertDefinitionXML(definition, false)
                     }
                 }
@@ -219,7 +219,8 @@ public class AlertdefinitionController extends ApiController {
         renderXml() {
             out << AlertDefinitionsResponse() {
                 out << getSuccessXML()
-                for (definition in definitions) {
+                // Order by id's so recoveries come after problem alerts
+                for (definition in definitions.sort {a, b -> a.id <=> b.id}) {
                     out << getAlertDefinitionXML(definition, noIds)
                 }
             }
