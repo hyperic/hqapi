@@ -25,14 +25,6 @@ class GroupController extends ApiController {
         }
     }
 
-    private getGroup(Integer id, String name) {
-        if (id != null) {
-            return resourceHelper.findGroup(id)
-        } else {
-            return resourceHelper.findGroupByName(name)
-        }
-    }
-
     def get(params) {
         def id = params.getOne('id')?.toInteger()
         def name = params.getOne('name')

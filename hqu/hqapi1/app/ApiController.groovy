@@ -105,6 +105,21 @@ class ApiController extends BaseController {
         }
     }
 
+    /**
+     * Get a group by id or name
+     *
+     * @return The group with the given id or name.  If the passed in id is null,
+     * then the group with the given name is returned.  If no group could be found
+     * for either the id or name, null is returned.
+     */
+    protected getGroup(Integer id, String name) {
+        if (id != null) {
+            return resourceHelper.findGroup(id)
+        } else {
+            return resourceHelper.findGroupByName(name)
+        }
+    }
+
     def dispatchRequest() {
 
         long start = System.currentTimeMillis()
