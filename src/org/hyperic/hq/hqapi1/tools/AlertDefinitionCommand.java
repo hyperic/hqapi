@@ -5,20 +5,13 @@ import joptsimple.OptionSet;
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
-import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
-import org.hyperic.hq.hqapi1.types.GroupResponse;
-import org.hyperic.hq.hqapi1.types.Resource;
 
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 public class AlertDefinitionCommand extends Command {
 
@@ -85,7 +78,6 @@ public class AlertDefinitionCommand extends Command {
 
         HQApi api = getApi(options);
         AlertDefinitionApi definitionApi = api.getAlertDefinitionApi();
-        GroupApi groupApi = api.getGroupApi();
 
         AlertDefinitionsResponse alertDefs;
         
@@ -106,55 +98,15 @@ public class AlertDefinitionCommand extends Command {
                                    " when " + OPT_TYPEALERTS + " is specified.");
                 System.exit(-1);
             }
-            alertDefs = definitionApi.getAlertDefinitions(excludeTypeAlerts);
-        }
 
-        // Filter on group if necessary
-        if (options.has(OPT_GROUP)) {
-            GroupResponse group =
-                    groupApi.getGroup((String)options.valueOf(OPT_GROUP));
-            checkSuccess(group);
+            String alertNameFilter = (String)options.valueOf(OPT_ALERT_NAME);
+            String resourceNameFilter = (String)options.valueOf(OPT_RESOURCE_NAME);
+            String groupNameFilter = (String)options.valueOf(OPT_GROUP);
 
-            List<Integer> includedResources = new ArrayList<Integer>();
-            for (Resource r : group.getGroup().getResource()) {
-                includedResources.add(r.getId());
-            }
-
-            for (Iterator<AlertDefinition> i = alertDefs.getAlertDefinition().iterator();
-                 i.hasNext(); ) {
-                AlertDefinition d = i.next();
-                Integer rid = d.getResource().getId();
-                if (!includedResources.contains(rid)) {
-                    i.remove();
-                }
-            }
-        }
-
-        // Filter on resource name if necessary
-        if (options.has(OPT_RESOURCE_NAME)) {
-            Pattern pattern = Pattern.compile((String)options.valueOf(OPT_RESOURCE_NAME));
-
-            for (Iterator<AlertDefinition> i = alertDefs.getAlertDefinition().iterator();
-                 i.hasNext(); ) {
-                AlertDefinition d = i.next();
-                Matcher m = pattern.matcher(d.getResource().getName());
-                if (!m.matches()) {
-                    i.remove();
-                }
-            }
-        }
-
-        if (options.has(OPT_ALERT_NAME)) {
-            Pattern pattern = Pattern.compile((String)options.valueOf(OPT_ALERT_NAME));
-
-            for (Iterator<AlertDefinition> i = alertDefs.getAlertDefinition().iterator();
-                 i.hasNext(); ) {
-                AlertDefinition d = i.next();
-                Matcher m = pattern.matcher(d.getName());
-                if (!m.matches()) {
-                    i.remove();
-                }
-            }
+            alertDefs = definitionApi.getAlertDefinitions(excludeTypeAlerts,
+                                                          alertNameFilter,
+                                                          resourceNameFilter,
+                                                          groupNameFilter);
         }
 
         checkSuccess(alertDefs);

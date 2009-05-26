@@ -158,6 +158,10 @@ public class AlertdefinitionController extends ApiController {
 
     def listDefinitions(params) {
 
+        def alertNameFilter = params.getOne('alertNameFilter')
+        def resourceNameFilter = params.getOne('resourceNameFilter')
+        def groupName = params.getOne('groupName')
+
         def excludeTypeBased = params.getOne('excludeTypeBased')?.toBoolean()
         if (excludeTypeBased == null) {
             excludeTypeBased = false;
@@ -186,7 +190,30 @@ public class AlertdefinitionController extends ApiController {
             definitions = alertHelper.findDefinitions(AlertSeverity.LOW, null,
                                                       excludeTypeBased)
         }
-        
+
+        // Filter
+        try {
+            if (alertNameFilter) {
+                definitions = definitions.findAll { it.name ==~ alertNameFilter }
+            }
+            if (resourceNameFilter) {
+                definitions = definitions.findAll { it.resource.name ==~ resourceNameFilter }
+            }
+        } catch (java.util.regex.PatternSyntaxException e) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Invalid syntax: " + e.getMessage())
+        }
+        if (groupName) {
+            def group = getGroup(null, groupName)
+            if (!group) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Unable to find group with name " + groupName)
+            } else {
+                def resources = group.resources
+                definitions = definitions.findAll { resources.contains(it.resource) }
+            }
+        }
+
         renderXml() {
             out << AlertDefinitionsResponse() {
                 if (failureXml) {

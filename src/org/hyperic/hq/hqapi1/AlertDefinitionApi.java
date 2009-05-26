@@ -31,6 +31,47 @@ public class AlertDefinitionApi extends BaseApi {
      *
      * @param excludeTypeBased Flag to control whether instances of type based
      * alerts will be included.
+     * @param alertNameFilter Filter returned definitions by definition name
+     * using the given regular expression.  A value of null will result in no
+     * filtering being performed.
+     * @param resourceNameFilter Filter returned definitions by resource name
+     * using the given regular expression.  A value of null will result in no
+     * filtering being performed.
+     * @param groupName Filter returned definitions such that only definitions
+     * on resources belonging to the given group are returned.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * a list of AlertDefinitions are returned.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public AlertDefinitionsResponse getAlertDefinitions(boolean excludeTypeBased,
+                                                        String alertNameFilter,
+                                                        String resourceNameFilter,
+                                                        String groupName)
+        throws IOException
+    {
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("excludeTypeBased", new String[] { Boolean.toString(excludeTypeBased)});
+        if (alertNameFilter != null) {
+            params.put("alertNameFilter", new String[] { alertNameFilter });
+        }
+        if (resourceNameFilter != null) {
+            params.put("resourceNameFilter", new String[] { resourceNameFilter });
+        }
+        if (groupName != null) {
+            params.put("groupName", new String[] { groupName });
+        }
+
+        return doGet("alertdefinition/listDefinitions.hqu", params,
+                     AlertDefinitionsResponse.class);
+    }
+
+    /**
+     * Find all {@link org.hyperic.hq.hqapi1.types.AlertDefinition}s in the system.
+     *
+     * @param excludeTypeBased Flag to control whether instances of type based
+     * alerts will be included.
      * 
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * a list of AlertDefinitions are returned.
@@ -40,11 +81,7 @@ public class AlertDefinitionApi extends BaseApi {
     public AlertDefinitionsResponse getAlertDefinitions(boolean excludeTypeBased)
         throws IOException
     {
-        Map<String,String[]> params = new HashMap<String,String[]>();
-        params.put("excludeTypeBased", new String[] { Boolean.toString(excludeTypeBased)});
-
-        return doGet("alertdefinition/listDefinitions.hqu", params,
-                     AlertDefinitionsResponse.class);
+        return getAlertDefinitions(excludeTypeBased, null, null, null);
     }
 
     /**
