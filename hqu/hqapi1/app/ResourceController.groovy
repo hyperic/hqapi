@@ -1,6 +1,9 @@
-import org.hyperic.hq.hqapi1.ErrorCode;
+import org.hyperic.hq.hqapi1.ErrorCode
+import org.hyperic.hq.appdef.shared.AppdefEntityID
+import org.hyperic.hq.authz.shared.AuthzConstants
 import org.hyperic.hq.authz.shared.PermissionException
-import org.hyperic.hq.common.VetoException;
+import org.hyperic.hq.authz.shared.ResourceEdgeCreateException
+import org.hyperic.hq.common.VetoException
 
 class ResourceController extends ApiController {
 
@@ -67,6 +70,44 @@ class ResourceController extends ApiController {
         }
     }
 
+    private Closure getResourceEdgeXML(edges) {
+    	{ doc ->
+    		for (e in edges.sort {a, b -> a.to.name <=> b.to.name}) {
+    			ResourceEdge(relation : e.relation.name,
+    					 	 distance : e.distance) {
+    				ResourceFrom() {
+    					Resource(id : e.from.id,
+    						 	 name : e.from.name)
+    				}
+    				ResourceTo() {
+                        Resource(id : e.to.id,
+                        		 name : e.to.name)
+                    }    			
+    			}
+    		}                    
+    	}
+    }
+
+    private Closure getResourceEdgeGroupingXML(resourceRelation, parent, childrenEdges) {
+    	{ doc ->
+    		ResourceEdge(relation : resourceRelation,
+    					 distance : 1) {
+    			ResourceFrom() {
+    				Resource(id : parent.id,
+    						 name : parent.name)
+    			}
+    			ResourceTo() {
+                    for (e in childrenEdges.sort {a, b -> a.to.name <=> b.to.name}) {
+                        if (e.distance == 1) {
+                        	Resource(id : e.to.id,
+                        		 	 name : e.to.name)
+                        }
+                    }    			
+    			}
+    		}                     
+    	}
+    }
+    
     def getResourcePrototypes(params) {
         def existing = params.getOne('existing')?.toBoolean()
 
@@ -369,6 +410,112 @@ class ResourceController extends ApiController {
         }
     }
 
+    def getParentResourcesByRelation(params) {
+    	def name = params.getOne("name")
+    	def prototype = params.getOne("prototype")
+    	def resourceRelation = params.getOne("resourceRelation")
+    	def hasChildren = params.getOne("hasChildren").toBoolean()
+    	
+    	def platforms = null
+    	def failureXml
+    	
+    	if (!resourceRelation 
+    			|| !resourceRelation.equals(AuthzConstants.ResourceEdgeNetworkRelation)) {
+    		failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)    		
+    	} else {
+    		platforms = resourceHelper.findParentPlatformsByNetworkRelation(prototype, name, hasChildren)
+    	}
+    	
+    	renderXml() {
+    		ResourcesResponse() {
+    			if (failureXml) {
+                    out << failureXml
+                } else {    			
+    				out << getSuccessXML()
+    				for (platform in platforms.sort {a, b -> a.name <=> b.name}) {
+                		out << getResourceXML(user, platform.resource, Boolean.FALSE, Boolean.FALSE)
+                	}
+                }
+    		}
+    	}
+    }
+    
+    def getResourcesByNoRelation(params) {
+    	def name = params.getOne("name")
+    	def prototype = params.getOne("prototype")
+    	def resourceRelation = params.getOne("resourceRelation")
+    	
+    	def platforms = null
+    	def failureXml
+    	
+    	if (!resourceRelation 
+    			|| !resourceRelation.equals(AuthzConstants.ResourceEdgeNetworkRelation)) {
+    		failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)    		
+    	} else {
+    		platforms = resourceHelper.findPlatformsByNoNetworkRelation(prototype, name)
+    	}
+    	
+    	renderXml() {
+    		ResourcesResponse() {
+    			if (failureXml) {
+                    out << failureXml
+                } else {    			
+    				out << getSuccessXML()
+    				for (platform in platforms.sort {a, b -> a.name <=> b.name}) {
+                		out << getResourceXML(user, platform.resource, Boolean.FALSE, Boolean.FALSE)
+                	}
+                }
+    		}
+    	}
+    }
+    
+    def getResourceEdges(params) {
+    	def resourceRelation = params.getOne("resourceRelation")
+    	def id = params.getOne("id")?.toInteger()
+    	def prototype = params.getOne("prototype")
+    	def name = params.getOne("name")
+    	
+    	def parent = null
+    	def edges = []
+    	def failureXml
+    	
+    	if (!resourceRelation)  {
+    		failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+    	} else {
+    		if (id) {
+    			parent = getResource(id)
+    			if (!parent) {
+    				failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+    										   "Resource id=" + id +
+    										   " not found")
+    			} else {
+    				edges = resourceHelper.findResourceEdges(resourceRelation, parent)
+    			}
+    		} else {
+    			edges = resourceHelper.findResourceEdges(resourceRelation, prototype, name)
+    		}
+    	}
+
+        renderXml() {
+            out << ResourceEdgesResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    if (edges.size() > 0) {
+                    	if (parent) {
+                    		out << getResourceEdgeGroupingXML(resourceRelation, 
+                    						  	  		  	  parent, 
+                    						  	  		  	  edges)
+                    	} else {
+                    		out << getResourceEdgeXML(edges)
+                    	}
+                    }
+                }
+            }
+        }
+    }
+    
     // TODO: ResourceConfig does not properly handle unchanged configs.. 
     private configsEqual(existingConfig, newConfig) {
         def config = [:] + newConfig // Don't modify callers map
@@ -555,6 +702,173 @@ class ResourceController extends ApiController {
             }
         }
     }
+
+    def syncResourceEdges(params) {
+
+        def failureXml = null
+        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+
+        for (xmlResourceEdge in syncRequest['ResourceEdge']) {
+            failureXml = updateResourceEdges("sync", xmlResourceEdge)
+            if (failureXml != null) {
+                break;
+            }
+        }
+
+        renderXml() {
+            StatusResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                }
+            }
+        }
+    }
+        
+    def createResourceEdges(params) {
+
+        def failureXml = null
+        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+
+        for (xmlResourceEdge in syncRequest['ResourceEdge']) {
+            failureXml = updateResourceEdges("add", xmlResourceEdge)
+            if (failureXml != null) {
+                break;
+            }
+        }
+
+        renderXml() {
+            StatusResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                }
+            }
+        }
+    }
+    
+    def deleteResourceEdges(params) {
+
+        def failureXml = null
+        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+
+        for (xmlResourceEdge in syncRequest['ResourceEdge']) {
+            failureXml = updateResourceEdges("remove", xmlResourceEdge)
+            if (failureXml != null) {
+                break;
+            }
+        }
+
+        renderXml() {
+            StatusResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                }
+            }
+        }    
+    }
+
+    def deleteAllResourceEdges(params) {
+    	def resourceRelation = params.getOne("resourceRelation")
+        def id = params.getOne("id")?.toInteger()
+        def resource = null
+        def failureXml = null
+        
+    	if (!resourceRelation 
+    			|| !resourceRelation.equals(AuthzConstants.ResourceEdgeNetworkRelation)) {
+    		failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)    		
+    	} else {
+    		if (id) {
+    			resource = getResource(id)
+    			if (!resource) {
+    				failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+    										   "Resource id=" + id +
+    										   " not found")
+    			} else {
+    				try {
+    					resourceHelper.removeResourceEdges(resourceRelation, resource)
+    				} catch (Exception e) {
+    					log.error("Error removing resource edges", e)
+    					failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+    				}
+    			}
+    		}
+    	}
+                
+        renderXml() {
+            StatusResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                }
+            }
+        }   	
+    }
+        
+    private updateResourceEdges(syncType, xmlResourceEdge) {
+    	def relation = xmlResourceEdge.'@relation'                          
+        def xmlResourceFrom = xmlResourceEdge['ResourceFrom']
+        def xmlResourceTo = xmlResourceEdge['ResourceTo']
+        def xmlResource = null
+        def resourceFrom = null
+        def resourceTo = null
+        def parent = null
+        def children = []
+
+        xmlResource = xmlResourceFrom['Resource'].get(0)
+        resourceFrom = getResource(xmlResource.'@id'?.toInteger())
+        
+        if (resourceFrom) {
+        	parent = new AppdefEntityID(resourceFrom)
+        } else {
+           	return getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Unable to find resource with id = " +
+                                           xmlResource.'@id')
+        }
+        
+		xmlResourceTo['Resource'].each {
+            resourceTo = getResource(it.'@id'?.toInteger())
+            if (resourceTo) {
+            	children << new AppdefEntityID(resourceTo)
+            } else {
+            	return getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Unable to find resource with id = " +
+                                           it.'@id')
+        	}
+        }
+                
+        try {
+    		if (syncType.equals("add")) {
+    			resourceHelper.createResourceEdges(relation, 
+    										   	   parent, 
+    										   	   (AppdefEntityID[]) children.toArray(),
+    										   	   false)
+    		} else if (syncType.equals("remove")) {
+    			resourceHelper.removeResourceEdges(relation, 
+    										   	   parent, 
+    										   	   (AppdefEntityID[]) children.toArray())    		
+    		} else if (syncType.equals("sync")) {
+    			resourceHelper.createResourceEdges(relation, 
+    										   	   parent, 
+    										   	   (AppdefEntityID[]) children.toArray(),
+    										   	   true)
+    		}
+    	} catch (PermissionException p) {
+            return getFailureXML(ErrorCode.PERMISSION_DENIED)
+    	} catch (ResourceEdgeCreateException r)  {
+    		return getFailureXML(ErrorCode.INVALID_PARAMETERS, r.getMessage())
+    	} catch (IllegalArgumentException i)  {
+    		return getFailureXML(ErrorCode.INVALID_PARAMETERS, i.getMessage())
+    	} catch (Exception e) {
+    		return getFailureXML(ErrorCode.UNEXPECTED_ERROR, e.getMessage())
+    	}
+    	return null
+	}
 
     // Walk the Resource tree ensuring all resources exist.
     private ensureResourcesExist(xmlResource) {

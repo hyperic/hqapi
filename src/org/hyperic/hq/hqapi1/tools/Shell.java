@@ -45,6 +45,7 @@ public class Shell {
         _commands.put("metricData", new MetricDataCommand());
         _commands.put("metricTemplate", new MetricTemplateCommand());
         _commands.put("resource", new ResourceCommand());
+        _commands.put("dependency", new ResourceEdgeCommand());
         _commands.put("role", new RoleCommand());
         _commands.put("user", new UserCommand());
     }
