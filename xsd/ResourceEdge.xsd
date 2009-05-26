@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:include schemaLocation="Resource.xsd"/>
+    <xs:include schemaLocation="Response.xsd"/>
+    
+    <!-- Resource Edge objects -->
+   
+    <xs:complexType name="ResourceFrom">
+        <xs:sequence>
+            <xs:element name="Resource" type="Resource" minOccurs="1" maxOccurs="1" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ResourceTo">
+        <xs:sequence>
+            <xs:element name="Resource" type="Resource" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ResourceEdge">
+        <xs:sequence>
+            <xs:element name="ResourceFrom" type="ResourceFrom" minOccurs="1" maxOccurs="1" />
+            <xs:element name="ResourceTo" type="ResourceTo" minOccurs="1" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="relation" type="xs:string" use="required" />
+        <xs:attribute name="distance" type="xs:int" use="required" />
+    </xs:complexType>
+
+    <!-- Resource Relation Requests -->
+
+    <xs:element name="ResourceEdgesRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="ResourceEdge" type="ResourceEdge" maxOccurs="unbounded" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+        
+    <!-- Resource Relation Responses -->
+
+    <xs:element name="ResourceEdgesResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="ResourceEdge" type="ResourceEdge" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    
+</xs:schema>
