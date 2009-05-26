@@ -44,6 +44,7 @@ public class HQApi {
     private final AgentApi           _agentApi;
     private final AlertDefinitionApi _alertDefinitionApi;
     private final MaintenanceApi     _maintenanceApi;
+    private final ResourceEdgeApi    _resourceEdgeApi;
     
     /**
      * @param host The hostname of the HQ Server to connect to.
@@ -66,6 +67,7 @@ public class HQApi {
         _agentApi         = new AgentApi(connection);
         _alertDefinitionApi = new AlertDefinitionApi(connection);
         _maintenanceApi   = new MaintenanceApi(connection);
+        _resourceEdgeApi  = new ResourceEdgeApi(connection);
     }
 
     /**
@@ -157,5 +159,14 @@ public class HQApi {
      */
     public MaintenanceApi getMaintenanceApi() {
         return _maintenanceApi;
+    }
+    
+    /**
+     * List and update the relationships between resources.
+     *
+     * @return The API for operating on resource relationships.
+     */
+    public ResourceEdgeApi getResourceEdgeApi() {
+        return _resourceEdgeApi;
     }
 }
