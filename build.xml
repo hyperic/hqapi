@@ -41,6 +41,7 @@
         <javac destdir="${build.dir}/classes"
                optimize="off"
                debug="on"
+               target="1.5" source="1.5"
                classpathref="compile.classpath">
             <src>
                 <path location="${build.dir}/src"/>
