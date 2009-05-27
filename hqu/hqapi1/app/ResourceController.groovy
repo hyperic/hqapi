@@ -423,7 +423,7 @@ class ResourceController extends ApiController {
     			|| !resourceRelation.equals(AuthzConstants.ResourceEdgeNetworkRelation)) {
     		failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)    		
     	} else {
-    		platforms = resourceHelper.findParentPlatformsByNetworkRelation(prototype, name, hasChildren)
+    		platforms = resourceHelper.findParentPlatformsByNetworkRelation(prototype, name, Boolean.valueOf(hasChildren))
     	}
     	
     	renderXml() {
