@@ -477,6 +477,8 @@ public class AlertdefinitionController extends ApiController {
                 templs = resource.metrics
             }
 
+            def isRecovery = false
+
             for (xmlCond in xmlDef['AlertCondition']) {
                 AlertConditionValue acv = new AlertConditionValue()
                 def acError
@@ -610,6 +612,8 @@ public class AlertdefinitionController extends ApiController {
                             break
                         }
 
+                        isRecovery = true
+
                         // If a resource alert, look up alert by name
                         if (resource) {
                             log.debug("Looking up alerts for resource=" + resource.id)
@@ -723,7 +727,13 @@ public class AlertdefinitionController extends ApiController {
 
             // Deal with Escalations
             if (escalation) {
-                pojo.setEscalation(user, escalation)
+                // TODO: Backend should handle escalations on recovery alerts
+                if (isRecovery) {
+                    log.warn("Skipping escalation for definition '" + pojo.name +
+                             "'.  Escalations not allowed for recovery alerts.")
+                } else {
+                    pojo.setEscalation(user, escalation)
+                }
             } else {
                 pojo.unsetEscalation(user)
             }
