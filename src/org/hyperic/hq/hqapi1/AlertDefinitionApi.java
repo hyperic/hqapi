@@ -31,6 +31,7 @@ import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsRequest;
+import org.hyperic.hq.hqapi1.types.Escalation;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -130,6 +131,28 @@ public class AlertDefinitionApi extends BaseApi {
 
         return doGet("alertdefinition/listDefinitions.hqu", params,
                      AlertDefinitionsResponse.class); 
+    }
+
+
+    /**
+     * Find all {@link org.hyperic.hq.hqapi1.types.AlertDefinition}s that use
+     * the given escalation.
+     *
+     * @param e The {@link Escalation} to filter by
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * a list of AlertDefinitions are returned.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public AlertDefinitionsResponse getAlertDefinitions(Escalation e)
+        throws IOException {
+
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("escalationId", new String[] { Integer.toString(e.getId()) });
+
+        return doGet("alertdefinition/listDefinitions.hqu", params,
+                     AlertDefinitionsResponse.class);
     }
 
     /**

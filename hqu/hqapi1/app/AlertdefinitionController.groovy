@@ -10,12 +10,15 @@ import org.hyperic.hq.events.AlertSeverity
 import org.hyperic.hq.events.EventConstants
 import org.hyperic.hq.events.shared.AlertConditionValue
 import org.hyperic.hq.events.shared.AlertDefinitionValue
+import org.hyperic.hq.events.server.session.AlertDefinitionManagerEJBImpl as AMan
 import org.hyperic.hq.measurement.shared.ResourceLogEvent
 import org.hyperic.hq.product.LogTrackPlugin
 import ApiController
 
 public class AlertdefinitionController extends ApiController {
     private eventBoss   = EventsBoss.one
+    private aMan        = AMan.one
+
     private EVENT_LEVEL_TO_NUM = [
         ANY: -1,
         ERR : LogTrackPlugin.LOGLEVEL_ERROR,
@@ -167,6 +170,7 @@ public class AlertdefinitionController extends ApiController {
         def alertNameFilter = params.getOne('alertNameFilter')
         def resourceNameFilter = params.getOne('resourceNameFilter')
         def groupName = params.getOne('groupName')
+        def escalationId = params.getOne('escalationId')?.toInteger()
 
         def excludeTypeBased = params.getOne('excludeTypeBased')?.toBoolean()
         if (excludeTypeBased == null) {
@@ -176,7 +180,7 @@ public class AlertdefinitionController extends ApiController {
         def parentId = params.getOne('parentId')?.toInteger()
 
         def failureXml
-        def definitions
+        def definitions = []
 
         if (parentId) {
             def typeAlert = alertHelper.getById(parentId)
@@ -191,6 +195,16 @@ public class AlertdefinitionController extends ApiController {
                                            "definition")
             } else {
                 definitions = typeAlert.children
+            }
+        } else if (escalationId != null) {
+            def escalation = escalationHelper.getEscalation(escalationId, null)
+            if (!escalation) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Escalation with id = " + escalationId +
+                                           " not found")
+            } else {
+                // TODO: Add to alert helper
+                definitions = aMan.getUsing(escalation)
             }
         } else {
             definitions = alertHelper.findDefinitions(AlertSeverity.LOW, null,
@@ -209,6 +223,7 @@ public class AlertdefinitionController extends ApiController {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                        "Invalid syntax: " + e.getMessage())
         }
+
         if (groupName) {
             def group = getGroup(null, groupName)
             if (!group) {
