@@ -5,9 +5,11 @@ import joptsimple.OptionSet;
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
+import org.hyperic.hq.hqapi1.EscalationApi;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.EscalationResponse;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -29,6 +31,7 @@ public class AlertDefinitionCommand extends Command {
     private static String OPT_ALERT_NAME = "alertName";
     private static String OPT_ID   = "id";
     private static String OPT_BATCH_SIZE = "batchSize";
+    private static String OPT_ESCLATION = "escalation";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -70,14 +73,18 @@ public class AlertDefinitionCommand extends Command {
                                      "belonging to a resource with the given " +
                                      "resource name regex.").
                 withRequiredArg().ofType(String.class);
-         p.accepts(OPT_ALERT_NAME, "If specified, only show alert definitions " +
-                                   "with names that match the given regex. ").
+        p.accepts(OPT_ALERT_NAME, "If specified, only show alert definitions " +
+                                   "with names that match the given regex.").
+                withRequiredArg().ofType(String.class);
+        p.accepts(OPT_ESCLATION, "If specified, only show alert definitions " +
+                                 "that are tied to the named escalation.").
                 withRequiredArg().ofType(String.class);
 
         OptionSet options = getOptions(p, args);
 
         HQApi api = getApi(options);
         AlertDefinitionApi definitionApi = api.getAlertDefinitionApi();
+        EscalationApi escalationApi = api.getEscalationApi();
 
         AlertDefinitionsResponse alertDefs;
         
@@ -88,6 +95,11 @@ public class AlertDefinitionCommand extends Command {
             }
             
             alertDefs = definitionApi.getTypeAlertDefinitions(excludeIds);
+        } else if (options.has(OPT_ESCLATION)) {
+            EscalationResponse escalationResponse = escalationApi.
+                    getEscalation((String)getRequired(options, OPT_ESCLATION));
+            checkSuccess(escalationResponse);
+            alertDefs = definitionApi.getAlertDefinitions(escalationResponse.getEscalation());
         } else {
             boolean excludeTypeAlerts = false;
             if (options.has(OPT_EXCLUDE_TYPEALERTS)) {
