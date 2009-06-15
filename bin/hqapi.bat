@@ -16,4 +16,4 @@ if "%_JAVACMD%" == "" set _JAVACMD=%JAVA_HOME%\bin\java.exe
 :noJavaHome
 if "%_JAVACMD%" == "" set _JAVACMD=java.exe
 
-"%_JAVACMD%" -cp %CLASSPATH% org.hyperic.hq.hqapi1.tools.Shell "%1"
+"%_JAVACMD%" -cp %CLASSPATH% org.hyperic.hq.hqapi1.tools.Shell %*
