@@ -99,6 +99,8 @@
             <fileset dir="${build.dir}/classes">
                 <include name="**"/>
                 <exclude name="**/*_test.class"/>
+                <!-- We don't include the wadl bindings -->
+                <exclude name="**/wadl/*.class"/>
             </fileset>
         </jar>
         <mkdir dir="${client.dir}/xsd"/>
