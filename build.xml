@@ -19,8 +19,13 @@
     <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask"
              classpathref="compile.classpath"/>
 
+    <taskdef name="wjc"
+             classname="org.jvnet.ws.wadl2java.WJCTask"
+             classpathref="compile.classpath"/>
+
     <!-- Generate the Java XML bindings -->
     <target name="generate">
+
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${build.dir}/src"/>
         <mkdir dir="${build.dir}/classes"/>
@@ -31,6 +36,14 @@
             <produces dir="${build.dir}/src/org/hyperic/hq/hqapi1/types"
                       includes="**/"/>
         </xjc>
+
+        <mkdir dir="${build.dir}/src/org/hyperic/hq/hqapi1/wadl"/>
+
+        <wjc description="xsd/HQApi1.wadl" package="org.hyperic.hq.hqapi1.wadl"
+             autoSchemaPackage="false" target="build/src">
+          <produces dir="build/src/org/hyperic/hq/hqapi1/wadl" includes="*.java"/>
+        </wjc>
+
     </target>
 
     <target name="compile" depends="generate">
