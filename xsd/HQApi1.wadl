@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+<wadl:application xmlns:xs="http://www.w3.org/2001/XMLSchema"
+             xmlns:html="http://www.w3.org/1999/xhtml"
+             xmlns:wadl="http://research.sun.com/wadl/2006/10"
+             xmlns:hq="HQApi1.xsd">
+
+    <wadl:doc title="HQApi WebService Documentation">
+        This document describes the methods available through Hyperic's web
+        service API.
+    </wadl:doc>
+
+    <wadl:grammars>
+        <wadl:include href="HQApi1.xsd"/>
+    </wadl:grammars>
+
+    <wadl:resources base="http://localhost:7080/hqu/hqapi1/">
+
+        <wadl:resource path="user/get.hqu">
+            <wadl:doc title="HQApi User get command">
+                Get a User by name.
+            </wadl:doc>
+            <wadl:method name="GET" id="UserGet">
+                <wadl:request>
+                    <wadl:param name="name" style="query" required="false"
+                                type="xs:string">
+                        <wadl:doc>
+                            The name of the User to search for.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="hq:UserResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="user/list.hqu">
+            <wadl:doc title="HQApi User list command">
+                List all Users.
+            </wadl:doc>
+            <wadl:method name="GET" id="UserList">
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="hq:UsersResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="user/changePassword.hqu">
+            <wadl:doc title="HQApi User changePassword command">
+                Change the password for the given User.
+            </wadl:doc>
+            <wadl:method name="GET" id="UserChangePassword">
+                                <wadl:request>
+                    <wadl:param name="name" style="query" required="true"
+                           type="xs:string">
+                        <wadl:doc>
+                            The name of the User.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="password" style="query" required="true"
+                           type="xs:string">
+                        <wadl:doc>
+                            The new password to assign to the User.
+                        </wadl:doc>
+                    </wadl:param>                                   
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="user/sync.hqu">
+            <wadl:doc title="HQApi User sync command">
+                Sync users
+            </wadl:doc>
+            <wadl:method name="POST" id="userSync">
+                <wadl:request>
+                    <wadl:representation mediaType="application/xml"
+                                         element="UsersRequest">
+                    </wadl:representation>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="UsersResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="user/delete.hqu">
+            <wadl:doc title="HQApi User delete command">
+                Delete a User
+            </wadl:doc>
+            <wadl:method name="GET" id="UserDelete">
+                <wadl:request>
+                    <wadl:param name="name" style="query" required="false"
+                                type="xs:string">
+                        <wadl:doc>
+                            The name of the User to search for.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="UserResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="user/create.hqu">
+            <wadl:doc title="HQApi User create command">
+                Create a User
+            </wadl:doc>
+            <wadl:method name="GET" id="UserCreate">
+                <wadl:request>
+                    <wadl:param name="name" style="query" required="true"
+                                type="xs:string">
+                        <wadl:doc>
+                            The username to create.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="password" style="query" required="true"
+                                type="xs:string">
+                        <wadl:doc>
+                            The password to assign to the created User.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="firstName" style="query" required="true"
+                                type="xs:string">
+                        <wadl:doc>
+                            The first name to assign the created User.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="lastName" style="query" required="true"
+                                type="xs:string">
+                        <wadl:doc>
+                            The last name to assign the created User.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="emailAddress" style="query" required="true"
+                                type="xs:string">
+                        <wadl:doc>
+                            The email address to assign the created User.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="htmlEmail" style="query" required="false"
+                                type="xs:boolean">
+                        <wadl:doc>
+                            Flag to control whether the created User will
+                            receive email in HTML or text format.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="active" style="query" required="false"
+                                type="xs:boolean">
+                        <wadl:doc>
+                            Flag to control whether the created User will
+                            be active or not.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="department" style="query" required="false"
+                                type="xs:string">
+                        <wadl:doc>
+                            The department to assign the created User.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="phoneNumber" style="query" required="false"
+                                type="xs:string">
+                        <wadl:doc>
+                            The phone number to assign the created User.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="SMSAddress" style="query" required="false"
+                                type="xs:string">
+                        <wadl:doc>
+                            The SMS address to assign the created User.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="UserResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+    </wadl:resources>
+
+</wadl:application>
