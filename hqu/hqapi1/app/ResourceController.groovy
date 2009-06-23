@@ -645,7 +645,7 @@ class ResourceController extends ApiController {
                         it.'@key' == PROP_INSTALLPATH
                     }
                     if (installpath) {
-                        config.put(PROP_INSTALLPATH, aiid.'@value')
+                        config.put(PROP_INSTALLPATH, installpath.'@value')
                     }
 
                     resource = prototype.createInstance(parent, name,
