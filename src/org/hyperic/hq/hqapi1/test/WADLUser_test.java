@@ -2,7 +2,7 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.wadl.*;
 
-public class WADLUser_test extends WADL_test {
+public class WADLUser_test extends WADLTestBase {
 
     public void testUserList() throws Exception {
 
