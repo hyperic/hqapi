@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <wadl:application xmlns:xs="http://www.w3.org/2001/XMLSchema"
              xmlns:html="http://www.w3.org/1999/xhtml"
-             xmlns:wadl="http://research.sun.com/wadl/2006/10"
-             xmlns:hq="HQApi1.xsd">
+             xmlns:wadl="http://research.sun.com/wadl/2006/10">
 
     <wadl:doc title="HQApi WebService Documentation">
         This document describes the methods available through Hyperic's web
@@ -21,7 +20,7 @@
             </wadl:doc>
             <wadl:method name="GET" id="UserGet">
                 <wadl:request>
-                    <wadl:param name="name" style="query" required="false"
+                    <wadl:param name="name" style="query" required="true"
                                 type="xs:string">
                         <wadl:doc>
                             The name of the User to search for.
@@ -30,7 +29,7 @@
                 </wadl:request>
                 <wadl:response>
                     <wadl:representation mediaType="application/xml"
-                                         element="hq:UserResponse"/>
+                                         element="UserResponse"/>
                 </wadl:response>
             </wadl:method>
         </wadl:resource>
@@ -42,7 +41,7 @@
             <wadl:method name="GET" id="UserList">
                 <wadl:response>
                     <wadl:representation mediaType="application/xml"
-                                         element="hq:UsersResponse"/>
+                                         element="UsersResponse"/>
                 </wadl:response>
             </wadl:method>
         </wadl:resource>
@@ -80,12 +79,11 @@
             <wadl:method name="POST" id="userSync">
                 <wadl:request>
                     <wadl:representation mediaType="application/xml"
-                                         element="UsersRequest">
-                    </wadl:representation>
+                                         element="UsersRequest"/>
                 </wadl:request>
                 <wadl:response>
                     <wadl:representation mediaType="application/xml"
-                                         element="UsersResponse"/>
+                                         element="StatusResponse"/>
                 </wadl:response>
             </wadl:method>
         </wadl:resource>
@@ -96,7 +94,7 @@
             </wadl:doc>
             <wadl:method name="GET" id="UserDelete">
                 <wadl:request>
-                    <wadl:param name="name" style="query" required="false"
+                    <wadl:param name="name" style="query" required="true"
                                 type="xs:string">
                         <wadl:doc>
                             The name of the User to search for.
@@ -105,7 +103,7 @@
                 </wadl:request>
                 <wadl:response>
                     <wadl:representation mediaType="application/xml"
-                                         element="UserResponse"/>
+                                         element="StatusResponse"/>
                 </wadl:response>
             </wadl:method>
         </wadl:resource>
