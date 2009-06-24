@@ -400,6 +400,235 @@
             </wadl:method>
         </wadl:resource>
 
+        <wadl:resource path="metric/getTemplates.hqu">
+            <wadl:doc title="HQApi Metric getTemplates command">
+                Get the MetricTemplates based on the given ResourcePrototype
+            </wadl:doc>
+            <wadl:method name="GET" id="MetricGetTemplates">
+                <wadl:request>
+                    <wadl:param name="prototype" style="query" required="true"
+                                type="xs:string">
+                        <wadl:doc>
+                            The ResourcePrototype to query for MetricTemplates.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="MetricTemplatesResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="metric/getMetricTemplate.hqu">
+            <wadl:doc title="HQApi Metric getMetricTemplate command">
+                Get a MetricTemplate by id
+            </wadl:doc>
+            <wadl:method name="GET" id="MetricGetTemplate">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the MetricTemplate to return.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="MetricTemplateResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="metric/getMetrics.hqu">
+            <wadl:doc title="HQApi Metric getMetrics command">
+                Get the Metrics for the given Resource
+            </wadl:doc>
+            <wadl:method name="GET" id="MetricGetMetrics">
+                <wadl:request>
+                    <wadl:param name="resourceId" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Resource to query for Metrics.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="enabled" style="query" required="false"
+                                type="xs:boolean" default="false">
+                        <wadl:doc>
+                            If set to true, only return Metrics that are currently
+                            enabled for collection.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="MetricsResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="metric/getMetric.hqu">
+            <wadl:doc title="HQApi Metric getMetric command">
+                Get a Metric by id
+            </wadl:doc>
+            <wadl:method name="GET" id="MetricGetMetric">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Metric to return.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="MetricResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="metric/syncMetrics.hqu">
+            <wadl:doc title="HQApi Metric syncMetrics command">
+                Sync Metrics
+            </wadl:doc>
+            <wadl:method name="POST" id="MetricSyncMetrics">
+                <wadl:request>
+                    <wadl:representation mediaType="application/xml"
+                                         element="MetricsRequest"/>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="metric/syncTemplates.hqu">
+            <wadl:doc title="HQApi Metric syncTemplates command">
+                Sync Metrics
+            </wadl:doc>
+            <wadl:method name="POST" id="MetricSyncTemplates">
+                <wadl:request>
+                    <wadl:representation mediaType="application/xml"
+                                         element="MetricTemplatesRequest"/>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="metric/getData.hqu">
+            <wadl:doc title="HQApi Metric getData command">
+                Get MetricData for the specified time window
+            </wadl:doc>
+            <wadl:method name="GET" id="MetricGetData">
+                <wadl:request>
+                    <wadl:param name="metricId" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Metric to query for MetricData.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="start" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The start time in milliseconds from the epoch.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="end" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The end time in milliseconds from the epoch.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="MetricDataResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="metric/getGroupData.hqu">
+            <wadl:doc title="HQApi Metric getGroupData command">
+                Get MetricData for a MetricTemplate across a compatible Group.
+            </wadl:doc>
+            <wadl:method name="GET" id="MetricGetGroupData">
+                <wadl:request>
+                    <wadl:param name="groupId" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Group to query for MetricData.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="templateId" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the MetricTemplate to query for MetricData.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="start" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The start time in milliseconds from the epoch.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="end" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The end time in milliseconds from the epoch.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="MetricsDataResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="metric/getResourceData.hqu">
+            <wadl:doc title="HQApi Metric getResourceData command">
+                Get MetricData for a list of Resource's.
+            </wadl:doc>
+            <wadl:method name="GET" id="MetricGetResourceData">
+                <wadl:request>
+                    <wadl:param name="ids" style="query" required="true"
+                                type="xs:int" repeating="true">
+                        <wadl:doc>
+                            The id's of the Resources to query for MetricData.
+                            All Resources in this list must be of the same
+                            ResourcePrototype.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="templateId" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the MetricTemplate to query for MetricData.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="start" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The start time in milliseconds from the epoch.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="end" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The end time in milliseconds from the epoch.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="MetricsDataResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>        
+
     </wadl:resources>
 
 </wadl:application>
