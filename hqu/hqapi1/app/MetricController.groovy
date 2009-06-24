@@ -200,7 +200,7 @@ class MetricController extends ApiController {
     // TODO: Need collection based method for enable/disable
     def syncMetrics(params) {
 
-        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+        def syncRequest = new XmlParser().parseText(getPostData())
         def xmlMetric = syncRequest['Metric']
         def failureXml = null
 
@@ -271,7 +271,7 @@ class MetricController extends ApiController {
 
     def syncTemplates(params) {
 
-        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+        def syncRequest = new XmlParser().parseText(getPostData())
         def xmlTemplate = syncRequest['MetricTemplate']
         def failureXml = null
 

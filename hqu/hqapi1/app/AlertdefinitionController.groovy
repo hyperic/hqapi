@@ -317,7 +317,7 @@ public class AlertdefinitionController extends ApiController {
     }
 
     def sync(params) {
-        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+        def syncRequest = new XmlParser().parseText(getPostData())
         def definitions = []
 
         for (xmlDef in syncRequest['AlertDefinition']) {

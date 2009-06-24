@@ -115,7 +115,7 @@ class EscalationController extends ApiController {
     def create(params) {
 
         def failureXml
-        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+        def syncRequest = new XmlParser().parseText(getPostData())
         def esc
 
         if (syncRequest['Escalation'].size() != 1) {
@@ -166,7 +166,7 @@ class EscalationController extends ApiController {
     
     def update(params) {
         def failureXml
-        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+        def syncRequest = new XmlParser().parseText(getPostData())
         def esc
 
         if (syncRequest['Escalation'].size() != 1) {
@@ -211,8 +211,7 @@ class EscalationController extends ApiController {
     
     def sync(params) {
         def failureXml
-        def data = getUpload('postdata')
-        def syncRequest = new XmlParser().parseText(data)
+        def syncRequest = new XmlParser().parseText(getPostData())
         
         for (xmlEsc in syncRequest['Escalation']) {
             def id           = xmlEsc.'@id'?.toInteger()

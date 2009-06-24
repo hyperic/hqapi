@@ -71,7 +71,7 @@ class RoleController extends ApiController {
         def failureXml
         def createdRole
         try {
-            def createRequest = new XmlParser().parseText(getUpload('postdata'))
+            def createRequest = new XmlParser().parseText(getPostData())
             def xmlRole = createRequest['Role']
 
             if (!xmlRole || xmlRole.size() != 1) {
@@ -136,7 +136,7 @@ class RoleController extends ApiController {
     def update(params) {
         def failureXml
         try {
-            def updateRequest = new XmlParser().parseText(getUpload('postdata'))
+            def updateRequest = new XmlParser().parseText(getPostData())
             def xmlRole = updateRequest['Role']
 
             if (!xmlRole || xmlRole.size() != 1) {
@@ -204,7 +204,7 @@ class RoleController extends ApiController {
     def sync(params) {
         def failureXml
         try {
-            def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+            def syncRequest = new XmlParser().parseText(getPostData())
             for (xmlRole in syncRequest['Role']) {
                 def existing = getRole(xmlRole.'@id'?.toInteger(),
                                        xmlRole.'@name')

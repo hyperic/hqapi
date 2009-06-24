@@ -100,7 +100,7 @@ class GroupController extends ApiController {
     }
 
     def sync(params) {
-        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+        def syncRequest = new XmlParser().parseText(getPostData())
 
         def groups = []
 

@@ -153,7 +153,7 @@ class ResourceController extends ApiController {
     }
 
     def createPlatform(params) {
-        def createRequest = new XmlParser().parseText(getUpload('postdata'))
+        def createRequest = new XmlParser().parseText(getPostData())
         def xmlResource = createRequest['Resource']
         def xmlPrototype = createRequest['Prototype']
         def xmlIps = createRequest['Ip']
@@ -252,7 +252,7 @@ class ResourceController extends ApiController {
     }
 
     def createResource(params) {
-        def createRequest = new XmlParser().parseText(getUpload('postdata'))
+        def createRequest = new XmlParser().parseText(getPostData())
         def xmlParent = createRequest['Parent']
         def xmlResource = createRequest['Resource']
         def xmlPrototype = createRequest['Prototype']
@@ -683,7 +683,7 @@ class ResourceController extends ApiController {
     def sync(params) {
 
         def failureXml = null
-        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+        def syncRequest = new XmlParser().parseText(getPostData())
 
         for (xmlResource in syncRequest['Resource']) {
             failureXml = syncResource(xmlResource, null)
@@ -706,7 +706,7 @@ class ResourceController extends ApiController {
     def syncResourceEdges(params) {
 
         def failureXml = null
-        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+        def syncRequest = new XmlParser().parseText(getPostData())
 
         for (xmlResourceEdge in syncRequest['ResourceEdge']) {
             failureXml = updateResourceEdges("sync", xmlResourceEdge)
@@ -729,7 +729,7 @@ class ResourceController extends ApiController {
     def createResourceEdges(params) {
 
         def failureXml = null
-        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+        def syncRequest = new XmlParser().parseText(getPostData())
 
         for (xmlResourceEdge in syncRequest['ResourceEdge']) {
             failureXml = updateResourceEdges("add", xmlResourceEdge)
@@ -752,7 +752,7 @@ class ResourceController extends ApiController {
     def deleteResourceEdges(params) {
 
         def failureXml = null
-        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+        def syncRequest = new XmlParser().parseText(getPostData())
 
         for (xmlResourceEdge in syncRequest['ResourceEdge']) {
             failureXml = updateResourceEdges("remove", xmlResourceEdge)
@@ -891,7 +891,7 @@ class ResourceController extends ApiController {
 
     // Uses sync(), but does extra checks to ensure the resource exists.
     def update(params) {
-        def updateRequest = new XmlParser().parseText(getUpload('postdata'))
+        def updateRequest = new XmlParser().parseText(getPostData())
         def xmlResources = updateRequest['Resource']
         def failureXml = null
 
