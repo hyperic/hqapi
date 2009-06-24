@@ -120,6 +120,18 @@ class ApiController extends BaseController {
         }
     }
 
+    /**
+     * Get POST data from the client.
+     */
+    protected getPostData() {
+        // Check for multipart/form-data
+        if (invokeArgs.request.contentType.contains("multipart")) {
+            return getUpload('postdata')
+        } else {
+            return invokeArgs.request.inputStream.getText()
+        }
+    }
+
     def dispatchRequest() {
 
         long start = System.currentTimeMillis()
