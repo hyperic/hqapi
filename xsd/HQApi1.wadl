@@ -184,6 +184,222 @@
             </wadl:method>
         </wadl:resource>
 
+        <wadl:resource path="resource/getResourcePrototypes.hqu">
+            <wadl:doc title="HQApi Resource getResourcePrototypes command">
+                List ResourcePrototypes
+            </wadl:doc>
+            <wadl:method name="GET" id="ResourceGetResourcePrototypes">
+                <wadl:request>
+                    <wadl:param name="existing" style="query" required="false"
+                                type="xs:boolean" default="false">
+                        <wadl:doc>
+                            If set to true, only ResourcePrototypes with
+                            Resources of that type in the inventory will be
+                            returned.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ResourcePrototypesResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="resource/getResourcePrototype.hqu">
+            <wadl:doc title="HQApi Resource getResourcePrototype command">
+                Get a ResourcePrototype
+            </wadl:doc>
+            <wadl:method name="GET" id="ResourceGetResourcePrototype">
+                <wadl:request>
+                    <wadl:param name="name" style="query" required="true"
+                                type="xs:string">
+                        <wadl:doc>
+                            The name of the ResourcePrototype to get.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ResourcePrototypeResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="resource/createPlatform.hqu">
+            <wadl:doc title="HQApi Resource createPlatform command">
+                Create a platform Resource
+            </wadl:doc>
+            <wadl:method name="POST" id="ResourceCreatePlatform">
+                <wadl:request>
+                    <wadl:representation mediaType="application/xml"
+                                         element="CreatePlatformRequest"/>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ResourceResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="resource/createResource.hqu">
+            <wadl:doc title="HQApi Resource createResource command">
+                Create a server or service Resource
+            </wadl:doc>
+            <wadl:method name="POST" id="ResourceCreate">
+                <wadl:request>
+                    <wadl:representation mediaType="application/xml"
+                                         element="CreateResourceRequest"/>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ResourceResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="resource/get.hqu">
+            <wadl:doc title="HQApi Resource get command">
+                Get a Resource by id or platform name
+            </wadl:doc>
+            <wadl:method name="GET" id="ResourceGet">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="false"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Resource to return.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="platformName" style="query" required="false"
+                                type="xs:string">
+                        <wadl:doc>
+                            The name of the platform Resource to return.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="verbose" style="query" required="false"
+                                type="xs:boolean" default="false">
+                        <wadl:doc>
+                            If set to true, return additional Resource information
+                            such as ResourceConfig and ResourceProperty.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="children" style="query" required="false"
+                                type="xs:boolean" default="false">
+                        <wadl:doc>
+                            If set to true, return child Resources of the
+                            returned Resource.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ResourceResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="resource/find.hqu">
+            <wadl:doc title="HQApi Resource find command">
+                Find Resources by Agent id or by ResourcePrototype
+            </wadl:doc>
+            <wadl:method name="GET" id="ResourceFind">
+                <wadl:request>
+                    <wadl:param name="agentId" style="query" required="false"
+                                type="xs:int">
+                        <wadl:doc>
+                            Find Resources serviced by the given Agent id.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="prototype" style="query" required="false"
+                                type="xs:string">
+                        <wadl:doc>
+                            Find Resources of the given ResourcePrototype
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="verbose" style="query" required="false"
+                                type="xs:boolean" default="false">
+                        <wadl:doc>
+                            If set to true, return additional Resource information
+                            such as ResourceConfig and ResourceProperty.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="children" style="query" required="false"
+                                type="xs:boolean" default="false">
+                        <wadl:doc>
+                            If set to true, return child Resources of the
+                            returned Resource.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ResourcesResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="resource/sync.hqu">
+            <wadl:doc title="HQApi Resource sync command">
+                Sync Resources
+            </wadl:doc>
+            <wadl:method name="POST" id="ResourceSync">
+                <wadl:request>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ResourcesRequest"/>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="resource/delete.hqu">
+            <wadl:doc title="HQApi Resource delete command">
+                Delete a Resource
+            </wadl:doc>
+            <wadl:method name="GET" id="ResourceDelete">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Resource to delete.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="resource/move.hqu">
+            <wadl:doc title="HQApi Resource move command">
+                Delete a Resource
+            </wadl:doc>
+            <wadl:method name="GET" id="ResourceMove">
+                <wadl:request>
+                    <wadl:param name="targetId" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Resource to move.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="destinationId" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the destination Resource.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
     </wadl:resources>
 
 </wadl:application>
