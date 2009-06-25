@@ -201,7 +201,7 @@
                  maxmemory="256M"
                  use="true"
                  packagenames="org.hyperic.*"
-                 excludepackagenames="org.hyperic.hq.hqapi1.test.*,org.hyperic.hq.hqapi1.examples.*,org.hyperic.hq.hqapi1.tools.*"
+                 excludepackagenames="org.hyperic.hq.hqapi1.test.*,org.hyperic.hq.hqapi1.examples.*,org.hyperic.hq.hqapi1.tools.*,org.hyperic.hq.hqapi1.wadl.*"
                  windowtitle="Hyperic HQ API">
             <sourcepath>
                 <pathelement location="src"/>
