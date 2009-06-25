@@ -27,4 +27,11 @@ public class WADLTestBase extends TestCase {
             response.getError().getReasonText() : "";
         assertEquals(error, ResponseStatus.SUCCESS, response.getStatus());
     }
+    
+    // Assert FAILURE
+    void hqAssertFailure(Response response) {
+        String error = (response.getError() != null) ?
+            response.getError().getReasonText() : "";
+        assertEquals(error, ResponseStatus.FAILURE, response.getStatus());
+    }
 }
