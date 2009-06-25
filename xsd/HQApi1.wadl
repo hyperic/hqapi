@@ -681,7 +681,41 @@
                 </wadl:response>
             </wadl:method>
         </wadl:resource>
-              
+
+        <wadl:resource path="autodiscovery/getQueue.hqu">
+            <wadl:doc title="HQApi Agent list command">
+                List the Autodiscovery queue
+            </wadl:doc>
+            <wadl:method name="GET" id="AutodiscoveryGetQueue">
+                <wadl:request/>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="QueueResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="autodiscovery/approve.hqu">
+            <wadl:doc title="HQApi Autodiscovery approve command">
+                Approve a platform Resource into the inventory
+            </wadl:doc>
+            <wadl:method name="GET" id="AutodiscoveryApprove">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the platform Resource to approve.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+
     </wadl:resources>
 
 </wadl:application>
