@@ -107,6 +107,7 @@
         <copy toDir="${client.dir}/xsd">
             <fileset dir="${basedir}/xsd">
                 <include name="*.xsd"/>
+                <include name="*.wadl"/>
             </fileset>
         </copy>
         <mkdir dir="${client.dir}/bin"/>
