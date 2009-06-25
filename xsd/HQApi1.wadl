@@ -683,7 +683,7 @@
         </wadl:resource>
 
         <wadl:resource path="autodiscovery/getQueue.hqu">
-            <wadl:doc title="HQApi Agent list command">
+            <wadl:doc title="HQApi Autodiscovery getQueue command">
                 List the Autodiscovery queue
             </wadl:doc>
             <wadl:method name="GET" id="AutodiscoveryGetQueue">
