@@ -553,7 +553,7 @@
 
         <wadl:resource path="metric/getGroupData.hqu">
             <wadl:doc title="HQApi Metric getGroupData command">
-                Get MetricData for a MetricTemplate across a compatible Group.
+                Get MetricData for a MetricTemplate across a compatible Group
             </wadl:doc>
             <wadl:method name="GET" id="MetricGetGroupData">
                 <wadl:request>
@@ -591,7 +591,7 @@
 
         <wadl:resource path="metric/getResourceData.hqu">
             <wadl:doc title="HQApi Metric getResourceData command">
-                Get MetricData for a list of Resource's.
+                Get MetricData for a list of Resource's
             </wadl:doc>
             <wadl:method name="GET" id="MetricGetResourceData">
                 <wadl:request>
@@ -629,6 +629,59 @@
             </wadl:method>
         </wadl:resource>        
 
+        <wadl:resource path="agent/get.hqu">
+            <wadl:doc title="HQApi Agent get command">
+                Get an Agent
+            </wadl:doc>
+            <wadl:method name="GET" id="AgentGet">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Agent to return.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="AgentResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="agent/list.hqu">
+            <wadl:doc title="HQApi Agent list command">
+                List all Agents
+            </wadl:doc>
+            <wadl:method name="GET" id="AgentList">
+                <wadl:request/>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="AgentsResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="agent/ping.hqu">
+            <wadl:doc title="HQApi Agent ping command">
+                Ping an Agent
+            </wadl:doc>
+            <wadl:method name="GET" id="AgentPing">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Agent to ping.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="PingAgentResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+              
     </wadl:resources>
 
 </wadl:application>
