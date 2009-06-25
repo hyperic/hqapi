@@ -715,6 +715,80 @@
             </wadl:method>
         </wadl:resource>
 
+        <wadl:resource path="maintenance/get.hqu">
+            <wadl:doc title="HQApi Maintenance get command">
+                Get the maintenance schedule for a Group
+            </wadl:doc>
+            <wadl:method name="GET" id="MaintenanceGet">
+                <wadl:request>
+                    <wadl:param name="groupId" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Group to get maintenance.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="MaintenanceResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="maintenance/schedule.hqu">
+            <wadl:doc title="HQApi Maintenance schedule command">
+                Schedule maintenance for a Group
+            </wadl:doc>
+            <wadl:method name="GET" id="MaintenanceSchedule">
+                <wadl:request>
+                    <wadl:param name="groupId" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Group to put into maintenance.
+                        </wadl:doc>
+                    </wadl:param>
+
+                    <wadl:param name="start" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The start time in milliseconds from the epoch.
+                        </wadl:doc>
+                    </wadl:param>
+
+                    <wadl:param name="end" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The end time in milliseconds from the epoch.
+                        </wadl:doc>
+                    </wadl:param>
+
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="MaintenanceResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="maintenance/unschedule.hqu">
+            <wadl:doc title="HQApi Maintenance unschedule command">
+                Unschedule maintenance for a Group
+            </wadl:doc>
+            <wadl:method name="GET" id="MaintenanceUnschedule">
+                <wadl:request>
+                    <wadl:param name="groupId" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Group to unschedule from maintenance.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
 
     </wadl:resources>
 
