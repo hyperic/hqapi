@@ -71,11 +71,22 @@ class EscalationController extends ApiController {
         }
     }
 
+    private getEscalation(Integer id, String name) {
+        // TODO: Work around deficiency in EscalationHelper
+        def esc = escalationHelper.getEscalation(id, name)
+        try {
+            esc.name
+        } catch (Throwable t) {
+            return null
+        }
+        return esc
+    }
+
     def get(params) {
         def id = params.getOne("id")?.toInteger()
         def name = params.getOne("name")
         
-        def esc = escalationHelper.getEscalation(id, name)
+        def esc = getEscalation(id, name)
         renderXml() {
             out << EscalationResponse() {
                 if (!esc) {
@@ -103,11 +114,29 @@ class EscalationController extends ApiController {
     }
 
     def delete(params) {
-        def id = params.getOne("id").toInteger()
-        escalationHelper.deleteEscalation(id)
+        def id = params.getOne("id")?.toInteger()
+        def failureXml
+
+        if (id == null) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Required id parameter not given.")
+        }
+
+        def esc = getEscalation(id, null)
+        if (!esc) {
+            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                       "Escalation with id " + id + " not found")
+        } else {
+            escalationHelper.deleteEscalation(id)
+        }
+
         renderXml() {
             out << StatusResponse() {
-                out << getSuccessXML()
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                }
             }
         }
     }
@@ -132,7 +161,7 @@ class EscalationController extends ApiController {
             def notifyAll    = xmlEsc.'@notifyAll'.toBoolean()
             def repeat       = xmlEsc.'@repeat'.toBoolean()
 
-            esc = escalationHelper.getEscalation(id, name)
+            esc = getEscalation(id, name)
 
             if (!name || name.length() == 0) {
                 failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
@@ -183,7 +212,7 @@ class EscalationController extends ApiController {
             def notifyAll    = xmlEsc.'@notifyAll'.toBoolean()
             def repeat       = xmlEsc.'@repeat'.toBoolean()
         
-            esc = escalationHelper.getEscalation(id, name)
+            esc = getEscalation(id, name)
 
             if (!esc) {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
@@ -222,7 +251,7 @@ class EscalationController extends ApiController {
             def notifyAll    = xmlEsc.'@notifyAll'.toBoolean()
             def repeat       = xmlEsc.'@repeat'.toBoolean()
         
-            def esc = escalationHelper.getEscalation(id, name)
+            def esc = getEscalation(id, name)
 
             if (!name || name.length() == 0) {
                 failureXml = getFailureXml(ErrorCode.INVALID_PARAMETERS,
