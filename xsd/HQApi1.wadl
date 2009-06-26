@@ -899,6 +899,77 @@
             </wadl:method>
         </wadl:resource>
 
+        <wadl:resource path="escalation/get.hqu">
+            <wadl:doc title="HQApi Escalation get command">
+                Get an Escalation
+            </wadl:doc>
+            <wadl:method name="GET" id="EscalationGet">
+                <wadl:request>
+                    <wadl:param name="name" style="query" required="true"
+                                type="xs:string">
+                        <wadl:doc>
+                            The name of the Escalation to return.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="EscalationResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="escalation/list.hqu">
+            <wadl:doc title="HQApi Escalation list command">
+                List Escalations
+            </wadl:doc>
+            <wadl:method name="GET" id="EscalationList">
+                <wadl:request/>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="EscalationsResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="escalation/delete.hqu">
+            <wadl:doc title="HQApi Escalation delete command">
+                Delete an AlertDefinition
+            </wadl:doc>
+            <wadl:method name="GET" id="EscalationDelete">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Escalation to delete.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <!-- Escalation create/update left off intentionally, use sync() -->
+
+        <wadl:resource path="escalation/sync.hqu">
+            <wadl:doc title="HQApi Escalation sync command">
+                Sync Escalations
+            </wadl:doc>
+            <wadl:method name="POST" id="EscalationSync">
+                <wadl:request>
+                    <wadl:representation mediaType="application/xml"
+                                         element="EscalationsRequest"/>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
     </wadl:resources>
 
 </wadl:application>
