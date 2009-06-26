@@ -790,6 +790,115 @@
             </wadl:method>
         </wadl:resource>
 
+        <wadl:resource path="alertdefinition/listDefinitions.hqu">
+            <wadl:doc title="HQApi Alertdefinition listDefinitions command">
+                List AlertDefinitions.  If multiple optional parameters are used
+                the returned list will be the union of all parameters. (Logical
+                AND)
+            </wadl:doc>
+            <wadl:method name="GET" id="AlertDefinitionListDefinitions">
+                <wadl:request>
+                    <wadl:param name="alertNameFilter" style="query" required="false"
+                                type="xs:string">
+                        <wadl:doc>
+                            If specified, only return AlertDefinitions that have
+                            a name matching the given regular expression.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="resourceNameFilter" style="query" required="false"
+                                type="xs:string">
+                        <wadl:doc>
+                            If specified, only return AlertDefinitions that are
+                            on Resources with a name matching the given regular
+                            expression.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="groupName" style="query" required="false"
+                                type="xs:string">
+                        <wadl:doc>
+                            If specified, only return AlertDefinitions for Resources
+                            contained in the specified Group.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="escalationId" style="query" required="false"
+                                type="xs:int">
+                        <wadl:doc>
+                            If specified, only return AlertDefinitions that are
+                            assigned to the given Escalation.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="excludeTypeBased" style="query" required="false"
+                                type="xs:boolean">
+                        <wadl:doc>
+                            If true, only return AlertDefinitions that are not created
+                            as part of a Resource type definition.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="AlertDefinitionsResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="alertdefinition/listTypeDefinitions.hqu">
+            <wadl:doc title="HQApi Alertdefinition listTypeDefinitions command">
+                List type based AlertDefinitions
+            </wadl:doc>
+            <wadl:method name="GET" id="AlertDefinitionListTypeDefinitions">
+                <wadl:request>
+                    <wadl:param name="excludeIds" style="query" required="false"
+                                default="false" type="xs:boolean">
+                        <wadl:doc>
+                            If true, do not include AlertDefinition ids in the
+                            XML output.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="AlertDefinitionsResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="alertdefinition/delete.hqu">
+            <wadl:doc title="HQApi Alertdefinition delete command">
+                Delete an AlertDefinition
+            </wadl:doc>
+            <wadl:method name="GET" id="AlertDefinitionDelete">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the AlertDefinition to delete.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="alertdefinition/sync.hqu">
+            <wadl:doc title="HQApi Alertdefinition sync command">
+                Sync AlertDefinitions
+            </wadl:doc>
+            <wadl:method name="POST" id="AlertDefinitionSync">
+                <wadl:request>
+                    <wadl:representation mediaType="application/xml"
+                                         element="AlertDefinitionsRequest"/>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="AlertDefinitionsResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
     </wadl:resources>
 
 </wadl:application>
