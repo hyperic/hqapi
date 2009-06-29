@@ -61,7 +61,7 @@ public class XmlUtil {
     {
         Marshaller m = CTX.createMarshaller();
         m.setEventHandler(new DefaultValidationEventHandler());
-        m.setProperty("jaxb.formatted.output", format);
+        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, format);
         m.marshal(o, os);
     }
 }
