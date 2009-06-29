@@ -992,7 +992,7 @@
 
         <wadl:resource path="group/list.hqu">
             <wadl:doc title="HQApi Group list command">
-                Get a Group
+                List Groups
             </wadl:doc>
             <wadl:method name="GET" id="GroupList">
                 <wadl:request>
@@ -1010,7 +1010,6 @@
                 </wadl:response>
             </wadl:method>
         </wadl:resource>
-
 
         <wadl:resource path="group/delete.hqu">
             <wadl:doc title="HQApi Group delete command">
@@ -1044,6 +1043,75 @@
                 <wadl:response>
                     <wadl:representation mediaType="application/xml"
                                          element="GroupsResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="role/get.hqu">
+            <wadl:doc title="HQApi Role get command">
+                Get a Role
+            </wadl:doc>
+            <wadl:method name="GET" id="RoleGet">
+                <wadl:request>
+                    <wadl:param name="name" style="query" required="true"
+                                type="xs:string">
+                        <wadl:doc>
+                            The name of the Role to return.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="RoleResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="role/list.hqu">
+            <wadl:doc title="HQApi Role list command">
+                List Roles
+            </wadl:doc>
+            <wadl:method name="GET" id="RoleList">
+                <wadl:request/>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="RolesResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="role/delete.hqu">
+            <wadl:doc title="HQApi Role delete command">
+                Delete a Role
+            </wadl:doc>
+            <wadl:method name="GET" id="RoleDelete">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Role to delete.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="role/sync.hqu">
+            <wadl:doc title="HQApi Role sync command">
+                Sync Roles
+            </wadl:doc>
+            <wadl:method name="POST" id="RoleSync">
+                <wadl:request>
+                    <wadl:representation mediaType="application/xml"
+                                         element="RolesRequest"/>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
                 </wadl:response>
             </wadl:method>
         </wadl:resource>
