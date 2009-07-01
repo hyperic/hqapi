@@ -254,7 +254,7 @@ public class RoleUpdate_test extends RoleTestBase {
         RoleResponse createResponse = roleApi.createRole(r);
         hqAssertSuccess(createResponse);
 
-        // Add all users.
+        // Add invalid users.
         List<User> users = new ArrayList<User>();
         for (int i = 0; i < 5; i++) {
             users.add(generateTestUser());
@@ -263,11 +263,6 @@ public class RoleUpdate_test extends RoleTestBase {
         Role role = createResponse.getRole();
         role.getUser().addAll(users);
         StatusResponse updateResponse = roleApi.updateRole(role);
-        hqAssertSuccess(updateResponse);
-
-        RoleResponse getResponse = roleApi.getRole(r.getName());
-        hqAssertSuccess(getResponse);
-        assertTrue("Updated role contained users, should be 0",
-                   getResponse.getRole().getUser().size() == 0);
+        hqAssertFailureObjectNotFound(updateResponse);
     }
 }

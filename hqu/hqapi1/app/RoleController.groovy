@@ -68,7 +68,7 @@ class RoleController extends ApiController {
     }
 
     def create(params) {
-        def failureXml
+        def failureXml = null
         def createdRole
         try {
             def createRequest = new XmlParser().parseText(getPostData())
@@ -102,16 +102,23 @@ class RoleController extends ApiController {
                     def u = getUser(subj.'@id'?.toInteger(), subj.'@name')
                     if (u) {
                         users << u
+                    } else {
+                        failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                                   "User with id=" + subj.'@id' +
+                                                   ", name=" + subj.'@name' +
+                                                   " not found")
                     }
                 }
 
-                createdRole = roleHelper.createRole(xmlIn.'@name',
-                                                    xmlIn.'@description',
-                                                    operations as String[],
-                                                    users*.id as Integer[],
-                                                    [] as Integer[])
-                // TODO: Setting subjects via createRole broken?
-                createdRole.setSubjects(user, users)
+                if (!failureXml) {
+                    createdRole = roleHelper.createRole(xmlIn.'@name',
+                                                        xmlIn.'@description',
+                                                        operations as String[],
+                                                        users*.id as Integer[],
+                                                        [] as Integer[])
+                    // TODO: Setting subjects via createRole broken?
+                    createdRole.setSubjects(user, users)
+                }
             }
         } catch (PermissionException e) {
             log.debug("Permission denied [${user.name}]", e)
@@ -134,7 +141,7 @@ class RoleController extends ApiController {
     }
 
     def update(params) {
-        def failureXml
+        def failureXml = null
         try {
             def updateRequest = new XmlParser().parseText(getPostData())
             def xmlRole = updateRequest['Role']
@@ -170,14 +177,21 @@ class RoleController extends ApiController {
                     def u = getUser(subj.'@id'?.toInteger(), subj.'@name')
                     if (u) {
                         users << u
+                    } else {
+                        failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                                   "User with id=" + subj.'@id' +
+                                                   ", name=" + subj.'@name' +
+                                                   " not found")
                     }
                 }
 
-                existing.update(user,
-                                xmlIn.'@name',
-                                xmlIn.'@description')
-                existing.setOperations(user, operations)
-                existing.setSubjects(user, users)
+                if (!failureXml) {
+                    existing.update(user,
+                                    xmlIn.'@name',
+                                    xmlIn.'@description')
+                    existing.setOperations(user, operations)
+                    existing.setSubjects(user, users)
+                }
             }
         } catch (AuthzDuplicateNameException e) {
             log.debug("Duplicate object", e)
@@ -202,7 +216,7 @@ class RoleController extends ApiController {
     }
 
     def sync(params) {
-        def failureXml
+        def failureXml = null
         try {
             def syncRequest = new XmlParser().parseText(getPostData())
             for (xmlRole in syncRequest['Role']) {
@@ -230,14 +244,21 @@ class RoleController extends ApiController {
                         def u = getUser(subj.'@id'?.toInteger(), subj.'@name')
                         if (u) {
                             users << u
+                        } else {
+                            failureXml=  getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                                       "User with id=" + subj.'@id' +
+                                                       ", name=" + subj.'@name' +
+                                                       " not found")
                         }
                     }
 
-                    existing.update(user,
-                                    xmlRole.'@name',
-                                    xmlRole.'@description')
-                    existing.setOperations(user, operations)
-                    existing.setSubjects(user, users)
+                    if (!failureXml) {
+                        existing.update(user,
+                                        xmlRole.'@name',
+                                        xmlRole.'@description')
+                        existing.setOperations(user, operations)
+                        existing.setSubjects(user, users)
+                    }
                 } else {
                     def operations = []
                     def ops = xmlRole['Operation']
@@ -251,17 +272,24 @@ class RoleController extends ApiController {
                         def u = getUser(subj.'@id'?.toInteger(), subj.'@name')
                         if (u) {
                             users << u
+                        } else {
+                            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                                       "User with id=" + subj.'@id' +
+                                                       ", name=" + subj.'@name' +
+                                                       " not found")
                         }
                     }
 
-                    def createdRole = roleHelper.createRole(xmlRole.'@name',
-                                          xmlRole.'@description',
-                                          operations as String[],
-                                          [] as Integer[],
-                                          [] as Integer[])
+                    if (!failureXml) {
+                        def createdRole = roleHelper.createRole(xmlRole.'@name',
+                                                                xmlRole.'@description',
+                                                                operations as String[],
+                                                                [] as Integer[],
+                                                                [] as Integer[])
 
-                    // TODO: Setting subjects via createRole broken?
-                    createdRole.setSubjects(user, users)
+                        // TODO: Setting subjects via createRole broken?
+                        createdRole.setSubjects(user, users)
+                    }
                 }
             }
         } catch (PermissionException e) {

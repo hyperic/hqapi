@@ -208,4 +208,21 @@ public class RoleSyncRoles_test extends RoleTestBase {
         StatusResponse response = api.syncRoles(roles);
         hqAssertFailureNotSupported(response);              
     }
+
+    public void testSyncRolesInvalidUsers() throws Exception {
+        RoleApi api = getRoleApi();
+
+        Role r = new Role();
+        r.setName("New Role with invalid users");
+
+        User u = new User();
+        u.setName("Invalid User");
+        r.getUser().add(u);
+
+        List<Role> roles = new ArrayList<Role>();
+        roles.add(r);
+
+        StatusResponse response = api.syncRoles(roles);
+        hqAssertFailureObjectNotFound(response);
+    }
 }

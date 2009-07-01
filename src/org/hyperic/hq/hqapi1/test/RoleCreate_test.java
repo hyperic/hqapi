@@ -153,15 +153,6 @@ public class RoleCreate_test extends RoleTestBase {
         r.getUser().addAll(users);
 
         RoleResponse response = api.createRole(r);
-        hqAssertSuccess(response);
-
-        Role role = response.getRole();
-        for (Operation o : VIEW_OPS) {
-            assertTrue("Created role does not contain operation " + o.value(),
-                       role.getOperation().contains(o));
-        }
-
-        // Should return 0 users since Role creation will not create new users.
-        assertTrue(role.getUser().size() == 0);
+        hqAssertFailureObjectNotFound(response);
     }
 }
