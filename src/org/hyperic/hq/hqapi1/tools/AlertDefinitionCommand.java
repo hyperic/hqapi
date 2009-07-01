@@ -10,6 +10,7 @@ import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.EscalationResponse;
+import org.hyperic.hq.hqapi1.types.Escalation;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -95,11 +96,6 @@ public class AlertDefinitionCommand extends Command {
             }
             
             alertDefs = definitionApi.getTypeAlertDefinitions(excludeIds);
-        } else if (options.has(OPT_ESCLATION)) {
-            EscalationResponse escalationResponse = escalationApi.
-                    getEscalation((String)getRequired(options, OPT_ESCLATION));
-            checkSuccess(escalationResponse);
-            alertDefs = definitionApi.getAlertDefinitions(escalationResponse.getEscalation());
         } else {
             boolean excludeTypeAlerts = false;
             if (options.has(OPT_EXCLUDE_TYPEALERTS)) {
@@ -114,8 +110,17 @@ public class AlertDefinitionCommand extends Command {
             String alertNameFilter = (String)options.valueOf(OPT_ALERT_NAME);
             String resourceNameFilter = (String)options.valueOf(OPT_RESOURCE_NAME);
             String groupNameFilter = (String)options.valueOf(OPT_GROUP);
+            Escalation escalation = null;
+
+            if (options.has(OPT_ESCLATION)) {
+                EscalationResponse escalationResponse = escalationApi.
+                        getEscalation((String)getRequired(options, OPT_ESCLATION));
+                checkSuccess(escalationResponse);
+                escalation = escalationResponse.getEscalation();
+            }
 
             alertDefs = definitionApi.getAlertDefinitions(excludeTypeAlerts,
+                                                          escalation,
                                                           alertNameFilter,
                                                           resourceNameFilter,
                                                           groupNameFilter);
