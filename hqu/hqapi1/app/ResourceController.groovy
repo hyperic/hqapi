@@ -306,6 +306,14 @@ class ResourceController extends ApiController {
         try {
             resource = prototype.createInstance(parent, resourceXml.'@name',
                                                 user, cfg)
+        } catch (IllegalArgumentException e) {
+            renderXml() {
+                ResourceResponse() {
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         e.getMessage())
+                }
+            }
+            return
         } catch (Exception e) {
             // TODO: Fix this
             renderXml() {
@@ -626,6 +634,9 @@ class ResourceController extends ApiController {
                 try {
                     resource = prototype.createInstance(parent, name,
                                                         user, config, agent, ips)
+                } catch (IllegalArgumentException e) {
+                    return getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         e.getMessage())
                 } catch (Exception e) {
                     log.warn("Error creating resource", e)
                     return getFailureXML(ErrorCode.OBJECT_EXISTS);
@@ -650,6 +661,9 @@ class ResourceController extends ApiController {
 
                     resource = prototype.createInstance(parent, name,
                                                         user, config)
+                } catch (IllegalArgumentException e) {
+                    return getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         e.getMessage())
                 } catch (Exception e) {
                     log.warn("Error creating resource", e)
                     return getFailureXML(ErrorCode.OBJECT_EXISTS);
@@ -659,6 +673,9 @@ class ResourceController extends ApiController {
                 try {
                     resource = prototype.createInstance(parent, name,
                                                         user, config)
+                } catch (IllegalArgumentException e) {
+                    return getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         e.getMessage())
                 } catch (Exception e) {
                     log.warn("Error creating resource", e)
                     return getFailureXML(ErrorCode.OBJECT_EXISTS);

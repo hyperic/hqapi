@@ -32,6 +32,7 @@ import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -76,5 +77,59 @@ public class ResourceCreateServer_test extends ResourceTestBase {
         // Cleanup
         StatusResponse deleteResponse = api.deleteResource(resp.getResource().getId());
         hqAssertSuccess(deleteResponse);
+    }
+
+    public void testCreateServerInvalidAppdefType() throws Exception {
+        ResourceApi api = getApi().getResourceApi();
+
+        ResourcePrototypeResponse protoResponse =
+                api.getResourcePrototype("Apache httpd");
+        hqAssertSuccess(protoResponse);
+
+        ResourcePrototypeResponse cpuProtoResponse =
+                api.getResourcePrototype("CPU");
+        hqAssertSuccess(cpuProtoResponse);
+
+        ResourcesResponse cpusResponse = api.getResources(cpuProtoResponse.getResourcePrototype(),
+                                                          false, false);
+        hqAssertSuccess(cpusResponse);
+        assertTrue("No CPUs found", cpusResponse.getResource().size() > 0);
+
+        Resource parent = cpusResponse.getResource().get(0);
+
+        Random r = new Random();
+        final String name = "Test Apache Server" + r.nextInt();
+
+        Map<String,String> config = new HashMap<String,String>();
+        config.put("hostname", "localhost");
+        config.put("port", "80");
+        config.put("path", "/server-status");
+        config.put("sotimeout", "10");
+
+        ResourceResponse resp =
+                api.createServer(protoResponse.getResourcePrototype(),
+                                 parent, name, config);
+        hqAssertFailureInvalidParameters(resp);
+    }
+
+    public void testCreateServerInvalidPrototype() throws Exception {
+        ResourceApi api = getApi().getResourceApi();
+
+        ResourcePrototypeResponse protoResponse =
+                api.getResourcePrototype(".NET 1.1");
+        hqAssertSuccess(protoResponse);
+
+        // TODO: This requires a non-Windows type!
+        Resource parent = getLocalPlatformResource(false, false);
+
+        Random r = new Random();
+        final String name = "Test .NET Server" + r.nextInt();
+
+        Map<String,String> config = new HashMap<String,String>();
+
+        ResourceResponse resp =
+                api.createServer(protoResponse.getResourcePrototype(),
+                                 parent, name, config);
+        hqAssertFailureInvalidParameters(resp);
     }
 }

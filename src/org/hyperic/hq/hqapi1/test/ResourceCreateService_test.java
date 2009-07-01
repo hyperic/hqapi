@@ -30,6 +30,15 @@ package org.hyperic.hq.hqapi1.test;
 import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.ResourcePrototype;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.ResourceResponse;
+import org.hyperic.hq.hqapi1.types.Agent;
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Random;
 
 public class ResourceCreateService_test extends ResourceTestBase {
 
@@ -45,5 +54,73 @@ public class ResourceCreateService_test extends ResourceTestBase {
         // Clean up
         StatusResponse deleteResponse = api.deleteResource(createdResource.getId());
         hqAssertSuccess(deleteResponse);
+    }
+
+    // Attempt to create a resource on an invalid appdef type. (e.g. service on service)
+    public void testCreateServiceInvalidAppdefType() throws Exception {
+        ResourceApi api = getApi().getResourceApi();
+
+        // Find HTTP resource type
+        ResourcePrototypeResponse protoResponse = api.getResourcePrototype("HTTP");
+        hqAssertSuccess(protoResponse);
+        ResourcePrototype pt = protoResponse.getResourcePrototype();
+
+        // Find CPU resource type
+        ResourcePrototypeResponse cpuProtoResponse = api.getResourcePrototype("CPU");
+        hqAssertSuccess(cpuProtoResponse);
+        ResourcePrototype cpuPt = protoResponse.getResourcePrototype();
+
+        ResourcesResponse cpusResponse = api.getResources(cpuPt, false, false);
+        hqAssertSuccess(cpusResponse);
+        assertTrue("0 CPUs found", cpusResponse.getResource().size() != 0);
+        Resource cpu = cpusResponse.getResource().get(0);
+
+        // Configure service
+        Map<String,String> params = new HashMap<String,String>();
+        params.put("hostname", "www.hyperic.com");
+        params.put("port", "80");
+        params.put("sotimeout", "10");
+        params.put("path", "/");
+        params.put("method", "GET");
+
+        Random r = new Random();
+        String name = "My HTTP Check " + r.nextInt();
+
+        ResourceResponse resp = api.createService(pt, cpu, name, params);
+        hqAssertFailureInvalidParameters(resp);
+    }
+
+    // Attempt to create a resource on an invalid prototype
+    public void testServiceCreateInvalidPrototype() throws Exception {
+        ResourceApi api = getApi().getResourceApi();
+
+        // Find HTTP resource type
+        ResourcePrototypeResponse protoResponse = api.getResourcePrototype("HTTP");
+        hqAssertSuccess(protoResponse);
+        ResourcePrototype pt = protoResponse.getResourcePrototype();
+
+        // Find CPU resource type
+        ResourcePrototypeResponse hqAgentProtoResponse = api.getResourcePrototype("HQ Agent");
+        hqAssertSuccess(hqAgentProtoResponse);
+        ResourcePrototype hqAgentPt = protoResponse.getResourcePrototype();
+
+        ResourcesResponse agentsResponse = api.getResources(hqAgentPt, false, false);
+        hqAssertSuccess(agentsResponse);
+        assertTrue("0 Agents found", agentsResponse.getResource().size() != 0);
+        Resource agent = agentsResponse.getResource().get(0);
+
+        // Configure service
+        Map<String,String> params = new HashMap<String,String>();
+        params.put("hostname", "www.hyperic.com");
+        params.put("port", "80");
+        params.put("sotimeout", "10");
+        params.put("path", "/");
+        params.put("method", "GET");
+
+        Random r = new Random();
+        String name = "My HTTP Check " + r.nextInt();
+
+        ResourceResponse resp = api.createService(pt, agent, name, params);
+        hqAssertFailureInvalidParameters(resp);
     }
 }
