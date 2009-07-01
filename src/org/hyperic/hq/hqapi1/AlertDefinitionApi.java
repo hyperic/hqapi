@@ -59,6 +59,7 @@ public class AlertDefinitionApi extends BaseApi {
      *
      * @param excludeTypeBased Flag to control whether instances of type based
      * alerts will be included.
+     * @param escalation The {@link Escalation} to filter by
      * @param alertNameFilter Filter returned definitions by definition name
      * using the given regular expression.  A value of null will result in no
      * filtering being performed.
@@ -74,6 +75,7 @@ public class AlertDefinitionApi extends BaseApi {
      * @throws java.io.IOException If a network error occurs while making the request.
      */
     public AlertDefinitionsResponse getAlertDefinitions(boolean excludeTypeBased,
+                                                        Escalation escalation,
                                                         String alertNameFilter,
                                                         String resourceNameFilter,
                                                         String groupName)
@@ -89,6 +91,9 @@ public class AlertDefinitionApi extends BaseApi {
         }
         if (groupName != null) {
             params.put("groupName", new String[] { groupName });
+        }
+        if (escalation != null) {
+            params.put("escalationId", new String[] { Integer.toString(escalation.getId())});
         }
 
         return doGet("alertdefinition/listDefinitions.hqu", params,
@@ -109,7 +114,7 @@ public class AlertDefinitionApi extends BaseApi {
     public AlertDefinitionsResponse getAlertDefinitions(boolean excludeTypeBased)
         throws IOException
     {
-        return getAlertDefinitions(excludeTypeBased, null, null, null);
+        return getAlertDefinitions(excludeTypeBased, null, null, null, null);
     }
 
     /**
@@ -126,33 +131,12 @@ public class AlertDefinitionApi extends BaseApi {
     public AlertDefinitionsResponse getAlertDefinitions(AlertDefinition parent)
         throws IOException {
 
+        // TODO: This should allow for filtering
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("parentId", new String[] { Integer.toString(parent.getId()) });
 
         return doGet("alertdefinition/listDefinitions.hqu", params,
                      AlertDefinitionsResponse.class); 
-    }
-
-
-    /**
-     * Find all {@link org.hyperic.hq.hqapi1.types.AlertDefinition}s that use
-     * the given escalation.
-     *
-     * @param e The {@link Escalation} to filter by
-     *
-     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
-     * a list of AlertDefinitions are returned.
-     *
-     * @throws java.io.IOException If a network error occurs while making the request.
-     */
-    public AlertDefinitionsResponse getAlertDefinitions(Escalation e)
-        throws IOException {
-
-        Map<String,String[]> params = new HashMap<String,String[]>();
-        params.put("escalationId", new String[] { Integer.toString(e.getId()) });
-
-        return doGet("alertdefinition/listDefinitions.hqu", params,
-                     AlertDefinitionsResponse.class);
     }
 
     /**

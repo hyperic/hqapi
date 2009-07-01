@@ -205,6 +205,9 @@ public class AlertdefinitionController extends ApiController {
             } else {
                 // TODO: Add to alert helper
                 definitions = aMan.getUsing(escalation)
+                if (excludeTypeBased) {
+                    definitions = definitions.findAll { it.parent == null }
+                }
             }
         } else {
             definitions = alertHelper.findDefinitions(AlertSeverity.LOW, null,
