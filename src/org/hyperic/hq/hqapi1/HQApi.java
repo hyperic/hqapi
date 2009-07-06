@@ -45,6 +45,7 @@ public class HQApi {
     private final AlertDefinitionApi _alertDefinitionApi;
     private final MaintenanceApi     _maintenanceApi;
     private final ResourceEdgeApi    _resourceEdgeApi;
+    private final ServerConfigApi    _serverConfigApi;
     
     /**
      * @param host The hostname of the HQ Server to connect to.
@@ -68,6 +69,7 @@ public class HQApi {
         _alertDefinitionApi = new AlertDefinitionApi(connection);
         _maintenanceApi   = new MaintenanceApi(connection);
         _resourceEdgeApi  = new ResourceEdgeApi(connection);
+        _serverConfigApi  = new ServerConfigApi(connection);
     }
 
     /**
@@ -168,5 +170,14 @@ public class HQApi {
      */
     public ResourceEdgeApi getResourceEdgeApi() {
         return _resourceEdgeApi;
+    }
+
+    /**
+     * Manipulate HQ server configuration settings
+     *
+     * @return The API for modifying HQ server settings
+     */
+    public ServerConfigApi getServerConfigApi() {
+        return _serverConfigApi;
     }
 }
