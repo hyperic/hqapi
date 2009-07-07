@@ -26,11 +26,34 @@ class ServerconfigController extends ApiController {
 
     def setConfig(params) {
 
-        // TODO: Implement
-        
+        def failureXml = null
+
+        if (!user.isSuperUser()) {
+            failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED,
+                                       "User " + user.name + " is not superuser")
+        } else {
+
+            Properties props = new Properties()
+            def postData = new XmlParser().parseText(getPostData())
+            for (xmlConfig in postData['ServerConfig']) {
+                props.put(xmlConfig.'@key', xmlConfig.'@value')
+            }
+
+            try {
+                _serverMan.setConfig(user, props)
+            } catch (Exception e) {
+                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                           e.getMessage())
+            }
+        }
+
         renderXml() {
             StatusResponse() {
-                out << getSuccessXML()
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                }
             }
         }
     }
