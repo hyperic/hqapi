@@ -68,7 +68,7 @@ public class ResourceCreateService_test extends ResourceTestBase {
         // Find CPU resource type
         ResourcePrototypeResponse cpuProtoResponse = api.getResourcePrototype("CPU");
         hqAssertSuccess(cpuProtoResponse);
-        ResourcePrototype cpuPt = protoResponse.getResourcePrototype();
+        ResourcePrototype cpuPt = cpuProtoResponse.getResourcePrototype();
 
         ResourcesResponse cpusResponse = api.getResources(cpuPt, false, false);
         hqAssertSuccess(cpusResponse);
@@ -102,7 +102,7 @@ public class ResourceCreateService_test extends ResourceTestBase {
         // Find CPU resource type
         ResourcePrototypeResponse hqAgentProtoResponse = api.getResourcePrototype("HQ Agent");
         hqAssertSuccess(hqAgentProtoResponse);
-        ResourcePrototype hqAgentPt = protoResponse.getResourcePrototype();
+        ResourcePrototype hqAgentPt = hqAgentProtoResponse.getResourcePrototype();
 
         ResourcesResponse agentsResponse = api.getResources(hqAgentPt, false, false);
         hqAssertSuccess(agentsResponse);
