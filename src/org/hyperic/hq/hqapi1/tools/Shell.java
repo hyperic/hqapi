@@ -48,6 +48,7 @@ public class Shell {
         _commands.put("dependency", new ResourceEdgeCommand());
         _commands.put("role", new RoleCommand());
         _commands.put("user", new UserCommand());
+        _commands.put("serverConfig", new ServerConfigCommand());
     }
 
     private static void printHelp() {

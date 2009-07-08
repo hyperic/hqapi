@@ -4,12 +4,10 @@ import org.hyperic.hq.hqapi1.types.ServerConfigsResponse;
 import org.hyperic.hq.hqapi1.types.ServerConfig;
 import org.hyperic.hq.hqapi1.types.ServerConfigRequest;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
-import org.hyperic.hq.hqapi1.types.ServerConfigResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  *  The Hyperic HQ Server Configuration API.
