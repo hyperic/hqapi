@@ -1116,6 +1116,35 @@
             </wadl:method>
         </wadl:resource>
 
+        <wadl:resource path="serverConfig/getConfig.hqu">
+            <wadl:doc title="HQApi ServerConfig getConfig command">
+                Get the HQ Server configuration settings
+            </wadl:doc>
+            <wadl:method name="GET" id="ServerConfigGet">
+                <wadl:request/>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ServerConfigsResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="serverConfig/setConfig.hqu">
+            <wadl:doc title="HQApi ServerConfig setConfig command">
+                Set the HQ Server configuration settings
+            </wadl:doc>
+            <wadl:method name="POST" id="ServerConfigSet">
+                <wadl:request>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ServerConfigRequest"/>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
     </wadl:resources>
 
 </wadl:application>
