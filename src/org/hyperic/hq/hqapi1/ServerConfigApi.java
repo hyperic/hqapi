@@ -1,6 +1,6 @@
 package org.hyperic.hq.hqapi1;
 
-import org.hyperic.hq.hqapi1.types.ServerConfigsResponse;
+import org.hyperic.hq.hqapi1.types.ServerConfigResponse;
 import org.hyperic.hq.hqapi1.types.ServerConfig;
 import org.hyperic.hq.hqapi1.types.ServerConfigRequest;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
@@ -26,9 +26,9 @@ public class ServerConfigApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public ServerConfigsResponse getConfig() throws IOException {
+    public ServerConfigResponse getConfig() throws IOException {
         return doGet("serverconfig/getConfig.hqu", new HashMap<String, String[]>(),
-                     ServerConfigsResponse.class);
+                     ServerConfigResponse.class);
     }
 
     /**

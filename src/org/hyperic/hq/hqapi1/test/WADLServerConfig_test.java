@@ -8,7 +8,7 @@ public class WADLServerConfig_test extends WADLTestBase {
         Endpoint.ServerConfigGetConfigHqu get =
                 new Endpoint.ServerConfigGetConfigHqu();
 
-        ServerConfigsResponse response = get.getAsServerConfigsResponse();
+        ServerConfigResponse response = get.getAsServerConfigResponse();
         hqAssertSuccess(response);
     }
 
@@ -18,7 +18,7 @@ public class WADLServerConfig_test extends WADLTestBase {
         Endpoint.ServerConfigSetConfigHqu set =
                 new Endpoint.ServerConfigSetConfigHqu();
 
-        ServerConfigsResponse response = get.getAsServerConfigsResponse();
+        ServerConfigResponse response = get.getAsServerConfigResponse();
         hqAssertSuccess(response);
 
         ServerConfigRequest request = new ServerConfigRequest();

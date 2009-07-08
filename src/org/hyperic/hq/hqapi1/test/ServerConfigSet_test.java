@@ -2,7 +2,7 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.ServerConfigApi;
 import org.hyperic.hq.hqapi1.HQApi;
-import org.hyperic.hq.hqapi1.types.ServerConfigsResponse;
+import org.hyperic.hq.hqapi1.types.ServerConfigResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.UserResponse;
@@ -22,7 +22,7 @@ public class ServerConfigSet_test extends HQApiTestBase {
 
         ServerConfigApi sApi = getApi().getServerConfigApi();
 
-        ServerConfigsResponse configResponse = sApi.getConfig();
+        ServerConfigResponse configResponse = sApi.getConfig();
         hqAssertSuccess(configResponse);
 
         StatusResponse response = sApi.setConfig(configResponse.getServerConfig());
@@ -33,7 +33,7 @@ public class ServerConfigSet_test extends HQApiTestBase {
 
         ServerConfigApi sApi = getApi().getServerConfigApi();
 
-        ServerConfigsResponse configResponse = sApi.getConfig();
+        ServerConfigResponse configResponse = sApi.getConfig();
         hqAssertSuccess(configResponse);
 
         List<ServerConfig> configs = configResponse.getServerConfig();
@@ -91,7 +91,7 @@ public class ServerConfigSet_test extends HQApiTestBase {
                 api.getUserApi().createUser(user, "test"); // Create test user w/o Admin
         hqAssertSuccess(userCreateResponse);
 
-        ServerConfigsResponse response = api.getServerConfigApi().getConfig();
+        ServerConfigResponse response = api.getServerConfigApi().getConfig();
         hqAssertSuccess(response);
 
         // Re-sync with invalid user

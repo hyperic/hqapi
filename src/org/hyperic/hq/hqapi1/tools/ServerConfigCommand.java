@@ -10,16 +10,16 @@ import java.io.InputStream;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.ServerConfigApi;
-import org.hyperic.hq.hqapi1.types.ServerConfigsResponse;
+import org.hyperic.hq.hqapi1.types.ServerConfigResponse;
 import org.hyperic.hq.hqapi1.types.ServerConfig;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 public class ServerConfigCommand extends Command {
 
-    private static String CMD_GET           = "getConfig";
-    private static String CMD_GET_PARAMETER = "getConfigParameter";
-    private static String CMD_SET           = "setConfig";
-    private static String CMD_SET_PARAMETER = "setConfigParameter";
+    private static String CMD_GET           = "get";
+    private static String CMD_GET_PARAMETER = "getParameter";
+    private static String CMD_SET           = "set";
+    private static String CMD_SET_PARAMETER = "setParameter";
 
     private static String[] COMMANDS = { CMD_GET, CMD_GET_PARAMETER,
                                          CMD_SET, CMD_SET_PARAMETER};
@@ -60,7 +60,7 @@ public class ServerConfigCommand extends Command {
         HQApi api = getApi(options);
         ServerConfigApi configApi = api.getServerConfigApi();
 
-        ServerConfigsResponse response = configApi.getConfig();
+        ServerConfigResponse response = configApi.getConfig();
         checkSuccess(response);
 
         XmlUtil.serialize(response, System.out, Boolean.TRUE);
@@ -80,7 +80,7 @@ public class ServerConfigCommand extends Command {
 
         String key = (String)getRequired(options, OPT_KEY);
 
-        ServerConfigsResponse response = configApi.getConfig();
+        ServerConfigResponse response = configApi.getConfig();
         checkSuccess(response);
 
         for (ServerConfig c : response.getServerConfig()) {
@@ -102,7 +102,7 @@ public class ServerConfigCommand extends Command {
         ServerConfigApi serverConfigApi = api.getServerConfigApi();
 
         InputStream is = getInputStream(options);
-        ServerConfigsResponse resp = XmlUtil.deserialize(ServerConfigsResponse.class, is);
+        ServerConfigResponse resp = XmlUtil.deserialize(ServerConfigResponse.class, is);
         List<ServerConfig> config = resp.getServerConfig();
 
         StatusResponse response = serverConfigApi.setConfig(config);
@@ -127,7 +127,7 @@ public class ServerConfigCommand extends Command {
         String key = (String)getRequired(options, OPT_KEY);
         String value = (String)getRequired(options, OPT_VALUE);
 
-        ServerConfigsResponse response = configApi.getConfig();
+        ServerConfigResponse response = configApi.getConfig();
         checkSuccess(response);
 
         List<ServerConfig> config = response.getServerConfig();

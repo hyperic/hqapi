@@ -1124,7 +1124,7 @@
                 <wadl:request/>
                 <wadl:response>
                     <wadl:representation mediaType="application/xml"
-                                         element="ServerConfigsResponse"/>
+                                         element="ServerConfigResponse"/>
                 </wadl:response>
             </wadl:method>
         </wadl:resource>

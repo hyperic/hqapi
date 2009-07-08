@@ -3,7 +3,7 @@ package org.hyperic.hq.hqapi1.test;
 import org.hyperic.hq.hqapi1.ServerConfigApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.UserApi;
-import org.hyperic.hq.hqapi1.types.ServerConfigsResponse;
+import org.hyperic.hq.hqapi1.types.ServerConfigResponse;
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.UserResponse;
@@ -20,7 +20,7 @@ public class ServerConfigGet_test extends HQApiTestBase {
 
         ServerConfigApi sApi = getApi().getServerConfigApi();
 
-        ServerConfigsResponse response = sApi.getConfig();
+        ServerConfigResponse response = sApi.getConfig();
         hqAssertSuccess(response);
         assertTrue("No server configuration settings found",
                    response.getServerConfig().size() > 0);
@@ -46,7 +46,7 @@ public class ServerConfigGet_test extends HQApiTestBase {
 
         ServerConfigApi sApi = getApi(user.getName(), "test").getServerConfigApi();
 
-        ServerConfigsResponse response = sApi.getConfig();
+        ServerConfigResponse response = sApi.getConfig();
         hqAssertFailurePermissionDenied(response);
 
         // Cleanup
