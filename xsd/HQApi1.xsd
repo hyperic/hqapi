@@ -865,4 +865,35 @@
         </xs:complexType>
     </xs:element>
 
+    <!-- Server Config objects -->
+
+    <xs:complexType name="ServerConfig">
+        <xs:attribute name="value"  type="xs:string" use="required"/>
+        <xs:attribute name="key"    type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <!-- Server Config Response objects -->
+
+    <xs:element name="ServerConfigResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="ServerConfig" type="ServerConfig" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Server Config Request objects -->
+
+    <xs:element name="ServerConfigRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="ServerConfig" maxOccurs="unbounded" type="ServerConfig"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
 </xs:schema>
