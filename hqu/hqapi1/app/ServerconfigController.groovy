@@ -16,8 +16,8 @@ class ServerconfigController extends ApiController {
                                          "User " + user.name + " is not superuser")
                 } else {
                     out << getSuccessXML()
-                    props.each { k, v ->
-                        ServerConfig(key: k, value: v)
+                    for (key in props.keySet().sort {a, b -> a <=> b}) {
+                        ServerConfig(key: key, value: props.getProperty(key))
                     }
                 }
             }
