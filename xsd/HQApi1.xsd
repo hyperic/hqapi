@@ -874,7 +874,7 @@
 
     <!-- Server Config Response objects -->
 
-    <xs:element name="ServerConfigResponse">
+    <xs:element name="ServerConfigsResponse">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="Response">

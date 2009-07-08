@@ -10,7 +10,7 @@ class ServerconfigController extends ApiController {
         def props = _serverMan.config
 
         renderXml() {
-            ServerConfigResponse() {
+            ServerConfigsResponse() {
                 if (!user.isSuperUser()) {
                     out << getFailureXML(ErrorCode.PERMISSION_DENIED,
                                          "User " + user.name + " is not superuser")

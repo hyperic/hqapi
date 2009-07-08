@@ -1,13 +1,15 @@
 package org.hyperic.hq.hqapi1;
 
-import org.hyperic.hq.hqapi1.types.ServerConfigResponse;
+import org.hyperic.hq.hqapi1.types.ServerConfigsResponse;
 import org.hyperic.hq.hqapi1.types.ServerConfig;
 import org.hyperic.hq.hqapi1.types.ServerConfigRequest;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.ServerConfigResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *  The Hyperic HQ Server Configuration API.
@@ -26,9 +28,9 @@ public class ServerConfigApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public ServerConfigResponse getConfig() throws IOException {
+    public ServerConfigsResponse getConfig() throws IOException {
         return doGet("serverconfig/getConfig.hqu", new HashMap<String, String[]>(),
-                     ServerConfigResponse.class);
+                     ServerConfigsResponse.class);
     }
 
     /**

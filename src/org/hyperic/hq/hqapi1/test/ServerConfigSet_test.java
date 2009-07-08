@@ -2,8 +2,7 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.ServerConfigApi;
 import org.hyperic.hq.hqapi1.HQApi;
-import org.hyperic.hq.hqapi1.UserApi;
-import org.hyperic.hq.hqapi1.types.ServerConfigResponse;
+import org.hyperic.hq.hqapi1.types.ServerConfigsResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.UserResponse;
@@ -19,14 +18,48 @@ public class ServerConfigSet_test extends HQApiTestBase {
         super(name);
     }
 
-    public void testSetConfig() throws Exception {
+    public void testSetAllConfig() throws Exception {
 
         ServerConfigApi sApi = getApi().getServerConfigApi();
 
-        ServerConfigResponse configResponse = sApi.getConfig();
+        ServerConfigsResponse configResponse = sApi.getConfig();
         hqAssertSuccess(configResponse);
 
         StatusResponse response = sApi.setConfig(configResponse.getServerConfig());
+        hqAssertSuccess(response);
+    }
+
+    public void testSetSingleConfig() throws Exception {
+
+        ServerConfigApi sApi = getApi().getServerConfigApi();
+
+        ServerConfigsResponse configResponse = sApi.getConfig();
+        hqAssertSuccess(configResponse);
+
+        List<ServerConfig> configs = configResponse.getServerConfig();
+        for (ServerConfig config : configs) {
+            if (config.getKey().equals("HQ_ALERTS_ENABLED")) {
+                config.setValue("false");
+            }
+        }
+
+        StatusResponse response = sApi.setConfig(configs);
+        hqAssertSuccess(response);
+
+        // Validate update of HQ_ALERTS_ENABLED
+        configResponse = sApi.getConfig();
+        hqAssertSuccess(configResponse);
+
+        configs = configResponse.getServerConfig();
+        for (ServerConfig config : configs) {
+            if (config.getKey().equals("HQ_ALERTS_ENABLED")) {
+                assertTrue("HQ_ALERTS_ENABLED was not false",
+                           config.getValue().equals("false"));
+                config.setValue("true"); // Re-enable
+            }
+        }
+
+        response = sApi.setConfig(configs);
         hqAssertSuccess(response);
     }
 
@@ -58,7 +91,7 @@ public class ServerConfigSet_test extends HQApiTestBase {
                 api.getUserApi().createUser(user, "test"); // Create test user w/o Admin
         hqAssertSuccess(userCreateResponse);
 
-        ServerConfigResponse response = api.getServerConfigApi().getConfig();
+        ServerConfigsResponse response = api.getServerConfigApi().getConfig();
         hqAssertSuccess(response);
 
         // Re-sync with invalid user
