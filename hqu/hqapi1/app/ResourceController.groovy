@@ -57,7 +57,8 @@ class ResourceController extends ApiController {
                     ResourceInfo(key: PROP_INSTALLPATH, value: s.installPath)
                     ResourceInfo(key: PROP_AIIDENIFIER, value: s.autoinventoryIdentifier)
                 } else if (r.isService()) {
-                    // Nothing yet.
+                    def s = r.toService()
+                    ResourceInfo(key: PROP_AIIDENIFIER, value: s.autoinventoryIdentifier)
                 }
             }
         }
@@ -620,6 +621,13 @@ class ResourceController extends ApiController {
                 if (installpath) {
                     config.put(PROP_INSTALLPATH, installpath.'@value')
                 }
+            } else if (prototype.isServicePrototype()) {
+                def aiid = xmlResource['ResourceInfo'].find {
+                    it.'@key' == PROP_AIIDENIFIER
+                }
+                if (aiid) {
+                    config.put(PROP_AIIDENIFIER, aiid.'@value')
+                }
             }
 
             // Update
@@ -696,6 +704,12 @@ class ResourceController extends ApiController {
             } else if (prototype.isServicePrototype()) {
 
                 try {
+                    def aiid = xmlResource['ResourceInfo'].find {
+                        it.'@key' == PROP_AIIDENIFIER
+                    }
+                    if (aiid) {
+                        config.put(PROP_AIIDENIFIER, aiid.'@value')
+                    }
                     resource = prototype.createInstance(parent, name,
                                                         user, config)
                 } catch (IllegalArgumentException e) {
