@@ -8,8 +8,8 @@ import org.hyperic.hq.common.VetoException
 class ResourceController extends ApiController {
 
     private static final String PROP_FQDN        = "fqdn"
-    private static final String PROP_INSTALLPATH = "installpath"
-    private static final String PROP_AIIDENIFIER = "autoinventoryIdentifier"
+    private static final String PROP_INSTALLPATH = "installPath"
+    private static final String PROP_AIIDENIFIER = "autoIdentifier"
 
     private Closure getResourceXML(user, r, boolean verbose, boolean children) {
         { doc ->
@@ -581,28 +581,53 @@ class ResourceController extends ApiController {
                 resource = resourceHelper.find('platform':name)
             }
         }
-        
+
+        def xmlPrototype = xmlResource['ResourcePrototype']
+        if (!xmlPrototype) {
+            return getFailureXML(ErrorCode.INVALID_PARAMETERS ,
+                                 "Resource prototype not given for " + name)
+        }
+
+        def prototype = resourceHelper.find(prototype: xmlPrototype.'@name')
+
+        if (!prototype) {
+            return getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                 "No ResourcePrototype found for " +
+                                 name)
+        }
+
         if (resource) {
+            // Add special configurations from ResourceInfo
+            if (prototype.isPlatformPrototype()) {
+                def fqdn = xmlResource['ResourceInfo'].find { it.'@key' == PROP_FQDN }
+                if (!fqdn) {
+                    return getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         "No FQDN given for " + name)
+                } else {
+                    config.put(PROP_FQDN, fqdn.'@value')
+                }
+            } else if (prototype.isServerPrototype()) {
+                def aiid = xmlResource['ResourceInfo'].find {
+                    it.'@key' == PROP_AIIDENIFIER
+                }
+                if (aiid) {
+                    config.put(PROP_AIIDENIFIER, aiid.'@value')
+                }
+
+                def installpath = xmlResource['ResourceInfo'].find {
+                    it.'@key' == PROP_INSTALLPATH
+                }
+                if (installpath) {
+                    config.put(PROP_INSTALLPATH, installpath.'@value')
+                }
+            }
+
             // Update
             if (!configsEqual(resource.getConfig(), config)) {
                 resource.setConfig(config, user)
             }
         } else {
             // Create
-            def xmlPrototype = xmlResource['ResourcePrototype']
-            if (!xmlPrototype) {
-                return getFailureXML(ErrorCode.INVALID_PARAMETERS ,
-                                     "Resource prototype not given for " + name)
-            }
-
-            def prototype = resourceHelper.find(prototype: xmlPrototype.'@name')
-
-            if (!prototype) {
-                return getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                     "No ResourcePrototype found for " +
-                                     name)
-            }
-
             if (prototype.isPlatformPrototype()) {
                 parent = resourceHelper.findRootResource()
                 def xmlAgent = xmlResource['Agent']
