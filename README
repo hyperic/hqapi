@@ -1,0 +1,15 @@
+
+Visit the HQApi wiki for documentation:
+
+http://support.hyperic.com/display/DOC/HQ+Web+Services+API
+
+Binary builds for HQApi can be found at:
+
+http://hudson.hyperic.com/
+
+Version compatiblity guide:
+
+HQApi 3.x -> HQ 4.3
+HQApi 2.x -> HQ 4.2
+HQApi 1.x -> HQ 4.1/HQ 4.2
+
