@@ -1,0 +1,82 @@
+
+Changes in HQApi 2.2
+
+ *) [HHQ-3230] Add --conditionCount and --conditionType parameters to 
+    alertdefinition list CLI command.
+
+ *) [HHQ-3235] Add <ResourceInfo> block for service autoIdentifier.  Allow 
+    updates of this field via sync.
+
+ *) [HHQ-2866] Allow for updates to installPath and autoIdentifier.  Previously 
+    these only were accounted for in resource creation.
+
+Changes in HQApi 2.1
+
+ *) [HHQ-3223] Merge getAlertDefinition APIs.  Previously, fetching alerts by 
+    escalation would ignore other search parameters. 
+
+ *) [HHQ-3132] Fail on Role update/create/sync if embedded Users do not exist.
+
+ *) [HHQ-3219] [HHQ-3033]  Handle IllegalArgumentException from invalid
+    resources or prototypes. Add tests.
+
+ *) [HHQ-3062] Reorder XSD attributes for better ordering.
+
+ *) Upgrade JAXB to a known version.  JAXB RI 2.1.11
+
+Changes in HQApi 2.0
+
+ *) Add WADL definition file.
+
+ *) [HHQ-3213] Fix lookups of escalations by id.
+
+ *) Add ability to read POST data directly from the request in addition to
+    the prior multi-part/formdata method.
+
+ *) Consolodate XSD's into a single document.
+
+ *) [HHQ-3192] Allow alert definition filtering by associated escalation.
+
+ *) [HHQ-2812] Fix argument passing for windows shell.
+
+ *) [HHQ-3188] Do not allow escalations to be set for recovery alerts.
+
+ *) [HHQ-2973] Remove internal alert definition by name cache used for recovery
+    alert lookups.  Instead query the resource in question for the definition
+    by that name.  This fixes problems where a sync file may have many
+    problem/recoveries and may not be in order.
+
+ *) [HHQ-3039] Look up existing type alert defintions during sync.
+
+ *) Add optional --description flag for group sync CLI command.
+
+ *) [HHQ-2870] Add command line group sync ala mass.
+
+ *) [HHQ-1665] Add ResourceEdgeApi to allow for viewing or updating resource
+    edges.
+
+ *) Move alert filtering from client to server.
+
+ *) [HHQ-3142] Sort alert definitions so recoveries come after problems.
+
+ *) [HHQ-2812] Add windows client courtesy of Chip.
+
+ *) [HHQ-3136] Cache JAXBContext, performance improvement of around 300%
+    when running the test suite. (4:42 down to 1:35).
+
+ *) Change webservice endpoints for the agent API to use more common names.
+
+ *) [HHQ-3116] Add MaintenanceApi to allow for modification of maintenance
+    schedules.
+
+ *) [HHQ-2866] Modify ResourceApi to allow for full sync().  Resources can
+    now be created or updated via sync.
+
+ *) [HHQ-3001] Add --batchSize argument to resource syncing.
+
+ *) [HHQ-3032] Give better information on object not found errors.
+
+ *) [HHQ-2972] Fill in all escalation attributes to avoid defaults being used.
+
+ *) [HHQ-3025] Add move() support to ResourceApi
+ 
