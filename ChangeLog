@@ -1,4 +1,9 @@
 
+Changes in HQApi 3.0
+
+ *) [HHQ-3144] Add ServerConfigApi to allow manipulation of HQ server config
+    settings.
+
 Changes in HQApi 2.2
 
  *) [HHQ-3230] Add --conditionCount and --conditionType parameters to 
