@@ -41,6 +41,9 @@ public class AlertController extends ApiController {
         } else if (begin >= end) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                        "Begin must be < end")
+        } else if (count <= 0) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Count must ben > 0")
         } else {
             try {
                 Integer groupId = null
@@ -92,6 +95,9 @@ public class AlertController extends ApiController {
         } else if (begin >= end) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                        "Begin must be < end")
+        } else if (count <= 0) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Count must ben > 0")
         } else {
             try {
                 AlertSeverity severity = AlertSeverity.findByCode(sev)
