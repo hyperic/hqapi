@@ -4,6 +4,7 @@ import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.AlertApi;
 import org.hyperic.hq.hqapi1.types.AlertsResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.Alert;
 
 public class AlertFind_test extends AlertTestBase {
 
@@ -19,6 +20,11 @@ public class AlertFind_test extends AlertTestBase {
                                                  10, 1, false, false);
         hqAssertSuccess(response);
         assertTrue(response.getAlert().size() <= 10);
+        assertTrue(response.getAlert().size() > 0);
+
+        for (Alert a : response.getAlert()) {
+            validateAlert(a);
+        }
 
         // Cleanup
         StatusResponse deleteResponse = getApi().

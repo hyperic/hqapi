@@ -8,6 +8,7 @@ import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.AlertsResponse;
+import org.hyperic.hq.hqapi1.types.Alert;
 
 import java.util.Random;
 import java.util.List;
@@ -21,6 +22,15 @@ public class AlertTestBase extends HQApiTestBase {
 
     protected AlertApi getAlertApi() {
         return getApi().getAlertApi();
+    }
+
+    protected void validateAlert(Alert a) throws Exception {
+        assertNotNull("fixed was NULL", a.isFixed());
+        assertTrue("ctime is incorrect", a.getCtime() > 0);
+        assertTrue("resourceId is invalid", a.getResourceId() > 0);
+        assertTrue("alertDefinitionId is invalid", a.getAlertDefinitionId() > 0);
+        assertNotNull("Alert name was null", a.getName());
+        assertTrue("Alert id is incorrect", a.getId() > 0);    
     }
 
     /**

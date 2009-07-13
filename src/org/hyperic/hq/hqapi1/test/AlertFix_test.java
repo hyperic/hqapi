@@ -22,6 +22,10 @@ public class AlertFix_test extends AlertTestBase {
         assertTrue(response.getAlert().size() <= 10);
         assertTrue(response.getAlert().size() > 0);
 
+        for (Alert a : response.getAlert()) {
+            validateAlert(a);
+        }
+        
         // Test marking fixed
         Alert a = response.getAlert().get(0);
 

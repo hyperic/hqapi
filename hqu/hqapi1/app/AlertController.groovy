@@ -18,6 +18,7 @@ public class AlertController extends ApiController {
             Alert(id                : a.id,
                   name              : a.alertDefinition.name,
                   alertDefinitionId : a.alertDefinition.id,
+                  resourceId        : a.alertDefinition.resource.id,
                   ctime             : a.ctime,
                   fixed             : a.fixed,
                   ackedBy           : a.ackedBy,
