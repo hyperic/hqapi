@@ -1,5 +1,8 @@
 
 Changes in HQApi 3.0
+ 
+ *) [HHQ-3217] [HHQ-3019] Add AlertApi to allow for listing, fixing, 
+    acknowledging and deleting of alerts.
 
  *) [HHQ-3144] Add ServerConfigApi to allow manipulation of HQ server config
     settings.

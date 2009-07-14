@@ -1145,6 +1145,188 @@
             </wadl:method>
         </wadl:resource>
 
+        <wadl:resource path="alert/find.hqu">
+            <wadl:doc title="HQApi Alert find command">
+                Find Alerts
+            </wadl:doc>
+            <wadl:method name="GET" id="AlertFind">
+                <wadl:request>
+                    <wadl:param name="begin" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The beginning of the time window in epoch-millis.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="end" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The end of the time window in epoch-millis.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="count" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The maximum number of Alerts to return.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="severity" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The minimum Alert severity to return.  1 = LOW,
+                            2 = MEDIUM, 3 = HIGH.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="inEscalation" style="query" required="false"
+                                type="xs:boolean">
+                        <wadl:doc>
+                            If true, only return Alerts which are in Escalation.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="notFixed" style="query" required="false"
+                                type="xs:boolean">
+                        <wadl:doc>
+                            If true, only return Alerts which are not fixed.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="AlertsResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="alert/findByResource.hqu">
+            <wadl:doc title="HQApi Alert findByResource command">
+                Find Alerts for the given Resource
+            </wadl:doc>
+            <wadl:method name="GET" id="AlertFindByResource">
+                <wadl:request>
+                    <wadl:param name="resourceId" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Resource to query for Alerts.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="begin" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The beginning of the time window in epoch-millis.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="end" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The end of the time window in epoch-millis.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="count" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The maximum number of Alerts to return.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="severity" style="query" required="false"
+                                type="xs:int">
+                        <wadl:doc>
+                            The minimum Alert severity to return.  1 = LOW,
+                            2 = MEDIUM, 3 = HIGH.  Default is 1.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="inEscalation" style="query" required="false"
+                                type="xs:boolean">
+                        <wadl:doc>
+                            If true, only return Alerts which are in Escalation.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="notFixed" style="query" required="false"
+                                type="xs:boolean">
+                        <wadl:doc>
+                            If true, only return Alerts which are not fixed.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="AlertsResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="alert/ack.hqu">
+            <wadl:doc title="HQApi Alert ack command">
+                Acknowledge an Alert
+            </wadl:doc>
+            <wadl:method name="GET" id="AlertAck">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Alert to acknowledge.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="reason" style="query" required="true"
+                                type="xs:string">
+                        <wadl:doc>
+                            The reason for the acknowledgement.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="pause" style="query" required="false"
+                                type="xs:long">
+                        <wadl:doc>
+                            If specified, the pause time until the next
+                            step in the Escalation.  If set to 0, no pause
+                            will be performed.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="alert/fix.hqu">
+            <wadl:doc title="HQApi Alert fix command">
+                Fix an Alert
+            </wadl:doc>
+            <wadl:method name="GET" id="AlertFix">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Alert to fix.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="alert/delete.hqu">
+            <wadl:doc title="HQApi Alert delete command">
+                Fix and Alert
+            </wadl:doc>
+            <wadl:method name="GET" id="AlertDelete">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Alert to delete.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
     </wadl:resources>
 
 </wadl:application>

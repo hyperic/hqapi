@@ -49,6 +49,7 @@ public class Shell {
         _commands.put("role", new RoleCommand());
         _commands.put("user", new UserCommand());
         _commands.put("serverConfig", new ServerConfigCommand());
+        _commands.put("alert", new AlertCommand());
     }
 
     private static void printHelp() {
