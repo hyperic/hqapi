@@ -9,6 +9,10 @@ Changes in HQApi 3.0
 
 Changes in HQApi 2.2
 
+ *) [HHQ-3230] Add --conditionTypeExclude to allow definitions to be excluded
+    based on conditions.  As part of this change --conditionType has been
+    renamed to --conditionTypeInclude
+
 Changes in HQApi 2.1
 
  *) [HHQ-3230] Add --conditionCount and --conditionType parameters to 
