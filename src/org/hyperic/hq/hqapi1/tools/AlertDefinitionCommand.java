@@ -36,7 +36,8 @@ public class AlertDefinitionCommand extends Command {
     private static String OPT_BATCH_SIZE = "batchSize";
     private static String OPT_ESCLATION = "escalation";
     private static String OPT_COND_COUNT = "conditionCount";
-    private static String OPT_COND_TYPE  = "conditionType";
+    private static String OPT_COND_INCLUDE = "conditionTypeInclude";
+    private static String OPT_COND_EXCLUDE = "conditionTypeExclude";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -88,9 +89,13 @@ public class AlertDefinitionCommand extends Command {
                                   "which have the number of conditions " +
                                   "specified")
                 .withRequiredArg().ofType(Integer.class);
-        p.accepts(OPT_COND_TYPE, "If specified, only show alert definitions " +
-                                 "which have at least one condition of the " +
-                                 "given type")
+        p.accepts(OPT_COND_INCLUDE, "If specified, only show alert definitions " +
+                                    "which have at least one condition of the " +
+                                    "given type")
+                .withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_COND_EXCLUDE, "If specified, exclude alert definitions " +
+                                    "which have at least one condition of the " +
+                                    "given type")
                 .withRequiredArg().ofType(Integer.class);
 
         OptionSet options = getOptions(p, args);
@@ -149,8 +154,8 @@ public class AlertDefinitionCommand extends Command {
             }
         }
 
-        if (options.has(OPT_COND_TYPE)) {
-            Integer type = (Integer)getRequired(options, OPT_COND_TYPE);
+        if (options.has(OPT_COND_INCLUDE)) {
+            Integer type = (Integer)getRequired(options, OPT_COND_INCLUDE);
             for (Iterator<AlertDefinition> i =
                     alertDefs.getAlertDefinition().iterator(); i.hasNext(); ) {
                 AlertDefinition d = i.next();
@@ -162,6 +167,20 @@ public class AlertDefinitionCommand extends Command {
                 }
                 if (!hasType) {
                     i.remove();
+                }
+            }
+        }
+
+        if (options.has(OPT_COND_EXCLUDE)) {
+            Integer type = (Integer)getRequired(options, OPT_COND_EXCLUDE);
+            for (Iterator<AlertDefinition> i =
+                    alertDefs.getAlertDefinition().iterator(); i.hasNext(); ) {
+                AlertDefinition d = i.next();
+                for (AlertCondition c : d.getAlertCondition()) {
+                    if (c.getType() == type) {
+                        i.remove();
+                        break;
+                    }
                 }
             }
         }
