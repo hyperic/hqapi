@@ -1,5 +1,9 @@
 
 Changes in HQApi 3.0
+
+ *) [HHQ-3230] Add --conditionTypeExclude to allow definitions to be excluded
+    based on conditions.  As part of this change --conditionType has been
+    renamed to --conditionTypeInclude
  
  *) [HHQ-3217] [HHQ-3019] Add AlertApi to allow for listing, fixing, 
     acknowledging and deleting of alerts.
