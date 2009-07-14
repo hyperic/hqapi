@@ -9,6 +9,8 @@ Changes in HQApi 3.0
 
 Changes in HQApi 2.2
 
+Changes in HQApi 2.1
+
  *) [HHQ-3230] Add --conditionCount and --conditionType parameters to 
     alertdefinition list CLI command.
 
@@ -17,8 +19,6 @@ Changes in HQApi 2.2
 
  *) [HHQ-2866] Allow for updates to installPath and autoIdentifier.  Previously 
     these only were accounted for in resource creation.
-
-Changes in HQApi 2.1
 
  *) [HHQ-3223] Merge getAlertDefinition APIs.  Previously, fetching alerts by 
     escalation would ignore other search parameters. 
