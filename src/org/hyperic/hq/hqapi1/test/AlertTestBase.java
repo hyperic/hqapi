@@ -69,7 +69,8 @@ public class AlertTestBase extends HQApiTestBase {
                                                              10, 1, false, false);
             hqAssertSuccess(alerts);
             if (alerts.getAlert().size() > 0) {
-                break;
+                System.out.println("Found " + alerts.getAlert().size() + " alerts!");
+                return response.getAlertDefinition().get(0);
             }
 
             try {
@@ -78,7 +79,7 @@ public class AlertTestBase extends HQApiTestBase {
                 // Ignore
             }
         }
-        
-        return response.getAlertDefinition().get(0);
+
+        throw new Exception("Unable to find generated alerts!");
     }
 }
