@@ -13,6 +13,14 @@ public class AlertController extends ApiController {
     private aMan = AlertMan.one
     private escMan = EscMan.one
 
+    private getEscalationState(alert) {
+        // TODO: Move to AlertCategory
+        if (alert.stateId) {
+            return escMan.findEscalationState(alert.alertDefinition)
+        }
+        return null
+    }
+
     private Closure getAlertXML(a) {
         { doc ->
             Alert(id                : a.id,
@@ -20,9 +28,14 @@ public class AlertController extends ApiController {
                   alertDefinitionId : a.alertDefinition.id,
                   resourceId        : a.alertDefinition.resource.id,
                   ctime             : a.ctime,
-                  fixed             : a.fixed,
-                  ackedBy           : a.ackedBy,
-                  stateId           : a.stateId)
+                  fixed             : a.fixed) {
+                def e = getEscalationState(a)
+                if (e) {
+                    EscalationState(ackedBy: e.acknowledgedBy?.name,
+                                    escalationId: e.escalation.id,
+                                    nextActionTime: e.nextActionTime)
+                }
+            }
         }
     }
 

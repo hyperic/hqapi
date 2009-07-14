@@ -898,13 +898,18 @@
 
     <!-- Alert objects -->
 
+    <xs:complexType name="EscalationState">
+        <xs:attribute name="ackedBy"        type="xs:string" use="required"/>
+        <xs:attribute name="escalationId"   type="xs:int"    use="required"/>
+        <xs:attribute name="nextActionTime" type="xs:long"   use="required"/>
+    </xs:complexType>
+
     <xs:complexType name="Alert">
         <xs:sequence>
+            <xs:element name="EscalationState" type="EscalationState" minOccurs="1" maxOccurs="1" />
             <!-- ActionLog, Condition Log -->
         </xs:sequence>
 
-        <xs:attribute name="stateId"           type="xs:int"         use="optional"/>
-        <xs:attribute name="ackedBy"           type="xs:int"         use="optional"/>
         <xs:attribute name="fixed"             type="xs:boolean"     use="required"/>
         <xs:attribute name="ctime"             type="xs:long"        use="required"/>
         <xs:attribute name="resourceId"        type="xs:int"         use="required"/>
