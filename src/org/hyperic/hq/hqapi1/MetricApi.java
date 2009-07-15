@@ -75,6 +75,7 @@ public class MetricApi extends BaseApi {
      * metrics were successfully retrieved.
      *
      * @throws IOException If a network error occurs while making the request.
+     * @deprecated See {@link org.hyperic.hq.hqapi1.MetricApi#getMetrics(org.hyperic.hq.hqapi1.types.Resource, boolean)}
      */
     public MetricsResponse getMetrics(Resource resource)
         throws IOException
@@ -96,6 +97,7 @@ public class MetricApi extends BaseApi {
      * metrics were successfully retrieved.
      *
      * @throws IOException If a network error occurs while making the request.
+     * @deprecated See {@link org.hyperic.hq.hqapi1.MetricApi#getMetrics(org.hyperic.hq.hqapi1.types.Resource, boolean)}  
      */
     public MetricsResponse getEnabledMetrics(Resource resource)
         throws IOException
@@ -103,6 +105,29 @@ public class MetricApi extends BaseApi {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("resourceId", new String[] { Integer.toString(resource.getId()) });
         params.put("enabled", new String[] { Boolean.toString(true) });
+        return doGet("metric/getMetrics.hqu", params,
+                     MetricsResponse.class);
+    }
+
+    /**
+     * List all enabled {@link org.hyperic.hq.hqapi1.types.Metric}s associated with a
+     * {@link org.hyperic.hq.hqapi1.types.Resource}
+     *
+     * @param resource The associated {@link org.hyperic.hq.hqapi1.types.Resource}
+     * which the metrics belong.
+     * @param enabled If set to true, only Metrics which are enabled will be returned.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * metrics were successfully retrieved.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public MetricsResponse getMetrics(Resource resource, boolean enabled)
+        throws IOException
+    {
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("resourceId", new String[] { Integer.toString(resource.getId()) });
+        params.put("enabled", new String[] { Boolean.toString(enabled) });
         return doGet("metric/getMetrics.hqu", params,
                      MetricsResponse.class);
     }

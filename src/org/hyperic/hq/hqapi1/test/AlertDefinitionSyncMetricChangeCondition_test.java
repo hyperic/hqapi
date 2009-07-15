@@ -56,7 +56,7 @@ public class AlertDefinitionSyncMetricChangeCondition_test extends AlertDefiniti
 
         Resource platform = getLocalPlatformResource(false, false);
 
-        MetricsResponse metricsResponse = metricApi.getMetrics(platform);
+        MetricsResponse metricsResponse = metricApi.getMetrics(platform, true);
         hqAssertSuccess(metricsResponse);
         assertTrue("No metrics found for " + platform.getName(),
                 metricsResponse.getMetric().size() > 0);
@@ -93,7 +93,7 @@ public class AlertDefinitionSyncMetricChangeCondition_test extends AlertDefiniti
 
         Resource platform = getLocalPlatformResource(false, false);
 
-        MetricsResponse metricsResponse = metricApi.getMetrics(platform);
+        MetricsResponse metricsResponse = metricApi.getMetrics(platform, true);
         hqAssertSuccess(metricsResponse);
         assertTrue("No metrics found for " + platform.getName(),
                 metricsResponse.getMetric().size() > 0);
@@ -130,7 +130,7 @@ public class AlertDefinitionSyncMetricChangeCondition_test extends AlertDefiniti
 
         Resource platform = getLocalPlatformResource(false, false);
 
-        MetricsResponse metricsResponse = metricApi.getMetrics(platform);
+        MetricsResponse metricsResponse = metricApi.getMetrics(platform, true);
         hqAssertSuccess(metricsResponse);
         assertTrue("No metrics found for " + platform.getName(),
                 metricsResponse.getMetric().size() > 0);

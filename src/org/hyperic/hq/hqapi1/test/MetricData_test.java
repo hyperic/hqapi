@@ -62,7 +62,7 @@ public class MetricData_test extends MetricTestBase {
 
         MetricApi api = getApi().getMetricApi();
         Resource r = getLocalPlatformResource(false, false);
-        MetricsResponse resp = api.getEnabledMetrics(r);
+        MetricsResponse resp = api.getMetrics(r, true);
         hqAssertSuccess(resp);
 
         assertTrue("No enabled metrics found for " + r.getName(),
@@ -94,7 +94,7 @@ public class MetricData_test extends MetricTestBase {
 
         MetricApi api = getApi().getMetricApi();
         Resource r = getLocalPlatformResource(false, false);
-        MetricsResponse resp = api.getEnabledMetrics(r);
+        MetricsResponse resp = api.getMetrics(r, true);
         hqAssertSuccess(resp);
 
         assertTrue("No enabled metrics found for " + r.getName(),
@@ -126,7 +126,7 @@ public class MetricData_test extends MetricTestBase {
 
         MetricApi api = getApi().getMetricApi();
         Resource r = getLocalPlatformResource(false, false);
-        MetricsResponse resp = api.getMetrics(r);
+        MetricsResponse resp = api.getMetrics(r, false);
         hqAssertSuccess(resp);
 
         assertTrue("No metrics found for " + r.getName(),
@@ -167,7 +167,7 @@ public class MetricData_test extends MetricTestBase {
 
         MetricApi api = getApi().getMetricApi();
         Resource r = getLocalPlatformResource(false, false);
-        MetricsResponse resp = api.getMetrics(r);
+        MetricsResponse resp = api.getMetrics(r, true);
         hqAssertSuccess(resp);
 
         long end = System.currentTimeMillis();

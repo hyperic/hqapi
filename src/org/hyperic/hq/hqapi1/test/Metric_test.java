@@ -59,7 +59,7 @@ public class Metric_test extends MetricTestBase {
 
         MetricApi api = getApi().getMetricApi();
         Resource r = getLocalPlatformResource(false, false);
-        MetricsResponse resp = api.getMetrics(r);
+        MetricsResponse resp = api.getMetrics(r, false);
         hqAssertSuccess(resp);
 
         int numNotDefaultOn = 0;
@@ -76,7 +76,7 @@ public class Metric_test extends MetricTestBase {
 
         MetricApi api = getApi().getMetricApi();
         Resource r = getLocalPlatformResource(false, false);
-        MetricsResponse resp = api.getEnabledMetrics(r);
+        MetricsResponse resp = api.getMetrics(r, true);
         hqAssertSuccess(resp);
 
         for (Metric m : resp.getMetric()) {
@@ -91,7 +91,7 @@ public class Metric_test extends MetricTestBase {
         MetricApi api = getApi().getMetricApi();
         Resource r = new Resource();
         r.setId(Integer.MAX_VALUE);
-        MetricsResponse resp = api.getMetrics(r);
+        MetricsResponse resp = api.getMetrics(r, true);
         hqAssertFailureObjectNotFound(resp);
     }
 
@@ -99,7 +99,7 @@ public class Metric_test extends MetricTestBase {
 
         MetricApi api = getApi().getMetricApi();
         Resource r = getLocalPlatformResource(false, false);
-        MetricsResponse resp = api.getMetrics(r);
+        MetricsResponse resp = api.getMetrics(r, true);
         hqAssertSuccess(resp);
 
         assertFalse("Resource " + r.getName() + " has no metrics",
@@ -124,7 +124,7 @@ public class Metric_test extends MetricTestBase {
         MetricApi metricApi = api.getMetricApi();
         Resource r = getLocalPlatformResource(false, false);
 
-        MetricsResponse metrics = metricApi.getMetrics(r);
+        MetricsResponse metrics = metricApi.getMetrics(r, true);
         hqAssertSuccess(metrics);
 
         Metric enabledMetric = null;
@@ -173,9 +173,9 @@ public class Metric_test extends MetricTestBase {
         Resource r = getLocalPlatformResource(false, false);
 
         // Keep a copy of the old metrics.
-        MetricsResponse orignalMetrics = metricApi.getMetrics(r);
+        MetricsResponse orignalMetrics = metricApi.getMetrics(r, false);
 
-        MetricsResponse metrics = metricApi.getMetrics(r);
+        MetricsResponse metrics = metricApi.getMetrics(r, false);
         hqAssertSuccess(metrics);
 
         Metric disabledMetric = null;
@@ -187,7 +187,7 @@ public class Metric_test extends MetricTestBase {
             }
         }
 
-        assertNotNull("Unable to find enabled metric for " + r.getName(),
+        assertNotNull("Unable to find disabled metric for " + r.getName(),
                       disabledMetric);
 
         disabledMetric.setEnabled(true);
@@ -235,7 +235,7 @@ public class Metric_test extends MetricTestBase {
         MetricApi metricApi = api.getMetricApi();
         Resource r = getLocalPlatformResource(false, false);
 
-        MetricsResponse metrics = metricApi.getMetrics(r);
+        MetricsResponse metrics = metricApi.getMetrics(r, true);
         hqAssertSuccess(metrics);
 
         assertTrue("No metrics found for " + r.getName(),

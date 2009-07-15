@@ -1,6 +1,10 @@
 
 Changes in HQApi 3.0
 
+ *) MetricApi.getMetrics(Resource r) and MetricApi.getEnabledMetrics(Resource r)
+    has been combined into a single function which takes an enabled flag.  These
+    2 APIs have been marked as deprecated.
+
  *) [HHQ-3230] Add --conditionTypeExclude to allow definitions to be excluded
     based on conditions.  As part of this change --conditionType has been
     renamed to --conditionTypeInclude

@@ -95,9 +95,9 @@ public class MetricCommand extends Command {
 
         MetricsResponse metrics;
         if (options.has(OPT_ENABLED)) {
-            metrics = metricApi.getEnabledMetrics(resourceResponse.getResource());
+            metrics = metricApi.getMetrics(resourceResponse.getResource(), true);
         } else {
-            metrics = metricApi.getMetrics(resourceResponse.getResource());
+            metrics = metricApi.getMetrics(resourceResponse.getResource(), false);
         }
 
         XmlUtil.serialize(metrics, System.out, Boolean.TRUE);
