@@ -47,7 +47,7 @@ public class AlertApi extends BaseApi {
      * @param begin The beginning of the time window in epoch-millis.
      * @param end The end of the time window in epoch-millis.
      * @param count The maximum number of Alert instances to return.
-     * @param severity The minimum severity to query.  1 = LOW - 3 = HIGH
+     * @param severity The minimum severity to query.  1 = LOW, 2 = MEDIUM, 3 = HIGH
      * @param inEscalation If true, only return Alerts which are in Escalation
      * @param notFixed If true, only return Alerts which are not fixed.
      *
@@ -85,7 +85,7 @@ public class AlertApi extends BaseApi {
      * @param begin The beginning of the time window in epoch-millis.
      * @param end The end of the time window in epoch-millis.
      * @param count The maximum number of Alert instances to return.
-     * @param severity The minimum severity to query.  1 = LOW - 3 = HIGH
+     * @param severity The minimum severity to query.  1 = LOW, 2 = MEDIUM, 3 = HIGH
      * @param inEscalation If true, only return Alerts which are in Escalation
      * @param notFixed If true, only return Alerts which are not fixed.
      *
@@ -99,7 +99,7 @@ public class AlertApi extends BaseApi {
                                      int count, int severity,
                                      Boolean inEscalation,
                                      Boolean notFixed)
-            throws Exception
+            throws IOException
     {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("resourceId", new String[] { Integer.toString(r.getId())});
