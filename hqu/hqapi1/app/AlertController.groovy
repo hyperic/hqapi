@@ -36,6 +36,14 @@ public class AlertController extends ApiController {
                                     escalationId: e.escalation.id,
                                     nextActionTime: e.nextActionTime)
                 }
+                for (l in a.actionLog) {
+                    if (l.subject) {
+                        // Ignore 'internal' logs.
+                        AlertActionLog(timestamp: l.timeStamp,
+                                       detail: l.detail,
+                                       user: l.subject?.name)
+                    }
+                }
             }
         }
     }
