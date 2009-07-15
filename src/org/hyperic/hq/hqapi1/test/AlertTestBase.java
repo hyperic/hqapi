@@ -30,7 +30,8 @@ public class AlertTestBase extends HQApiTestBase {
         assertTrue("resourceId is invalid", a.getResourceId() > 0);
         assertTrue("alertDefinitionId is invalid", a.getAlertDefinitionId() > 0);
         assertNotNull("Alert name was null", a.getName());
-        assertTrue("Alert id is incorrect", a.getId() > 0);    
+        assertTrue("Alert id is incorrect", a.getId() > 0);
+        assertTrue("Empty long reason", a.getReason().length() > 0);
     }
 
     /**

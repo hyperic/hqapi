@@ -907,9 +907,10 @@
     <xs:complexType name="Alert">
         <xs:sequence>
             <xs:element name="EscalationState" type="EscalationState" minOccurs="1" maxOccurs="1" />
-            <!-- ActionLog, Condition Log -->
+            <!-- ActionLog -->
         </xs:sequence>
 
+        <xs:attribute name="reason"            type="xs:string"      use="required"/>
         <xs:attribute name="fixed"             type="xs:boolean"     use="required"/>
         <xs:attribute name="ctime"             type="xs:long"        use="required"/>
         <xs:attribute name="resourceId"        type="xs:int"         use="required"/>

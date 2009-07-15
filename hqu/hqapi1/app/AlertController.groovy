@@ -28,7 +28,8 @@ public class AlertController extends ApiController {
                   alertDefinitionId : a.alertDefinition.id,
                   resourceId        : a.alertDefinition.resource.id,
                   ctime             : a.ctime,
-                  fixed             : a.fixed) {
+                  fixed             : a.fixed,
+                  reason            : aMan.getLongReason(a).trim()) {
                 def e = getEscalationState(a)
                 if (e) {
                     EscalationState(ackedBy: e.acknowledgedBy?.name,
