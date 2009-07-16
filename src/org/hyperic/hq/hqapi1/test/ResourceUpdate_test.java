@@ -157,5 +157,35 @@ public class ResourceUpdate_test extends ResourceTestBase {
         StatusResponse updateResponse = api.updateResource(platform);
         hqAssertFailureObjectNotFound(updateResponse);
     }
+
+    public void testUpdateInvalidDescription() throws Exception {
+
+        ResourceApi api = getApi().getResourceApi();
+        Resource createdResource = createTestHTTPService();
+
+        String longDescription = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+
+        createdResource.setDescription(longDescription);
+
+        StatusResponse updateResponse = api.updateResource(createdResource);
+        hqAssertFailureInvalidParameters(updateResponse);
+
+        // Cannot delete resources soon after modifying them..
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            // Ignore
+        }
+
+        // Cleanup
+        StatusResponse deleteResponse = api.deleteResource(createdResource.getId());
+        hqAssertSuccess(deleteResponse);
+    }
 }
 

@@ -38,6 +38,13 @@ class ResourceController extends ApiController {
         }
     }
 
+    private String getCause(Throwable t) {
+        while (t.getCause()) {
+            t = t.getCause()
+        }
+        return t.getMessage()
+    }
+
     def getResourcePrototypes(params) {
         def existing = params.getOne('existing')?.toBoolean()
 
@@ -132,14 +139,16 @@ class ResourceController extends ApiController {
         try {
             resource = prototype.createInstance(parent, resourceXml.'@name',
                                                 user, cfg, agent, ips)
-        } catch (Exception e) {
-            // TODO: Fix this
+        } catch (Throwable t) {
+            String cause = getCause(t)
             renderXml() {
                 ResourceResponse() {
-                    out << getFailureXML(ErrorCode.OBJECT_EXISTS);
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         "Error creating '" +
+                                         resourceXml.'@name' + "': " + cause)
                 }
             }
-            log.warn("Error creating resource", e)
+            log.warn("Error creating resource", t)
             return
         }
 
@@ -191,14 +200,16 @@ class ResourceController extends ApiController {
         try {
             resource = prototype.createInstance(parent, resourceXml.'@name',
                                                 user, cfg)
-        } catch (Exception e) {
-            // TODO: Fix this
+        } catch (Throwable t) {
+            String cause = getCause(t)
             renderXml() {
                 ResourceResponse() {
-                    out << getFailureXML(ErrorCode.OBJECT_EXISTS);
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         "Error creating " +
+                                         resourceXml.'@name' + "': " + cause)
                 }
             }
-            log.warn("Error creating resource", e)
+            log.warn("Error creating resource", t)
             return
         }
         
@@ -325,7 +336,14 @@ class ResourceController extends ApiController {
             }
 
             if (!configsEqual(resource.getConfig(), config)) {
-                resource.setConfig(config, user)
+                try {
+                    resource.setConfig(config, user)
+                } catch (Throwable t) {
+                    String cause = getCause(t)
+                    return getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         "Error updating '" + name + "': " +
+                                         cause)
+                }
             }
 
             def xmlChildren = xmlResource['Resource']
