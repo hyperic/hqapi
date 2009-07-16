@@ -1,6 +1,8 @@
 
 Changes in HQApi 3.0
 
+ *) [HHQ-3244] Add better error handling to Resource create and updates.
+
  *) MetricApi.getMetrics(Resource r) and MetricApi.getEnabledMetrics(Resource r)
     has been combined into a single function which takes an enabled flag.  These
     2 APIs have been marked as deprecated.
