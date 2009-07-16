@@ -132,4 +132,43 @@ public class ResourceCreateServer_test extends ResourceTestBase {
                                  parent, name, config);
         hqAssertFailureInvalidParameters(resp);
     }
+
+    public void testCreateServerLongDescription() throws Exception {
+
+        ResourceApi api = getApi().getResourceApi();
+
+        ResourcePrototypeResponse protoResponse =
+                api.getResourcePrototype("Apache httpd");
+        hqAssertSuccess(protoResponse);
+
+        Resource parent = getLocalPlatformResource(false, false);
+
+        String longDescription = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+
+        Random r = new Random();
+        final String name = "Test Apache Server" + r.nextInt();
+
+        Map<String,String> config = new HashMap<String,String>();
+        config.put("hostname", "localhost");
+        config.put("port", "80");
+        config.put("path", "/server-status");
+        config.put("sotimeout", "10");
+        config.put("description", longDescription);
+
+        ResourceResponse resp =
+                api.createServer(protoResponse.getResourcePrototype(),
+                                 parent, name, config);
+        hqAssertFailureInvalidParameters(resp);
+    }
 }

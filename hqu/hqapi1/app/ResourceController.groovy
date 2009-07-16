@@ -108,7 +108,14 @@ class ResourceController extends ApiController {
     		}                     
     	}
     }
-    
+
+    private String getCause(Throwable t) {
+        while (t.getCause()) {
+            t = t.getCause()
+        }
+        return t.getMessage()
+    }
+
     def getResourcePrototypes(params) {
         def existing = params.getOne('existing')?.toBoolean()
 
@@ -232,14 +239,16 @@ class ResourceController extends ApiController {
         try {
             resource = prototype.createInstance(parent, resourceXml.'@name',
                                                 user, cfg, agent, ips)
-        } catch (Exception e) {
-            // TODO: Fix this
+        } catch (Throwable t) {
+            String cause = getCause(t)
             renderXml() {
                 ResourceResponse() {
-                    out << getFailureXML(ErrorCode.OBJECT_EXISTS);
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         "Error creating '" +
+                                         resourceXml.'@name' + "': " + cause)
                 }
             }
-            log.warn("Error creating resource", e)
+            log.warn("Error creating resource", t)
             return
         }
 
@@ -307,22 +316,17 @@ class ResourceController extends ApiController {
         try {
             resource = prototype.createInstance(parent, resourceXml.'@name',
                                                 user, cfg)
-        } catch (IllegalArgumentException e) {
+        } catch (Throwable t) {
+            String cause = getCause(t)
             renderXml() {
                 ResourceResponse() {
                     out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
-                                         e.getMessage())
+                                         "Error creating '" +
+                                         resourceXml.'@name' + "': " +
+                                         cause);
                 }
             }
-            return
-        } catch (Exception e) {
-            // TODO: Fix this
-            renderXml() {
-                ResourceResponse() {
-                    out << getFailureXML(ErrorCode.OBJECT_EXISTS);
-                }
-            }
-            log.warn("Error creating resource", e)
+            log.warn("Error creating resource", t)
             return
         }
         
@@ -561,7 +565,7 @@ class ResourceController extends ApiController {
                                  "Resource name not given")
         }
 
-        def resource
+        def resource = null
         if (id) {
             resource = getResource(id)
         }
@@ -632,7 +636,14 @@ class ResourceController extends ApiController {
 
             // Update
             if (!configsEqual(resource.getConfig(), config)) {
-                resource.setConfig(config, user)
+                try {
+                    resource.setConfig(config, user)
+                } catch (Throwable t) {
+                    String cause = getCause(t)
+                    return getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         "Error updating '" + name + "': " +
+                                         cause)
+                }
             }
         } else {
             // Create
@@ -667,12 +678,12 @@ class ResourceController extends ApiController {
                 try {
                     resource = prototype.createInstance(parent, name,
                                                         user, config, agent, ips)
-                } catch (IllegalArgumentException e) {
+                } catch (Throwable t) {
+                    String cause = getCause(t)
+                    log.warn("Error creating resource", t)
                     return getFailureXML(ErrorCode.INVALID_PARAMETERS,
-                                         e.getMessage())
-                } catch (Exception e) {
-                    log.warn("Error creating resource", e)
-                    return getFailureXML(ErrorCode.OBJECT_EXISTS);
+                                         "Error creating '" + name + "':" +
+                                         cause);
                 }
 
             } else if (prototype.isServerPrototype()) {
@@ -694,12 +705,12 @@ class ResourceController extends ApiController {
 
                     resource = prototype.createInstance(parent, name,
                                                         user, config)
-                } catch (IllegalArgumentException e) {
+                } catch (Throwable t) {
+                    String cause = getCause(t)
+                    log.warn("Error creating resource", t)
                     return getFailureXML(ErrorCode.INVALID_PARAMETERS,
-                                         e.getMessage())
-                } catch (Exception e) {
-                    log.warn("Error creating resource", e)
-                    return getFailureXML(ErrorCode.OBJECT_EXISTS);
+                                         "Error creating '" + name + "':" +
+                                         cause);
                 }
             } else if (prototype.isServicePrototype()) {
 
@@ -711,14 +722,14 @@ class ResourceController extends ApiController {
                         config.put(PROP_AIIDENIFIER, aiid.'@value')
                     }
                     resource = prototype.createInstance(parent, name,
-                                                        user, config)
-                } catch (IllegalArgumentException e) {
+                                                        user, config)  
+                } catch (Throwable t) {
+                    String cause = getCause(t)
+                    log.warn("Error creating resource", t)
                     return getFailureXML(ErrorCode.INVALID_PARAMETERS,
-                                         e.getMessage())
-                } catch (Exception e) {
-                    log.warn("Error creating resource", e)
-                    return getFailureXML(ErrorCode.OBJECT_EXISTS);
-                }            
+                                         "Error creating '" + name + "':" +
+                                         cause);
+                }
             } else {
                 return getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                      "Invalid prototype=" + prototype.name)

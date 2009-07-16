@@ -123,4 +123,46 @@ public class ResourceCreateService_test extends ResourceTestBase {
         ResourceResponse resp = api.createService(pt, agent, name, params);
         hqAssertFailureInvalidParameters(resp);
     }
+
+    public void testServiceCreateInvalidDescription() throws Exception {
+
+        Agent a = getRunningAgent();
+
+        ResourceApi api = getApi().getResourceApi();
+
+        // Find HTTP resource type
+        ResourcePrototypeResponse protoResponse = api.getResourcePrototype("HTTP");
+        hqAssertSuccess(protoResponse);
+        ResourcePrototype pt = protoResponse.getResourcePrototype();
+
+        // Find local platform
+        ResourcesResponse resourcesResponse = api.getResources(a, false, false);
+        hqAssertSuccess(resourcesResponse);
+        assertTrue("Did not find a single platform for " + a.getAddress() + ":" +
+                   a.getPort(), resourcesResponse.getResource().size() == 1);
+        Resource platform = resourcesResponse.getResource().get(0);
+
+        String longDescription = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
+                                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+
+        // Configure service
+        Map<String,String> params = new HashMap<String,String>();
+        params.put("hostname", "www.hyperic.com");
+        params.put("port", "80");
+        params.put("sotimeout", "10");
+        params.put("path", "/");
+        params.put("method", "GET");
+        params.put("description", longDescription);
+
+        Random r = new Random();
+        String name = "My HTTP Check " + r.nextInt();
+
+        ResourceResponse resp = api.createService(pt, platform, name, params);
+        hqAssertFailureInvalidParameters(resp);
+    }
 }
