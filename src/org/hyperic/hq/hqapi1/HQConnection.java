@@ -145,16 +145,16 @@ class HQConnection {
             uri.append("?");
         }
 
-        int idx = 0;
-        for (Iterator i = params.keySet().iterator(); i.hasNext(); idx++) {
-            String key = (String)i.next();
+        boolean append = false;
+        for (String key : params.keySet()) {
             String[] vals = params.get(key);
             for (String val : vals) {
                 if (val != null) {
-                    if (idx > 0) {
+                    if (append) {
                         uri.append("&");
                     }
                     uri.append(key).append("=").append(urlEncode(val));
+                    append = true;
                 }
             }
         }
