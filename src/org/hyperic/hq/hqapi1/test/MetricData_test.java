@@ -52,6 +52,9 @@ import java.util.List;
 import java.util.Random;
 import java.io.IOException;
 
+/**
+ * These are tests for the old Metric API which as of 3.0 is deprecated.
+ */
 public class MetricData_test extends MetricTestBase {
 
     public MetricData_test(String name) {

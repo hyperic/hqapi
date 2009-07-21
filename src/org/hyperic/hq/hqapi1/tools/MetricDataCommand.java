@@ -31,10 +31,17 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.MetricApi;
-import org.hyperic.hq.hqapi1.XmlUtil;
+import org.hyperic.hq.hqapi1.MetricDataApi;
+import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.types.MetricDataResponse;
+import org.hyperic.hq.hqapi1.types.DataPoint;
+import org.hyperic.hq.hqapi1.types.LastMetricsDataResponse;
+import org.hyperic.hq.hqapi1.types.MetricsResponse;
+import org.hyperic.hq.hqapi1.types.ResourceResponse;
+import org.hyperic.hq.hqapi1.types.LastMetricData;
 
 import java.util.Arrays;
+import java.util.Date;
 
 public class MetricDataCommand extends Command {
 
@@ -42,7 +49,9 @@ public class MetricDataCommand extends Command {
 
     private static String[] COMMANDS = { CMD_LIST };
 
-    private static final String OPT_METRIC_ID = "metricId";
+    private static final String OPT_RESOURCE_ID = "resourceId";
+    private static final String OPT_METRIC_ID   = "metricId";
+    private static final String OPT_HOURS       = "hours";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -67,20 +76,71 @@ public class MetricDataCommand extends Command {
 
         OptionParser p = getOptionParser();
 
-        p.accepts(OPT_METRIC_ID, "The metric id to query for data").
-                withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_RESOURCE_ID, "The resource id to query for metric data")
+                .withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_METRIC_ID, "The metric id to query for data")
+                .withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_HOURS, "The number of hours of data to query.  Defaults to 8")
+                .withRequiredArg().ofType(Integer.class);
 
         OptionSet options = getOptions(p, args);
 
         HQApi api = getApi(options);
+        ResourceApi resourceApi = api.getResourceApi();
         MetricApi metricApi = api.getMetricApi();
+        MetricDataApi dataApi = api.getMetricDataApi();
 
         long end = System.currentTimeMillis();
-        long start = end - 8 * 60 * 60 * 1000;
-        MetricDataResponse data =
-                metricApi.getMetricData((Integer)getRequired(options, OPT_METRIC_ID),
-                                        start, end);
+        long start;
+        if (options.has(OPT_HOURS)) {
+            Integer hours = (Integer)options.valueOf(OPT_HOURS);
+            start = end - (hours * 60 * 60 * 1000);
+        } else {
+            start = end - 8 * 60 * 60 * 1000;
+        }
 
-        XmlUtil.serialize(data, System.out, Boolean.TRUE);
+        if (options.has(OPT_METRIC_ID)) {
+
+            MetricDataResponse data =
+                    dataApi.getData((Integer)getRequired(options, OPT_METRIC_ID),
+                                    start, end);
+            checkSuccess(data);
+
+            System.out.println("Values for " + data.getMetricData().getMetricName() +
+                               " on " + data.getMetricData().getResourceName());
+            for (DataPoint dp : data.getMetricData().getDataPoint()) {
+                System.out.println("    " + new Date(dp.getTimestamp()) +
+                                   " = " + dp.getValue());
+            }
+        } else if (options.has(OPT_RESOURCE_ID)){
+            ResourceResponse resource =
+                    resourceApi.getResource((Integer)getRequired(options,
+                                                                 OPT_RESOURCE_ID),
+                                            false, false);
+            checkSuccess(resource);
+
+            MetricsResponse metrics = metricApi.getMetrics(resource.getResource(), true);
+            checkSuccess(metrics);
+
+            int[] ids = new int[metrics.getMetric().size()];
+            for (int i = 0; i < metrics.getMetric().size(); i++) {
+                ids[i] = metrics.getMetric().get(i).getId();
+            }
+
+            LastMetricsDataResponse data = dataApi.getData(ids);
+            checkSuccess(data);
+
+            System.out.println("Last metric values for " + resource.getResource().getName());
+            for (LastMetricData d : data.getLastMetricData()) {
+                String value;
+                if (d.getDataPoint() != null) {
+                    value = d.getDataPoint().getValue() + " (at " +
+                            new Date(d.getDataPoint().getTimestamp()) + ")";
+                } else {
+                    value = "No data";
+                }
+                System.out.println("    " + d.getMetricName() + " = " + value);
+            }
+        }
     }
 }

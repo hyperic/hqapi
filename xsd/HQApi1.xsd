@@ -443,6 +443,16 @@
         <xs:attribute name="metricName"   type="xs:string" use="required"/>
     </xs:complexType>
 
+    <xs:complexType name="LastMetricData">
+        <xs:sequence>
+             <xs:element name="DataPoint" type="DataPoint" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute name="resourceId"   type="xs:int" use="required"/>
+        <xs:attribute name="resourceName" type="xs:string" use="required"/>
+        <xs:attribute name="metricId"     type="xs:int" use="required"/>
+        <xs:attribute name="metricName"   type="xs:string" use="required"/>
+    </xs:complexType>
+
     <!-- Metric Responses -->
 
     <xs:element name="MetricResponse">
@@ -491,6 +501,18 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="LastMetricDataResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="LastMetricData" type="LastMetricData" maxOccurs="1"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="MetricsDataResponse">
         <xs:complexType>
             <xs:complexContent>
@@ -500,6 +522,29 @@
                     </xs:sequence>
                 </xs:extension>
             </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="LastMetricsDataResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="LastMetricData" type="LastMetricData" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- MetricData Requests -->
+
+    <xs:element name="DataPointsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="DataPoint" type="DataPoint" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="metricId" type="xs:int" use="required"/>
         </xs:complexType>
     </xs:element>
 

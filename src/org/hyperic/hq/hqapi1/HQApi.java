@@ -47,6 +47,7 @@ public class HQApi {
     private final ResourceEdgeApi    _resourceEdgeApi;
     private final ServerConfigApi    _serverConfigApi;
     private final AlertApi           _alertApi;
+    private final MetricDataApi      _metricDataApi;
     
     /**
      * @param host The hostname of the HQ Server to connect to.
@@ -72,6 +73,7 @@ public class HQApi {
         _resourceEdgeApi  = new ResourceEdgeApi(connection);
         _serverConfigApi  = new ServerConfigApi(connection);
         _alertApi         = new AlertApi(connection);
+        _metricDataApi    = new MetricDataApi(connection);
     }
 
     /**
@@ -118,6 +120,16 @@ public class HQApi {
     public MetricApi getMetricApi() {
         return _metricApi;
     }
+
+    /**
+     * Import or Export Metric data
+     *
+     * @return The API for querying or reporting Metric information.
+     */
+    public MetricDataApi getMetricDataApi() {
+        return _metricDataApi;
+    }
+
 
     /**
      * Add, remove and assign escalations.

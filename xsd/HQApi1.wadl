@@ -519,6 +519,7 @@
             </wadl:method>
         </wadl:resource>
 
+        <!-- Deprecated -->
         <wadl:resource path="metric/getData.hqu">
             <wadl:doc title="HQApi Metric getData command">
                 Get MetricData for the specified time window
@@ -551,6 +552,7 @@
             </wadl:method>
         </wadl:resource>
 
+        <!-- Deprecated -->
         <wadl:resource path="metric/getGroupData.hqu">
             <wadl:doc title="HQApi Metric getGroupData command">
                 Get MetricData for a MetricTemplate across a compatible Group
@@ -589,6 +591,7 @@
             </wadl:method>
         </wadl:resource>
 
+        <!-- Deprecated -->
         <wadl:resource path="metric/getResourceData.hqu">
             <wadl:doc title="HQApi Metric getResourceData command">
                 Get MetricData for a list of Resource's
@@ -1319,6 +1322,126 @@
                             The id of the Alert to delete.
                         </wadl:doc>
                     </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="metricData/get.hqu">
+            <wadl:doc title="HQApi MetricData get command">
+                Get MetricData for the specified time window for the requested Metric
+            </wadl:doc>
+            <wadl:method name="GET" id="MetricDataGet">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Metric to query for MetricData.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="start" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The start time in milliseconds from the epoch.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="end" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The end time in milliseconds from the epoch.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="MetricDataResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="metricData/getLast.hqu">
+            <wadl:doc title="HQApi MetricData getLast command">
+                Get the LastMetricData for given Metric
+            </wadl:doc>
+            <wadl:method name="GET" id="MetricDataGetLast">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Metric to query for MetricData.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="LastMetricDataResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="metricData/getMulti.hqu">
+            <wadl:doc title="HQApi MetricData get command">
+                Get MetricData for the specified time window for multiple Metrics
+            </wadl:doc>
+            <wadl:method name="GET" id="MetricDataGetMulti">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="true"
+                                type="xs:int" repeating="true">
+                        <wadl:doc>
+                            The ids of the Metrics to query for MetricData.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="start" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The start time in milliseconds from the epoch.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="end" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The end time in milliseconds from the epoch.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="MetricsDataResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="metricData/getMultiLast.hqu">
+            <wadl:doc title="HQApi MetricData getLast command">
+                Get the LastMetricData for given Metric
+            </wadl:doc>
+            <wadl:method name="GET" id="MetricDataGetMultiLast">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="true"
+                                type="xs:int" repeating="true">
+                        <wadl:doc>
+                            The ids of the Metrics to query for MetricData.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="LastMetricsDataResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="metricData/put.hqu">
+            <wadl:doc title="HQApi MetricData put command">
+                Push DataPoints into the system for the specified Metric
+            </wadl:doc>
+            <wadl:method name="POST" id="MetricDataPut">
+                <wadl:request>
+                    <wadl:representation mediaType="application/xml"
+                                         element="DataPointsRequest"/>
                 </wadl:request>
                 <wadl:response>
                     <wadl:representation mediaType="application/xml"

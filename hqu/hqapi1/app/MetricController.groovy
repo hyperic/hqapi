@@ -42,6 +42,9 @@ class MetricController extends ApiController {
         }
     }
 
+    /**
+     * @deprecated
+     */
     private Closure getMetricDataXML(r) {
         { doc ->
             MetricData(resourceId: r.resource.id,
@@ -334,6 +337,9 @@ class MetricController extends ApiController {
         }
     }
 
+    /**
+     * @deprecated
+     */
     def getData(params) {
         def metricId = params.getOne("metricId")?.toInteger()
         def start = params.getOne("start")?.toLong()
@@ -380,6 +386,9 @@ class MetricController extends ApiController {
         }
     }
 
+    /**
+     * @deprecated
+     */
     def getGroupData(params) {
         def groupId = params.getOne("groupId")?.toInteger()
         def templateId = params.getOne("templateId")?.toInteger()
@@ -459,6 +468,9 @@ class MetricController extends ApiController {
         }
     }
 
+    /**
+     * @deprecated
+     */    
     def getResourceData(params) {
         
         def ids = params["ids"]

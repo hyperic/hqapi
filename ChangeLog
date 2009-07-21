@@ -1,6 +1,14 @@
 
 Changes in HQApi 3.0
 
+ *) [HHQ-3216] Revamp metricData CLI command to allow metrics to be pulled
+    for a single resource in addition to metrics.  Allow different time
+    windows to be specified and format output in human readable form rather
+    than XML.
+
+ *) [HHQ-3216] Split out APIs for pulling or adding Metric data into a new
+    MetricDataApi.  Old methods for pulling metric data have been deprecated.
+
  *) [HHQ-3244] Add better error handling to Resource create and updates.
 
  *) MetricApi.getMetrics(Resource r) and MetricApi.getEnabledMetrics(Resource r)

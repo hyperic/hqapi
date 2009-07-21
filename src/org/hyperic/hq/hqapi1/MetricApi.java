@@ -248,6 +248,7 @@ public class MetricApi extends BaseApi {
      * via {@link org.hyperic.hq.hqapi1.types.MetricDataResponse#getMetricData()}.
      *
      * @throws IOException If a network error occurs while making the request.
+     * @deprecated See {@link org.hyperic.hq.hqapi1.MetricDataApi}.
      */
     public MetricDataResponse getMetricData(int metricId, long start, long end)
         throws IOException
@@ -277,6 +278,7 @@ public class MetricApi extends BaseApi {
      * via {@link org.hyperic.hq.hqapi1.types.MetricsDataResponse#getMetricData()}.
      *
      * @throws IOException If a network error occurs while making the request.
+     * @deprecated See {@link org.hyperic.hq.hqapi1.MetricDataApi}.
      */
     public MetricsDataResponse getMetricData(int groupId, int templateId,
                                              long start, long end)
@@ -311,6 +313,7 @@ public class MetricApi extends BaseApi {
      * via {@link org.hyperic.hq.hqapi1.types.MetricsDataResponse#getMetricData()}.
      *
      * @throws IOException If a network error occurs while making the request.
+     * @deprecated See {@link org.hyperic.hq.hqapi1.MetricDataApi}.
      */
     public MetricsDataResponse getMetricData(int[] resourceIds, int templateId,
                                              long start, long end)
