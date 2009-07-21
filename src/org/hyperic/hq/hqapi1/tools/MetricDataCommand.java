@@ -138,7 +138,8 @@ public class MetricDataCommand extends Command {
                 } else {
                     value = "No data";
                 }
-                System.out.println("    " + d.getMetricName() + " = " + value);
+                System.out.println("    " + d.getMetricName() +
+                                   " (id=" + d.getMetricId() + ") = " + value);
             }
         }
     }
