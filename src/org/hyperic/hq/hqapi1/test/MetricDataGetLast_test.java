@@ -7,6 +7,9 @@ import org.hyperic.hq.hqapi1.types.MetricsResponse;
 import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.LastMetricDataResponse;
 
+import java.util.List;
+import java.util.Iterator;
+
 public class MetricDataGetLast_test extends MetricDataTestBase {
 
     public MetricDataGetLast_test(String name) {
@@ -25,7 +28,7 @@ public class MetricDataGetLast_test extends MetricDataTestBase {
 
         Metric m = metricsResponse.getMetric().get(0);
 
-        LastMetricDataResponse dataResponse = dataApi.getData(m.getId());
+        LastMetricDataResponse dataResponse = dataApi.getData(m);
         hqAssertSuccess(dataResponse);
        
         validateLastMetricData(dataResponse.getLastMetricData());
@@ -33,7 +36,9 @@ public class MetricDataGetLast_test extends MetricDataTestBase {
 
     public void testGetInvalidMetricId() throws Exception {
         MetricDataApi dataApi = getApi().getMetricDataApi();
-        LastMetricDataResponse dataResponse = dataApi.getData(Integer.MAX_VALUE);
+        Metric m = new Metric();
+        m.setId(Integer.MAX_VALUE);
+        LastMetricDataResponse dataResponse = dataApi.getData(m);
         hqAssertFailureObjectNotFound(dataResponse);
     }
 
@@ -57,7 +62,7 @@ public class MetricDataGetLast_test extends MetricDataTestBase {
 
         assertNotNull("No disabled metric could be found", metric);
 
-        LastMetricDataResponse dataResponse = dataApi.getData(metric.getId());
+        LastMetricDataResponse dataResponse = dataApi.getData(metric);
         hqAssertSuccess(dataResponse);
         // TODO: What is the correct behavior of the API if the last data point
         //       could not be found? Return an error for simply null?

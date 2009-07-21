@@ -40,7 +40,7 @@ public class MetricDataAddData_test extends MetricDataTestBase {
             dps.add(dp);
         }
 
-        StatusResponse response = dataApi.addData(m.getId(), dps);
+        StatusResponse response = dataApi.addData(m, dps);
         hqAssertFailureNotImplemented(response);
     }
 }

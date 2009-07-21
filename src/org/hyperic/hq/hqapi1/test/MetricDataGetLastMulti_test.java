@@ -13,6 +13,7 @@ import org.hyperic.hq.hqapi1.types.LastMetricDataResponse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
 public class MetricDataGetLastMulti_test extends MetricDataTestBase {
 
@@ -31,12 +32,8 @@ public class MetricDataGetLastMulti_test extends MetricDataTestBase {
         assertTrue("No metrics found for " + platform.getName(),
                    metricsResponse.getMetric().size() > 0);
 
-        int[] mids = new int[metricsResponse.getMetric().size()];
-        for (int i = 0; i < metricsResponse.getMetric().size(); i++) {
-            mids[i] = metricsResponse.getMetric().get(i).getId();
-        }
-
-        LastMetricsDataResponse dataResponse = dataApi.getData(mids);
+        LastMetricsDataResponse dataResponse =
+                dataApi.getData(metricsResponse.getMetric());
         hqAssertSuccess(dataResponse);
 
         for (LastMetricData metricData : dataResponse.getLastMetricData()) {
@@ -48,19 +45,22 @@ public class MetricDataGetLastMulti_test extends MetricDataTestBase {
 
         MetricDataApi dataApi = getApi().getMetricDataApi();
 
-        int[] mids = { Integer.MAX_VALUE };
+        List<Metric> metrics = new ArrayList<Metric>();
+        Metric m = new Metric();
+        m.setId(Integer.MAX_VALUE);
+        metrics.add(m);
 
-        LastMetricsDataResponse dataResponse = dataApi.getData(mids);
+        LastMetricsDataResponse dataResponse = dataApi.getData(metrics);
         hqAssertFailureObjectNotFound(dataResponse);
     }
 
-    public void testGetEmptyMetricArray() throws Exception {
+    public void testGetEmptyMetricList() throws Exception {
 
         MetricDataApi dataApi = getApi().getMetricDataApi();
 
-        int[] mids = {};
+        List<Metric> metrics = new ArrayList<Metric>();
 
-        LastMetricsDataResponse dataResponse = dataApi.getData(mids);
+        LastMetricsDataResponse dataResponse = dataApi.getData(metrics);
         hqAssertFailureInvalidParameters(dataResponse);
     }
 
@@ -75,21 +75,17 @@ public class MetricDataGetLastMulti_test extends MetricDataTestBase {
         assertTrue("No metrics found for " + platform.getName(),
                    metricsResponse.getMetric().size() > 0);
 
-        List<Metric> disabledMetrics = new ArrayList<Metric>();
-        for (Metric m : metricsResponse.getMetric()) {
-            if (!m.isEnabled()) {
-                disabledMetrics.add(m);
+        List<Metric> disabledMetrics = metricsResponse.getMetric();
+        for (Iterator<Metric> i = disabledMetrics.iterator(); i.hasNext();) {
+            Metric m = i.next();
+            if (m.isEnabled()) {
+                i.remove();
             }
         }
 
         assertTrue("No disabled metrics could be found", disabledMetrics.size() > 0);
 
-        int[] mids = new int[disabledMetrics.size()];
-        for (int i = 0; i < disabledMetrics.size(); i++) {
-            mids[i] = disabledMetrics.get(i).getId();
-        }
-
-        LastMetricsDataResponse dataResponse = dataApi.getData(mids);
+        LastMetricsDataResponse dataResponse = dataApi.getData(disabledMetrics);
         hqAssertSuccess(dataResponse);
         // TODO: What is the correct behavior of the API if the last data point
         //       could not be found? Return an error for simply null?

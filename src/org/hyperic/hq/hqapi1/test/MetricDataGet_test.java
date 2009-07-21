@@ -28,7 +28,7 @@ public class MetricDataGet_test extends MetricDataTestBase {
 
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
-        MetricDataResponse dataResponse = dataApi.getData(m.getId(), start, end);
+        MetricDataResponse dataResponse = dataApi.getData(m, start, end);
         hqAssertSuccess(dataResponse);
 
         validateMetricData(dataResponse.getMetricData());
@@ -38,10 +38,12 @@ public class MetricDataGet_test extends MetricDataTestBase {
 
         MetricDataApi dataApi = getApi().getMetricDataApi();
 
+        Metric m = new Metric();
+        m.setId(Integer.MAX_VALUE);
+
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
-        MetricDataResponse dataResponse = dataApi.getData(Integer.MAX_VALUE,
-                                                          start, end);
+        MetricDataResponse dataResponse = dataApi.getData(m, start, end);
         hqAssertFailureObjectNotFound(dataResponse);
     }
 
@@ -60,7 +62,7 @@ public class MetricDataGet_test extends MetricDataTestBase {
 
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
-        MetricDataResponse dataResponse = dataApi.getData(m.getId(), start, end);
+        MetricDataResponse dataResponse = dataApi.getData(m, start, end);
         hqAssertSuccess(dataResponse);
     }   
 }

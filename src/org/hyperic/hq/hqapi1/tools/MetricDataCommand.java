@@ -39,6 +39,7 @@ import org.hyperic.hq.hqapi1.types.LastMetricsDataResponse;
 import org.hyperic.hq.hqapi1.types.MetricsResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.LastMetricData;
+import org.hyperic.hq.hqapi1.types.MetricResponse;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -100,10 +101,13 @@ public class MetricDataCommand extends Command {
         }
 
         if (options.has(OPT_METRIC_ID)) {
+            MetricResponse metric =
+                    metricApi.getMetric((Integer)getRequired(options,
+                                                             OPT_METRIC_ID));
+            checkSuccess(metric);
 
             MetricDataResponse data =
-                    dataApi.getData((Integer)getRequired(options, OPT_METRIC_ID),
-                                    start, end);
+                    dataApi.getData(metric.getMetric(), start, end);
             checkSuccess(data);
 
             System.out.println("Values for " + data.getMetricData().getMetricName() +
@@ -122,12 +126,7 @@ public class MetricDataCommand extends Command {
             MetricsResponse metrics = metricApi.getMetrics(resource.getResource(), true);
             checkSuccess(metrics);
 
-            int[] ids = new int[metrics.getMetric().size()];
-            for (int i = 0; i < metrics.getMetric().size(); i++) {
-                ids[i] = metrics.getMetric().get(i).getId();
-            }
-
-            LastMetricsDataResponse data = dataApi.getData(ids);
+            LastMetricsDataResponse data = dataApi.getData(metrics.getMetric());
             checkSuccess(data);
 
             System.out.println("Last metric values for " + resource.getResource().getName());
