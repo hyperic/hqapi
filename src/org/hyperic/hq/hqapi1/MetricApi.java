@@ -66,7 +66,7 @@ public class MetricApi extends BaseApi {
     }
     
     /**
-     * List all {@link org.hyperic.hq.hqapi1.types.Metric}s associated with a
+     * Get all {@link org.hyperic.hq.hqapi1.types.Metric}s associated with a
      * {@link org.hyperic.hq.hqapi1.types.Resource}
      *
      * @param resource The associated {@link org.hyperic.hq.hqapi1.types.Resource} which the metrics belong.
@@ -87,7 +87,7 @@ public class MetricApi extends BaseApi {
     }
 
     /**
-     * List all enabled {@link org.hyperic.hq.hqapi1.types.Metric}s associated with a
+     * Get all enabled {@link org.hyperic.hq.hqapi1.types.Metric}s associated with a
      * {@link org.hyperic.hq.hqapi1.types.Resource}
      *
      * @param resource The associated {@link org.hyperic.hq.hqapi1.types.Resource}
@@ -110,7 +110,7 @@ public class MetricApi extends BaseApi {
     }
 
     /**
-     * List all enabled {@link org.hyperic.hq.hqapi1.types.Metric}s associated with a
+     * Get all {@link org.hyperic.hq.hqapi1.types.Metric}s associated with a
      * {@link org.hyperic.hq.hqapi1.types.Resource}
      *
      * @param resource The associated {@link org.hyperic.hq.hqapi1.types.Resource}
@@ -133,8 +133,7 @@ public class MetricApi extends BaseApi {
     }
 
     /**
-     * Get the {@link org.hyperic.hq.hqapi1.types.Metric} associated
-     * with the metricId
+     * Get a {@link org.hyperic.hq.hqapi1.types.Metric} by it's id.
      *
      * @param id The id used to retrieve the associated
      *  {@link org.hyperic.hq.hqapi1.types.Metric}.
@@ -174,8 +173,7 @@ public class MetricApi extends BaseApi {
     }
 
     /**
-     * Get the {@link org.hyperic.hq.hqapi1.types.MetricTemplate} associated
-     * with the metric id.
+     * Get a {@link org.hyperic.hq.hqapi1.types.MetricTemplate} by it's id.
      *
      * @param id The id used to retrieve the associated
      *  {@link org.hyperic.hq.hqapi1.types.MetricTemplate}.
@@ -196,7 +194,7 @@ public class MetricApi extends BaseApi {
     }
 
     /**
-     * List all {@link org.hyperic.hq.hqapi1.types.MetricTemplate}s associated
+     * Get all {@link org.hyperic.hq.hqapi1.types.MetricTemplate}s associated
      * with the given {@link org.hyperic.hq.hqapi1.types.ResourcePrototype}.
      *
      * @param prototype The associated {@link org.hyperic.hq.hqapi1.types.ResourcePrototype}
