@@ -1,6 +1,8 @@
 
 Changes in HQApi 3.0
 
+ *) [HHQ-3216] Implement MetricDataApi.addData()
+
  *) [HHQ-3216] Revamp metricData CLI command to allow metrics to be pulled
     for a single resource in addition to metrics.  Allow different time
     windows to be specified and format output in human readable form rather

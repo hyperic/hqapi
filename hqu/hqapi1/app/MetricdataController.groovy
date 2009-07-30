@@ -1,5 +1,8 @@
 import org.hyperic.hq.hqapi1.ErrorCode;
 
+import org.hyperic.hq.measurement.server.session.MeasurementStartupListener as MListener
+import org.hyperic.hq.measurement.server.session.DataPoint as DP
+
 class MetricdataController extends ApiController {
 
     private Closure getMetricDataXML(r) {
@@ -39,13 +42,17 @@ class MetricdataController extends ApiController {
      */
     private Closure validateParameters(metricIds, start, end) {
 
-        if (!start) {
+        if (start == null) {
             return getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                  "Start time not given")
         }
-        if (!end) {
+        if (end == null) {
             return getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                  "End time not given")
+        }
+        if (start < 0) {
+            return getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                 "Start time must be >= 0")
         }
         if (end < start) {
             return getFailureXML(ErrorCode.INVALID_PARAMETERS,
@@ -212,10 +219,42 @@ class MetricdataController extends ApiController {
     }
 
     def put(params) {
+        def inserter = MListener.dataInserter
+        def failureXml = null
+
+        def dataRequest = new XmlParser().parseText(getPostData())
+        def metricId = dataRequest.'@metricId'?.toInteger()
+
+        def metric = metricHelper.findMeasurementById(metricId)
+        if (!metric) {
+            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                       "Unable to find metric with id = " +
+                                       metricId)
+        } else {
+            def points = []
+            for (dp in dataRequest["DataPoint"]) {
+                long ts = dp.'@timestamp'?.toLong()
+                double val = dp.'@value'?.toDouble()
+                points << new DP(metricId, val, ts)
+            }
+            log.info("Inserting " + points.size() + " metrics for " + metric.template.name)
+            try {
+                inserter.insertMetrics(points)
+            } catch (Exception e) {
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
+                                           "Error inserting metrics: " +
+                                           e.getMessage())
+                log.warn("Error inserting metrics", e)
+            }
+        }
 
         renderXml() {
             StatusResponse() {
-                out << getFailureXML(ErrorCode.NOT_IMPLEMENTED);
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                }
             }
         }
     }
