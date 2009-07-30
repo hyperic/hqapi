@@ -62,9 +62,9 @@ public class AlertTestBase extends HQApiTestBase {
         hqAssertSuccess(response);
 
         // Now we wait..
+        System.out.println("Waiting for alerts...");
         for (int i = 0; i < 120; i++) {
             // Wait for alerts
-            System.out.println("Waiting for alerts...");
             AlertsResponse alerts = getAlertApi().findAlerts(platform, 0,
                                                              System.currentTimeMillis(),
                                                              10, 1, false, false);
