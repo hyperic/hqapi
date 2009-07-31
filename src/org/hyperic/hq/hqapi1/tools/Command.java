@@ -50,6 +50,7 @@ public abstract class Command {
     static final String[] OPT_SECURE = {"s", "secure"};
     static final String[] OPT_HELP   = {"h","help"};
     static final String OPT_FILE     = "file";
+    static final String OPT_PROPERTIES = "properties";
 
     // Ripped out from PluginMain.java
     private static final String[][] LOG_PROPS = {
@@ -97,6 +98,10 @@ public abstract class Command {
                                  "not specified, stdin will be used.").
                 withRequiredArg().ofType(String.class);
 
+        parser.accepts(OPT_PROPERTIES, "Specify the file to read for connection " +
+                                      "properties.  Defaults to ~/.hq/client.properties")
+                .withRequiredArg().ofType(String.class);
+
         return parser;
     }
 
@@ -111,12 +116,23 @@ public abstract class Command {
         return o;
     }
 
-    private Properties getClientProperties() {
+    private Properties getClientProperties(String file) {
         Properties props = new Properties();
 
-        String home = System.getProperty("user.home");
-        File hq = new File(home, ".hq");
-        File clientProperties = new File(hq, "client.properties");
+        File clientProperties;
+
+        if (file != null) {
+            clientProperties = new File(file);
+            if (!clientProperties.exists()) {
+                System.err.println("Error: " + clientProperties.toString() +
+                                   " does not exist");
+                System.exit(-1);
+            }
+        } else {
+            String home = System.getProperty("user.home");
+            File hq = new File(home, ".hq");
+            clientProperties = new File(hq, "client.properties");
+        }
 
         if (clientProperties.exists()) {
             props = new Properties();
@@ -144,7 +160,8 @@ public abstract class Command {
 
     protected HQApi getApi(OptionSet s) {
 
-        Properties clientProps = getClientProperties();
+        Properties clientProps =
+                getClientProperties((String)s.valueOf(OPT_PROPERTIES));
 
         String host = (String)s.valueOf(OPT_HOST);
         if (host == null) {

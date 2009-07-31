@@ -1,6 +1,9 @@
 
 Changes in HQApi 3.0
 
+ *) [HHQ-3275] Add --properties option to CLI commands to override default
+    location for user.home/.hq/client.properties
+
  *) [HHQ-3216] Implement MetricDataApi.addData()
 
  *) [HHQ-3216] Revamp metricData CLI command to allow metrics to be pulled
