@@ -72,6 +72,7 @@ public class AgentCommand extends Command {
         AgentApi agentApi = api.getAgentApi();
 
         AgentsResponse agents = agentApi.getAgents();
+        checkSuccess(agents);
 
         XmlUtil.serialize(agents, System.out, Boolean.TRUE);
     }
