@@ -185,6 +185,18 @@ public abstract class Command {
             password = clientProps.getProperty(OPT_PASS);
         }
 
+        if (password == null) {
+            // Prompt for password
+            try {
+                char[] passwordArray = PasswordField.getPassword(System.in,
+                                                                 "Enter password: ");
+                password = String.valueOf(passwordArray);
+            } catch (IOException ioe) {
+                System.err.println("Error reading password");
+                System.exit(-1);
+            }
+        }
+
         Boolean secure = s.hasArgument(OPT_SECURE[0]) ||
                          Boolean.valueOf(clientProps.getProperty(OPT_SECURE[1],
                                                                  "false"));

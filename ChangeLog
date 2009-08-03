@@ -1,6 +1,9 @@
 
 Changes in HQApi 3.0
 
+ *) [HHQ-3274] If a password is not given on the command line or via the
+    client.properties, prompt on the command line.
+
  *) [HHQ-3275] Add --properties option to CLI commands to override default
     location for user.home/.hq/client.properties
 
