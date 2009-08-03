@@ -80,6 +80,7 @@ public class AutoDiscoveryCommand extends Command {
         AutodiscoveryApi autodiscoveryApi = api.getAutodiscoveryApi();
 
         QueueResponse queue = autodiscoveryApi.getQueue();
+        checkSuccess(queue);
 
         XmlUtil.serialize(queue, System.out, Boolean.TRUE);
     }
