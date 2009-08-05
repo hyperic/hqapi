@@ -50,6 +50,7 @@ public class Shell {
         _commands.put("user", new UserCommand());
         _commands.put("serverConfig", new ServerConfigCommand());
         _commands.put("alert", new AlertCommand());
+        _commands.put("event", new EventCommand());
     }
 
     private static void printHelp() {

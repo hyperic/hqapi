@@ -1,6 +1,8 @@
 
 Changes in HQApi 3.0
 
+ *) [HHQ-3284] Add EventApi for gathering events globally or by resource.
+
  *) [HHQ-3274] If a password is not given on the command line or via the
     client.properties, prompt on the command line.
 

@@ -48,6 +48,7 @@ public class HQApi {
     private final ServerConfigApi    _serverConfigApi;
     private final AlertApi           _alertApi;
     private final MetricDataApi      _metricDataApi;
+    private final EventApi           _eventApi;
     
     /**
      * @param host The hostname of the HQ Server to connect to.
@@ -74,6 +75,7 @@ public class HQApi {
         _serverConfigApi  = new ServerConfigApi(connection);
         _alertApi         = new AlertApi(connection);
         _metricDataApi    = new MetricDataApi(connection);
+        _eventApi         = new EventApi(connection);
     }
 
     /**
@@ -202,5 +204,12 @@ public class HQApi {
      */
     public AlertApi getAlertApi() {
         return _alertApi;
+    }
+
+    /**
+     * List events in HQ
+     */
+    public EventApi getEventApi() {
+        return _eventApi;
     }
 }
