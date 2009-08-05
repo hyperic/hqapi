@@ -1450,6 +1450,81 @@
             </wadl:method>
         </wadl:resource>
 
+        <wadl:resource path="event/find.hqu">
+            <wadl:doc title="HQApi Event find command">
+                Find Events
+            </wadl:doc>
+            <wadl:method name="GET" id="EventFind">
+                <wadl:request>
+                    <wadl:param name="begin" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The start time in milliseconds from the epoch.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="end" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The end time in milliseconds from the epoch.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="count" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The maximum number of Events to return.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="status" style="query" required="false"
+                                type="xs:string">
+                        <wadl:doc>
+                            Filter the Events by status.  One of ANY,ERR,WRN,INF,DBG.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="type" style="query" required="false"
+                                type="xs:string">
+                        <wadl:doc>
+                            Filter the Events by type.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="EventsResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="event/findByResource.hqu">
+            <wadl:doc title="HQApi Event findByResource command">
+                Find Events
+            </wadl:doc>
+            <wadl:method name="GET" id="EventFindByResource">
+                <wadl:request>
+                    <wadl:param name="resourceId" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Resource to query for Events.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="begin" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The start time in milliseconds from the epoch.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="end" style="query" required="true"
+                                type="xs:long">
+                        <wadl:doc>
+                            The end time in milliseconds from the epoch.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="EventsResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
     </wadl:resources>
 
 </wadl:application>

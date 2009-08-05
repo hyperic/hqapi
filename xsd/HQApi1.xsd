@@ -994,4 +994,29 @@
         </xs:complexType>
     </xs:element>
 
+    <!-- Event objects -->
+
+    <xs:complexType name="Event">
+        <xs:attribute name="detail"     type="xs:string" use="required"/>
+        <xs:attribute name="type"       type="xs:string" use="required"/>
+        <xs:attribute name="ctime"      type="xs:long" use="required"/>
+        <xs:attribute name="user"       type="xs:string" use="required"/>
+        <xs:attribute name="status"     type="xs:string" use="required"/>
+        <xs:attribute name="resourceId" type="xs:int" use="required"/>
+    </xs:complexType>
+
+    <!-- Event Response objects -->
+
+    <xs:element name="EventsResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="Event" type="Event" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
 </xs:schema>
