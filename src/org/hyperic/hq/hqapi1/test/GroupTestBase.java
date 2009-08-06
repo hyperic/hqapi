@@ -38,7 +38,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-public class GroupTestBase extends HQApiTestBase {
+public abstract class GroupTestBase extends HQApiTestBase {
 
     static final String GROUP_NAME = "API Test Group";
     static final String GROUP_LOCATION = "API Test Group Location";

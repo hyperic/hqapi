@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class ResourceTestBase extends HQApiTestBase {
+public abstract class ResourceTestBase extends HQApiTestBase {
 
     public ResourceTestBase(String name) {
         super(name);

@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-public class AlertDefinitionTestBase extends HQApiTestBase {
+public abstract class AlertDefinitionTestBase extends HQApiTestBase {
 
     public AlertDefinitionTestBase(String name) {
         super(name);

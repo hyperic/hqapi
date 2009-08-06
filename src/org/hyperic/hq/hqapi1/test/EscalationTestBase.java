@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-public class EscalationTestBase extends HQApiTestBase {
+public abstract class EscalationTestBase extends HQApiTestBase {
 
     public EscalationTestBase(String name) {
         super(name);

@@ -4,7 +4,7 @@ import org.hyperic.hq.hqapi1.types.MetricData;
 import org.hyperic.hq.hqapi1.types.DataPoint;
 import org.hyperic.hq.hqapi1.types.LastMetricData;
 
-public class MetricDataTestBase extends HQApiTestBase {
+public abstract class MetricDataTestBase extends HQApiTestBase {
 
     public MetricDataTestBase(String name) {
         super(name);

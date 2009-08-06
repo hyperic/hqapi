@@ -7,7 +7,7 @@ import org.hyperic.hq.hqapi1.wadl.*;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 
-public class WADLTestBase extends TestCase {
+public abstract class WADLTestBase extends TestCase {
 
     public void setUp() throws Exception {
         final String username ="hqadmin";

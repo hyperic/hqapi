@@ -39,7 +39,7 @@ import org.hyperic.hq.hqapi1.GroupApi;
 
 import java.util.Random;
 
-public class MaintenanceTestBase extends HQApiTestBase {
+public abstract class MaintenanceTestBase extends HQApiTestBase {
 
     public MaintenanceTestBase(String name) {
         super(name);

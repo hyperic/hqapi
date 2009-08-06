@@ -14,7 +14,7 @@ import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
 
-public class AlertTestBase extends HQApiTestBase {
+public abstract class AlertTestBase extends HQApiTestBase {
 
     public AlertTestBase(String name) {
         super(name);

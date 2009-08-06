@@ -46,7 +46,7 @@ import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import java.util.List;
 import java.util.Properties;
 
-public class HQApiTestBase  extends TestCase {
+public abstract class HQApiTestBase  extends TestCase {
 
     private static boolean _logConfigured = false;
 

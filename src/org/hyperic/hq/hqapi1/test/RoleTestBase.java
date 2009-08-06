@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class RoleTestBase extends UserTestBase {
+public abstract class RoleTestBase extends UserTestBase {
 
     static final String GUEST_ROLENAME = "Guest Role";
     static final String SUPER_USER_ROLENAME = "Super User Role";

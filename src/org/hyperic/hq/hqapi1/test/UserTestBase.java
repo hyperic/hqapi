@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class UserTestBase extends HQApiTestBase {
+public abstract class UserTestBase extends HQApiTestBase {
 
     static final String PASSWORD = "apitest";
 
