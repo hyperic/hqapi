@@ -131,8 +131,29 @@ public class AlertApi extends BaseApi {
     public StatusResponse fixAlert(Integer alertId)
         throws IOException
     {
+        return fixAlerts(new Integer[] { alertId });
+    }
+
+    /**
+     * Fix multiple Alerts
+     *
+     * @param alertIds An array of Alert id's to fix.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * if the Alert was successfully fixed.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public StatusResponse fixAlerts(Integer[] alertIds)
+        throws IOException
+    {
         Map<String,String[]> params = new HashMap<String,String[]>();
-        params.put("id", new String[] { Integer.toString(alertId) });
+        String[] ids = new String[alertIds.length];
+        for (int i = 0; i < alertIds.length; i++) {
+            ids[i] = Integer.toString(alertIds[i]);
+        }
+
+        params.put("id", ids);
 
         return doGet("alert/fix.hqu", params, StatusResponse.class);
     }
@@ -153,8 +174,31 @@ public class AlertApi extends BaseApi {
     public StatusResponse ackAlert(Integer alertId, String reason, Long pause)
         throws IOException
     {
+        return ackAlerts(new Integer[] { alertId }, reason, pause);
+    }
+
+    /**
+     * Acknowledge multiple Alerts
+     *
+     * @param alertIds An array of Alert id's to acknowledge.
+     * @param reason The reason for acknowledgement.
+     * @param pause If not null, pause the Escalation for the specified number
+     * of milliseconds.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * if the Alert was successfully acknowledged.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public StatusResponse ackAlerts(Integer[] alertIds, String reason, Long pause)
+        throws IOException
+    {
         Map<String,String[]> params = new HashMap<String,String[]>();
-        params.put("id", new String[] { Integer.toString(alertId) });
+        String[] ids = new String[alertIds.length];
+        for (int i = 0; i < alertIds.length; i++) {
+            ids[i] = Integer.toString(alertIds[i]);
+        }
+        params.put("id", ids);
         params.put("reason", new String[] { reason });
         params.put("pause", new String[] { Long.toString(pause)});
 
@@ -164,7 +208,7 @@ public class AlertApi extends BaseApi {
     /**
      * Delete an Alert
      *
-     * @param alertId The id of the Alert to delete.
+     * @param alertId An array of Alert id's to delete.
      *
      * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * if the Alert was successfully deleted.
@@ -174,8 +218,28 @@ public class AlertApi extends BaseApi {
     public StatusResponse delete(Integer alertId)
         throws IOException
     {
+        return delete(new Integer[] { alertId});
+    }
+
+    /**
+     * Delete multiple Alerts
+     *
+     * @param alertIds An array of Alert id's to delete.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * if the Alert was successfully deleted.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public StatusResponse delete(Integer[] alertIds)
+        throws IOException
+    {
         Map<String,String[]> params = new HashMap<String,String[]>();
-        params.put("id", new String[] { Integer.toString(alertId) });
+        String[] ids = new String[alertIds.length];
+        for (int i = 0; i < alertIds.length; i++) {
+            ids[i] = Integer.toString(alertIds[i]);
+        }
+        params.put("id", ids);
 
         return doGet("alert/delete.hqu", params, StatusResponse.class);
     }

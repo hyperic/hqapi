@@ -175,25 +175,31 @@ public class AlertController extends ApiController {
     }
 
     def ack(params) {
-        def id = params.getOne("id")?.toInteger()
+        def ids = params.get("id")*.toInteger()
         def reason = params.getOne("reason")
         def pause = params.getOne("pause", "0").toLong()
 
         def failureXml = null
 
-        if (id == null) {
+        if (ids == null) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                        "Required parameter id not given")
         } else {
-            def alert = getAlertById(id)
-            if (!alert) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                           "Unable to find alert with id = " + id)  
-            } else {
+            for (id in ids) {
+                def alert = getAlertById(id)
+                if (!alert) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Unable to find alert with id = " + id)
+                }
+            }
+
+            if (!failureXml) {
                 try {
                     // TODO: Add to EscalationHelper
-                    escMan.acknowledgeAlert(user, ClassicEscalationAlertType.CLASSIC,
-                                            id, reason, pause)
+                    for (id in ids) {
+                        escMan.acknowledgeAlert(user, ClassicEscalationAlertType.CLASSIC,
+                                                id, reason, pause)
+                    }
                 } catch (Throwable t) {
                     failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
                                                t.getMessage())
@@ -213,22 +219,30 @@ public class AlertController extends ApiController {
     }
 
     def fix(params) {
-        def id = params.getOne("id")?.toInteger()
-
+        def ids = params.get("id")*.toInteger()
         def failureXml = null
-        if (id == null) {
+        if (ids == null) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                        "Required parameter id not given")
 
         } else {
-            def alert = getAlertById(id)
-            if (!alert) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                           "Unable to find alert with id = " + id)
-            } else {
+            def alerts = []
+            for (id in ids) {
+                def alert = getAlertById(id)
+                if (!alert) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Unable to find alert with id = " + id)
+                } else {
+                    alerts << alert
+                }
+            }
+
+            if (!failureXml) {
                 try {
                     // TODO: Add to AlertCategory
-                    aMan.setAlertFixed(alert)
+                    for (alert in alerts) {
+                        aMan.setAlertFixed(alert)
+                    }
                 } catch (Exception e) {
                     failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
                                                e.getMessage())
@@ -248,19 +262,22 @@ public class AlertController extends ApiController {
     }
 
     def delete(params) {
-        def id = params.getOne("id")?.toInteger()
+        def ids = params.get("id")*.toInteger()
         def failureXml = null
-        if (id == null) {
+        if (ids == null) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                        "Required parameter id not given")
         } else {
-            def alert = getAlertById(id)
-            if (!alert) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                           "Unable to find alert with id = " + id)
-            } else {
+            for (id in ids) {
+                def alert = getAlertById(id)
+                if (!alert) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Unable to find alert with id = " + id)
+                }
+            }
+
+            if (!failureXml) {
                 try {
-                    def ids = [alert.id]
                     // TODO: Add to AlertCategory
                     aMan.deleteAlerts(ids as Integer[])
                 } catch (Exception e) {
