@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.Enumeration;
 
 public abstract class Command {
 
@@ -142,6 +143,13 @@ public abstract class Command {
                 return props;
             }
         }
+
+        // Trim property values
+        for (Enumeration e = props.propertyNames(); e.hasMoreElements(); ) {
+            String prop = (String)e.nextElement();
+            props.setProperty(prop, props.getProperty(prop).trim());
+        }
+
         return props;
     }
 
