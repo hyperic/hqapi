@@ -199,8 +199,8 @@ public class Metric_test extends MetricTestBase {
 
         MetricResponse metric = metricApi.getMetric(disabledMetric.getId());
         hqAssertSuccess(metric);
-        assertTrue("Metric " + disabledMetric.getName() + " not enabled.",
-                   metric.getMetric().isEnabled());
+        assertTrue("Metric " + disabledMetric.getName() + " not enabled. (id=" +
+                disabledMetric.getId() + ")", metric.getMetric().isEnabled());
 
         // Reset
         try {
