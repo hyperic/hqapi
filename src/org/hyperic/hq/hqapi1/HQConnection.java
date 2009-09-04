@@ -146,14 +146,14 @@ class HQConnection {
         }
 
         boolean append = false;
-        for (String key : params.keySet()) {
-            String[] vals = params.get(key);
-            for (String val : vals) {
+
+        for (Map.Entry<String,String[]> e : params.entrySet()) {
+            for (String val : e.getValue()) {
                 if (val != null) {
                     if (append) {
                         uri.append("&");
                     }
-                    uri.append(key).append("=").append(urlEncode(val));
+                    uri.append(e.getKey()).append("=").append(urlEncode(val));
                     append = true;
                 }
             }

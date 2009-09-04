@@ -38,7 +38,7 @@ import java.util.List;
 
 public class GroupGet_test extends GroupTestBase {
 
-    private final int SYNC_NUM = 3;
+    private static final int SYNC_NUM = 3;
 
     public GroupGet_test(String name) {
         super(name);

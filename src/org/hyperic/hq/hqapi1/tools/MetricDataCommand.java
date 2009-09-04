@@ -91,13 +91,14 @@ public class MetricDataCommand extends Command {
         MetricApi metricApi = api.getMetricApi();
         MetricDataApi dataApi = api.getMetricDataApi();
 
-        long end = System.currentTimeMillis();
+        final long MS_IN_HOUR = 60l * 60l * 1000l;
+        final long end = System.currentTimeMillis();
         long start;
         if (options.has(OPT_HOURS)) {
-            Integer hours = (Integer)options.valueOf(OPT_HOURS);
-            start = end - (hours * 60 * 60 * 1000);
+            int hours = (Integer)options.valueOf(OPT_HOURS);
+            start = end - (hours * MS_IN_HOUR);
         } else {
-            start = end - 8 * 60 * 60 * 1000;
+            start = end - (8 * MS_IN_HOUR);
         }
 
         if (options.has(OPT_METRIC_ID)) {

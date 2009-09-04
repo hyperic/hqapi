@@ -167,7 +167,6 @@ public class GroupCommand extends Command {
         
         // Optional
         String regex = (String)s.valueOf(OPT_REGEX);
-        String description = (String)s.valueOf(OPT_DESC);
         boolean deleteMissing = s.has(OPT_DELETEMISSING);
         boolean compatible = s.has(OPT_COMPAT);
 

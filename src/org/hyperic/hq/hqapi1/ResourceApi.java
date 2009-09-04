@@ -153,10 +153,11 @@ public class ResourceApi extends BaseApi {
     {
         Resource platform = new Resource();
         platform.setName(name);
-        for (String k : config.keySet()) {
+
+        for (Map.Entry<String,String> e : config.entrySet()) {
             ResourceConfig c = new ResourceConfig();
-            c.setKey(k);
-            c.setValue(config.get(k));
+            c.setKey(e.getKey());
+            c.setValue(e.getValue());
             platform.getResourceConfig().add(c);
         }
 
@@ -179,10 +180,10 @@ public class ResourceApi extends BaseApi {
     {
         Resource resource = new Resource();
         resource.setName(name);
-        for (String k : config.keySet()) {
+        for (Map.Entry<String,String> e : config.entrySet()) {
             ResourceConfig c = new ResourceConfig();
-            c.setKey(k);
-            c.setValue(config.get(k));
+            c.setKey(e.getKey());
+            c.setValue(e.getValue());
             resource.getResourceConfig().add(c);
         }
 

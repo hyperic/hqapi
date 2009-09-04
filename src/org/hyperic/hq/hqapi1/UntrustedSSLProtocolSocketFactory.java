@@ -135,7 +135,7 @@ class UntrustedSSLProtocolSocketFactory
         return createSocket(host, port, clientHost, clientPort);
     }
 
-    class BogusTrustManager 
+    static final class BogusTrustManager
         implements X509TrustManager
     {
         public void checkClientTrusted(X509Certificate[] chain,

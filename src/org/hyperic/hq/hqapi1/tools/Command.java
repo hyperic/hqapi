@@ -136,11 +136,21 @@ public abstract class Command {
         }
 
         if (clientProperties.exists()) {
+            FileInputStream fis = null;
             props = new Properties();
             try {
-                props.load(new FileInputStream(clientProperties));
+                fis = new FileInputStream(clientProperties);
+                props.load(fis);
             } catch (IOException e) {
                 return props;
+            } finally {
+                try {
+                    if (fis != null) {
+                        fis.close();
+                    }
+                } catch (IOException ioe) {
+                    // Ignore
+                }
             }
         }
 
@@ -153,15 +163,18 @@ public abstract class Command {
         return props;
     }
 
-    protected InputStream getInputStream(OptionSet s) throws Exception {
+    /**
+     * TODO: This is not symmetrical
+     * @param s The OptionSet parsed from the command line arguments.
+     * @return A FileInputStream to the given file argument
+     * @throws IOException If the file does not exist.
+     */
+    protected InputStream getInputStream(OptionSet s) throws IOException {
         String file = (String)s.valueOf(OPT_FILE);
         if (file == null) {
             return System.in;
         } else {
             File f = new File(file);
-            if (!f.exists()) {
-                throw new Exception("Input file " + file + " does not exist.");
-            }
             return new FileInputStream(f);
         }
     }

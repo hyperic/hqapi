@@ -55,8 +55,6 @@ public class MaintenanceCommand extends Command {
     private static final String OPT_START      = "start";
     private static final String OPT_END        = "end";
 
-    private static final DateFormat DF = SimpleDateFormat.getInstance();
-
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
     }
@@ -91,8 +89,9 @@ public class MaintenanceCommand extends Command {
      * @return The equivenlent Date object, or null if the date could not be parsed.
      */
     private Date parseDateString(String str) {
+        final DateFormat df = SimpleDateFormat.getInstance();
         try {
-            return DF.parse(str);
+            return df.parse(str);
         } catch (ParseException e) {
             // Ignored
         }
@@ -174,7 +173,7 @@ public class MaintenanceCommand extends Command {
     }
 
     private void get(String[] args) throws Exception {
-
+        final DateFormat df = SimpleDateFormat.getInstance();
         OptionParser p = getOptionParser();
 
         p.accepts(OPT_GROUPID, "The id of the group to query for maintenance").
@@ -195,8 +194,8 @@ public class MaintenanceCommand extends Command {
             response.getMaintenanceEvent().getEndTime() != 0) {
             System.out.println("Maintenance scheudle for group " + groupId);
             System.out.println("State: " + response.getMaintenanceEvent().getState().value());
-            System.out.println("Start Time: " + DF.format(response.getMaintenanceEvent().getStartTime()));
-            System.out.println("End Time: " + DF.format(response.getMaintenanceEvent().getEndTime()));
+            System.out.println("Start Time: " + df.format(response.getMaintenanceEvent().getStartTime()));
+            System.out.println("End Time: " + df.format(response.getMaintenanceEvent().getEndTime()));
         } else {
             System.out.println("No maintenance events found for group " + groupId);
         }
