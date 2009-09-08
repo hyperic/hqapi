@@ -37,6 +37,8 @@ Changes in HQApi 3.0
  *) [HHQ-3144] Add ServerConfigApi to allow manipulation of HQ server config
     settings.
 
+Changes in HQApi 2.3
+
 Changes in HQApi 2.2
 
  *) [HHQ-3381] Do not allow system Group's to be synced via the API.
