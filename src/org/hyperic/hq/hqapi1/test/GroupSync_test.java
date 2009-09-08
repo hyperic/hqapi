@@ -39,8 +39,10 @@ import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.RolesResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.GroupsResponse;
 
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * This class tests all aspects of the group sync. (which includes update/create)
@@ -385,5 +387,20 @@ public class GroupSync_test extends GroupTestBase {
         // Cleanup
         StatusResponse deleteResponse = groupApi.deleteGroup(createdGroup.getId());
         hqAssertSuccess(deleteResponse);
-    }    
+    }
+
+    public void testUpdateSystemGroup() throws Exception {
+        HQApi api = getApi();
+        GroupApi groupApi = api.getGroupApi();
+
+        Group g = new Group();
+        g.setId(0);
+        g.setName("Updated Name");
+        List<Group> groups = new ArrayList<Group>();
+        groups.add(g);
+
+        // We don't allow updates of system groups.
+        GroupsResponse syncResponse = groupApi.syncGroups(groups);
+        hqAssertFailureNotSupported(syncResponse);
+    }
 }

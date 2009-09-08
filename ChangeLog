@@ -39,6 +39,8 @@ Changes in HQApi 3.0
 
 Changes in HQApi 2.2
 
+ *) [HHQ-3381] Do not allow system Group's to be synced via the API.
+
  *) [HHQ-3244] Add better error handling to Resource create and updates.
 
  *) [HHQ-3230] Add --conditionTypeExclude to allow definitions to be excluded
