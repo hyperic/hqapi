@@ -28,10 +28,13 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.AgentApi;
+import org.hyperic.hq.hqapi1.UserApi;
 import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.PingAgentResponse;
+import org.hyperic.hq.hqapi1.types.User;
+import org.hyperic.hq.hqapi1.types.UserResponse;
 
-public class AgentPing_test extends HQApiTestBase {
+public class AgentPing_test extends UserTestBase {
 
     public AgentPing_test(String name) {
         super(name);
@@ -45,5 +48,33 @@ public class AgentPing_test extends HQApiTestBase {
         a.setId(Integer.MAX_VALUE);
         PingAgentResponse response = api.pingAgent(a);
         hqAssertFailureObjectNotFound(response);
+    }
+    
+    public void testPingValidAgent() throws Exception {
+        
+        AgentApi api = getApi().getAgentApi();
+
+        Agent a = getRunningAgent();
+        
+        PingAgentResponse response = api.pingAgent(a);
+        hqAssertSuccess(response);
+    }
+    
+    public void testPingValidAgentUserNoPermission() throws Exception {
+        
+        UserApi userApi = getUserApi();
+
+        User user = generateTestUser();
+
+        UserResponse createResponse = userApi.createUser(user, PASSWORD);
+        hqAssertSuccess(createResponse);
+        
+        // reconnect as the new user
+        AgentApi agentApi = getApi(user.getName(), PASSWORD).getAgentApi();
+
+        Agent a = getRunningAgent();
+        
+        PingAgentResponse pingResponse = agentApi.pingAgent(a);
+        hqAssertFailurePermissionDenied(pingResponse);
     }
 }
