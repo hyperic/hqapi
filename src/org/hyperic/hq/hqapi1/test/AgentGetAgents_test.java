@@ -54,7 +54,7 @@ public class AgentGetAgents_test extends HQApiTestBase {
 
         for (Agent a : agents) {
             assertTrue(a.getAddress().length() > 0);
-            assertTrue(a.getPort() > 0);
+            assertTrue(a.getPort() > 0 || a.getPort() == -1);
             assertTrue(a.getVersion().length() > 0);
             assertTrue(a.getId() > 0);
         }
