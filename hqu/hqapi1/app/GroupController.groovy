@@ -119,6 +119,12 @@ class GroupController extends ApiController {
                                            "Group name required.")
             }
 
+            if (existing?.isSystem()) {
+                failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
+                                           "Cannot update system group " +
+                                           "with id=" + existing.id)
+            }
+
             // Look up prototype
             def xmlPrototype = xmlGroup.'ResourcePrototype'
             if (!xmlPrototype) {
