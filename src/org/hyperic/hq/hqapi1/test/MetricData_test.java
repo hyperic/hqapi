@@ -88,8 +88,14 @@ public class MetricData_test extends MetricTestBase {
             assertTrue("Metric point timestamp less than start time ts=" +
                        d.getTimestamp() + " start=" + start,
                        d.getTimestamp() >= start);
-            assertTrue("Metric value less than zero",
-                       d.getValue() >= 0);
+            
+            if ("Availability".equals(m.getName())) {
+                assertTrue("Invalid availability value [" + d.getValue() + "]",
+                           d.getValue() >= 0 || d.getValue() == -0.01);
+            } else {
+                assertTrue("Metric value less than zero ",
+                           d.getValue() >= 0);
+            }
         }
     }
 

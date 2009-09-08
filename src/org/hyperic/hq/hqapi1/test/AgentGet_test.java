@@ -39,7 +39,7 @@ public class AgentGet_test extends HQApiTestBase {
 
     private void validateAgent(Agent a) {
         assertTrue(a.getAddress().length() > 0);
-        assertTrue(a.getPort() > 0);
+        assertTrue(a.getPort() > 0 || a.getPort() == -1);
         assertTrue(a.getVersion().length() > 0);
         assertTrue(a.getId() > 0);
     }

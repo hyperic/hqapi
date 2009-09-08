@@ -55,9 +55,8 @@ public class MaintenanceGet_test extends MaintenanceTestBase {
         MaintenanceResponse response = mApi.get(g.getId());
         hqAssertSuccess(response);
 
-        // TODO: Shouldn't this return null?
-        // assertNull("Maintenance event found for group not in maintenance",
-        //            response.getMaintenanceEvent());
+        assertNull("Maintenance event found for group not in maintenance",
+                    response.getMaintenanceEvent());
 
         cleanupGroup(g);
     }

@@ -1,5 +1,6 @@
 
-import org.hyperic.hq.hqapi1.ErrorCode;
+import org.hyperic.hq.authz.shared.PermissionException
+import org.hyperic.hq.hqapi1.ErrorCode
 
 class AgentController extends ApiController {
 
@@ -73,6 +74,8 @@ class AgentController extends ApiController {
                 } else {
                     up = agent.ping(user)
                 }
+            } catch (PermissionException p) {
+            	failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
             } catch (Exception e) {
                 log.error("UnexpectedError: " + e.getMessage(), e);
                 failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
