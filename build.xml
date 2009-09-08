@@ -98,7 +98,7 @@
         <jar file="${client.dir}/hqapi1-${plugin.version}.jar">
             <fileset dir="${build.dir}/classes">
                 <include name="**"/>
-                <exclude name="**/*_test.class"/>
+                <exclude name="**/test/*.class"/>
                 <!-- We don't include the wadl bindings -->
                 <exclude name="**/wadl/*.class"/>
             </fileset>
