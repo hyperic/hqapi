@@ -35,7 +35,7 @@ import org.hyperic.hq.hqapi1.types.User;
 import java.util.List;
 
 /**
- * Utility class to build @{link org.hyperic.hq.hqapi1.types.EscalationAction}s.
+ * Utility class to build {@link org.hyperic.hq.hqapi1.types.EscalationAction}s.
  */
 public class EscalationActionBuilder {
 

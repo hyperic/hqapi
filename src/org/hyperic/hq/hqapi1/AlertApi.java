@@ -35,6 +35,16 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * The Hyperic HQ Alert API.
+ * <br><br>
+ * This class provides access to the alerts within the HQ system.  Each of the
+ * methods in this class return {@link org.hyperic.hq.hqapi1.types.Response}
+ * objects that wrap the result of the method with a
+ * {@link org.hyperic.hq.hqapi1.types.ResponseStatus} and a
+ * {@link org.hyperic.hq.hqapi1.types.ServiceError} that indicates the error
+ * if the response status is {@link org.hyperic.hq.hqapi1.types.ResponseStatus#FAILURE}.
+ */
 public class AlertApi extends BaseApi {
 
     AlertApi(HQConnection conn) {

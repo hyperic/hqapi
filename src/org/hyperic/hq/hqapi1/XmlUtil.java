@@ -35,6 +35,9 @@ import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * Utility class to convert Java objects to XML and vice versa.
+ */
 public class XmlUtil {
 
     private static JAXBContext CTX;
