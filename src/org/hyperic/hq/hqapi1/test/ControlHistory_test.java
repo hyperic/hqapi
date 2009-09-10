@@ -27,9 +27,23 @@
 
 package org.hyperic.hq.hqapi1.test;
 
+import org.hyperic.hq.hqapi1.ControlApi;
+import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ControlHistoryResponse;
+
 public class ControlHistory_test extends HQApiTestBase {
 
     public ControlHistory_test(String name) {
         super(name);
+    }
+
+    public void testControlHistoryInvalidResource() throws Exception {
+        ControlApi api = getApi().getControlApi();
+
+        Resource r = new Resource();
+        r.setId(Integer.MAX_VALUE);
+
+        ControlHistoryResponse response = api.getHistory(r);
+        hqAssertFailureObjectNotFound(response);
     }
 }

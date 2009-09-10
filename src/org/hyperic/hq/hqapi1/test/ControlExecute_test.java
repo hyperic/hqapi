@@ -27,9 +27,23 @@
 
 package org.hyperic.hq.hqapi1.test;
 
+import org.hyperic.hq.hqapi1.ControlApi;
+import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
+
 public class ControlExecute_test extends HQApiTestBase {
 
     public ControlExecute_test(String name) {
         super(name);
+    }
+
+    public void testExecuteInvalidResource() throws Exception {
+        ControlApi api = getApi().getControlApi();
+
+        Resource r = new Resource();
+        r.setId(Integer.MAX_VALUE);
+
+        StatusResponse response = api.executeAction(r, "none", new String[] {});
+        hqAssertFailureObjectNotFound(response);
     }
 }
