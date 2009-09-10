@@ -1525,6 +1525,79 @@
                 </wadl:response>
             </wadl:method>
         </wadl:resource>
+
+        <wadl:resource path="control/actions.hqu">
+            <wadl:doc title="HQApi Control actions command">
+                List available Control actions
+            </wadl:doc>
+            <wadl:method name="GET" id="ControlActions">
+                <wadl:request>
+                    <wadl:param name="resourceId" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Resource to query for actions.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ControlActionResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="control/history.hqu">
+            <wadl:doc title="HQApi Control history command">
+                List Control action history
+            </wadl:doc>
+            <wadl:method name="GET" id="ControlHistory">
+                <wadl:request>
+                    <wadl:param name="resourceId" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Resource to query for control history.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ControlHistoryResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="control/execute.hqu">
+            <wadl:doc title="HQApi Control execute command">
+                Execute a Control action
+            </wadl:doc>
+            <wadl:method name="GET" id="ControlExecute">
+                <wadl:request>
+                    <wadl:param name="resourceId" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Resource to execute the action on.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="action" style="query" required="true"
+                                type="xs:string">
+                        <wadl:doc>
+                            The Control action to run.
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="arguments" style="query" required="false"
+                                type="xs:string" repeating="true">
+                        <wadl:doc>
+                            Arguments to pass to the Control action.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
     </wadl:resources>
 
 </wadl:application>

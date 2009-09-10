@@ -49,6 +49,7 @@ public class HQApi {
     private final AlertApi           _alertApi;
     private final MetricDataApi      _metricDataApi;
     private final EventApi           _eventApi;
+    private final ControlApi         _controlApi;
     
     /**
      * @param host The hostname of the HQ Server to connect to.
@@ -76,6 +77,7 @@ public class HQApi {
         _alertApi         = new AlertApi(connection);
         _metricDataApi    = new MetricDataApi(connection);
         _eventApi         = new EventApi(connection);
+        _controlApi       = new ControlApi(connection);
     }
 
     /**
@@ -208,8 +210,19 @@ public class HQApi {
 
     /**
      * List events in HQ
+     *
+     * @return The API for finding Events.
      */
     public EventApi getEventApi() {
         return _eventApi;
+    }
+
+    /**
+     * View actions, control history and issue commands on Resources.
+     *
+     * @return The API for viewing and issuing control actions.
+     */
+    public ControlApi getControlApi() {
+        return _controlApi;
     }
 }

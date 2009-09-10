@@ -1,6 +1,9 @@
 
 Changes in HQApi 3.0
 
+ *) [HHQ-3248] Add ControlApi for running control actions and viewing control
+    action history.
+
  *) [HHQ-3367] Trim whitespace from properties included in client.properties.
 
  *) [HHQ-3284] Add EventApi for gathering events globally or by resource.

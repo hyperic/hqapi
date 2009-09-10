@@ -1019,4 +1019,44 @@
         </xs:complexType>
     </xs:element>
 
+    <!-- Control objects -->
+
+    <xs:complexType name="ControlHistory">
+        <xs:attribute name="scheduled" type="xs:boolean" use="required"/>
+        <xs:attribute name="dateScheduled" type="xs:long" use="required"/>
+        <xs:attribute name="endTime" type="xs:long" use="required"/>
+        <xs:attribute name="startTime" type="xs:long" use="required"/>
+        <xs:attribute name="status" type="xs:string" use="required"/>
+        <xs:attribute name="message" type="xs:string" use="required"/>
+        <xs:attribute name="description" type="xs:string" use="required"/>
+        <xs:attribute name="args" type="xs:string" use="required"/>
+        <xs:attribute name="action" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <!-- Control Response objects -->
+
+    <xs:element name="ControlHistoryResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="ControlHistory" type="ControlHistory" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="ControlActionResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="Action" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
 </xs:schema>
