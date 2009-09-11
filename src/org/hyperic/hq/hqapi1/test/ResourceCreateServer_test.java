@@ -116,14 +116,13 @@ public class ResourceCreateServer_test extends ResourceTestBase {
         ResourceApi api = getApi().getResourceApi();
 
         ResourcePrototypeResponse protoResponse =
-                api.getResourcePrototype(".NET 1.1");
+                api.getResourcePrototype("Cisco IOS Server");
         hqAssertSuccess(protoResponse);
 
-        // TODO: This requires a non-Windows type!
         Resource parent = getLocalPlatformResource(false, false);
 
         Random r = new Random();
-        final String name = "Test .NET Server" + r.nextInt();
+        final String name = "Test Cisco IOS Server" + r.nextInt();
 
         Map<String,String> config = new HashMap<String,String>();
 
