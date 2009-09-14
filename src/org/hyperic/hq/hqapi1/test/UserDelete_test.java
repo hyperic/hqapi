@@ -45,7 +45,7 @@ public class UserDelete_test extends UserTestBase {
         User user = generateTestUser();
 
         // Create the user
-        UserResponse createResponse = api.createUser(user, PASSWORD);
+        UserResponse createResponse = api.createUser(user, TESTUSER_PASSWORD);
         hqAssertSuccess(createResponse);
 
         // Assert the new user exists

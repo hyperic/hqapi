@@ -144,9 +144,9 @@ public class RoleSyncRoles_test extends RoleTestBase {
 
         User user = generateTestUser();
 
-        userapi.createUser(user, PASSWORD);
+        userapi.createUser(user, TESTUSER_PASSWORD);
         
-        RoleApi api = getRoleApi(user.getName(), PASSWORD);
+        RoleApi api = getRoleApi(user.getName(), TESTUSER_PASSWORD);
 
         List<Role> roles = new ArrayList<Role>();
         for (int i = 0; i < SYNC_NUM; i++) {
@@ -178,9 +178,9 @@ public class RoleSyncRoles_test extends RoleTestBase {
 
         User user = generateTestUser();
 
-        userapi.createUser(user, PASSWORD);
+        userapi.createUser(user, TESTUSER_PASSWORD);
         
-        RoleApi roleapi = getRoleApi(user.getName(), PASSWORD);
+        RoleApi roleapi = getRoleApi(user.getName(), TESTUSER_PASSWORD);
         final String UPDATE_STR = " (Updated)";
 
         for (Role r : createdRoles) {

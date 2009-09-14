@@ -54,7 +54,7 @@ public class UserCopy_test extends UserTestBase {
         User user = generateTestUser();
         
         //create the new user     
-        UserResponse createResponse = api.createUser(user, PASSWORD);
+        UserResponse createResponse = api.createUser(user, TESTUSER_PASSWORD);
         assertEquals(ResponseStatus.SUCCESS, createResponse.getStatus());
         
         // Assert the new user exists
@@ -80,7 +80,7 @@ public class UserCopy_test extends UserTestBase {
         assertEquals(ResponseStatus.SUCCESS, syncResponse.getStatus());
         
         // test login
-        UserApi api2 = getUserApi(user.getName(), PASSWORD);
+        UserApi api2 = getUserApi(user.getName(), TESTUSER_PASSWORD);
         UsersResponse getResponse3 = api2.getUsers();
         hqAssertSuccess(getResponse3);        
     }

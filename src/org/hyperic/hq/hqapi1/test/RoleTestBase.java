@@ -28,6 +28,7 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.RoleApi;
+import org.hyperic.hq.hqapi1.UserApi;
 import org.hyperic.hq.hqapi1.types.Operation;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.RolesResponse;
@@ -36,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public abstract class RoleTestBase extends UserTestBase {
+public abstract class RoleTestBase extends HQApiTestBase {
 
     static final String GUEST_ROLENAME = "Guest Role";
     static final String SUPER_USER_ROLENAME = "Super User Role";
@@ -76,6 +77,10 @@ public abstract class RoleTestBase extends UserTestBase {
 
     public RoleApi getRoleApi() {
         return getApi().getRoleApi();
+    }
+
+    public UserApi getUserApi() {
+        return getApi().getUserApi();
     }
 
     public RoleApi getRoleApi(String name, String password){

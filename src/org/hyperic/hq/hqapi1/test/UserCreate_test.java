@@ -43,7 +43,7 @@ public class UserCreate_test extends UserTestBase {
 
         User user = generateTestUser();
 
-        UserResponse response = api.createUser(user, PASSWORD);
+        UserResponse response = api.createUser(user, TESTUSER_PASSWORD);
 
         hqAssertSuccess(response);
 
@@ -58,11 +58,11 @@ public class UserCreate_test extends UserTestBase {
 
         User user = generateTestUser();
 
-        UserResponse response = api.createUser(user, PASSWORD);
+        UserResponse response = api.createUser(user, TESTUSER_PASSWORD);
         assertEquals(ResponseStatus.SUCCESS, response.getStatus());
 
         // Attempt to create the same user again
-        UserResponse response2 = api.createUser(user, PASSWORD);
+        UserResponse response2 = api.createUser(user, TESTUSER_PASSWORD);
         hqAssertFailureObjectExists(response2);
     }
 
@@ -70,7 +70,7 @@ public class UserCreate_test extends UserTestBase {
         UserApi api = getUserApi();
 
         User user = new User();
-        UserResponse response = api.createUser(user, PASSWORD);
+        UserResponse response = api.createUser(user, TESTUSER_PASSWORD);
 
         hqAssertFailureInvalidParameters(response);
     }
@@ -81,7 +81,7 @@ public class UserCreate_test extends UserTestBase {
         User user = generateTestUser();
         user.setName(null);
 
-        UserResponse response = api.createUser(user, PASSWORD);
+        UserResponse response = api.createUser(user, TESTUSER_PASSWORD);
 
         hqAssertFailureInvalidParameters(response);
     }
@@ -92,7 +92,7 @@ public class UserCreate_test extends UserTestBase {
         User user = generateTestUser();
         user.setFirstName(null);
 
-        UserResponse response = api.createUser(user, PASSWORD);
+        UserResponse response = api.createUser(user, TESTUSER_PASSWORD);
 
         hqAssertFailureInvalidParameters(response);
     }
@@ -103,7 +103,7 @@ public class UserCreate_test extends UserTestBase {
         User user = generateTestUser();
         user.setLastName(null);
 
-        UserResponse response = api.createUser(user, PASSWORD);
+        UserResponse response = api.createUser(user, TESTUSER_PASSWORD);
 
         hqAssertFailureInvalidParameters(response);
     }
@@ -114,7 +114,7 @@ public class UserCreate_test extends UserTestBase {
         User user = generateTestUser();
         user.setEmailAddress(null);
 
-        UserResponse response = api.createUser(user, PASSWORD);
+        UserResponse response = api.createUser(user, TESTUSER_PASSWORD);
 
         hqAssertFailureInvalidParameters(response);
     }
@@ -134,15 +134,15 @@ public class UserCreate_test extends UserTestBase {
 
         User user = generateTestUser();
 
-        UserResponse response = api.createUser(user, PASSWORD);
+        UserResponse response = api.createUser(user, TESTUSER_PASSWORD);
 
         hqAssertSuccess(response);
         
-        UserApi api1 = getUserApi(user.getName(), PASSWORD);
+        UserApi api1 = getUserApi(user.getName(), TESTUSER_PASSWORD);
         
         User user1 = generateTestUser();
         
-        UserResponse response1 = api1.createUser(user1, PASSWORD);
+        UserResponse response1 = api1.createUser(user1, TESTUSER_PASSWORD);
         
         hqAssertFailurePermissionDenied(response1);
     }

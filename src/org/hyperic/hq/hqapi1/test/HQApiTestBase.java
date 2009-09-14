@@ -35,6 +35,7 @@ import org.hyperic.hq.hqapi1.AgentApi;
 import org.hyperic.hq.hqapi1.ErrorCode;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
+import org.hyperic.hq.hqapi1.UserApi;
 import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.AgentsResponse;
 import org.hyperic.hq.hqapi1.types.PingAgentResponse;
@@ -42,11 +43,16 @@ import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.Response;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
+import org.hyperic.hq.hqapi1.types.User;
+import org.hyperic.hq.hqapi1.types.UserResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
+import java.util.ArrayList;
 
-public abstract class HQApiTestBase  extends TestCase {
+public abstract class HQApiTestBase extends TestCase {
 
     private static boolean _logConfigured = false;
 
@@ -56,6 +62,13 @@ public abstract class HQApiTestBase  extends TestCase {
     private static final boolean IS_SECURE   = false;
     private static final String  USER        = "hqadmin";
     private static final String  PASSWORD    = "hqadmin";
+
+    static final String  TESTUSER_PASSWORD    = "apitest";
+    static final String  TESTUSER_NAME_PREFIX = "apitest";
+    static final String  TESTUSER_FIRSTNAME   = "API";
+    static final String  TESTUSER_LASTNAME    = "Test";
+    static final String  TESTUSER_EMAIL       = "apitest@hyperic.com";
+    static final boolean TESTUSER_ACTIVE      = true;
 
     private Log _log = LogFactory.getLog(HQApiTestBase.class);
 
@@ -173,6 +186,50 @@ public abstract class HQApiTestBase  extends TestCase {
         }
 
         return localPlatforms.get(0);
+    }
+
+    /**
+     * Generate a valid User object that's guaranteed to have a unique Name
+     * @return A valid User object.
+     */
+    public User generateTestUser() {
+
+        Random r = new Random();
+
+        User user = new User();
+        user.setName(TESTUSER_NAME_PREFIX + r.nextInt());
+        user.setFirstName(TESTUSER_FIRSTNAME);
+        user.setLastName(TESTUSER_LASTNAME);
+        user.setEmailAddress(TESTUSER_EMAIL);
+        user.setActive(TESTUSER_ACTIVE);
+        return user;
+    }
+
+    /**
+     * Create a List of Users.
+     *
+     * @param num The number of users to generate
+     * @return The list of create Users
+     * @exception Exception If an error occurs while creating the users.
+     */
+    public List<User> createTestUsers(int num) throws Exception {
+        ArrayList<User> users = new ArrayList<User>();
+        for (int i = 0; i < num; i++) {
+            User u = generateTestUser();
+            UserResponse createResponse = getApi().getUserApi().createUser(u, TESTUSER_PASSWORD);
+            hqAssertSuccess(createResponse);
+            users.add(createResponse.getUser());
+        }
+        return users;
+    }
+
+    public void deleteTestUsers(List<User> users) throws Exception {
+        UserApi api = getApi().getUserApi();
+
+        for (User u : users) {
+            StatusResponse response = api.deleteUser(u.getId());
+            hqAssertSuccess(response);
+        }
     }
 
     // Assert SUCCESS

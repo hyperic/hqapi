@@ -77,9 +77,9 @@ public class RoleDelete_test extends RoleTestBase {
 
         User user = generateTestUser();
 
-        userapi.createUser(user, PASSWORD);
+        userapi.createUser(user, TESTUSER_PASSWORD);
         
-        RoleApi roleapi = getRoleApi(user.getName(), PASSWORD);
+        RoleApi roleapi = getRoleApi(user.getName(), TESTUSER_PASSWORD);
         Role role = createResponse.getRole();
         StatusResponse deleteResponse = roleapi.deleteRole(role.getId());
         hqAssertFailurePermissionDenied(deleteResponse);

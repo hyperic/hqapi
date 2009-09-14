@@ -79,7 +79,7 @@ public class UserChangePassword_test extends UserTestBase {
     public void testChangePasswordNoPermission() throws Exception {
 
         User u = createTestUsers(1).get(0);
-        UserApi api = getUserApi(u.getName(), PASSWORD);
+        UserApi api = getUserApi(u.getName(), TESTUSER_PASSWORD);
 
         User admin = new User();
         admin.setId(1);
@@ -96,7 +96,7 @@ public class UserChangePassword_test extends UserTestBase {
         nonexistant.setName("non-existant");
 
         UserApi api = getUserApi();
-        StatusResponse response = api.changePassword(nonexistant, PASSWORD);
+        StatusResponse response = api.changePassword(nonexistant, TESTUSER_PASSWORD);
         hqAssertFailureObjectNotFound(response);
     }
 }

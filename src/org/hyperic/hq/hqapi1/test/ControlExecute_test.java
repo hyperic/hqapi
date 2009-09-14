@@ -31,7 +31,7 @@ import org.hyperic.hq.hqapi1.ControlApi;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 
-public class ControlExecute_test extends HQApiTestBase {
+public class ControlExecute_test extends ControlTestBase {
 
     public ControlExecute_test(String name) {
         super(name);

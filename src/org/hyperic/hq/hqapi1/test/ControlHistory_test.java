@@ -31,7 +31,7 @@ import org.hyperic.hq.hqapi1.ControlApi;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ControlHistoryResponse;
 
-public class ControlHistory_test extends HQApiTestBase {
+public class ControlHistory_test extends ControlTestBase {
 
     public ControlHistory_test(String name) {
         super(name);

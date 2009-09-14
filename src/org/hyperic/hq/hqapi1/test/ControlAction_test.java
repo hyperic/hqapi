@@ -29,9 +29,13 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ControlActionResponse;
+import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.ControlApi;
+import org.hyperic.hq.hqapi1.HQApi;
 
-public class ControlAction_test extends HQApiTestBase {
+import java.util.List;
+
+public class ControlAction_test extends ControlTestBase {
 
     public ControlAction_test(String name) {
         super(name);
@@ -45,5 +49,51 @@ public class ControlAction_test extends HQApiTestBase {
 
         ControlActionResponse response = api.getActions(r);
         hqAssertFailureObjectNotFound(response);
+    }
+
+    public void testControlActionNoControlPlugin() throws Exception {
+        ControlApi api = getApi().getControlApi();
+
+        Resource localPlatform = getLocalPlatformResource(false, false);
+
+        ControlActionResponse response = api.getActions(localPlatform);
+        hqAssertSuccess(response);
+
+        assertTrue("Should have found 0 actions for " +
+                   localPlatform.getName(), response.getAction().size() == 0);
+    }
+
+    public void testControlActionValidResource() throws Exception {
+        HQApi api = getApi();
+        ControlApi cApi = getApi().getControlApi();
+
+        Resource controllableResource = createControllableResource(api);
+
+        ControlActionResponse response = cApi.getActions(controllableResource);
+        hqAssertSuccess(response);
+
+        assertTrue("Should have found 1 action for " +
+                   controllableResource.getName(), response.getAction().size() == 1);
+
+        assertEquals("run", response.getAction().get(0));
+
+        cleanupControllableResource(api, controllableResource);   
+    }
+
+    public void testControlActionNoPermissio() throws Exception {
+        HQApi api = getApi();
+        Resource controllableResource = createControllableResource(api);
+
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+
+        HQApi apiUnpriv = getApi(user.getName(), TESTUSER_PASSWORD);
+        ControlApi cApi = apiUnpriv.getControlApi();
+
+        ControlActionResponse response = cApi.getActions(controllableResource);
+        // TODO: This should fail!
+        hqAssertSuccess(response);
+
+        cleanupControllableResource(api, controllableResource);
     }
 }

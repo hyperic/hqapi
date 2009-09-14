@@ -66,11 +66,11 @@ public class AgentPing_test extends UserTestBase {
 
         User user = generateTestUser();
 
-        UserResponse createResponse = userApi.createUser(user, PASSWORD);
+        UserResponse createResponse = userApi.createUser(user, TESTUSER_PASSWORD);
         hqAssertSuccess(createResponse);
         
         // reconnect as the new user
-        AgentApi agentApi = getApi(user.getName(), PASSWORD).getAgentApi();
+        AgentApi agentApi = getApi(user.getName(), TESTUSER_PASSWORD).getAgentApi();
 
         Agent a = getRunningAgent();
         

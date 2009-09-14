@@ -63,7 +63,7 @@ public class UserSync_test extends UserTestBase {
         User u = generateTestUser();
 
         // Create a new user
-        UserResponse createResponse = api.createUser(u, PASSWORD);
+        UserResponse createResponse = api.createUser(u, TESTUSER_PASSWORD);
         hqAssertSuccess(createResponse);
 
         // Sync the user with new information

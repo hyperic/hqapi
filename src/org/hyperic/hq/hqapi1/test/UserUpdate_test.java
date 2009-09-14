@@ -45,7 +45,7 @@ public class UserUpdate_test extends UserTestBase {
 
         User user = generateTestUser();
 
-        UserResponse createResponse = api.createUser(user, PASSWORD);
+        UserResponse createResponse = api.createUser(user, TESTUSER_PASSWORD);
         assertEquals(ResponseStatus.SUCCESS, createResponse.getStatus());
 
         String FIRST   = "Updated FirstName";
@@ -92,12 +92,12 @@ public class UserUpdate_test extends UserTestBase {
 
         User user = generateTestUser();
 
-        UserResponse createResponse = api.createUser(user, PASSWORD);
+        UserResponse createResponse = api.createUser(user, TESTUSER_PASSWORD);
         hqAssertSuccess(createResponse);
 
         // Reconnect as the new user
 
-        UserApi apiNewUser = getUserApi(user.getName(), PASSWORD);
+        UserApi apiNewUser = getUserApi(user.getName(), TESTUSER_PASSWORD);
 
         User u = new User();
         u.setName("hqadmin");

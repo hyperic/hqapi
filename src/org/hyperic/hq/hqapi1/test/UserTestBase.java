@@ -38,14 +38,6 @@ import java.util.Random;
 
 public abstract class UserTestBase extends HQApiTestBase {
 
-    static final String PASSWORD = "apitest";
-
-    static final String TESTUSER_NAME_PREFIX = "apitest";
-    static final String TESTUSER_FIRSTNAME   = "API";
-    static final String TESTUSER_LASTNAME    = "Test";
-    static final String TESTUSER_EMAIL       = "apitest@hyperic.com";
-    static final boolean TESTUSER_ACTIVE     = true;
-
     public UserTestBase(String name) {
         super(name);
     }
@@ -56,39 +48,6 @@ public abstract class UserTestBase extends HQApiTestBase {
 
     UserApi getUserApi(String user, String password) {
         return getApi(user, password).getUserApi();
-    }
-
-    /**
-     * Generate a valid User object that's guaranteed to have a unique Name
-     * @return A valid User object.
-     */
-    public User generateTestUser() {
-
-        Random r = new Random();
-
-        User user = new User();
-        user.setName(TESTUSER_NAME_PREFIX + r.nextInt());
-        user.setFirstName(TESTUSER_FIRSTNAME);
-        user.setLastName(TESTUSER_LASTNAME);
-        user.setEmailAddress(TESTUSER_EMAIL);
-        user.setActive(TESTUSER_ACTIVE);
-        return user;
-    }
-
-    /**
-     * Create a List of Users.
-     *
-     * @param num The number of users to generate
-     */
-    public List<User> createTestUsers(int num) throws Exception {
-        ArrayList<User> users = new ArrayList<User>();
-        for (int i = 0; i < num; i++) {
-            User u = generateTestUser();
-            UserResponse createResponse = getUserApi().createUser(u, PASSWORD);
-            hqAssertSuccess(createResponse);
-            users.add(createResponse.getUser());
-        }
-        return users;
     }
 
     /**

@@ -89,9 +89,9 @@ public class RoleCreate_test extends RoleTestBase {
 
         User user = generateTestUser();
 
-        userapi.createUser(user, PASSWORD);
+        userapi.createUser(user, TESTUSER_PASSWORD);
         
-        RoleApi api = getRoleApi(user.getName(), PASSWORD);
+        RoleApi api = getRoleApi(user.getName(), TESTUSER_PASSWORD);
         Role r = generateTestRole();
 
         RoleResponse roleResponse = api.createRole(r);
