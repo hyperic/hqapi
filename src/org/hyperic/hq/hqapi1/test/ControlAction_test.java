@@ -94,6 +94,7 @@ public class ControlAction_test extends ControlTestBase {
         // TODO: This should fail!
         hqAssertSuccess(response);
 
+        deleteTestUsers(users);
         cleanupControllableResource(api, controllableResource);
     }
 }
