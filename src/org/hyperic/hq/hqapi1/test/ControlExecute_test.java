@@ -28,8 +28,12 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.ControlApi;
+import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.User;
+
+import java.util.List;
 
 public class ControlExecute_test extends ControlTestBase {
 
@@ -45,5 +49,37 @@ public class ControlExecute_test extends ControlTestBase {
 
         StatusResponse response = api.executeAction(r, "none", new String[] {});
         hqAssertFailureObjectNotFound(response);
+    }
+
+    public void testExecuteValidResource() throws Exception {
+        HQApi api = getApi();
+        ControlApi cApi = getApi().getControlApi();
+
+        Resource controllableResource = createControllableResource(api);
+
+        String[] arguments = new String[0];
+        StatusResponse executeResponse = cApi.executeAction(controllableResource,
+                                                            "run", arguments);
+        hqAssertSuccess(executeResponse);
+
+        cleanupControllableResource(api, controllableResource);
+    }
+
+    public void testExecuteNoPermission() throws Exception {
+        HQApi api = getApi();
+        Resource controllableResource = createControllableResource(api);
+
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+
+        HQApi apiUnpriv = getApi(user.getName(), TESTUSER_PASSWORD);
+        ControlApi cApiUnpriv = apiUnpriv.getControlApi();
+
+        StatusResponse executeResponse = cApiUnpriv.executeAction(controllableResource,
+                                                            "run", new String[0]);
+        hqAssertFailurePermissionDenied(executeResponse);
+
+        deleteTestUsers(users);
+        cleanupControllableResource(api, controllableResource);
     }
 }
