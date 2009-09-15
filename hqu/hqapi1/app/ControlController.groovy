@@ -93,7 +93,9 @@ class ControlController extends ApiController {
         def resourceId = params.getOne('resourceId')?.toInteger()
         def action = params.getOne('action')
         def arguments = params.get('arguments')?.join(",")
-
+        if (arguments == null) {
+            arguments = ""
+        }
         def resource = getResource(resourceId)
         if (!resource) {
             failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
