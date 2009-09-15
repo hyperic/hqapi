@@ -80,7 +80,7 @@ public class ControlAction_test extends ControlTestBase {
         cleanupControllableResource(api, controllableResource);   
     }
 
-    public void testControlActionNoPermissio() throws Exception {
+    public void testControlActionNoPermission() throws Exception {
         HQApi api = getApi();
         Resource controllableResource = createControllableResource(api);
 
@@ -91,8 +91,7 @@ public class ControlAction_test extends ControlTestBase {
         ControlApi cApi = apiUnpriv.getControlApi();
 
         ControlActionResponse response = cApi.getActions(controllableResource);
-        // TODO: This should fail!
-        hqAssertSuccess(response);
+        hqAssertFailurePermissionDenied(response);
 
         deleteTestUsers(users);
         cleanupControllableResource(api, controllableResource);

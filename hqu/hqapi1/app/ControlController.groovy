@@ -1,5 +1,5 @@
 import org.hyperic.hq.hqapi1.ErrorCode;
-import org.hyperic.hq.control.server.session.ControlScheduleManagerEJBImpl as CMan
+import org.hyperic.hq.authz.shared.PermissionException
 import org.hyperic.util.pager.PageControl
 
 class ControlController extends ApiController {
@@ -35,8 +35,11 @@ class ControlController extends ApiController {
             failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                        "Resource id " + resourceId + " not found")
         } else {
-            // TODO: Seems that permissions are not applied here. XXX: need test
-            actions = resource.getControlActions(user)
+            try {
+            	actions = resource.getControlActions(user)
+            } catch (PermissionException e) {
+                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+            }
         }
 
         renderXml() {
@@ -64,10 +67,11 @@ class ControlController extends ApiController {
             failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                        "Resource id " + resourceId + " not found")
         } else {
-            // TODO: This needs to be pulled into ResourceHelper
-            def cMan = CMan.one
-            history = cMan.findJobHistory(user, resource.entityId,
-                                          PageControl.PAGE_ALL)
+            try {
+            	history = resource.getControlHistory(user)
+            } catch (PermissionException e) {
+                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+            }
         }
 
         renderXml() {
@@ -104,7 +108,7 @@ class ControlController extends ApiController {
                 failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
                                            "Resource id " + resourceId +
                                            " does not support action " + action)
-            } catch (org.hyperic.hq.authz.shared.PermissionException e) {
+            } catch (PermissionException e) {
                 failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
             } catch (Exception e) {
                 failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
