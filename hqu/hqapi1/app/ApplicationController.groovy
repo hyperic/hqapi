@@ -80,7 +80,21 @@ class ApplicationController extends ApiController {
     }
 
     def delete(params) {
+        def id = params.getOne('id')?.toInteger()
+
+        if (id == null) {
+            renderXml() {
+                out << StatusResponse() {
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                }
+            }
+            return
+        }
+
         def failureXml = null
+
+        // TODO: remove next debugging line
+        print "ID: " + id
 
         renderXml() {
             StatusResponse() {
