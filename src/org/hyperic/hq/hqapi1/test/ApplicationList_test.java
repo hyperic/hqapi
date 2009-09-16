@@ -17,12 +17,13 @@ public class ApplicationList_test extends HQApiTestBase {
         ApplicationsResponse response = api.listApplications();
         // TODO: remove debugging lines
         System.out.println("TEST " + response);
-        System.out.println("TEST " + response.getApplication().size());
+        System.out.println("TEST - Apps: " + response.getApplication().size());
         if (response.getApplication().size() > 0) {
-            System.out.println("TEST " + response.getApplication().get(0).getLocation());
-            System.out.println("TEST " + response.getApplication().get(0).getDescription());
-            System.out.println("Resources: " + response.getApplication().get(0).getResource().size());
-            System.out.println("Groups: " + response.getApplication().get(0).getGroup().size());
+            System.out.println("APP 1: " + response.getApplication().get(0).getId());
+            System.out.println("APP 1: " + response.getApplication().get(0).getLocation());
+            System.out.println("APP 1: " + response.getApplication().get(0).getDescription());
+            System.out.println("APP 1 Resources: " + response.getApplication().get(0).getResource().size());
+            System.out.println("APP 1 Groups: " + response.getApplication().get(0).getGroup().size());
         }
         hqAssertSuccess(response);
     }
