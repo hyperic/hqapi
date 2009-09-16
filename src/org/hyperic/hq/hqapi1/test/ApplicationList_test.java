@@ -21,7 +21,8 @@ public class ApplicationList_test extends HQApiTestBase {
         if (response.getApplication().size() > 0) {
             System.out.println("TEST " + response.getApplication().get(0).getLocation());
             System.out.println("TEST " + response.getApplication().get(0).getDescription());
-            System.out.println("Resources: " + response.getApplication().get(0).getApplicationServices());
+            System.out.println("Resources: " + response.getApplication().get(0).getResource().size());
+            System.out.println("Groups: " + response.getApplication().get(0).getGroup().size());
         }
         hqAssertSuccess(response);
     }
