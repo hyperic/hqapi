@@ -17,7 +17,7 @@ public class ApplicationCreate_test extends HQApiTestBase {
 
         Application a = new Application();
         a.setName("A new app");
-        a.setLocation("Doylestown");
+        a.setLocation("Tahiti");
         a.setDescription("A test app created using the API");
         a.setEngContact("the Engineer");
         a.setBizContact("the Businessman");
@@ -27,6 +27,6 @@ public class ApplicationCreate_test extends HQApiTestBase {
 
         hqAssertSuccess(response);
 
-        System.out.println("NEW APP: " + response.getApplication().getId());
+        api.deleteApplication(response.getApplication().getId());
     }
 }
