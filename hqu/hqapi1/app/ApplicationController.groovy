@@ -5,7 +5,7 @@ import org.hyperic.hq.appdef.shared.ApplicationManagerLocal
 
 class ApplicationController extends ApiController {
 
-    ApplicationManagerLocal applicationManager = null;
+    ApplicationManagerLocal applicationManager = ApplicationManagerEJBImpl.getOne()
 
     private Closure getApplicationXML(a) {
         { doc ->
@@ -17,21 +17,15 @@ class ApplicationController extends ApiController {
                   opsContact  : a.opsContact,
                   bizContact  : a.businessContact)
               // TODO: include ApplicationServices and ApplicationGroups
-//            a.getAppServiceValues().each { asv ->
-//                print "Resource: " + asv
+           a.getAppServiceValues().each { asv ->
+               print "Resource: " + asv
 //                if (!asv.isCluster) {
 //                    Resource(id : asv.service.id,
 //                        name : asv.service.name,
 //                        description : asv.service.description)
 //                }
-//            }
+           }
         }
-    }
-
-    protected void init() {
-        applicationManager = ApplicationManagerEJBImpl.getOne()
-        // TODO: remove next debugging line
-        print "Number of Applications: " + applicationManager.getApplicationCount()
     }
 
     def list(params) {
@@ -91,19 +85,47 @@ class ApplicationController extends ApiController {
             return
         }
 
+        def app = getApplication(id)
         def failureXml = null
 
-        // TODO: remove next debugging line
-        print "ID: " + id
+        if (!app) {
+            renderXml() {
+                out << StatusResponse() {
+                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+                }
+            }
+            return
+        }
+
+        try {
+            removeApplication(id)
+        } catch (Exception e) {
+            renderXml() {
+                log.error("Error removing application", e)
+                StatusResponse() {
+                    out << getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+                }
+            }
+            return
+        }
 
         renderXml() {
             StatusResponse() {
-                if (failureXml) {
-                    out << failureXml
-                } else {
-                    out << getSuccessXML()
-                }
+                out << getSuccessXML()
             }
         }
+    }
+
+    private getApplication(id) {
+        try {
+            return applicationManager.findApplicationById(user, id)
+        }
+        catch (Exception e) {
+            return null
+        }
+    }
+
+    private removeApplication(id) {
+        applicationManager.removeApplication(user, id)
     }
 }
