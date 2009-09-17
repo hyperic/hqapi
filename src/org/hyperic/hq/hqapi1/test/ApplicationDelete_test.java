@@ -14,6 +14,8 @@ public class ApplicationDelete_test extends HQApiTestBase {
         ApplicationApi api = getApi().getApplicationApi();
 
         StatusResponse response = api.deleteApplication(Integer.MAX_VALUE);
-        hqAssertSuccess(response);
+        hqAssertFailureObjectNotFound(response);
+	    // TODO: add application and then delete it
+
     }
 }
