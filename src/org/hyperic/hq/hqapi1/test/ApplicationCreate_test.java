@@ -16,8 +16,17 @@ public class ApplicationCreate_test extends HQApiTestBase {
         ApplicationApi api = getApi().getApplicationApi();
 
         Application a = new Application();
+        a.setName("A new app");
+        a.setLocation("Doylestown");
+        a.setDescription("A test app created using the API");
+        a.setEngContact("the Engineer");
+        a.setBizContact("the Businessman");
+        a.setOpsContact("the Ops Man");
 
         ApplicationResponse response = api.createApplication(a);
+
         hqAssertSuccess(response);
+
+        System.out.println("NEW APP: " + response.getApplication().getId());
     }
 }

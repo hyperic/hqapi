@@ -1,10 +1,15 @@
 import org.hyperic.hq.hqapi1.ErrorCode
+import org.hyperic.hq.appdef.server.session.Application
+import org.hyperic.hq.appdef.server.session.ApplicationType
 import org.hyperic.hq.appdef.server.session.ApplicationManagerEJBImpl as AppMan
 import org.hyperic.hq.bizapp.server.session.AppdefBossEJBImpl as ABoss
 import org.hyperic.util.pager.PageControl
 import org.hyperic.hq.auth.shared.SessionManager
 import org.hyperic.hq.appdef.shared.AppdefGroupValue
+import org.hyperic.hq.appdef.shared.AppdefEntityConstants
 import org.hyperic.hq.appdef.shared.ServiceValue
+import org.hyperic.hq.appdef.shared.ApplicationValue
+
 
 class ApplicationController extends ApiController {
 
@@ -56,15 +61,52 @@ class ApplicationController extends ApiController {
     }
 
     def create(params) {
-        def failureXml = null
+        def createRequest = new XmlParser().parseText(getUpload('postdata'))
+        def xmlApplication = createRequest['Application']
+
+        if (!xmlApplication || xmlApplication.size() != 1) {
+            renderXml() {
+                ApplicationResponse() {
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                }
+            }
+            return
+        }
+
+        def appName = xmlApplication[0].'@name'
+        def appLoc = xmlApplication[0].'@location'
+        def appDesc = xmlApplication[0].'@description'
+        def appEng = xmlApplication[0].'@engContact'
+        def appOps = xmlApplication[0].'@opsContact'
+        def appBiz = xmlApplication[0].'@bizContact'
+
+        def applicationValue = new ApplicationValue()
+        applicationValue.name = appName
+        applicationValue.location = appLoc
+        applicationValue.description = appDesc
+        applicationValue.engContact = appEng
+        applicationValue.opsContact = appOps
+        applicationValue.businessContact = appBiz
+
+        Application newApp = null;
+
+        try {
+	        applicationValue.applicationType = appMan.findApplicationType(1)
+            newApp = appMan.createApplication( user, applicationValue, []) 
+        } catch (Exception e) {
+            renderXml() {
+                log.error("Error creating application", e)
+                ApplicationResponse() {
+                    out << getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+                }
+            }
+            return
+        }
 
         renderXml() {
             ApplicationResponse() {
-                if (failureXml) {
-                    out << failureXml
-                } else {
-                    out << getSuccessXML()
-                }
+                out << getSuccessXML()
+                out << getApplicationXML(newApp.applicationValue)
             }
         }
     }

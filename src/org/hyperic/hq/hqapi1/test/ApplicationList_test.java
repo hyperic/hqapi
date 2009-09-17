@@ -3,6 +3,7 @@ package org.hyperic.hq.hqapi1.test;
 import org.hyperic.hq.hqapi1.ApplicationApi;
 import org.hyperic.hq.hqapi1.types.ApplicationsResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.Application;
 
 public class ApplicationList_test extends HQApiTestBase {
 
@@ -18,12 +19,13 @@ public class ApplicationList_test extends HQApiTestBase {
         // TODO: remove debugging lines
         System.out.println("TEST " + response);
         System.out.println("TEST - Apps: " + response.getApplication().size());
-        if (response.getApplication().size() > 0) {
-            System.out.println("APP 1: " + response.getApplication().get(0).getId());
-            System.out.println("APP 1: " + response.getApplication().get(0).getLocation());
-            System.out.println("APP 1: " + response.getApplication().get(0).getDescription());
-            System.out.println("APP 1 Resources: " + response.getApplication().get(0).getResource().size());
-            System.out.println("APP 1 Groups: " + response.getApplication().get(0).getGroup().size());
+        for (Application app : response.getApplication()) {
+            Integer id =  app.getId();
+            System.out.println("APP " + id + "  name: " + app.getName());
+            System.out.println("       location: " + app.getLocation());
+            System.out.println("     desription: " + app.getDescription());
+            System.out.println("      Resources: " + app.getResource().size());
+            System.out.println("         Groups: " + app.getGroup().size());
         }
         hqAssertSuccess(response);
     }
