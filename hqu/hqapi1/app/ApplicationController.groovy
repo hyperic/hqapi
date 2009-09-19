@@ -112,17 +112,77 @@ class ApplicationController extends ApiController {
     }
 
     def update(params) {
-        def failureXml = null
+	    def updateRequest = new XmlParser().parseText(getUpload('postdata'))
+	    def xmlApplication = updateRequest['Application']
 
-        renderXml() {
-            ApplicationResponse() {
-                if (failureXml) {
-                    out << failureXml
-                } else {
-                    out << getSuccessXML()
-                }
-            }
-        }
+	    if (!xmlApplication || xmlApplication.size() != 1) {
+	        renderXml() {
+	            ApplicationResponse() {
+	                out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
+	            }
+	        }
+	        return
+	    }
+
+	    def appId = xmlApplication[0].'@id'?.toInteger()
+	    if (!appId) {
+	        renderXml() {
+	            ApplicationResponse() {
+	                out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
+	            }
+	        }
+	        return
+	    }
+
+	    def appName = xmlApplication[0].'@name'
+	    def appLoc = xmlApplication[0].'@location'
+	    def appDesc = xmlApplication[0].'@description'
+	    def appEng = xmlApplication[0].'@engContact'
+	    def appOps = xmlApplication[0].'@opsContact'
+	    def appBiz = xmlApplication[0].'@bizContact'
+
+	    def updateApp = null
+	    try {
+	        updateApp = appMan.findApplicationById(user, appId)
+	    } catch (Exception e) {
+	        log.error("ERROR: " + e)
+	        renderXml() {
+	            ApplicationResponse() {
+	                out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
+	            }
+	        }
+	        return
+	    }
+	
+	    def applicationValue = updateApp.getApplicationValue()
+
+	    applicationValue.name = appName
+	    applicationValue.location = appLoc
+	    applicationValue.description = appDesc
+	    applicationValue.engContact = appEng
+	    applicationValue.opsContact = appOps
+	    applicationValue.businessContact = appBiz
+
+	    def retAppValue = null;
+
+	    try {
+	        retAppValue = appMan.updateApplication(user, applicationValue) 
+	    } catch (Exception e) {
+	        renderXml() {
+	            log.error("Error updating application", e)
+	            ApplicationResponse() {
+	                out << getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+	            }
+	        }
+	        return
+	    }
+
+	    renderXml() {
+	        ApplicationResponse() {
+	            out << getSuccessXML()
+	            out << getApplicationXML(retAppValue)
+	        }
+	    }
     }
 
     def delete(params) {

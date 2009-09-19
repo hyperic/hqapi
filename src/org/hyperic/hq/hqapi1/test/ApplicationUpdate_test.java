@@ -15,8 +15,22 @@ public class ApplicationUpdate_test extends HQApiTestBase {
         ApplicationApi api = getApi().getApplicationApi();
 
         Application a = new Application();
-  
-        ApplicationResponse response = api.updateApplication(a);
-        hqAssertSuccess(response);        
+        a.setName("A new app");
+        a.setLocation("Tahiti");
+        a.setDescription("A test app created using the API");
+        a.setEngContact("the Engineer");
+        a.setBizContact("the Businessman");
+        a.setOpsContact("the Ops Man");
+
+        ApplicationResponse newResponse = api.createApplication(a);
+
+        Application a2 = newResponse.getApplication();
+        a2.setBizContact("new biz contact");
+
+        ApplicationResponse response = api.updateApplication(a2);
+        hqAssertSuccess(response);
+        assertEquals("new biz contact", newResponse.getApplication().getBizContact());
+
+        api.deleteApplication(newResponse.getApplication().getId());
     }
 }
