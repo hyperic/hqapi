@@ -2,6 +2,8 @@ package org.hyperic.hq.hqapi1;
 
 import org.hyperic.hq.hqapi1.types.AlertCondition;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
+import org.hyperic.hq.hqapi1.types.AlertAction;
+import org.hyperic.hq.hqapi1.types.AlertActionConfig;
 
 /**
  * This class is used to create {@link org.hyperic.hq.hqapi1.types.AlertCondition}s.
@@ -322,5 +324,24 @@ public class AlertDefinitionBuilder {
         c.setType(AlertConditionType.CONFIG_CHANGE.getType());
         c.setConfigMatch(matches);
         return c;
+    }
+
+    /**
+     * Create a ScriptAction
+     *
+     * @param script The script to execute when the alert fires.
+     * @return An {@link org.hyperic.hq.hqapi1.types.AlertAction} that can be
+     * included in {@link org.hyperic.hq.hqapi1.types.AlertDefinition#getAlertAction()}.
+     */
+    public static AlertAction createScriptAction(String script) {
+        AlertAction a = new AlertAction();
+        a.setClassName("com.hyperic.hq.bizapp.server.action.control.ScriptAction");
+
+        AlertActionConfig cfg = new AlertActionConfig();
+        cfg.setKey("script");
+        cfg.setValue(script);
+
+        a.getAlertActionConfig().add(cfg);
+        return a;
     }
 }

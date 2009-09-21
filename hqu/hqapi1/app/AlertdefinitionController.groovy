@@ -8,11 +8,13 @@ import org.hyperic.hq.appdef.shared.AppdefEntityTypeID
 import org.hyperic.hq.bizapp.server.session.EventsBossEJBImpl as EventsBoss
 import org.hyperic.hq.events.AlertSeverity
 import org.hyperic.hq.events.EventConstants
+import org.hyperic.hq.events.shared.ActionValue
 import org.hyperic.hq.events.shared.AlertConditionValue
 import org.hyperic.hq.events.shared.AlertDefinitionValue
 import org.hyperic.hq.events.server.session.AlertDefinitionManagerEJBImpl as AMan
 import org.hyperic.hq.measurement.shared.ResourceLogEvent
 import org.hyperic.hq.product.LogTrackPlugin
+import org.hyperic.util.config.ConfigResponse
 import ApiController
 
 public class AlertdefinitionController extends ApiController {
@@ -154,6 +156,20 @@ public class AlertdefinitionController extends ApiController {
                     }
                     // Write it out
                     AlertCondition(conditionAttrs)
+                }
+
+                for (a in d.actions) {
+                    // TODO: Only supporting ScriptAction for now.
+                    if (a.className == "com.hyperic.hq.bizapp.server.action.control.ScriptAction") {
+                        AlertAction(id: a.id,
+                                    className: a.className) {
+                            def config = ConfigResponse.decode(a.config)
+                            for (key in config.keys) {
+                                AlertActionConfig(key: key,
+                                                  value: config.getValue(key))
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -496,6 +512,22 @@ public class AlertdefinitionController extends ApiController {
             }
 
             def isRecovery = false
+
+            for (xmlAction in xmlDef['AlertAction']) {
+                def actionId  = xmlAction.'@id'?.toInteger()
+                def className = xmlAction.'@className'
+
+                def cfg = [:]
+                for (xmlConfig in xmlAction['AlertActionConfig']) {
+                    cfg[xmlConfig.'@key'] = xmlConfig.'@value'
+                }
+
+                ConfigResponse configResponse =  new ConfigResponse(cfg)
+                ActionValue action = new ActionValue(actionId, className,
+                                                     configResponse.encode(),
+                                                     null)
+                adv.addAction(action)
+            }
 
             for (xmlCond in xmlDef['AlertCondition']) {
                 AlertConditionValue acv = new AlertConditionValue()
