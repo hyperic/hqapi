@@ -692,6 +692,19 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:complexType name="AlertActionConfig">
+        <xs:attribute name="value" type="xs:string" use="required"/>
+        <xs:attribute name="key" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="AlertAction">
+        <xs:sequence>
+            <xs:element name="AlertActionConfig" type="AlertActionConfig" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="className" type="xs:string" use="required"/>
+        <xs:attribute name="id" type="xs:integer" use="optional"/>
+    </xs:complexType>
+
     <!-- Since conditions must be ordered and inheritence does not work so
          well in JAXB we must define all options -->
     <xs:complexType name="AlertCondition">
@@ -730,6 +743,7 @@
             <xs:element name="Escalation" type="Escalation" maxOccurs="1"/>
             <!-- The ordering of this list is important -->
             <xs:element name="AlertCondition" type="AlertCondition" maxOccurs="unbounded"/>
+            <xs:element name="AlertAction" type="AlertAction" maxOccurs="unbounded"/>
         </xs:sequence>
         <xs:attribute name="controlFiltered" type="xs:boolean" use="required" />
         <xs:attribute name="notifyFiltered"  type="xs:boolean" use="required" />
