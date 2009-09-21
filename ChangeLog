@@ -42,6 +42,9 @@ Changes in HQApi 3.0
 
 Changes in HQApi 2.3
 
+ *) [HHQ-3422] Add support for ScriptAction AlertActions in the
+    AlertDefinition API.
+
 Changes in HQApi 2.2
 
  *) [HHQ-3381] Do not allow system Group's to be synced via the API.
