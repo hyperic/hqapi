@@ -153,13 +153,9 @@ public class Metric_test extends MetricTestBase {
         assertTrue("Interval for metric " + enabledMetric.getName() + " not " +
                    "updated.", metric.getMetric().getInterval() == newInterval);
 
-        // Reset
-        try {
-            Thread.sleep(2000);
-        } catch (Exception e) {
-            // Cannot reschedule so quickly without getting ObjectNotFoundException
-            // for ScheduleRevNum
-        }
+        // Cannot reschedule so quickly without getting ObjectNotFoundException
+        // for ScheduleRevNum
+        pauseTest();
 
         enabledMetric.setInterval(interval);
         syncResponse = metricApi.syncMetrics(syncMetrics);
@@ -202,16 +198,17 @@ public class Metric_test extends MetricTestBase {
         assertTrue("Metric " + disabledMetric.getName() + " not enabled. (id=" +
                 disabledMetric.getId() + ")", metric.getMetric().isEnabled());
 
-        // Reset
-        try {
-            Thread.sleep(2000);
-        } catch (Exception e) {
-            // Cannot re-enable so quickly without getting ObjectNotFoundException
-            // for ScheduleRevNum
-        }
+        // Cannot re-enable so quickly without getting ObjectNotFoundException
+        // for ScheduleRevNum
+        pauseTest();
 
         syncResponse = metricApi.syncMetrics(orignalMetrics.getMetric());
         hqAssertSuccess(syncResponse);
+        
+        metric = metricApi.getMetric(disabledMetric.getId());
+        hqAssertSuccess(metric);
+        assertFalse("Metric " + disabledMetric.getName() + " is still enabled. (id=" +
+                disabledMetric.getId() + ")", metric.getMetric().isEnabled());
     }
 
     public void testSyncInvalidMetric() throws Exception {

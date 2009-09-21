@@ -125,7 +125,10 @@ public class ResourceCreateService_test extends ResourceTestBase {
     }
 
     public void testServiceCreateInvalidDescription() throws Exception {
-
+        // give hibernate time to flush current session before running
+        // this test which may cause a transaction failure
+        pauseTest();
+        
         Agent a = getRunningAgent();
 
         ResourceApi api = getApi().getResourceApi();

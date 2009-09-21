@@ -1006,10 +1006,11 @@ class ResourceController extends ApiController {
         try {
             resource.remove(user)
         } catch (Exception e) {
+            log.error("Error removing resource", e)
             renderXml() {
-                log.error("Error removing resource", e)
                 StatusResponse() {
-                    out << getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+                    out << getFailureXML(ErrorCode.UNEXPECTED_ERROR, 
+                    					 "Error removing resource: " + e.getMessage())
                 }
             }
             return

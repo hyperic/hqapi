@@ -66,13 +66,7 @@ public class MetricDataAddData_test extends MetricDataTestBase {
         Resource createdResource = resp.getResource();
         assertEquals(createdResource.getName(), name);
 
-        try {
-            // HQ does not like it when resources are modified so quickly
-            // after being created.
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            // Ignore
-        }
+        pauseTest();
 
         MetricsResponse metricsResponse =
                 metricApi.getMetrics(createdResource, true);

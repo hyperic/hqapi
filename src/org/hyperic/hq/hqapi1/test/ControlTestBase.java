@@ -47,6 +47,8 @@ public class ControlTestBase extends HQApiTestBase {
     public void cleanupControllableResource(HQApi api, Resource r)
         throws Exception
     {
+        pauseTest();
+        
         ResourceApi rApi = api.getResourceApi();
 
         StatusResponse response = rApi.deleteResource(r.getId());

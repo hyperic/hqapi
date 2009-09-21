@@ -231,7 +231,26 @@ public abstract class HQApiTestBase extends TestCase {
             hqAssertSuccess(response);
         }
     }
-
+    
+    /**
+     * Need to pause test because HQ does not like it when resources
+     * are modified or deleted so quickly after being created.
+     * 
+     * TODO: This issue needs to be fixed in the HQ Core code
+     */
+    void pauseTest(long timeMillis) {
+        try {
+            Thread.sleep(timeMillis);
+        } catch (InterruptedException e) {
+            // Ignore
+        }
+    }
+    
+    void pauseTest() {
+        // default pause time
+        pauseTest(2500);
+    }
+    
     // Assert SUCCESS
 
     void hqAssertSuccess(Response response) {

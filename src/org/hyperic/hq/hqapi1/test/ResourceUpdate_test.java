@@ -105,12 +105,7 @@ public class ResourceUpdate_test extends ResourceTestBase {
             }
         }
 
-        // Cannot delete resources soon after modifying them..
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            // Ignore
-        }
+        pauseTest();
 
         // Cleanup
         StatusResponse deleteResponse = api.deleteResource(updatedResource.getId());
@@ -186,7 +181,10 @@ public class ResourceUpdate_test extends ResourceTestBase {
     }
 
     public void testUpdateInvalidDescription() throws Exception {
-
+        // give hibernate time to flush current session before running
+        // this test which will cause a transaction failure
+        pauseTest();
+        
         ResourceApi api = getApi().getResourceApi();
         Resource createdResource = createTestHTTPService();
 
@@ -203,12 +201,7 @@ public class ResourceUpdate_test extends ResourceTestBase {
         StatusResponse updateResponse = api.updateResource(createdResource);
         hqAssertFailureInvalidParameters(updateResponse);
 
-        // Cannot delete resources soon after modifying them..
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            // Ignore
-        }
+        pauseTest();
 
         // Cleanup
         StatusResponse deleteResponse = api.deleteResource(createdResource.getId());

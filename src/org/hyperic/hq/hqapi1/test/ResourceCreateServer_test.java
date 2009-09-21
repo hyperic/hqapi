@@ -68,11 +68,7 @@ public class ResourceCreateServer_test extends ResourceTestBase {
                                  parent, name, config);
         hqAssertSuccess(resp);
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            // Ignore
-        }
+        pauseTest();
 
         // Cleanup
         StatusResponse deleteResponse = api.deleteResource(resp.getResource().getId());
@@ -133,7 +129,10 @@ public class ResourceCreateServer_test extends ResourceTestBase {
     }
 
     public void testCreateServerLongDescription() throws Exception {
-
+        // give hibernate time to flush current session before running
+        // this test which may cause a transaction failure
+        pauseTest();
+        
         ResourceApi api = getApi().getResourceApi();
 
         ResourcePrototypeResponse protoResponse =

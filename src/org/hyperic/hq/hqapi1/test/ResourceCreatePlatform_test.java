@@ -76,18 +76,17 @@ public class ResourceCreatePlatform_test extends ResourceTestBase {
                                    name, fqdn, ips, config);
         hqAssertSuccess(resp);
 
-        try {
-            Thread.sleep(2000);
-        } catch (Exception e) {
-            // Ignore
-        }
+        pauseTest();
 
         StatusResponse deleteResponse = api.deleteResource(resp.getResource().getId());
         hqAssertSuccess(deleteResponse);
     }
 
     public void testCreatePlatformLongDescription() throws Exception {
-
+        // give hibernate time to flush current session before running
+        // this test which may cause a transaction failure
+        pauseTest();
+        
         Agent a = getRunningAgent();
         ResourceApi api = getApi().getResourceApi();
 
