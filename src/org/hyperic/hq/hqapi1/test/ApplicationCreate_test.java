@@ -14,7 +14,6 @@ public class ApplicationCreate_test extends HQApiTestBase {
         super(name);
     }
 
-    // TODO: Stub
     public void testApplicationCreate() throws Exception {
 
         ApplicationApi api = getApi().getApplicationApi();
@@ -30,21 +29,26 @@ public class ApplicationCreate_test extends HQApiTestBase {
         Agent agent = getRunningAgent();
 
         ResourceApi resourceApi = getApi().getResourceApi();
-        AgentApi agentApi = getApi().getAgentApi();
         GroupApi groupApi = getApi().getGroupApi();
+
+        // TODO: This actually creates a mixed group for "Platforms, Servers & Service resource types."
+        // It still works for adding "Application resource types." using the API but not the GUI
+        Group group = new Group();
+        group.setName("An Application Group");
+        group.setDescription("Application Test Group");
+        group.setLocation("Anywhere");
+        GroupResponse newGroup = groupApi.createGroup(group);
 
         GroupsResponse grpResponse = groupApi.getMixedGroups();
         List<Group> groups = a.getGroup();
         for (Group g : grpResponse.getGroup()) {
-            System.out.println("GROUP: " + g.getDescription() + " :: " + g.getResource());
-            // TODO: need a better way of finding App groups - maybe create one?
+            System.out.println("GROUP: " + g.getDescription() + " :: " + g.getResourcePrototype());
             if (g.getDescription().contains("Application")) {
                 System.out.println("+> " + g.getId() + " " + g.getName());
                 groups.add(g);
             }
         }
 
-        ResourcePrototypeResponse rp = resourceApi.getResourcePrototype("");
         ResourcesResponse findResponse = resourceApi.getResources(agent, true, true);
         hqAssertSuccess(findResponse);
 
@@ -54,7 +58,6 @@ public class ApplicationCreate_test extends HQApiTestBase {
         Resource toAdd1 = null;
         Resource toAdd2 = null;
         for (Resource r : findResponse.getResource().get(0).getResource()) {
-            boolean done = false;
             System.out.println("RESOURCE: " + r.getDescription() + " :: " + r.getResourcePrototype().getName());
             for (Resource r2 : r.getResource()) {
                 System.out.println("+> " + r2.getId() + " " + r2.getName());
@@ -83,5 +86,6 @@ public class ApplicationCreate_test extends HQApiTestBase {
         hqAssertSuccess(response);
 
         api.deleteApplication(response.getApplication().getId());
+        groupApi.deleteGroup(newGroup.getGroup().getId().intValue());
     }
 }
