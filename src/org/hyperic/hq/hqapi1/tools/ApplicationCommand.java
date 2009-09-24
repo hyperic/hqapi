@@ -83,6 +83,6 @@ public class ApplicationCommand extends Command {
         StatusResponse response = groupApi.deleteApplication(id);
         checkSuccess(response);
 
-        System.out.println("Successfully deleted group id " + id);
+        System.out.println("Successfully deleted application id " + id);
     }
 }
