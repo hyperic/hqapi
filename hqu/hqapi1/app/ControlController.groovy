@@ -100,6 +100,9 @@ class ControlController extends ApiController {
         if (!resource) {
             failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                        "Resource id " + resourceId + " not found")
+        } else if (resource.entityId.isGroup()) {
+        	failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
+        							   "Group control action execution is not supported")
         } else if (!action) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                        "No action given")

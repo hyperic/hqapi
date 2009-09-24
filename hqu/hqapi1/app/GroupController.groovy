@@ -6,6 +6,7 @@ class GroupController extends ApiController {
     private Closure getGroupXML(g) {
         { doc ->
             Group(id          : g.id,
+            	  resourceId  : g.resource.id,
                   name        : g.name,
                   description : g.description,
                   location    : g.location) {
