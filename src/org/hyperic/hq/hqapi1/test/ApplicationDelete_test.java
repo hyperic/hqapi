@@ -12,7 +12,7 @@ public class ApplicationDelete_test extends ApplicationTestBase {
 
     public void testDeleteExistingApp() throws Exception {
         ApplicationApi api = getApi().getApplicationApi();
-        Application a = createTestApplication(null, null);
+        Application a = createTestApplication(null);
 
         StatusResponse response = api.deleteApplication(a.getId());
         hqAssertSuccess(response);

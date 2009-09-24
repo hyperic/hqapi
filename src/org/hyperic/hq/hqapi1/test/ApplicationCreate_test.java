@@ -17,7 +17,7 @@ public class ApplicationCreate_test extends ApplicationTestBase {
 
     public void testApplicationCreateNoServices() throws Exception {
         ApplicationApi api = getApi().getApplicationApi();
-        Application a = createTestApplication(null, null);
+        Application a = createTestApplication(null);
 
         StatusResponse response = api.deleteApplication(a.getId());
         hqAssertSuccess(response);
@@ -37,30 +37,7 @@ public class ApplicationCreate_test extends ApplicationTestBase {
                                   false, false);
         hqAssertSuccess(cpusResponse);
 
-        Application a = createTestApplication(cpusResponse.getResource(), null);
-
-        StatusResponse deleteResponse = appApi.deleteApplication(a.getId());
-        hqAssertSuccess(deleteResponse);
-    }
-
-    public void testApplicationCreateWithServiceGroups() throws Exception {
-        HQApi api = getApi();
-        ApplicationApi appApi = api.getApplicationApi();
-        GroupApi groupApi = api.getGroupApi();
-
-        Group compatibleServiceGroup = createTestCompatibleGroup("CPU");
-        Group compatibleFileMountGroup = createTestCompatibleGroup("FileServer Mount");
-
-        List<Group> serviceGroups = new ArrayList<Group>();
-        serviceGroups.add(compatibleServiceGroup);
-        serviceGroups.add(compatibleFileMountGroup);
-
-        Application a = createTestApplication(null, serviceGroups);
-
-        for (Group g : serviceGroups) {
-            StatusResponse deleteResponse = groupApi.deleteGroup(g.getId());
-            hqAssertSuccess(deleteResponse);
-        }
+        Application a = createTestApplication(cpusResponse.getResource());
 
         StatusResponse deleteResponse = appApi.deleteApplication(a.getId());
         hqAssertSuccess(deleteResponse);

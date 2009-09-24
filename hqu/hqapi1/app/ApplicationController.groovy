@@ -4,7 +4,6 @@ import org.hyperic.hq.appdef.server.session.ApplicationType
 import org.hyperic.hq.appdef.server.session.ApplicationManagerEJBImpl as AppMan
 import org.hyperic.hq.bizapp.server.session.AppdefBossEJBImpl as ABoss
 import org.hyperic.hq.authz.server.session.ResourceManagerEJBImpl as ResMan
-import org.hyperic.hq.authz.server.session.ResourceGroupManagerEJBImpl as GroupMan
 import org.hyperic.util.pager.PageControl
 import org.hyperic.util.config.ConfigResponse
 import org.hyperic.hq.auth.shared.SessionManager
@@ -24,7 +23,6 @@ class ApplicationController extends ApiController {
     def appMan = AppMan.one
     def aBoss = ABoss.one
     def resMan = ResMan.one
-    def groupMan = GroupMan.one
 
     private Closure getApplicationXML(a) {
         { doc ->
@@ -42,11 +40,6 @@ class ApplicationController extends ApiController {
                         Resource(id :          resource.id,
                                  name :        resource.name,
                                  description : resource.description)
-                    } else {
-                        Group(id :          appService.id,
-                              name :        appService.name,
-                              description : appService.description,
-                              location :    appService.location)
                     }
                 }
             }
@@ -116,8 +109,7 @@ class ApplicationController extends ApiController {
         }
 
         def resources = xmlApplication['Resource']
-        def groups = xmlApplication['Group']
-        updateAppServices(newApp, resources, groups)
+        updateAppServices(newApp, resources)
 
         renderXml() {
             ApplicationResponse() {
@@ -191,8 +183,7 @@ class ApplicationController extends ApiController {
         }
 
         def resources = xmlApplication['Resource']
-        def groups = xmlApplication['Group']
-        updateAppServices(updateApp, resources, groups)
+        updateAppServices(updateApp, resources)
 
         renderXml() {
             ApplicationResponse() {
@@ -246,7 +237,7 @@ class ApplicationController extends ApiController {
         }
     }
 
-    private updateAppServices(app, resources, groups) {
+    private updateAppServices(app, resources) {
         def svcList = []
 
         if (resources) {
@@ -255,14 +246,6 @@ class ApplicationController extends ApiController {
                 def sid = resMan.findResourceById(rid)?.instanceId
                 def svcAeid = AppdefEntityID.newServiceID(sid)
                 svcList.add(svcAeid)
-            }
-        }
-
-        if (groups) {
-            groups.each { grp ->
-                def gid = grp.'@id'?.toInteger()
-                def groupAeid = AppdefEntityID.newGroupID(gid)
-                svcList.add(groupAeid)
             }
         }
 

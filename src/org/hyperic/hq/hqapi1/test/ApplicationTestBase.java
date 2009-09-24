@@ -37,13 +37,13 @@ public abstract class ApplicationTestBase extends HQApiTestBase {
      *
      * @param services A list of Resources to add to the Application or null
      * if no Resources should be added.
-     * @param groups A list of Groups to add to the Application or null if no
      * Groups should be added.
      * @return The created Application
      * @throws Exception If an error occurs.
      */
-    protected Application createTestApplication(List<Resource> services,
-                                                List<Group> groups) throws Exception {
+    protected Application createTestApplication(List<Resource> services)
+            throws Exception
+    {
         ApplicationApi api = getApi().getApplicationApi();
 
         Random r = new Random();
@@ -61,10 +61,6 @@ public abstract class ApplicationTestBase extends HQApiTestBase {
             a.getResource().addAll(services);
         }
 
-        if (groups != null) {
-            a.getGroup().addAll(groups);
-        }
-
         ApplicationResponse response = api.createApplication(a);
         hqAssertSuccess(response);
 
@@ -80,10 +76,6 @@ public abstract class ApplicationTestBase extends HQApiTestBase {
 
         if (services != null) {
             assertEquals(createdApp.getResource().size(), services.size());
-        }
-
-        if (groups != null) {
-            assertEquals(createdApp.getGroup().size(), groups.size());
         }
 
         return response.getApplication();

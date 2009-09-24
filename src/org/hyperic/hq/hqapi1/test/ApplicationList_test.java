@@ -29,7 +29,7 @@ public class ApplicationList_test extends ApplicationTestBase {
         int num = 5;
         Map<Integer,Application> apps = new HashMap<Integer,Application>();
         for (int i = 0; i < num; i++) {
-            Application a = createTestApplication(null, null);
+            Application a = createTestApplication(null);
             apps.put(a.getId(), a);
         }
 

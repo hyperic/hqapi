@@ -25,7 +25,7 @@ public class ApplicationUpdate_test extends ApplicationTestBase {
     public void testUpdateNoServices() throws Exception {
         ApplicationApi api = getApi().getApplicationApi();
 
-        Application a = createTestApplication(null, null);
+        Application a = createTestApplication(null);
 
         a.setName(UPDATE_PREFIX + a.getName());
         a.setDescription(UPDATE_PREFIX + a.getDescription());
@@ -64,7 +64,7 @@ public class ApplicationUpdate_test extends ApplicationTestBase {
                                   false, false);
         hqAssertSuccess(cpusResponse);
 
-        Application a = createTestApplication(null, null);
+        Application a = createTestApplication(null);
 
         a.getResource().addAll(cpusResponse.getResource());
 
@@ -95,7 +95,7 @@ public class ApplicationUpdate_test extends ApplicationTestBase {
                                   false, false);
         hqAssertSuccess(cpusResponse);
 
-        Application a = createTestApplication(cpusResponse.getResource(), null);
+        Application a = createTestApplication(cpusResponse.getResource());
 
         a.getResource().clear();
 
@@ -108,60 +108,6 @@ public class ApplicationUpdate_test extends ApplicationTestBase {
 
         StatusResponse deleteResponse =
                 appApi.deleteApplication(updatedApplication.getId());
-        hqAssertSuccess(deleteResponse);
-    }
-
-    public void testUpdateAddGroups() throws Exception {
-        HQApi api = getApi();
-        GroupApi gApi = api.getGroupApi();
-        ApplicationApi appApi = api.getApplicationApi();
-
-        Application a = createTestApplication(null, null);
-
-        Group g = createTestCompatibleGroup("CPU");
-        List<Group> groups = new ArrayList<Group>();
-        groups.add(g);
-
-        a.getGroup().addAll(groups);
-
-        ApplicationResponse updateResponse = appApi.updateApplication(a);
-        hqAssertSuccess(updateResponse);
-
-        Application updatedApplication = updateResponse.getApplication();
-
-        assertEquals(groups.size(), updatedApplication.getGroup().size());
-
-        StatusResponse deleteResponse = gApi.deleteGroup(g.getId());
-        hqAssertSuccess(deleteResponse);
-
-        deleteResponse = appApi.deleteApplication(updatedApplication.getId());
-        hqAssertSuccess(deleteResponse);
-    }
-
-    public void testUpdateRemoveGroups() throws Exception {
-        HQApi api = getApi();
-        GroupApi gApi = api.getGroupApi();
-        ApplicationApi appApi = api.getApplicationApi();
-
-        Group g = createTestCompatibleGroup("CPU");
-        List<Group> groups = new ArrayList<Group>();
-        groups.add(g);
-
-        Application a = createTestApplication(null, groups);
-
-        a.getGroup().clear();
-
-        ApplicationResponse updateResponse = appApi.updateApplication(a);
-        hqAssertSuccess(updateResponse);
-
-        Application updatedApplication = updateResponse.getApplication();
-
-        assertEquals(0, updatedApplication.getGroup().size());
-
-        StatusResponse deleteResponse = gApi.deleteGroup(g.getId());
-        hqAssertSuccess(deleteResponse);
-
-        deleteResponse = appApi.deleteApplication(updatedApplication.getId());
         hqAssertSuccess(deleteResponse);
     }
 }
