@@ -10,6 +10,7 @@ import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.Resource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,6 +109,52 @@ public class ApplicationUpdate_test extends ApplicationTestBase {
 
         StatusResponse deleteResponse =
                 appApi.deleteApplication(updatedApplication.getId());
+        hqAssertSuccess(deleteResponse);
+    }
+
+    public void testUpdateAddServers() throws Exception {
+        HQApi api = getApi();
+        ResourceApi rApi = api.getResourceApi();
+        ApplicationApi appApi = api.getApplicationApi();
+
+        ResourcePrototypeResponse protoResponse =
+                rApi.getResourcePrototype("HQ Agent");
+        hqAssertSuccess(protoResponse);
+
+        ResourcesResponse agentsResponse =
+                rApi.getResources(protoResponse.getResourcePrototype(),
+                                  false, false);
+        hqAssertSuccess(agentsResponse);
+
+        assertTrue("No HQ Agent resources found in the inventory!",
+                   agentsResponse.getResource().size() > 0);
+
+        Application a = createTestApplication(null);
+
+        a.getResource().addAll(agentsResponse.getResource());
+
+        ApplicationResponse updateResponse = appApi.updateApplication(a);
+        hqAssertFailureInvalidParameters(updateResponse);
+
+        StatusResponse deleteResponse = appApi.deleteApplication(a.getId());
+        hqAssertSuccess(deleteResponse);
+    }
+
+    public void testUpdateAddPlatform() throws Exception {
+        HQApi api = getApi();
+        ResourceApi rApi = api.getResourceApi();
+        ApplicationApi appApi = api.getApplicationApi();
+
+        Resource platform = getLocalPlatformResource(false, false);
+
+        Application a = createTestApplication(null);
+
+        a.getResource().add(platform);
+
+        ApplicationResponse updateResponse = appApi.updateApplication(a);
+        hqAssertFailureInvalidParameters(updateResponse);
+
+        StatusResponse deleteResponse = appApi.deleteApplication(a.getId());
         hqAssertSuccess(deleteResponse);
     }
 }
