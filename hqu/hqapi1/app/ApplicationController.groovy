@@ -1,22 +1,14 @@
 import org.hyperic.hq.hqapi1.ErrorCode
-import org.hyperic.hq.appdef.server.session.Application
-import org.hyperic.hq.appdef.server.session.ApplicationType
 import org.hyperic.hq.appdef.server.session.ApplicationManagerEJBImpl as AppMan
 import org.hyperic.hq.bizapp.server.session.AppdefBossEJBImpl as ABoss
 import org.hyperic.hq.authz.server.session.ResourceManagerEJBImpl as ResMan
 import org.hyperic.util.pager.PageControl
-import org.hyperic.util.config.ConfigResponse
 import org.hyperic.hq.auth.shared.SessionManager
-import org.hyperic.hq.appdef.shared.AppdefGroupValue
-import org.hyperic.hq.appdef.shared.AppdefEntityConstants
 import org.hyperic.hq.appdef.shared.AppdefEntityID
-import org.hyperic.hq.appdef.shared.AppdefResourceValue
 import org.hyperic.hq.appdef.shared.ApplicationValue
-import org.hyperic.hq.appdef.shared.AppServiceValue
-import org.hyperic.hq.appdef.shared.DependencyTree
 import org.hyperic.hq.appdef.shared.ServiceValue
-import org.hyperic.hibernate.PageInfo
-import org.hyperic.hq.authz.server.session.ResourceGroupSortField
+import org.hyperic.dao.DAOFactory
+import org.hyperic.hq.appdef.server.session.AppServiceDAO
 
 class ApplicationController extends ApiController {
 
@@ -249,14 +241,23 @@ class ApplicationController extends ApiController {
             }
         }
 
-        log.info("Updating " + app.name + " to have " + svcList.size() + " app services!")
-
         appMan.setApplicationServices(user, app.id, svcList)
 
         // Setting the application services does not remove any app services
         // that may have been removed from the application.  We must look up
         // the tree and remove one-by-one.
-        // TODO: Fix me
+        // TODO: Fix me - Need manager APIs for Service -> AppService mappings
+        def sessionId = SessionManager.instance.put(user)
+        def dao = new AppServiceDAO(DAOFactory.getDAOFactory());
+        for (appService in aBoss.findServiceInventoryByApplication(sessionId, app.id, PageControl.PAGE_ALL)) {
+            if (appService instanceof ServiceValue) {
+                def entId = AppdefEntityID.newServiceID(appService.id)
+                if (!svcList.contains(entId)) {
+                    def appSvc = dao.findByAppAndService(app.id, appService.id)
+                    appMan.removeAppService(user, app.id, appSvc.id)
+                }
+            }
+        }
     }
 
     private getApplication(id) {
