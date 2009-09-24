@@ -2,11 +2,8 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.ApplicationApi;
 import org.hyperic.hq.hqapi1.types.ApplicationsResponse;
-import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.Application;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 

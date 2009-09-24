@@ -3,11 +3,7 @@ package org.hyperic.hq.hqapi1.test;
 import org.hyperic.hq.hqapi1.ApplicationApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
-import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.types.*;
-
-import java.util.List;
-import java.util.ArrayList;
 
 public class ApplicationCreate_test extends ApplicationTestBase {
 
