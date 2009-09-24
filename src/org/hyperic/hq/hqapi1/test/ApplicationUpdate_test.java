@@ -142,7 +142,6 @@ public class ApplicationUpdate_test extends ApplicationTestBase {
 
     public void testUpdateAddPlatform() throws Exception {
         HQApi api = getApi();
-        ResourceApi rApi = api.getResourceApi();
         ApplicationApi appApi = api.getApplicationApi();
 
         Resource platform = getLocalPlatformResource(false, false);
@@ -156,5 +155,14 @@ public class ApplicationUpdate_test extends ApplicationTestBase {
 
         StatusResponse deleteResponse = appApi.deleteApplication(a.getId());
         hqAssertSuccess(deleteResponse);
+    }
+
+    public void testUpdateNonPersistedApplication() throws Exception {
+        ApplicationApi appApi = getApi().getApplicationApi();
+
+        Application a = generateTestApplication();
+
+        ApplicationResponse response = appApi.updateApplication(a);
+        hqAssertFailureInvalidParameters(response);
     }
 }

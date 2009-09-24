@@ -144,7 +144,8 @@ class ApplicationController extends ApiController {
         if (!appId) {
             renderXml() {
                 ApplicationResponse() {
-                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         "No application id found")
                 }
             }
             return
