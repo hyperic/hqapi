@@ -3,34 +3,41 @@ package org.hyperic.hq.hqapi1.test;
 import org.hyperic.hq.hqapi1.ApplicationApi;
 import org.hyperic.hq.hqapi1.types.ApplicationResponse;
 import org.hyperic.hq.hqapi1.types.Application;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
-public class ApplicationUpdate_test extends HQApiTestBase {
+public class ApplicationUpdate_test extends ApplicationTestBase {
+
+    private static final String UPDATE_PREFIX = "UPDATED-";
 
     public ApplicationUpdate_test(String name) {
         super(name);
     }
 
-    // TODO: Stub
-    public void testUpdate() throws Exception {
+    public void testUpdateNoServices() throws Exception {
         ApplicationApi api = getApi().getApplicationApi();
 
-        Application a = new Application();
-        a.setName("A new app");
-        a.setLocation("Tahiti");
-        a.setDescription("A test app created using the API");
-        a.setEngContact("the Engineer");
-        a.setBizContact("the Businessman");
-        a.setOpsContact("the Ops Man");
+        Application a = createTestApplication(null, null);
 
-        ApplicationResponse newResponse = api.createApplication(a);
+        a.setName(UPDATE_PREFIX + a.getName());
+        a.setDescription(UPDATE_PREFIX + a.getDescription());
+        a.setLocation(UPDATE_PREFIX + a.getLocation());
+        a.setOpsContact(UPDATE_PREFIX + a.getOpsContact());
+        a.setBizContact(UPDATE_PREFIX + a.getBizContact());
+        a.setEngContact(UPDATE_PREFIX + a.getEngContact());
 
-        Application a2 = newResponse.getApplication();
-        a2.setBizContact("new biz contact");
+        ApplicationResponse updateResponse = api.updateApplication(a);
+        hqAssertSuccess(updateResponse);
 
-        ApplicationResponse response = api.updateApplication(a2);
-        hqAssertSuccess(response);
-        assertEquals("new biz contact", newResponse.getApplication().getBizContact());
+        Application updatedApp = updateResponse.getApplication();
 
-        api.deleteApplication(newResponse.getApplication().getId());
+        assertEquals(a.getName(), updatedApp.getName());
+        assertEquals(a.getDescription(), updatedApp.getDescription());
+        assertEquals(a.getLocation(), updatedApp.getLocation());
+        assertEquals(a.getOpsContact(), updatedApp.getOpsContact());
+        assertEquals(a.getBizContact(), updatedApp.getBizContact());
+        assertEquals(a.getEngContact(), updatedApp.getEngContact());
+
+        StatusResponse deleteResponse = api.deleteApplication(updatedApp.getId());
+        hqAssertSuccess(deleteResponse);
     }
 }
