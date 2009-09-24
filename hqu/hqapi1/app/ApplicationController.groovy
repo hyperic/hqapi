@@ -68,6 +68,22 @@ class ApplicationController extends ApiController {
             return
         }
 
+        // Validate Resources
+        for (xmlResource in xmlApplication['Resource']) {
+            def rid = xmlResource.'@id'?.toInteger()
+            def resource = resourceHelper.findById(rid)
+            if (!resource.isService()) {
+                renderXml() {
+                    ApplicationResponse() {
+                        out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                             "Invalid resource passed to create, " +
+                                             r.name + " is not a service")
+                    }
+                }
+                return
+            }
+        }
+
         def appName = xmlApplication[0].'@name'
         def appLoc = xmlApplication[0].'@location'
         def appDesc = xmlApplication[0].'@description'

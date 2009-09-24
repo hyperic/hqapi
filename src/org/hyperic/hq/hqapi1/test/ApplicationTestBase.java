@@ -32,6 +32,23 @@ public abstract class ApplicationTestBase extends HQApiTestBase {
         super(name);
     }
 
+    protected Application generateTestApplication()
+        throws Exception {
+
+        Random r = new Random();
+        Application a = new Application();
+
+        String name = APP_NAME + r.nextInt();
+        a.setName(name);
+        a.setLocation(APP_LOCATION);
+        a.setDescription(APP_DESC);
+        a.setEngContact(APP_ENG_CONTACT);
+        a.setBizContact(APP_BIZ_CONTACT);
+        a.setOpsContact(APP_OPS_CONTACT);
+
+        return a;
+    }
+
     /**
      * Create an Application with no groups or services associated.
      *
@@ -47,15 +64,7 @@ public abstract class ApplicationTestBase extends HQApiTestBase {
         ApplicationApi api = getApi().getApplicationApi();
 
         Random r = new Random();
-        Application a = new Application();
-
-        String name = APP_NAME + r.nextInt();
-        a.setName(name);
-        a.setLocation(APP_LOCATION);
-        a.setDescription(APP_DESC);
-        a.setEngContact(APP_ENG_CONTACT);
-        a.setBizContact(APP_BIZ_CONTACT);
-        a.setOpsContact(APP_OPS_CONTACT);
+        Application a = generateTestApplication();
 
         if (services != null) {
             a.getResource().addAll(services);
@@ -67,7 +76,7 @@ public abstract class ApplicationTestBase extends HQApiTestBase {
         Application createdApp = response.getApplication();
 
         assertNotNull("Application id was null!", createdApp.getId());
-        assertEquals(createdApp.getName(), name);
+        assertEquals(createdApp.getName(), a.getName());
         assertEquals(createdApp.getLocation(), APP_LOCATION);
         assertEquals(createdApp.getDescription(), APP_DESC);
         assertEquals(createdApp.getEngContact(), APP_ENG_CONTACT);
