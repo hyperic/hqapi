@@ -42,4 +42,27 @@ public class ApplicationCreate_test extends ApplicationTestBase {
         StatusResponse deleteResponse = appApi.deleteApplication(a.getId());
         hqAssertSuccess(deleteResponse);
     }
+
+    public void testApplicationCreateWithServiceGroups() throws Exception {
+        HQApi api = getApi();
+        ApplicationApi appApi = api.getApplicationApi();
+        GroupApi groupApi = api.getGroupApi();
+
+        Group compatibleServiceGroup = createTestCompatibleGroup("CPU");
+        Group compatibleFileMountGroup = createTestCompatibleGroup("FileServer Mount");
+
+        List<Group> serviceGroups = new ArrayList<Group>();
+        serviceGroups.add(compatibleServiceGroup);
+        serviceGroups.add(compatibleFileMountGroup);
+
+        Application a = createTestApplication(null, serviceGroups);
+
+        for (Group g : serviceGroups) {
+            StatusResponse deleteResponse = groupApi.deleteGroup(g.getId());
+            hqAssertSuccess(deleteResponse);
+        }
+
+        StatusResponse deleteResponse = appApi.deleteApplication(a.getId());
+        hqAssertSuccess(deleteResponse);
+    }
 }

@@ -275,41 +275,14 @@ class ApplicationController extends ApiController {
     }
 
     private updateAppGroups(app, groups) {
-        def groupIds = new ArrayList()
+        def grpList = new ArrayList()
         groups.each { grp ->
             def gid = grp.'@id'?.toInteger()
-            groupIds.add(gid)
+            def groupAeid = AppdefEntityID.newGroupID(gid)
+            grpList.add(groupAeid)
         }
 
-        def appRes = resMan.findResourceById(app.resource.id)
-
-        // find groups containing the application
-        def allPi = PageInfo.create(PageControl.PAGE_ALL, ResourceGroupSortField.NAME)
-        def containing = groupMan.findGroupsContaining(user, appRes, [], allPi)
-        def removeList = new ArrayList()
-        containing.each { contain -> 
-            if (groupIds.contains(contain.id)) {
-                // remove from list of ids since it is already part of the group
-                def ix = groupIds.indexOf(contain.id)
-                if (ix >=0) {
-                    groupIds.remove(ix)
-                }
-            }
-            else {
-                removeList.add(contain)
-            }
-        }
-
-        // remove the application from old groups
-        removeList.each { group ->
-            groupMan.removeResources(user, group, [appRes])
-        }
-
-        // add app to new groups that don't already contain the app
-        groupIds.each { id ->
-            def group = groupMan.findResourceGroupById(id)
-            groupMan.addResource(user, group, appRes)
-        }
+        appMan.setApplicationServices(user, app.id, grpList)
     }
 
     private getApplication(id) {
