@@ -16,7 +16,8 @@ public class HQApi {
     private final ResourceApi        _resourceApi;
     private final AgentApi           _agentApi;
     private final AlertDefinitionApi _alertDefinitionApi;
-    
+    private final ApplicationApi     _applApi;
+
     /**
      * @param host The hostname of the HQ Server to connect to.
      * @param port The port on the HQ server to connect to.
@@ -37,6 +38,7 @@ public class HQApi {
         _resourceApi      = new ResourceApi(connection);
         _agentApi         = new AgentApi(connection);
         _alertDefinitionApi = new AlertDefinitionApi(connection);
+        _applApi          = new ApplicationApi(connection);
     }
 
     /**
@@ -118,5 +120,14 @@ public class HQApi {
      */
     public AlertDefinitionApi getAlertDefinitionApi() {
         return _alertDefinitionApi;
+    }
+
+    /**
+     * List, create and update Applications.
+     *
+     * @return The API for operating on Applications.
+     */
+    public ApplicationApi getApplicationApi() {
+        return _applApi;
     }
 }
