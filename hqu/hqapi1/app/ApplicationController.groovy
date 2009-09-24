@@ -98,15 +98,12 @@ class ApplicationController extends ApiController {
         applicationValue.opsContact = appOps
         applicationValue.businessContact = appBiz
 
-        Application newApp = null;
+        def newApp;
 
         try {
             applicationValue.applicationType = appMan.findApplicationType(1)
-            newApp = appMan.createApplication( user, applicationValue, new ArrayList()) 
-            //def sessionId = SessionManager.instance.put(user)
-            //def newAppValue = aBoss.createApplication( sessionId, applicationValue, new ArrayList(), new ConfigResponse())
-            //newApp = appMan.findApplicationById(user, newAppValue.id)
-            // had to initialize appServices to avoid NPE
+            newApp = appMan.createApplication( user, applicationValue, new ArrayList())
+            // Initialize appServices to avoid NPE
             newApp.appServices = new ArrayList() 
         } catch (Exception e) {
             renderXml() {
@@ -118,14 +115,9 @@ class ApplicationController extends ApiController {
             return
         }
 
-        def resource = xmlApplication['Resource']
-        if (resource) {
-            updateAppServices(newApp, resource)
-        }
-        def group = xmlApplication['Group']
-        if (group) {
-            updateAppGroups(newApp, group)
-        }
+        def resources = xmlApplication['Resource']
+        def groups = xmlApplication['Group']
+        updateAppServices(newApp, resources, groups)
 
         renderXml() {
             ApplicationResponse() {
@@ -165,11 +157,11 @@ class ApplicationController extends ApiController {
         def appOps = xmlApplication[0].'@opsContact'
         def appBiz = xmlApplication[0].'@bizContact'
 
-        def updateApp = null
+        def updateApp
         try {
             updateApp = appMan.findApplicationById(user, appId)
         } catch (Exception e) {
-            log.error("ERROR: " + e)
+            log.error("Error finding application" + e)
             renderXml() {
                 ApplicationResponse() {
                     out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
@@ -179,7 +171,6 @@ class ApplicationController extends ApiController {
         }
     
         def applicationValue = updateApp.getApplicationValue()
-
         applicationValue.name = appName
         applicationValue.location = appLoc
         applicationValue.description = appDesc
@@ -187,10 +178,8 @@ class ApplicationController extends ApiController {
         applicationValue.opsContact = appOps
         applicationValue.businessContact = appBiz
 
-        def retAppValue = null;
-
         try {
-            retAppValue = appMan.updateApplication(user, applicationValue) 
+            appMan.updateApplication(user, applicationValue)
         } catch (Exception e) {
             renderXml() {
                 log.error("Error updating application", e)
@@ -201,19 +190,15 @@ class ApplicationController extends ApiController {
             return
         }
 
-        def resource = xmlApplication['Resource']
-        if (resource) {
-            updateAppServices(updateApp, resource)
-        }
-        def group = xmlApplication['Group']
-        if (group) {
-            updateAppGroups(updateApp, group)
-        }
+        def resources = xmlApplication['Resource']
+        def groups = xmlApplication['Group']
+        updateAppServices(updateApp, resources, groups)
 
         renderXml() {
             ApplicationResponse() {
                 out << getSuccessXML()
-                out << getApplicationXML(retAppValue)
+                // Must relookup the app to get updated services
+                out << getApplicationXML(applicationValue)
             }
         }
     }
@@ -261,35 +246,40 @@ class ApplicationController extends ApiController {
         }
     }
 
-    private updateAppServices(app, resources) {
-        def svcList = new ArrayList()
-        resources.each { res ->
-            def rid = res.'@id'?.toInteger()
-            def sid = resMan.findResourceById(rid)?.instanceId
-            def svcAeid = AppdefEntityID.newServiceID(sid)
-            svcList.add(svcAeid)
+    private updateAppServices(app, resources, groups) {
+        def svcList = []
+
+        if (resources) {
+            resources.each { res ->
+                def rid = res.'@id'?.toInteger()
+                def sid = resMan.findResourceById(rid)?.instanceId
+                def svcAeid = AppdefEntityID.newServiceID(sid)
+                svcList.add(svcAeid)
+            }
         }
-        
+
+        if (groups) {
+            groups.each { grp ->
+                def gid = grp.'@id'?.toInteger()
+                def groupAeid = AppdefEntityID.newGroupID(gid)
+                svcList.add(groupAeid)
+            }
+        }
+
+        log.info("Updating " + app.name + " to have " + svcList.size() + " app services!")
+
         appMan.setApplicationServices(user, app.id, svcList)
-              
-    }
 
-    private updateAppGroups(app, groups) {
-        def grpList = new ArrayList()
-        groups.each { grp ->
-            def gid = grp.'@id'?.toInteger()
-            def groupAeid = AppdefEntityID.newGroupID(gid)
-            grpList.add(groupAeid)
-        }
-
-        appMan.setApplicationServices(user, app.id, grpList)
+        // Setting the application services does not remove any app services
+        // that may have been removed from the application.  We must look up
+        // the tree and remove one-by-one.
+        // TODO: Fix me
     }
 
     private getApplication(id) {
         try {
             return appMan.findApplicationById(user, id)
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return null
         }
     }

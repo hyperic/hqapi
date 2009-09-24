@@ -1,9 +1,18 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.ApplicationApi;
+import org.hyperic.hq.hqapi1.HQApi;
+import org.hyperic.hq.hqapi1.ResourceApi;
+import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.types.ApplicationResponse;
 import org.hyperic.hq.hqapi1.types.Application;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.Group;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ApplicationUpdate_test extends ApplicationTestBase {
 
@@ -38,6 +47,121 @@ public class ApplicationUpdate_test extends ApplicationTestBase {
         assertEquals(a.getEngContact(), updatedApp.getEngContact());
 
         StatusResponse deleteResponse = api.deleteApplication(updatedApp.getId());
+        hqAssertSuccess(deleteResponse);
+    }
+
+    public void testUpdateAddServices() throws Exception {
+        HQApi api = getApi();
+        ResourceApi rApi = api.getResourceApi();
+        ApplicationApi appApi = api.getApplicationApi();
+
+        ResourcePrototypeResponse protoResponse =
+                rApi.getResourcePrototype("CPU");
+        hqAssertSuccess(protoResponse);
+
+        ResourcesResponse cpusResponse =
+                rApi.getResources(protoResponse.getResourcePrototype(),
+                                  false, false);
+        hqAssertSuccess(cpusResponse);
+
+        Application a = createTestApplication(null, null);
+
+        a.getResource().addAll(cpusResponse.getResource());
+
+        ApplicationResponse updateResponse = appApi.updateApplication(a);
+        hqAssertSuccess(updateResponse);
+
+        Application updatedApplication = updateResponse.getApplication();
+
+        assertEquals(cpusResponse.getResource().size(),
+                     updatedApplication.getResource().size());
+
+        StatusResponse deleteResponse =
+                appApi.deleteApplication(updatedApplication.getId());
+        hqAssertSuccess(deleteResponse);
+    }
+
+    public void testUpdateRemoveServices() throws Exception {
+        HQApi api = getApi();
+        ResourceApi rApi = api.getResourceApi();
+        ApplicationApi appApi = api.getApplicationApi();
+
+        ResourcePrototypeResponse protoResponse =
+                rApi.getResourcePrototype("CPU");
+        hqAssertSuccess(protoResponse);
+
+        ResourcesResponse cpusResponse =
+                rApi.getResources(protoResponse.getResourcePrototype(),
+                                  false, false);
+        hqAssertSuccess(cpusResponse);
+
+        Application a = createTestApplication(cpusResponse.getResource(), null);
+
+        a.getResource().clear();
+
+        ApplicationResponse updateResponse = appApi.updateApplication(a);
+        hqAssertSuccess(updateResponse);
+
+        Application updatedApplication = updateResponse.getApplication();
+
+        assertEquals(0, updatedApplication.getResource().size());
+
+        StatusResponse deleteResponse =
+                appApi.deleteApplication(updatedApplication.getId());
+        hqAssertSuccess(deleteResponse);
+    }
+
+    public void testUpdateAddGroups() throws Exception {
+        HQApi api = getApi();
+        GroupApi gApi = api.getGroupApi();
+        ApplicationApi appApi = api.getApplicationApi();
+
+        Application a = createTestApplication(null, null);
+
+        Group g = createTestCompatibleGroup("CPU");
+        List<Group> groups = new ArrayList<Group>();
+        groups.add(g);
+
+        a.getGroup().addAll(groups);
+
+        ApplicationResponse updateResponse = appApi.updateApplication(a);
+        hqAssertSuccess(updateResponse);
+
+        Application updatedApplication = updateResponse.getApplication();
+
+        assertEquals(groups.size(), updatedApplication.getGroup().size());
+
+        StatusResponse deleteResponse = gApi.deleteGroup(g.getId());
+        hqAssertSuccess(deleteResponse);
+
+        deleteResponse = appApi.deleteApplication(updatedApplication.getId());
+        hqAssertSuccess(deleteResponse);
+    }
+
+    public void testUpdateRemoveGroups() throws Exception {
+        HQApi api = getApi();
+        GroupApi gApi = api.getGroupApi();
+        ApplicationApi appApi = api.getApplicationApi();
+
+        Group g = createTestCompatibleGroup("CPU");
+        List<Group> groups = new ArrayList<Group>();
+        groups.add(g);
+
+        Application a = createTestApplication(null, groups);
+
+        a.getGroup().clear();
+
+        ApplicationResponse updateResponse = appApi.updateApplication(a);
+        hqAssertSuccess(updateResponse);
+
+        Application updatedApplication = updateResponse.getApplication();
+
+        assertEquals(0, updatedApplication.getGroup().size());
+
+        StatusResponse deleteResponse = gApi.deleteGroup(g.getId());
+        hqAssertSuccess(deleteResponse);
+
+        deleteResponse = appApi.deleteApplication(updatedApplication.getId());
         hqAssertSuccess(deleteResponse);
     }
 }
