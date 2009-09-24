@@ -87,10 +87,19 @@ public class MetricDataGetLastMulti_test extends MetricDataTestBase {
 
         LastMetricsDataResponse dataResponse = dataApi.getData(disabledMetrics);
         hqAssertSuccess(dataResponse);
+        
+        // disabled metrics could have data if it was previously enabled
+        int lastMetricNoDataCount = 0;
+        
         // TODO: What is the correct behavior of the API if the last data point
         //       could not be found? Return an error for simply null?
         for (LastMetricData d : dataResponse.getLastMetricData()) {
-            assertNull("Metric datapoint not null", d.getDataPoint());
+            if (d.getDataPoint() == null) {
+                lastMetricNoDataCount++;
+            }
         }
+        
+        assertTrue("No disabled metrics with no data could be found",
+                    lastMetricNoDataCount > 0);
     }
 }
