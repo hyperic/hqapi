@@ -113,6 +113,7 @@ class ApplicationController extends ApiController {
                     out << getFailureXML(ErrorCode.OBJECT_EXISTS)
                 }
             }
+            return
         } catch (Exception e) {
             renderXml() {
                 log.error("Error creating application", e)
@@ -204,6 +205,15 @@ class ApplicationController extends ApiController {
 
         try {
             appMan.updateApplication(user, applicationValue)
+        } catch (AppdefDuplicateNameException e) {
+            renderXml() {
+                ApplicationResponse() {
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         "There is already an application named " +
+                                         appName)
+                }
+            }
+            return
         } catch (Exception e) {
             renderXml() {
                 log.error("Error updating application", e)

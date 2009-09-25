@@ -165,4 +165,23 @@ public class ApplicationUpdate_test extends ApplicationTestBase {
         ApplicationResponse response = appApi.updateApplication(a);
         hqAssertFailureInvalidParameters(response);
     }
+
+    public void testUpdateExistingApplicationName() throws Exception {
+        ApplicationApi appApi = getApi().getApplicationApi();
+
+        Application app1 = createTestApplication(null);
+        Application app2 = createTestApplication(null);
+
+        // Try to rename app2 to app1
+        app2.setName(app1.getName());
+
+        ApplicationResponse response = appApi.updateApplication(app2);
+        hqAssertFailureInvalidParameters(response);
+
+        StatusResponse deleteResponse = appApi.deleteApplication(app1.getId());
+        hqAssertSuccess(deleteResponse);
+
+        deleteResponse = appApi.deleteApplication(app2.getId());
+        hqAssertSuccess(deleteResponse);
+    }
 }
