@@ -3,14 +3,7 @@ package org.hyperic.hq.hqapi1.test;
 import org.hyperic.hq.hqapi1.types.Application;
 import org.hyperic.hq.hqapi1.types.ApplicationResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
-import org.hyperic.hq.hqapi1.types.Group;
-import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
-import org.hyperic.hq.hqapi1.types.ResourcesResponse;
-import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.ApplicationApi;
-import org.hyperic.hq.hqapi1.HQApi;
-import org.hyperic.hq.hqapi1.GroupApi;
-import org.hyperic.hq.hqapi1.ResourceApi;
 
 import java.util.Random;
 import java.util.List;
@@ -88,45 +81,5 @@ public abstract class ApplicationTestBase extends HQApiTestBase {
         }
 
         return response.getApplication();
-    }
-
-    /**
-     * Create a compabile group of the given prototype that includes all
-     * resources of that type in the inventory.
-     *
-     * @param prototype The type of compatible group to create.
-     * @return The created Group
-     * @throws Exception If an error occurs creating the group
-     */
-    protected Group createTestCompatibleGroup(String prototype) throws Exception {
-        HQApi api = getApi();
-        GroupApi groupApi = api.getGroupApi();
-        ResourceApi rApi = api.getResourceApi();
-
-        ResourcePrototypeResponse protoResponse =
-                rApi.getResourcePrototype(prototype);
-        hqAssertSuccess(protoResponse);
-
-        ResourcesResponse resourcesResponse =
-                rApi.getResources(protoResponse.getResourcePrototype(),
-                                  false, false);
-        hqAssertSuccess(resourcesResponse);
-
-        assertTrue("No resources of type " + prototype + " found!",
-                   resourcesResponse.getResource().size() > 0);
-
-        Group g = new Group();
-        Random r = new Random();
-
-        g.setName(GROUP_NAME + r.nextInt());
-        g.setDescription(GROUP_DESCRIPTION);
-        g.setLocation(GROUP_LOCATION);
-        g.setResourcePrototype(protoResponse.getResourcePrototype());
-        g.getResource().addAll(resourcesResponse.getResource());
-
-        GroupResponse groupResponse = groupApi.createGroup(g);
-        hqAssertSuccess(groupResponse);
-
-        return groupResponse.getGroup();
     }
 }
