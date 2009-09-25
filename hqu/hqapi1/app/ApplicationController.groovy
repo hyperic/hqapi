@@ -9,6 +9,7 @@ import org.hyperic.hq.appdef.shared.ApplicationValue
 import org.hyperic.hq.appdef.shared.ServiceValue
 import org.hyperic.dao.DAOFactory
 import org.hyperic.hq.appdef.server.session.AppServiceDAO
+import org.hyperic.hq.appdef.shared.AppdefDuplicateNameException;
 
 class ApplicationController extends ApiController {
 
@@ -105,7 +106,13 @@ class ApplicationController extends ApiController {
             applicationValue.applicationType = appMan.findApplicationType(1)
             newApp = appMan.createApplication( user, applicationValue, new ArrayList())
             // Initialize appServices to avoid NPE
-            newApp.appServices = new ArrayList() 
+            newApp.appServices = new ArrayList()
+        } catch (AppdefDuplicateNameException e) {
+            renderXml() {
+                ApplicationResponse() {
+                    out << getFailureXML(ErrorCode.OBJECT_EXISTS)
+                }
+            }
         } catch (Exception e) {
             renderXml() {
                 log.error("Error creating application", e)
