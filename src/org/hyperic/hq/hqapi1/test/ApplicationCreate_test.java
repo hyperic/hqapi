@@ -75,4 +75,23 @@ public class ApplicationCreate_test extends ApplicationTestBase {
         ApplicationResponse response = appApi.createApplication(a);
         hqAssertFailureInvalidParameters(response); // Invalid - cannot have servers
     }
+
+    public void testApplicationCreateDuplicateName() throws Exception {
+
+        HQApi api = getApi();
+        ApplicationApi appApi = api.getApplicationApi();
+
+        Application a = generateTestApplication();
+
+        ApplicationResponse createResponse = appApi.createApplication(a);
+        hqAssertSuccess(createResponse);
+
+        // Attempt to create it again
+        ApplicationResponse dupResponse = appApi.createApplication(a);
+        hqAssertFailureObjectExists(dupResponse);
+
+        StatusResponse deleteResponse =
+                appApi.deleteApplication(createResponse.getApplication().getId());
+        hqAssertSuccess(deleteResponse);
+    }
 }
