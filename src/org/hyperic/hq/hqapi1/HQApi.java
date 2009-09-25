@@ -45,7 +45,8 @@ public class HQApi {
     private final AlertDefinitionApi _alertDefinitionApi;
     private final MaintenanceApi     _maintenanceApi;
     private final ResourceEdgeApi    _resourceEdgeApi;
-    
+    private final ApplicationApi     _applApi;
+
     /**
      * @param host The hostname of the HQ Server to connect to.
      * @param port The port on the HQ server to connect to.
@@ -68,6 +69,7 @@ public class HQApi {
         _alertDefinitionApi = new AlertDefinitionApi(connection);
         _maintenanceApi   = new MaintenanceApi(connection);
         _resourceEdgeApi  = new ResourceEdgeApi(connection);
+        _applApi          = new ApplicationApi(connection);
     }
 
     /**
@@ -151,7 +153,6 @@ public class HQApi {
         return _alertDefinitionApi;
     }
 
-
     /**
      * Schedule maintenance for groups in HQ.
      *
@@ -168,5 +169,14 @@ public class HQApi {
      */
     public ResourceEdgeApi getResourceEdgeApi() {
         return _resourceEdgeApi;
+    }
+
+    /**
+     * List, create and update Applications.
+     *
+     * @return The API for operating on Applications.
+     */
+    public ApplicationApi getApplicationApi() {
+        return _applApi;
     }
 }
