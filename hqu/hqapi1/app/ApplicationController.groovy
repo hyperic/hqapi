@@ -78,7 +78,7 @@ class ApplicationController extends ApiController {
                     ApplicationResponse() {
                         out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                              "Invalid resource passed to create, " +
-                                             r.name + " is not a service")
+                                             resource.name + " is not a service")
                     }
                 }
                 return
@@ -168,7 +168,7 @@ class ApplicationController extends ApiController {
                     ApplicationResponse() {
                         out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                              "Invalid resource passed to create, " +
-                                             r.name + " is not a service")
+                                             resource.name + " is not a service")
                     }
                 }
                 return
