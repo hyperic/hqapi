@@ -50,7 +50,8 @@ public class HQApi {
     private final MetricDataApi      _metricDataApi;
     private final EventApi           _eventApi;
     private final ControlApi         _controlApi;
-    
+    private final ApplicationApi     _applApi;
+
     /**
      * @param host The hostname of the HQ Server to connect to.
      * @param port The port on the HQ server to connect to.
@@ -78,6 +79,7 @@ public class HQApi {
         _metricDataApi    = new MetricDataApi(connection);
         _eventApi         = new EventApi(connection);
         _controlApi       = new ControlApi(connection);
+        _applApi          = new ApplicationApi(connection);
     }
 
     /**
@@ -171,7 +173,6 @@ public class HQApi {
         return _alertDefinitionApi;
     }
 
-
     /**
      * Schedule maintenance for groups in HQ.
      *
@@ -191,6 +192,7 @@ public class HQApi {
     }
 
     /**
+<<<<<<< HEAD
      * Manipulate HQ server configuration settings
      *
      * @return The API for modifying HQ server settings
@@ -224,5 +226,14 @@ public class HQApi {
      */
     public ControlApi getControlApi() {
         return _controlApi;
+    }
+
+    /*
+     * List, create and update Applications.
+     *
+     * @return The API for operating on Applications.
+     */
+    public ApplicationApi getApplicationApi() {
+        return _applApi;
     }
 }

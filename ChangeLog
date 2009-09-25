@@ -42,6 +42,8 @@ Changes in HQApi 3.0
 
 Changes in HQApi 2.3
 
+ *) [HQ-3076] Add ApplicationApi.
+
  *) [HHQ-3422] Add support for ScriptAction AlertActions in the
     AlertDefinition API.
 
