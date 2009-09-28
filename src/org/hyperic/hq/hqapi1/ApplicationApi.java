@@ -99,10 +99,11 @@ public class ApplicationApi extends BaseApi {
     /**
      * Sync a list of {@link org.hyperic.hq.hqapi1.types.Application}s.
      *
-     * @param applications The list of applications to sync.
+     * @param applications The list of Applications to sync.
      *
-     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if
-     * all the applications were successfully syced.
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the synced list of Application's are returned via
+     * {@link org.hyperic.hq.hqapi1.types.ApplicationsResponse#getApplication()}.
      *
      * @throws IOException If a network error occurs while making the request.
      */

@@ -79,22 +79,16 @@ class ApplicationController extends ApiController {
      * the cause.
      */
     private createApplication(xmlApplication) {
-
-        if (!xmlApplication || xmlApplication.size() != 1) {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
-            return null
-        }
-
         if (!validateApplicationServices(xmlApplication)) {
             return null
         }
 
-        def appName = xmlApplication[0].'@name'
-        def appLoc  = xmlApplication[0].'@location'
-        def appDesc = xmlApplication[0].'@description'
-        def appEng  = xmlApplication[0].'@engContact'
-        def appOps  = xmlApplication[0].'@opsContact'
-        def appBiz  = xmlApplication[0].'@bizContact'
+        def appName = xmlApplication.'@name'
+        def appLoc  = xmlApplication.'@location'
+        def appDesc = xmlApplication.'@description'
+        def appEng  = xmlApplication.'@engContact'
+        def appOps  = xmlApplication.'@opsContact'
+        def appBiz  = xmlApplication.'@bizContact'
 
         def applicationValue = new ApplicationValue()
         applicationValue.name            = appName
@@ -104,8 +98,7 @@ class ApplicationController extends ApiController {
         applicationValue.opsContact      = appOps
         applicationValue.businessContact = appBiz
 
-        def newApp = null
-
+        def newApp
         try {
             applicationValue.applicationType = appMan.findApplicationType(1)
             newApp = appMan.createApplication(user, applicationValue, new ArrayList())
@@ -132,7 +125,13 @@ class ApplicationController extends ApiController {
         def createRequest = new XmlParser().parseText(getUpload('postdata'))
         def xmlApplication = createRequest['Application']
 
-        def newApp = createApplication(xmlApplication)
+        def newApp
+        if (!xmlApplication || xmlApplication.size() != 1) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Wrong number of Applications")
+        } else {
+            newApp = createApplication(xmlApplication[0])
+        }
 
         renderXml() {
             ApplicationResponse() {
@@ -154,12 +153,7 @@ class ApplicationController extends ApiController {
      * the cause.
      */
     private updateApplication(xmlApplication) {
-        if (!xmlApplication || xmlApplication.size() != 1) {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
-            return null
-        }
-
-        def appId = xmlApplication[0].'@id'?.toInteger()
+        def appId = xmlApplication.'@id'?.toInteger()
         if (!appId) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                        "No application id found")
@@ -170,14 +164,14 @@ class ApplicationController extends ApiController {
             return null
         }
 
-        def appName = xmlApplication[0].'@name'
-        def appLoc  = xmlApplication[0].'@location'
-        def appDesc = xmlApplication[0].'@description'
-        def appEng  = xmlApplication[0].'@engContact'
-        def appOps  = xmlApplication[0].'@opsContact'
-        def appBiz  = xmlApplication[0].'@bizContact'
+        def appName = xmlApplication.'@name'
+        def appLoc  = xmlApplication.'@location'
+        def appDesc = xmlApplication.'@description'
+        def appEng  = xmlApplication.'@engContact'
+        def appOps  = xmlApplication.'@opsContact'
+        def appBiz  = xmlApplication.'@bizContact'
 
-        def updateApp = null
+        def updateApp
         try {
             updateApp = appMan.findApplicationById(user, appId)
         } catch (Exception e) {
@@ -189,11 +183,11 @@ class ApplicationController extends ApiController {
         }
 
         def applicationValue = updateApp.getApplicationValue()
-        applicationValue.name = appName
-        applicationValue.location = appLoc
-        applicationValue.description = appDesc
-        applicationValue.engContact = appEng
-        applicationValue.opsContact = appOps
+        applicationValue.name            = appName
+        applicationValue.location        = appLoc
+        applicationValue.description     = appDesc
+        applicationValue.engContact      = appEng
+        applicationValue.opsContact      = appOps
         applicationValue.businessContact = appBiz
 
         try {
@@ -218,7 +212,13 @@ class ApplicationController extends ApiController {
         def updateRequest = new XmlParser().parseText(getUpload('postdata'))
         def xmlApplication = updateRequest['Application']
 
-        def updatedApp = updateApplication(xmlApplication)
+        def updatedApp
+        if (!xmlApplication || xmlApplication.size() != 1) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Wrong number of Applications")
+        } else {
+            updatedApp = updateApplication(xmlApplication[0])
+        }
 
         renderXml() {
             ApplicationResponse() {
@@ -236,37 +236,30 @@ class ApplicationController extends ApiController {
         def syncRequest = new XmlParser().parseText(getUpload('postdata'))
 
         def applications = []
-
-        def xmlApplications = syncRequest['Application']
-
-        if (!xmlApplications || xmlApplications.size() < 1) {
-            renderXml() {
-                ApplicationResponse() {
-                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
-                }
-            }
-            return
-        }
-
-        xmlApplications.each { xmlApp ->
-            // TODO: This needs some work
-            def appId = xmlApp.'@id'?.toInteger()
+        for (xmlApplication in syncRequest['Application']) {
+            def appId = xmlApplication.'@id'?.toInteger()
             if (!appId) {
-              print "CREATING: " + xmlApp.'@name'
+                applications << createApplication(xmlApplication)
+            } else {
+                applications << updateApplication(xmlApplication)
             }
-            else {
-              print "UPDATING: " + appId + " " + xmlApp.'@name'
+
+            if (failureXml) {
+                // Break out early on errors.
+                break
             }
         }
 
-        // TODO: This needs some work
         renderXml() {
-            ApplicationResponse() {
-                out << getSuccessXML()
-                out << Application(
-                    applications.each { app ->
-                        getApplicationXML(app)
-                    })
+            ApplicationsResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    for (app in applications) {
+                        out << getApplicationXML(app)
+                    }
+                }
             }
         }
     }

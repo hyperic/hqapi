@@ -10,6 +10,8 @@ import java.util.List;
 
 public abstract class ApplicationTestBase extends HQApiTestBase {
 
+    static final String UPDATE_PREFIX = "UPDATED-";
+
     protected static final String APP_NAME = "Test Application";
     protected static final String APP_LOCATION = "SFO";
     protected static final String APP_DESC = "Test Application Description";
@@ -55,8 +57,6 @@ public abstract class ApplicationTestBase extends HQApiTestBase {
             throws Exception
     {
         ApplicationApi api = getApi().getApplicationApi();
-
-        Random r = new Random();
         Application a = generateTestApplication();
 
         if (services != null) {

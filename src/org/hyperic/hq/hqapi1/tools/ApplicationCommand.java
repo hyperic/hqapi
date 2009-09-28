@@ -21,13 +21,6 @@ public class ApplicationCommand extends Command {
 
     private static String OPT_ID     = "id";
 
-    // Additional sync commands when syncing via command line options.
-    private static String OPT_NAME          = "name";
-//    private static String OPT_PROTOTYPE     = "prototype";
-//    private static String OPT_REGEX         = "regex";
-//    private static String OPT_DELETEMISSING = "deleteMissing";
-//    private static String OPT_DESC          = "description";
-
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
     }
@@ -70,48 +63,20 @@ public class ApplicationCommand extends Command {
 
         OptionParser p = getOptionParser();
 
-        p.accepts(OPT_NAME, "The application name to sync").
-                withRequiredArg().ofType(String.class);
-//        p.accepts(OPT_PROTOTYPE, "The resource type to query for group membership").
-//                withRequiredArg().ofType(String.class);
-//        p.accepts(OPT_REGEX, "The regular expression to apply to the " + OPT_PROTOTYPE +
-//                  " flag").withRequiredArg().ofType(String.class);
-//        p.accepts(OPT_DELETEMISSING, "Remove resources in the group not included in " +
-//                  "the " + OPT_PROTOTYPE + " and " + OPT_REGEX);
-//        p.accepts(OPT_COMPAT, "If specified, attempt to make the group compatible");
-//        p.accepts(OPT_DESC, "If specified, set the description for the group").
-//                withRequiredArg().ofType(String.class);
-
         OptionSet options = getOptions(p, args);
 
-        if (options.hasArgument(OPT_NAME)) {
-            syncViaCommandLineArgs(options);
-            return;
-        }
-
-        HQApi api = getApi(options);
-        System.out.println("api: " + api);
-
-        ApplicationApi applicationApi = api.getApplicationApi();
-        System.out.println("applicationApi: " + applicationApi);
+        ApplicationApi applicationApi = getApi(options).getApplicationApi();
 
         InputStream is = getInputStream(options);
-        System.out.println("is: " + is);
 
         ApplicationsResponse resp = XmlUtil.deserialize(ApplicationsResponse.class, is);
-        System.out.println("resp: " + resp);
+
         List<Application> applications = resp.getApplication();
-        System.out.println("->" + applications);
 
         ApplicationsResponse syncResponse = applicationApi.syncApplications(applications);
         checkSuccess(syncResponse);
 
         System.out.println("Successfully synced " + applications.size() + " applications.");
-    }
-
-    private void syncViaCommandLineArgs(OptionSet s) throws Exception
-    {
-        System.out.println("Feature not implemented.");
     }
 
     private void delete(String[] args) throws Exception {
