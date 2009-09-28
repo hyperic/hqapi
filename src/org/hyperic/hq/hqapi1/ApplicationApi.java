@@ -1,14 +1,11 @@
 package org.hyperic.hq.hqapi1;
 
-import org.hyperic.hq.hqapi1.types.ApplicationsResponse;
-import org.hyperic.hq.hqapi1.types.ApplicationResponse;
-import org.hyperic.hq.hqapi1.types.ApplicationRequest;
-import org.hyperic.hq.hqapi1.types.Application;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.*;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * The Hyperic HQ Application API.
@@ -97,5 +94,24 @@ public class ApplicationApi extends BaseApi {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id)});
         return doGet("application/delete.hqu", params, StatusResponse.class);
+    }
+
+    /**
+     * Sync a list of {@link org.hyperic.hq.hqapi1.types.Application}s.
+     *
+     * @param applications The list of Applications to sync.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the synced list of Application's are returned via
+     * {@link org.hyperic.hq.hqapi1.types.ApplicationsResponse#getApplication()}.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public ApplicationsResponse syncApplications(List<Application> applications)
+            throws IOException {
+
+        ApplicationsRequest applicationsRequest = new ApplicationsRequest();
+        applicationsRequest.getApplication().addAll(applications);
+        return doPost("application/sync.hqu", applicationsRequest, ApplicationsResponse.class);
     }
 }

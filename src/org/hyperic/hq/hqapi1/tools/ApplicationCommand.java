@@ -8,22 +8,19 @@ import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.types.*;
 
 import java.util.Arrays;
+import java.util.List;
+import java.io.InputStream;
 
 public class ApplicationCommand extends Command {
 
     private static String CMD_LIST   = "list";
+    private static String CMD_SYNC   = "sync";
     private static String CMD_DELETE = "delete";
 
-    private static String[] COMMANDS = { CMD_LIST, CMD_DELETE };
+    private static String[] COMMANDS = { CMD_LIST, CMD_SYNC, CMD_DELETE };
 
     private static String OPT_ID     = "id";
-
-    // Additional sync commands when syncing via command line options.
-//    private static String OPT_NAME          = "name";
-//    private static String OPT_PROTOTYPE     = "prototype";
-//    private static String OPT_REGEX         = "regex";
-//    private static String OPT_DELETEMISSING = "deleteMissing";
-//    private static String OPT_DESC          = "description";
+    private static String OPT_BATCH_SIZE = "batchSize";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -37,6 +34,8 @@ public class ApplicationCommand extends Command {
 
         if (args[0].equals(CMD_LIST)) {
             list(trim(args));
+        } else if (args[0].equals(CMD_SYNC)) {
+            sync(trim(args));
         } else if (args[0].equals(CMD_DELETE)) {
             delete(trim(args));
         } else {
@@ -59,6 +58,46 @@ public class ApplicationCommand extends Command {
         applications = groupApi.listApplications();
 
         XmlUtil.serialize(applications, System.out, Boolean.TRUE);
+    }
+
+    private void sync(String[] args) throws Exception {
+
+        OptionParser p = getOptionParser();
+
+        p.accepts(OPT_BATCH_SIZE, "Process the sync in batches of the given size").
+                withRequiredArg().ofType(Integer.class);
+
+        OptionSet options = getOptions(p, args);
+
+        ApplicationApi api = getApi(options).getApplicationApi();
+
+        InputStream is = getInputStream(options);
+        ApplicationsResponse resp = XmlUtil.deserialize(ApplicationsResponse.class, is);
+        List<Application> applications = resp.getApplication();
+
+        int numSynced = 0;
+        if (options.has(OPT_BATCH_SIZE)) {
+            int batchSize = (Integer)options.valueOf(OPT_BATCH_SIZE);
+            int numBatches = (int)Math.ceil(applications.size()/((double)batchSize));
+
+            for (int i = 0; i < numBatches; i++) {
+                System.out.println("Syncing batch " + (i + 1) + " of " + numBatches);
+                int fromIndex = i * batchSize;
+                int toIndex = (fromIndex + batchSize) > applications.size() ?
+                              applications.size() : (fromIndex + batchSize);
+                ApplicationsResponse syncResponse =
+                        api.syncApplications(applications.subList(fromIndex,
+                                                                  toIndex));
+                checkSuccess(syncResponse);
+                numSynced += (toIndex - fromIndex);
+            }
+        } else {
+            ApplicationsResponse syncResponse = api.syncApplications(applications);
+            checkSuccess(syncResponse);
+            numSynced = applications.size();
+        }
+
+        System.out.println("Successfully synced " + numSynced + " applications.");
     }
 
     private void delete(String[] args) throws Exception {
