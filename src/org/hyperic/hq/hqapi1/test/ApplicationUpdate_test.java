@@ -184,4 +184,107 @@ public class ApplicationUpdate_test extends ApplicationTestBase {
         deleteResponse = appApi.deleteApplication(app2.getId());
         hqAssertSuccess(deleteResponse);
     }
+
+    public void testApplicationUpdateDuplicateServices() throws Exception {
+        HQApi api = getApi();
+        ResourceApi rApi = api.getResourceApi();
+        ApplicationApi appApi = api.getApplicationApi();
+
+        ResourcePrototypeResponse protoResponse =
+                rApi.getResourcePrototype("CPU");
+        hqAssertSuccess(protoResponse);
+
+        ResourcesResponse cpusResponse =
+                rApi.getResources(protoResponse.getResourcePrototype(),
+                                  false, false);
+        hqAssertSuccess(cpusResponse);
+
+        // Create empty application
+        Application a = createTestApplication(null);
+
+        // Add CPU services
+        a.getResource().addAll(cpusResponse.getResource());
+        ApplicationResponse response = appApi.updateApplication(a);
+        hqAssertSuccess(response);
+
+        assertEquals("Wrong number of application services!",
+                     cpusResponse.getResource().size(),
+                     response.getApplication().getResource().size());
+
+        // Add CPUs again
+        a = response.getApplication();
+        a.getResource().addAll(cpusResponse.getResource());
+        response = appApi.updateApplication(a);
+        hqAssertSuccess(response);
+
+        assertEquals("Wrong number of application services!",
+                     cpusResponse.getResource().size(),
+                     response.getApplication().getResource().size());
+
+        StatusResponse deleteResponse = appApi.deleteApplication(a.getId());
+        hqAssertSuccess(deleteResponse);
+    }
+
+    public void testApplicationUpdateDuplicateServicesSingleCall()
+            throws Exception
+    {
+        HQApi api = getApi();
+        ResourceApi rApi = api.getResourceApi();
+        ApplicationApi appApi = api.getApplicationApi();
+
+        ResourcePrototypeResponse protoResponse =
+                rApi.getResourcePrototype("CPU");
+        hqAssertSuccess(protoResponse);
+
+        ResourcesResponse cpusResponse =
+                rApi.getResources(protoResponse.getResourcePrototype(),
+                                  false, false);
+        hqAssertSuccess(cpusResponse);
+
+        // Create empty application
+        Application a = createTestApplication(null);
+
+        // Add duplicate CPU services
+        a.getResource().addAll(cpusResponse.getResource());
+        a.getResource().addAll(cpusResponse.getResource());
+        a.getResource().addAll(cpusResponse.getResource());
+        ApplicationResponse response = appApi.updateApplication(a);
+        hqAssertSuccess(response);
+
+        assertEquals("Wrong number of application services!",
+                     cpusResponse.getResource().size(),
+                     response.getApplication().getResource().size());
+
+        StatusResponse deleteResponse = appApi.deleteApplication(a.getId());
+        hqAssertSuccess(deleteResponse);
+    }
+
+    public void testApplicationUpdateNoop() throws Exception {
+        HQApi api = getApi();
+        ResourceApi rApi = api.getResourceApi();
+        ApplicationApi appApi = api.getApplicationApi();
+
+        ResourcePrototypeResponse protoResponse =
+                rApi.getResourcePrototype("CPU");
+        hqAssertSuccess(protoResponse);
+
+        ResourcesResponse cpusResponse =
+                rApi.getResources(protoResponse.getResourcePrototype(),
+                                  false, false);
+        hqAssertSuccess(cpusResponse);
+
+        // Create Application w/ CPU resources
+        Application a = createTestApplication(cpusResponse.getResource());
+
+        // Issue update with no changes
+        ApplicationResponse response = appApi.updateApplication(a);
+        hqAssertSuccess(response);
+
+        assertEquals("Wrong number of application services!",
+                     cpusResponse.getResource().size(),
+                     response.getApplication().getResource().size());
+
+        StatusResponse deleteResponse = appApi.deleteApplication(a.getId());
+        hqAssertSuccess(deleteResponse);
+    }
 }

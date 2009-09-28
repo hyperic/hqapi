@@ -76,10 +76,6 @@ public abstract class ApplicationTestBase extends HQApiTestBase {
         assertEquals(createdApp.getBizContact(), APP_BIZ_CONTACT);
         assertEquals(createdApp.getOpsContact(), APP_OPS_CONTACT);
 
-        if (services != null) {
-            assertEquals(createdApp.getResource().size(), services.size());
-        }
-
         return response.getApplication();
     }
 }
