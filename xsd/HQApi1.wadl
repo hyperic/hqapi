@@ -1116,6 +1116,87 @@
             </wadl:method>
         </wadl:resource>
 
+        <wadl:resource path="application/list.hqu">
+            <wadl:doc title="HQApi Application list command">
+                List Applications
+            </wadl:doc>
+            <wadl:method name="GET" id="ApplicationList">
+                <wadl:request/>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ApplicationsResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="application/sync.hqu">
+            <wadl:doc title="HQApi Role sync command">
+                Sync Applications
+            </wadl:doc>
+            <wadl:method name="POST" id="ApplicationSync">
+                <wadl:request>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ApplicationsRequest"/>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ApplicationsResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="application/create.hqu">
+            <wadl:doc title="HQApi Application create command">
+                Create an Application
+            </wadl:doc>
+            <wadl:method name="POST" id="ApplicationCreate">
+                <wadl:request>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ApplicationRequest"/>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ApplicationResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="application/update.hqu">
+            <wadl:doc title="HQApi Application update command">
+                Sync Roles
+            </wadl:doc>
+            <wadl:method name="POST" id="ApplicationUpdate">
+                <wadl:request>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ApplicationRequest"/>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ApplicationResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="application/delete.hqu">
+            <wadl:doc title="HQApi Application delete command">
+                Delete an Application
+            </wadl:doc>
+            <wadl:method name="GET" id="ApplicationDelete">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Application to delete.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="StatusResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
     </wadl:resources>
 
 </wadl:application>
