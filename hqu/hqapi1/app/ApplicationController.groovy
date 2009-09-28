@@ -14,8 +14,10 @@ import org.hyperic.hq.appdef.shared.AppdefDuplicateNameException;
 class ApplicationController extends ApiController {
 
     def appMan = AppMan.one
-    def aBoss = ABoss.one
+    def aBoss  = ABoss.one
     def resMan = ResMan.one
+
+    def failureXml = null
 
     private Closure getApplicationXML(a) {
         { doc ->
@@ -40,20 +42,85 @@ class ApplicationController extends ApiController {
     }
 
     def list(params) {
-        def failureXml = null
-
         renderXml() {
             out << ApplicationsResponse() {
-                if (failureXml) {
-                    out << failureXml
-                } else {
-                    out << getSuccessXML()
-                    for (app in appMan.getAllApplications(user, PageControl.PAGE_ALL)) {
-                        out << getApplicationXML(app)
-                    }
+                out << getSuccessXML()
+                for (app in appMan.getAllApplications(user, PageControl.PAGE_ALL)) {
+                    out << getApplicationXML(app)
                 }
             }
         }
+    }
+
+    /**
+     * Validate <Resource> XML within an Application to ensure all passed
+     * resources are service types.
+     * @return true if Resources are valid, false otherwise.
+     */
+    private validateApplicationServices(xmlApplication) {
+        for (xmlResource in xmlApplication['Resource']) {
+            def rid = xmlResource.'@id'?.toInteger()
+            def resource = resourceHelper.findById(rid)
+            if (!resource.isService()) {
+                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                           "Invalid resource passed to create, " +
+                                           resource.name + " is not a service")
+                return false
+            }
+        }
+        return true
+    }
+
+    /**
+     * Create an Application via XML.
+     *
+     * @return the Created application or null if Application creation
+     * failed.  In that case the caller should use failureXml to determine
+     * the cause.
+     */
+    private createApplication(xmlApplication) {
+
+        if (!validateApplicationServices(xmlApplication)) {
+            return null
+        }
+
+        def appName = xmlApplication[0].'@name'
+        def appLoc  = xmlApplication[0].'@location'
+        def appDesc = xmlApplication[0].'@description'
+        def appEng  = xmlApplication[0].'@engContact'
+        def appOps  = xmlApplication[0].'@opsContact'
+        def appBiz  = xmlApplication[0].'@bizContact'
+
+        def applicationValue = new ApplicationValue()
+        applicationValue.name            = appName
+        applicationValue.location        = appLoc
+        applicationValue.description     = appDesc
+        applicationValue.engContact      = appEng
+        applicationValue.opsContact      = appOps
+        applicationValue.businessContact = appBiz
+
+        def newApp = null
+
+        try {
+            applicationValue.applicationType = appMan.findApplicationType(1)
+            newApp = appMan.createApplication(user, applicationValue, new ArrayList())
+            // Initialize appServices to avoid NPE
+            newApp.appServices = new ArrayList()
+        } catch (AppdefDuplicateNameException e) {
+            failureXml =  getFailureXML(ErrorCode.OBJECT_EXISTS,
+                                        "Existing application with name " + appName +
+                                        "already exists.")
+            return null
+        } catch (Exception e) {
+            log.error("Error creating application", e)
+            failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
+                                       "Error creating application: " + e.message)
+            return null
+        }
+
+        def resources = xmlApplication['Resource']
+        updateAppServices(newApp, resources)
+        return newApp
     }
 
     def create(params) {
@@ -69,68 +136,16 @@ class ApplicationController extends ApiController {
             return
         }
 
-        // Validate Resources
-        for (xmlResource in xmlApplication['Resource']) {
-            def rid = xmlResource.'@id'?.toInteger()
-            def resource = resourceHelper.findById(rid)
-            if (!resource.isService()) {
-                renderXml() {
-                    ApplicationResponse() {
-                        out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
-                                             "Invalid resource passed to create, " +
-                                             resource.name + " is not a service")
-                    }
-                }
-                return
-            }
-        }
-
-        def appName = xmlApplication[0].'@name'
-        def appLoc = xmlApplication[0].'@location'
-        def appDesc = xmlApplication[0].'@description'
-        def appEng = xmlApplication[0].'@engContact'
-        def appOps = xmlApplication[0].'@opsContact'
-        def appBiz = xmlApplication[0].'@bizContact'
-
-        def applicationValue = new ApplicationValue()
-        applicationValue.name = appName
-        applicationValue.location = appLoc
-        applicationValue.description = appDesc
-        applicationValue.engContact = appEng
-        applicationValue.opsContact = appOps
-        applicationValue.businessContact = appBiz
-
-        def newApp;
-
-        try {
-            applicationValue.applicationType = appMan.findApplicationType(1)
-            newApp = appMan.createApplication( user, applicationValue, new ArrayList())
-            // Initialize appServices to avoid NPE
-            newApp.appServices = new ArrayList()
-        } catch (AppdefDuplicateNameException e) {
-            renderXml() {
-                ApplicationResponse() {
-                    out << getFailureXML(ErrorCode.OBJECT_EXISTS)
-                }
-            }
-            return
-        } catch (Exception e) {
-            renderXml() {
-                log.error("Error creating application", e)
-                ApplicationResponse() {
-                    out << getFailureXML(ErrorCode.UNEXPECTED_ERROR)
-                }
-            }
-            return
-        }
-
-        def resources = xmlApplication['Resource']
-        updateAppServices(newApp, resources)
+        def newApp = createApplication(xmlApplication)
 
         renderXml() {
             ApplicationResponse() {
-                out << getSuccessXML()
-                out << getApplicationXML(newApp.applicationValue)
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    out << getApplicationXML(newApp.applicationValue)
+                }
             }
         }
     }
@@ -230,7 +245,6 @@ class ApplicationController extends ApiController {
         renderXml() {
             ApplicationResponse() {
                 out << getSuccessXML()
-                // Must relookup the app to get updated services
                 out << getApplicationXML(applicationValue)
             }
         }
@@ -288,8 +302,6 @@ class ApplicationController extends ApiController {
         }
 
         def app = getApplication(id)
-        def failureXml = null
-
         if (!app) {
             renderXml() {
                 out << StatusResponse() {
