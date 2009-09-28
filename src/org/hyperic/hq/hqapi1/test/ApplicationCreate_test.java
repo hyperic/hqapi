@@ -5,6 +5,9 @@ import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.types.*;
 
+import java.util.List;
+import java.util.ArrayList;
+
 public class ApplicationCreate_test extends ApplicationTestBase {
 
     public ApplicationCreate_test(String name) {
@@ -14,7 +17,8 @@ public class ApplicationCreate_test extends ApplicationTestBase {
     public void testApplicationCreateNoServices() throws Exception {
         ApplicationApi api = getApi().getApplicationApi();
         Application a = createTestApplication(null);
-
+        assertEquals("Wrong number of application services",
+                     0, a.getResource().size());
         StatusResponse response = api.deleteApplication(a.getId());
         hqAssertSuccess(response);
     }
@@ -34,6 +38,35 @@ public class ApplicationCreate_test extends ApplicationTestBase {
         hqAssertSuccess(cpusResponse);
 
         Application a = createTestApplication(cpusResponse.getResource());
+        assertEquals(a.getResource().size(), cpusResponse.getResource().size());
+
+        StatusResponse deleteResponse = appApi.deleteApplication(a.getId());
+        hqAssertSuccess(deleteResponse);
+    }
+
+    public void testApplicationCreateDuplicateServices() throws Exception {
+        HQApi api = getApi();
+        ResourceApi rApi = api.getResourceApi();
+        ApplicationApi appApi = api.getApplicationApi();
+
+        ResourcePrototypeResponse protoResponse =
+                rApi.getResourcePrototype("CPU");
+        hqAssertSuccess(protoResponse);
+
+        ResourcesResponse cpusResponse =
+                rApi.getResources(protoResponse.getResourcePrototype(),
+                                  false, false);
+        hqAssertSuccess(cpusResponse);
+
+        List<Resource> resources = new ArrayList<Resource>();
+        resources.addAll(cpusResponse.getResource());
+        resources.addAll(cpusResponse.getResource());
+        resources.addAll(cpusResponse.getResource());
+
+        Application a = createTestApplication(resources);
+        assertEquals("Wrong number of application services",
+                     cpusResponse.getResource().size(),
+                     a.getResource().size());
 
         StatusResponse deleteResponse = appApi.deleteApplication(a.getId());
         hqAssertSuccess(deleteResponse);
