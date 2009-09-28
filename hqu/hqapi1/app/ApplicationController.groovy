@@ -280,33 +280,45 @@ class ApplicationController extends ApiController {
     }
 
     private updateAppServices(app, resources) {
-        def svcList = []
+        def svcList = [] // List of AppdefEntityID's to add to the application
 
         if (resources) {
             resources.each { res ->
                 def rid = res.'@id'?.toInteger()
                 def sid = resMan.findResourceById(rid)?.instanceId
-                def svcAeid = AppdefEntityID.newServiceID(sid)
-                svcList.add(svcAeid)
+                def entId = AppdefEntityID.newServiceID(sid)
+                if (!svcList.contains(entId)) {
+                    svcList.add(entId)
+                }
             }
         }
 
-        appMan.setApplicationServices(user, app.id, svcList)
-
         // Setting the application services does not remove any app services
-        // that may have been removed from the application.  We must look up
-        // the tree and remove one-by-one.
-        // TODO: Fix me - Need manager APIs for Service -> AppService mappings
+        // that may have been removed from the application.  It will also add
+        // duplicates, so we need to iterate the list, first removing services
+        // not present in the list, then adding the new entries.
         def sessionId = SessionManager.instance.put(user)
         def dao = new AppServiceDAO(DAOFactory.getDAOFactory());
+
+        def svcListExisting = [] // List of AppdefEntityID's existing in the Application
+        def svcListToRemove = [] // List of app service id's to remove
         for (appService in aBoss.findServiceInventoryByApplication(sessionId, app.id, PageControl.PAGE_ALL)) {
             if (appService instanceof ServiceValue) {
                 def entId = AppdefEntityID.newServiceID(appService.id)
+                svcListExisting << entId
                 if (!svcList.contains(entId)) {
                     def appSvc = dao.findByAppAndService(app.id, appService.id)
-                    appMan.removeAppService(user, app.id, appSvc.id)
+                    svcListToRemove << appSvc.id
                 }
             }
+        }
+
+        def toAdd = svcList - svcListExisting
+        appMan.setApplicationServices(user, app.id, toAdd)
+
+        // Remove all deleted services
+        for (appSvcId in svcListToRemove) {
+            appMan.removeAppService(user, app.id, appSvcId)
         }
     }
 
