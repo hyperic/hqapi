@@ -17,8 +17,6 @@ import java.util.List;
 
 public class ApplicationUpdate_test extends ApplicationTestBase {
 
-    private static final String UPDATE_PREFIX = "UPDATED-";
-
     public ApplicationUpdate_test(String name) {
         super(name);
     }
