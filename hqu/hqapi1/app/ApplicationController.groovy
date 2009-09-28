@@ -80,6 +80,11 @@ class ApplicationController extends ApiController {
      */
     private createApplication(xmlApplication) {
 
+        if (!xmlApplication || xmlApplication.size() != 1) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+            return null
+        }
+
         if (!validateApplicationServices(xmlApplication)) {
             return null
         }
@@ -127,15 +132,6 @@ class ApplicationController extends ApiController {
         def createRequest = new XmlParser().parseText(getUpload('postdata'))
         def xmlApplication = createRequest['Application']
 
-        if (!xmlApplication || xmlApplication.size() != 1) {
-            renderXml() {
-                ApplicationResponse() {
-                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
-                }
-            }
-            return
-        }
-
         def newApp = createApplication(xmlApplication)
 
         renderXml() {
@@ -150,66 +146,48 @@ class ApplicationController extends ApiController {
         }
     }
 
-    def update(params) {
-        def updateRequest = new XmlParser().parseText(getUpload('postdata'))
-        def xmlApplication = updateRequest['Application']
-
+    /**
+     * Update an Application via XML.
+     *
+     * @return the Created application or null if Application creation
+     * failed.  In that case the caller should use failureXml to determine
+     * the cause.
+     */
+    private updateApplication(xmlApplication) {
         if (!xmlApplication || xmlApplication.size() != 1) {
-            renderXml() {
-                ApplicationResponse() {
-                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
-                }
-            }
-            return
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+            return null
         }
 
         def appId = xmlApplication[0].'@id'?.toInteger()
         if (!appId) {
-            renderXml() {
-                ApplicationResponse() {
-                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
-                                         "No application id found")
-                }
-            }
-            return
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "No application id found")
+            return null
         }
 
-        // Validate Resources
-        for (xmlResource in xmlApplication['Resource']) {
-            def rid = xmlResource.'@id'?.toInteger()
-            def resource = resourceHelper.findById(rid)
-            if (!resource.isService()) {
-                renderXml() {
-                    ApplicationResponse() {
-                        out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
-                                             "Invalid resource passed to create, " +
-                                             resource.name + " is not a service")
-                    }
-                }
-                return
-            }
+        if (!validateApplicationServices(xmlApplication)) {
+            return null
         }
 
         def appName = xmlApplication[0].'@name'
-        def appLoc = xmlApplication[0].'@location'
+        def appLoc  = xmlApplication[0].'@location'
         def appDesc = xmlApplication[0].'@description'
-        def appEng = xmlApplication[0].'@engContact'
-        def appOps = xmlApplication[0].'@opsContact'
-        def appBiz = xmlApplication[0].'@bizContact'
+        def appEng  = xmlApplication[0].'@engContact'
+        def appOps  = xmlApplication[0].'@opsContact'
+        def appBiz  = xmlApplication[0].'@bizContact'
 
-        def updateApp
+        def updateApp = null
         try {
             updateApp = appMan.findApplicationById(user, appId)
         } catch (Exception e) {
             log.error("Error finding application" + e)
-            renderXml() {
-                ApplicationResponse() {
-                    out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND)
-                }
-            }
-            return
+            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                       "Unable to find application with " +
+                                       "id " + appId)
+            return null
         }
-    
+
         def applicationValue = updateApp.getApplicationValue()
         applicationValue.name = appName
         applicationValue.location = appLoc
@@ -221,31 +199,35 @@ class ApplicationController extends ApiController {
         try {
             appMan.updateApplication(user, applicationValue)
         } catch (AppdefDuplicateNameException e) {
-            renderXml() {
-                ApplicationResponse() {
-                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS,
-                                         "There is already an application named " +
-                                         appName)
-                }
-            }
-            return
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "There is already an application named " +
+                                       appName)
+            return null
         } catch (Exception e) {
-            renderXml() {
-                log.error("Error updating application", e)
-                ApplicationResponse() {
-                    out << getFailureXML(ErrorCode.UNEXPECTED_ERROR)
-                }
-            }
-            return
+            log.error("Error updating application", e)
+            failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+            return null
         }
 
         def resources = xmlApplication['Resource']
         updateAppServices(updateApp, resources)
+        return getApplication(appId)
+    }
+
+    def update(params) {
+        def updateRequest = new XmlParser().parseText(getUpload('postdata'))
+        def xmlApplication = updateRequest['Application']
+
+        def updatedApp = updateApplication(xmlApplication)
 
         renderXml() {
             ApplicationResponse() {
-                out << getSuccessXML()
-                out << getApplicationXML(applicationValue)
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    out << getApplicationXML(updatedApp.applicationValue)
+                }
             }
         }
     }
