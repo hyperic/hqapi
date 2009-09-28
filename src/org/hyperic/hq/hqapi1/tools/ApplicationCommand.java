@@ -20,6 +20,7 @@ public class ApplicationCommand extends Command {
     private static String[] COMMANDS = { CMD_LIST, CMD_SYNC, CMD_DELETE };
 
     private static String OPT_ID     = "id";
+    private static String OPT_BATCH_SIZE = "batchSize";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -63,20 +64,40 @@ public class ApplicationCommand extends Command {
 
         OptionParser p = getOptionParser();
 
+        p.accepts(OPT_BATCH_SIZE, "Process the sync in batches of the given size").
+                withRequiredArg().ofType(Integer.class);
+
         OptionSet options = getOptions(p, args);
 
-        ApplicationApi applicationApi = getApi(options).getApplicationApi();
+        ApplicationApi api = getApi(options).getApplicationApi();
 
         InputStream is = getInputStream(options);
-
         ApplicationsResponse resp = XmlUtil.deserialize(ApplicationsResponse.class, is);
-
         List<Application> applications = resp.getApplication();
 
-        ApplicationsResponse syncResponse = applicationApi.syncApplications(applications);
-        checkSuccess(syncResponse);
+        int numSynced = 0;
+        if (options.has(OPT_BATCH_SIZE)) {
+            int batchSize = (Integer)options.valueOf(OPT_BATCH_SIZE);
+            int numBatches = (int)Math.ceil(applications.size()/((double)batchSize));
 
-        System.out.println("Successfully synced " + applications.size() + " applications.");
+            for (int i = 0; i < numBatches; i++) {
+                System.out.println("Syncing batch " + (i + 1) + " of " + numBatches);
+                int fromIndex = i * batchSize;
+                int toIndex = (fromIndex + batchSize) > applications.size() ?
+                              applications.size() : (fromIndex + batchSize);
+                ApplicationsResponse syncResponse =
+                        api.syncApplications(applications.subList(fromIndex,
+                                                                  toIndex));
+                checkSuccess(syncResponse);
+                numSynced += (toIndex - fromIndex);
+            }
+        } else {
+            ApplicationsResponse syncResponse = api.syncApplications(applications);
+            checkSuccess(syncResponse);
+            numSynced = applications.size();
+        }
+
+        System.out.println("Successfully synced " + numSynced + " applications.");
     }
 
     private void delete(String[] args) throws Exception {
