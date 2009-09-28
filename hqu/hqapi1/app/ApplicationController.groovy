@@ -236,6 +236,45 @@ class ApplicationController extends ApiController {
         }
     }
 
+    def sync(params) {
+        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+
+        def applications = []
+
+        def xmlApplications = syncRequest['Application']
+
+        if (!xmlApplications || xmlApplications.size() < 1) {
+            renderXml() {
+                ApplicationResponse() {
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                }
+            }
+            return
+        }
+
+        xmlApplications.each { xmlApp ->
+            // TODO: This needs some work
+            def appId = xmlApp.'@id'?.toInteger()
+            if (!appId) {
+              print "CREATING: " + xmlApp.'@name'
+            }
+            else {
+              print "UPDATING: " + appId + " " + xmlApp.'@name'
+            }
+        }
+
+        // TODO: This needs some work
+        renderXml() {
+            ApplicationResponse() {
+                out << getSuccessXML()
+                out << Application(
+                    applications.each { app ->
+                        getApplicationXML(app)
+                    })
+            }
+        }
+    }
+
     def delete(params) {
         def id = params.getOne('id')?.toInteger()
 
