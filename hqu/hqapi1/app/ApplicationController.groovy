@@ -122,7 +122,7 @@ class ApplicationController extends ApiController {
     }
 
     def create(params) {
-        def createRequest = new XmlParser().parseText(getUpload('postdata'))
+        def createRequest = new XmlParser().parseText(getPostData())
         def xmlApplication = createRequest['Application']
 
         def newApp
@@ -209,7 +209,7 @@ class ApplicationController extends ApiController {
     }
 
     def update(params) {
-        def updateRequest = new XmlParser().parseText(getUpload('postdata'))
+        def updateRequest = new XmlParser().parseText(getPostData())
         def xmlApplication = updateRequest['Application']
 
         def updatedApp
@@ -233,7 +233,7 @@ class ApplicationController extends ApiController {
     }
 
     def sync(params) {
-        def syncRequest = new XmlParser().parseText(getUpload('postdata'))
+        def syncRequest = new XmlParser().parseText(getPostData())
 
         def applications = []
         for (xmlApplication in syncRequest['Application']) {
