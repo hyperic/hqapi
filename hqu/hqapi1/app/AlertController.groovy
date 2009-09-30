@@ -218,6 +218,33 @@ public class AlertController extends ApiController {
         }
     }
 
+    private canManageAlerts(resource) {
+        // TODO: Fix AlertManager to handle permissions
+        def appdefResource
+        // TODO: Platform/Server/Service have different modifyAlert operations
+        def operation
+        if (resource.isPlatform()) {
+            operation = "modifyAlerts"
+            appdefResource = resource.toPlatform()
+        } else if (resource.isServer()) {
+            operation = "modifyAlerts"
+            appdefResource = resource.toServer()
+        } else if (resource.isService()) {
+            operation = "manageAlerts"
+            appdefResource = resource.toService()
+        } else {
+            log.warn("Unhandled resource to canManageAlerts: " + resource.name)
+            return false
+        }
+
+        try {
+            appdefResource.checkPerms(operation:operation, user:user)
+            return true
+        } catch (Exception e) {
+            return false
+        }
+    }
+
     def fix(params) {
         def ids = params.get("id")*.toInteger()
         def failureXml = null
@@ -232,6 +259,8 @@ public class AlertController extends ApiController {
                 if (!alert) {
                     failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                                "Unable to find alert with id = " + id)
+                } else if (!canManageAlerts(alert.definition.resource)) {
+                    failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
                 } else {
                     alerts << alert
                 }

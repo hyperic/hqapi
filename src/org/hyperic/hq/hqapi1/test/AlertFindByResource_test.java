@@ -15,7 +15,7 @@ public class AlertFindByResource_test extends AlertTestBase {
 
     public void testFindValid() throws Exception {
         Resource r = getLocalPlatformResource(false, false);
-        AlertDefinition d = generateAlerts();
+        AlertDefinition d = generateAlerts(r);
 
         AlertApi api = getAlertApi();
 

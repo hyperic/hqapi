@@ -4,6 +4,7 @@ import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertsResponse;
 import org.hyperic.hq.hqapi1.types.Alert;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.AlertApi;
 
 public class AlertDelete_test extends AlertTestBase {
@@ -13,10 +14,11 @@ public class AlertDelete_test extends AlertTestBase {
     }
 
     public void testDeleteAlert() throws Exception {
-        AlertDefinition d = generateAlerts();
+        Resource platform = getLocalPlatformResource(false, false);
+        AlertDefinition d = generateAlerts(platform);
         AlertApi api = getAlertApi();
 
-        AlertsResponse response = api.findAlerts(0, System.currentTimeMillis(),
+        AlertsResponse response = api.findAlerts(platform, 0, System.currentTimeMillis(),
                                                  10, 1, false, false);
         hqAssertSuccess(response);
         assertTrue(response.getAlert().size() <= 10);
