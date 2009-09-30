@@ -31,6 +31,7 @@ import org.hyperic.hq.hqapi1.types.AlertCondition;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertAction;
 import org.hyperic.hq.hqapi1.types.AlertActionConfig;
+import org.hyperic.hq.hqapi1.types.Resource;
 
 /**
  * This class is used to create {@link org.hyperic.hq.hqapi1.types.AlertCondition}s.
@@ -354,7 +355,7 @@ public class AlertDefinitionBuilder {
     }
 
     /**
-     * Create a ScriptAction
+     * Create a Script AlertAction
      *
      * @param script The script to execute when the alert fires.
      * @return An {@link org.hyperic.hq.hqapi1.types.AlertAction} that can be
@@ -369,6 +370,60 @@ public class AlertDefinitionBuilder {
         cfg.setValue(script);
 
         a.getAlertActionConfig().add(cfg);
+        return a;
+    }
+
+    /**
+     * Create a ControlAction AlertAction
+     *
+     * @param r The {@link Resource} to run the action on
+     * @param action The control action to run
+     *
+     * @return An {@link org.hyperic.hq.hqapi1.types.AlertAction} that can be
+     * included in {@link org.hyperic.hq.hqapi1.types.AlertDefinition#getAlertAction()}.
+     */
+    public static AlertAction createControlAction(Resource r, String action) {
+        AlertAction a = new AlertAction();
+        a.setClassName("com.hyperic.hq.bizapp.server.action.control.ControlAction");
+
+        AlertActionConfig resourceCfg = new AlertActionConfig();
+        resourceCfg.setKey("resourceId");
+        resourceCfg.setValue(Integer.toString(r.getId()));
+
+        AlertActionConfig actionCfg = new AlertActionConfig();
+        actionCfg.setKey("action");
+        actionCfg.setValue(action);
+
+        a.getAlertActionConfig().add(resourceCfg);
+        a.getAlertActionConfig().add(actionCfg);
+
+        return a;
+    }
+
+    /**
+     * Create an OpenNMS AlertAction
+     *
+     * @param server The address of the OpenNMS server
+     * @param port The port the OpenNMS server is listening on
+     *
+     * @return An {@link org.hyperic.hq.hqapi1.types.AlertAction} that can be
+     * included in {@link org.hyperic.hq.hqapi1.types.AlertDefinition#getAlertAction()}.
+     */
+    public static AlertAction createOpenNMSAction(String server, int port) {
+        AlertAction a = new AlertAction();
+        a.setClassName("org.hyperic.hq.bizapp.server.action.integrate.OpenNMSAction");
+
+        AlertActionConfig serverCfg = new AlertActionConfig();
+        serverCfg.setKey("server");
+        serverCfg.setValue(server);
+
+        AlertActionConfig portCfg = new AlertActionConfig();
+        portCfg.setKey("port");
+        portCfg.setValue(Integer.toString(port));
+
+        a.getAlertActionConfig().add(serverCfg);
+        a.getAlertActionConfig().add(portCfg);
+
         return a;
     }
 }

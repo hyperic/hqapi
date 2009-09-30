@@ -3,8 +3,8 @@ Changes in HQApi 2.3
 
  *) [HQ-3076] Add ApplicationApi.
 
- *) [HHQ-3422] Add support for ScriptAction AlertActions in the
-    AlertDefinition API.
+ *) [HHQ-3422] Add support for AlertActions in the AlertDefinition API.
+    Supported actions include ControlAction, ScriptAction and OpenNMSAction.
 
 Changes in HQApi 2.2
 
