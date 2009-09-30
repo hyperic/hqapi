@@ -545,6 +545,11 @@ public class AlertdefinitionController extends ApiController {
                 def actionId  = xmlAction.'@id'?.toInteger()
                 def className = xmlAction.'@className'
 
+                if (!className) {
+                    // Nothing to do
+                    continue
+                }
+
                 def cfg = [:]
                 // Special translation for ControlActions for Resource ids
                 if (className == "com.hyperic.hq.bizapp.server.action.control.ControlAction") {
