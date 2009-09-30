@@ -159,14 +159,42 @@ public class AlertdefinitionController extends ApiController {
                 }
 
                 for (a in d.actions) {
-                    // TODO: Only supporting ScriptAction for now.
-                    if (a.className == "com.hyperic.hq.bizapp.server.action.control.ScriptAction") {
+                    // TODO: User and Role notifications only handled through Escalation
+                    if (a.className == "com.hyperic.hq.bizapp.server.action.control.ScriptAction" ||
+                        a.className == "org.hyperic.hq.bizapp.server.action.integrate.OpenNMSAction") {
                         AlertAction(id: a.id,
                                     className: a.className) {
                             def config = ConfigResponse.decode(a.config)
                             for (key in config.keys) {
                                 AlertActionConfig(key: key,
                                                   value: config.getValue(key))
+                            }
+                        }
+                    } else if (a.className == "com.hyperic.hq.bizapp.server.action.control.ControlAction") {
+                        def config = ConfigResponse.decode(a.config)
+                        def appdefType = config.getValue("appdefType")?.toInteger()
+                        def appdefId = config.getValue("appdefId")?.toInteger()
+                        def resource
+
+                        if (appdefType == 1) {
+                            resource = resourceHelper.find('platform':appdefId)
+                        } else if (appdefType == 2) {
+                            resource = resourceHelper.find('server':appdefId)
+                        } else if (appdefType == 3) {
+                            resource = resourceHelper.find('service':appdefId)
+                        } else {
+                            log.warn("Unable to find resource appdefType=" +
+                                     appdefType + " appdefId=" + appdefId)
+                            continue // Skip this action
+                        }
+
+                        if (resource) {
+                            AlertAction(id: a.id,
+                                        className: a.className) {
+                                AlertActionConfig(key: 'resourceId',
+                                                  value: resource.id)
+                                AlertActionConfig(key: 'action',
+                                                  value: config.getValue('action'))
                             }
                         }
                     }
@@ -518,8 +546,38 @@ public class AlertdefinitionController extends ApiController {
                 def className = xmlAction.'@className'
 
                 def cfg = [:]
-                for (xmlConfig in xmlAction['AlertActionConfig']) {
-                    cfg[xmlConfig.'@key'] = xmlConfig.'@value'
+                // Special translation for ControlActions for Resource ids
+                if (className == "com.hyperic.hq.bizapp.server.action.control.ControlAction") {
+                    def rId = xmlAction['AlertActionConfig'].find {
+                        it.'@key' == 'resourceId'
+                    }?.'@value'?.toInteger()
+
+                    def action = xmlAction['AlertActionConfig'].find {
+                        it.'@key' == 'action'
+                    }?.'@value'
+
+                    def cResource = getResource(rId)
+                    if (cResource != null && action != null) {
+                        def actions = cResource.getControlActions(user)
+                        if (!actions.find { it == action }) {
+                            log.warn("Resource " + cResource.name + " does not " +
+                                     "support action " + action)
+                            continue
+                        }
+
+                        cfg['appdefType'] = Integer.toString(cResource.entityId.type)
+                        cfg['appdefId'] = Integer.toString(cResource.entityId.id)
+                        cfg['action'] = action
+                    } else {
+                        // If the resource is not found, don't add the action
+                        log.warn("Ignoring invalid ControlAction config " +
+                                 xmlAction['AlertActionConfig'])
+                        continue
+                    }
+                } else {
+                    for (xmlConfig in xmlAction['AlertActionConfig']) {
+                        cfg[xmlConfig.'@key'] = xmlConfig.'@value'
+                    }
                 }
 
                 ConfigResponse configResponse =  new ConfigResponse(cfg)
