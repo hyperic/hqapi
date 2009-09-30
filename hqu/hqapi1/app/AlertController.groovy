@@ -302,6 +302,8 @@ public class AlertController extends ApiController {
                 if (!alert) {
                     failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                                "Unable to find alert with id = " + id)
+                } else if (!canManageAlerts(alert.definition.resource)) {
+                    failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
                 }
             }
 
