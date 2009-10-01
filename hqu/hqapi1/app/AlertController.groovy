@@ -7,6 +7,7 @@ import org.hyperic.hq.events.server.session.AlertSortField
 import org.hyperic.hq.events.server.session.AlertManagerEJBImpl as AlertMan
 import org.hyperic.hq.escalation.server.session.EscalationManagerEJBImpl as EscMan
 import org.hyperic.hq.events.server.session.ClassicEscalationAlertType
+import org.hyperic.hq.authz.shared.PermissionException
 
 public class AlertController extends ApiController {
 
@@ -214,6 +215,8 @@ public class AlertController extends ApiController {
                                      "acknowledgable state")
                         }
                     }
+                } catch (PermissionException e) {
+                    failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
                 } catch (Throwable t) {
                     failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
                                                t.getMessage())
