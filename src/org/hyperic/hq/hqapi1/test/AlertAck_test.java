@@ -5,6 +5,7 @@ import org.hyperic.hq.hqapi1.types.AlertsResponse;
 import org.hyperic.hq.hqapi1.types.Alert;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.Escalation;
 import org.hyperic.hq.hqapi1.AlertApi;
 
 public class AlertAck_test extends AlertTestBase {
@@ -14,32 +15,39 @@ public class AlertAck_test extends AlertTestBase {
     }
 
     public void testAckAlert() throws Exception {
-        Resource platform = getLocalPlatformResource(false, false);
-        AlertDefinition d = generateAlerts(platform);
         AlertApi api = getAlertApi();
+        Resource platform = getLocalPlatformResource(false, false);
+        Escalation e = createEscalation();
+        Alert a = generateAlerts(platform);
 
-        AlertsResponse response = api.findAlerts(platform, 0, System.currentTimeMillis(),
-                                                 10, 1, false, false);
-        hqAssertSuccess(response);
-        assertTrue(response.getAlert().size() <= 10);
-        assertTrue(response.getAlert().size() > 0);
+        validateAlert(a);
 
-        for (Alert a : response.getAlert()) {
-            validateAlert(a);
-        }
-
-        // Test ack
-        Alert a = response.getAlert().get(0);
-
+        // Test ack - alert will be in Escalation
         StatusResponse ackResponse = api.ackAlert(a.getId(), "Test ACK", 60000l);
         hqAssertSuccess(ackResponse);
 
         // TODO: Valididate ack? Will require a getById API.
 
         // Cleanup
-        StatusResponse deleteResponse = getApi().
-                getAlertDefinitionApi().deleteAlertDefinition(d.getId());
-        hqAssertSuccess(deleteResponse);
+        deleteAlertDefinitionByAlert(a);
+        deleteEscalation(e);
+    }
+
+    public void testAckUnacknowledableAlert() throws Exception {
+        Resource platform = getLocalPlatformResource(false, false);
+        AlertApi api = getAlertApi();
+        Alert a = generateAlerts(platform);
+
+        validateAlert(a);
+
+        // Test ack - alert is not in escalation
+        StatusResponse ackResponse = api.ackAlert(a.getId(), "Test ACK", 60000l);
+        hqAssertSuccess(ackResponse);
+
+        // TODO: Valididate ack? Will require a getById API.
+
+        // Cleanup
+        deleteAlertDefinitionByAlert(a);
     }
 
     public void testAckInvalidAlert() throws Exception {

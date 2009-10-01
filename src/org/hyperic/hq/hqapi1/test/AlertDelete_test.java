@@ -17,48 +17,28 @@ public class AlertDelete_test extends AlertTestBase {
     }
 
     public void testDeleteAlert() throws Exception {
-        Resource platform = getLocalPlatformResource(false, false);
-        AlertDefinition d = generateAlerts(platform);
         AlertApi api = getAlertApi();
+        Resource platform = getLocalPlatformResource(false, false);
+        Alert a = generateAlerts(platform);
 
-        AlertsResponse response = api.findAlerts(platform, 0, System.currentTimeMillis(),
-                                                 10, 1, false, false);
-        hqAssertSuccess(response);
-        assertTrue(response.getAlert().size() <= 10);
-        assertTrue(response.getAlert().size() > 0);
+        validateAlert(a);
 
-        for (Alert a : response.getAlert()) {
-            validateAlert(a);
-        }
-        
         // Test delete
-        Alert a = response.getAlert().get(0);
-
         StatusResponse deleteResponse = api.delete(a.getId());
         hqAssertSuccess(deleteResponse);
 
         // TODO: Valididate alert was deleted? Will require a getById API.
 
         // Cleanup
-        StatusResponse deleteDefResponse = getApi().
-                getAlertDefinitionApi().deleteAlertDefinition(d.getId());
-        hqAssertSuccess(deleteDefResponse);
+        deleteAlertDefinitionByAlert(a);
     }
 
     public void testDeleteAlertNoPermission() throws Exception {
-        Resource platform = getLocalPlatformResource(false, false);
-        AlertDefinition d = generateAlerts(platform);
         AlertApi api = getAlertApi();
+        Resource platform = getLocalPlatformResource(false, false);
+        Alert a = generateAlerts(platform);
 
-        AlertsResponse response = api.findAlerts(platform, 0, System.currentTimeMillis(),
-                                                 10, 1, false, false);
-        hqAssertSuccess(response);
-        assertTrue(response.getAlert().size() <= 10);
-        assertTrue(response.getAlert().size() > 0);
-
-        for (Alert a : response.getAlert()) {
-            validateAlert(a);
-        }
+        validateAlert(a);
 
         // Test delete with an unprivledged user
 
@@ -66,17 +46,13 @@ public class AlertDelete_test extends AlertTestBase {
         User unprivUser = users.get(0);
         AlertApi apiUnpriv = getApi(unprivUser.getName(), TESTUSER_PASSWORD).getAlertApi();
 
-        Alert a = response.getAlert().get(0);
         StatusResponse deleteResponse = apiUnpriv.delete(a.getId());
         hqAssertFailurePermissionDenied(deleteResponse);
 
         // TODO: Valididate alert was deleted? Will require a getById API.
 
         // Cleanup
-        StatusResponse deleteDefResponse = getApi().
-                getAlertDefinitionApi().deleteAlertDefinition(d.getId());
-        hqAssertSuccess(deleteDefResponse);
-
+        deleteAlertDefinitionByAlert(a);
         deleteTestUsers(users);
     }
 

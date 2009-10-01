@@ -20,71 +20,46 @@ public class AlertFix_test extends AlertTestBase {
     }
 
     public void testFixAlert() throws Exception {
-        Resource platform = getLocalPlatformResource(false, false);
-        AlertDefinition d = generateAlerts(platform);
         AlertApi api = getAlertApi();
+        Resource platform = getLocalPlatformResource(false, false);
+        Alert a = generateAlerts(platform);
 
-        AlertsResponse response = api.findAlerts(0, System.currentTimeMillis(),
-                                                 10, 1, false, false);
-        hqAssertSuccess(response);
-        assertTrue(response.getAlert().size() <= 10);
-        assertTrue(response.getAlert().size() > 0);
+        validateAlert(a);
 
-        for (Alert a : response.getAlert()) {
-            validateAlert(a);
-        }
-        
         // Test marking fixed
-        Alert a = response.getAlert().get(0);
-
         StatusResponse fixResponse = api.fixAlert(a.getId());
         hqAssertSuccess(fixResponse);
 
         // TODO: Valididate fix flag was set? Will require a getById API.
 
         // Cleanup
-        StatusResponse deleteResponse = getApi().
-                getAlertDefinitionApi().deleteAlertDefinition(d.getId());
-        hqAssertSuccess(deleteResponse);
+        deleteAlertDefinitionByAlert(a);
     }
 
     public void testFixPlatformAlertNoPermission() throws Exception {
         Resource platform = getLocalPlatformResource(false, false);
-        AlertDefinition d = generateAlerts(platform);
-        AlertApi api = getAlertApi();
+        Alert a = generateAlerts(platform);
 
-        AlertsResponse response = api.findAlerts(platform, 0, System.currentTimeMillis(),
-                                                 10, 1, false, false);
-        hqAssertSuccess(response);
-        assertTrue(response.getAlert().size() <= 10);
-        assertTrue(response.getAlert().size() > 0);
-
-        for (Alert a : response.getAlert()) {
-            validateAlert(a);
-        }
+        validateAlert(a);
 
         List<User> users = createTestUsers(1);
         User unprivUser = users.get(0);
         AlertApi apiUnpriv = getApi(unprivUser.getName(), TESTUSER_PASSWORD).getAlertApi();
 
         // Test marking fixed with an unprivlidged user
-        Alert a = response.getAlert().get(0);
-
         StatusResponse fixResponse = apiUnpriv.fixAlert(a.getId());
         hqAssertFailurePermissionDenied(fixResponse);
 
         // TODO: Valididate fix flag was set? Will require a getById API.
 
         // Cleanup
-        StatusResponse deleteResponse = getApi().
-                getAlertDefinitionApi().deleteAlertDefinition(d.getId());
-        hqAssertSuccess(deleteResponse);
+        deleteAlertDefinitionByAlert(a);
         deleteTestUsers(users);
     }
 
     public void testFixServerAlertNoPermission() throws Exception {
-        ResourceApi rApi = getApi().getResourceApi();
         AlertApi api = getAlertApi();
+        ResourceApi rApi = getApi().getResourceApi();
 
         ResourcePrototypeResponse protoResponse =
                 rApi.getResourcePrototype("HQ Agent");
@@ -101,40 +76,28 @@ public class AlertFix_test extends AlertTestBase {
 
         Resource server = resourcesResponse.getResource().get(0);
 
-        AlertDefinition d = generateAlerts(server);
+        Alert a = generateAlerts(server);
 
-        AlertsResponse response = api.findAlerts(server, 0, System.currentTimeMillis(),
-                                                 10, 1, false, false);
-        hqAssertSuccess(response);
-        assertTrue(response.getAlert().size() <= 10);
-        assertTrue(response.getAlert().size() > 0);
-
-        for (Alert a : response.getAlert()) {
-            validateAlert(a);
-        }
+        validateAlert(a);
 
         List<User> users = createTestUsers(1);
         User unprivUser = users.get(0);
         AlertApi apiUnpriv = getApi(unprivUser.getName(), TESTUSER_PASSWORD).getAlertApi();
 
         // Test marking fixed with an unprivlidged user
-        Alert a = response.getAlert().get(0);
-
         StatusResponse fixResponse = apiUnpriv.fixAlert(a.getId());
         hqAssertFailurePermissionDenied(fixResponse);
 
         // TODO: Valididate fix flag was set? Will require a getById API.
 
         // Cleanup
-        StatusResponse deleteResponse = getApi().
-                getAlertDefinitionApi().deleteAlertDefinition(d.getId());
-        hqAssertSuccess(deleteResponse);
+        deleteAlertDefinitionByAlert(a);
         deleteTestUsers(users);
     }
 
     public void testFixServiceAlertNoPermission() throws Exception {
-        ResourceApi rApi = getApi().getResourceApi();
         AlertApi api = getAlertApi();
+        ResourceApi rApi = getApi().getResourceApi();
 
         ResourcePrototypeResponse protoResponse =
                 rApi.getResourcePrototype("FileServer Mount");
@@ -151,34 +114,21 @@ public class AlertFix_test extends AlertTestBase {
 
         Resource service = resourcesResponse.getResource().get(0);
 
-        AlertDefinition d = generateAlerts(service);
-
-        AlertsResponse response = api.findAlerts(service, 0, System.currentTimeMillis(),
-                                                 10, 1, false, false);
-        hqAssertSuccess(response);
-        assertTrue(response.getAlert().size() <= 10);
-        assertTrue(response.getAlert().size() > 0);
-
-        for (Alert a : response.getAlert()) {
-            validateAlert(a);
-        }
+        Alert a = generateAlerts(service);
+        validateAlert(a);
 
         List<User> users = createTestUsers(1);
         User unprivUser = users.get(0);
         AlertApi apiUnpriv = getApi(unprivUser.getName(), TESTUSER_PASSWORD).getAlertApi();
 
         // Test marking fixed with an unprivlidged user
-        Alert a = response.getAlert().get(0);
-
         StatusResponse fixResponse = apiUnpriv.fixAlert(a.getId());
         hqAssertFailurePermissionDenied(fixResponse);
 
         // TODO: Valididate fix flag was set? Will require a getById API.
 
         // Cleanup
-        StatusResponse deleteResponse = getApi().
-                getAlertDefinitionApi().deleteAlertDefinition(d.getId());
-        hqAssertSuccess(deleteResponse);
+        deleteAlertDefinitionByAlert(a);
         deleteTestUsers(users);
     }
 

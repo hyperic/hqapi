@@ -13,6 +13,8 @@ public class AlertController extends ApiController {
     private aMan = AlertMan.one
     private escMan = EscMan.one
 
+    private static final int ROUNDING_VOODOO = 60000
+
     private getEscalationState(alert) {
         // TODO: Move to AlertCategory
         if (alert.stateId) {
@@ -71,11 +73,14 @@ public class AlertController extends ApiController {
             try {
                 Integer groupId = null
                 AlertSeverity severity = AlertSeverity.findByCode(sev)
-                long timerange = end - begin
                 PageInfo pInfo = PageInfo.create(0, count, AlertSortField.DATE,
                                                  false);
 
-                alerts = alertHelper.findAlerts(severity, timerange, end,
+                // TODO: Work around incorrect TimingVoodoo in AlertManagerEJBImpl
+                long roundedEnd = end + (ROUNDING_VOODOO - (end % ROUNDING_VOODOO))
+                long timerange = roundedEnd - begin
+
+                alerts = alertHelper.findAlerts(severity, timerange, roundedEnd,
                                                 inEsc, notFixed, groupId, pInfo)
             } catch (IllegalStateException e) {
                 failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
@@ -93,7 +98,8 @@ public class AlertController extends ApiController {
                     out << failureXml
                 } else {
                     out << getSuccessXML()
-                    for (a in alerts) {
+                    // TODO: See above, re-apply the actual end time
+                    for (a in alerts.findAll { it.ctime <= end }) {
                         out << getAlertXML(a)
                     }
                 }
@@ -130,7 +136,9 @@ public class AlertController extends ApiController {
                                                "Unable to find resource with " +
                                                "id=" + rid)
                 } else {
-                    alerts = resource.getAlerts(user, begin, end,
+                    // TODO: Work around incorrect TimingVoodoo in AlertManagerEJBImpl
+                    long roundedEnd = end + (ROUNDING_VOODOO - (end % ROUNDING_VOODOO))
+                    alerts = resource.getAlerts(user, begin, roundedEnd,
                                                 count, severity)
                     //TODO: Move these to ResourceCategory or AlertManager
                     if (inEsc) {
@@ -157,7 +165,8 @@ public class AlertController extends ApiController {
                     out << failureXml
                 } else {
                     out << getSuccessXML()
-                    for (a in alerts) {
+                    // TODO: See above, re-apply the actual end time
+                    for (a in alerts.findAll { it.ctime <= end }) {
                         out << getAlertXML(a)
                     }
                 }

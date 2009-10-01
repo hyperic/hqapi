@@ -14,9 +14,9 @@ public class AlertFind_test extends AlertTestBase {
     }
 
     public void testFindValid() throws Exception {
-        Resource platform = getLocalPlatformResource(false, false);
-        AlertDefinition d = generateAlerts(platform);
         AlertApi api = getAlertApi();
+        Resource platform = getLocalPlatformResource(false, false);
+        Alert a = generateAlerts(platform);
 
         AlertsResponse response = api.findAlerts(0, System.currentTimeMillis(),
                                                  10, 1, false, false);
@@ -24,14 +24,12 @@ public class AlertFind_test extends AlertTestBase {
         assertTrue(response.getAlert().size() <= 10);
         assertTrue(response.getAlert().size() > 0);
 
-        for (Alert a : response.getAlert()) {
-            validateAlert(a);
+        for (Alert alerts : response.getAlert()) {
+            validateAlert(alerts);
         }
 
         // Cleanup
-        StatusResponse deleteResponse = getApi().
-                getAlertDefinitionApi().deleteAlertDefinition(d.getId());
-        hqAssertSuccess(deleteResponse);
+        deleteAlertDefinitionByAlert(a);
     }
 
     public void testFindInvalidSeverity() throws Exception {
