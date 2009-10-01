@@ -4,6 +4,9 @@ import org.hyperic.hq.hqapi1.AlertApi;
 import org.hyperic.hq.hqapi1.types.AlertsResponse;
 import org.hyperic.hq.hqapi1.types.Alert;
 import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.User;
+
+import java.util.List;
 
 public class AlertFind_test extends AlertTestBase {
 
@@ -28,6 +31,24 @@ public class AlertFind_test extends AlertTestBase {
 
         // Cleanup
         deleteAlertDefinitionByAlert(a);
+    }
+
+    public void testFindValidNoPermission() throws Exception {
+        Resource platform = getLocalPlatformResource(false, false);
+        Alert a = generateAlerts(platform);
+
+        List<User> users = createTestUsers(1);
+        User unprivUser = users.get(0);
+        AlertApi apiUnpriv = getApi(unprivUser.getName(), TESTUSER_PASSWORD).getAlertApi();
+
+        AlertsResponse response = apiUnpriv.findAlerts(0, System.currentTimeMillis(),
+                                                       10, 1, false, false);
+        hqAssertSuccess(response);
+        assertTrue(response.getAlert().size() == 0);
+
+        // Cleanup
+        deleteAlertDefinitionByAlert(a);
+        deleteTestUsers(users);
     }
 
     public void testFindValidSmallRange() throws Exception {
