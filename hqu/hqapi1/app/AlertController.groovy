@@ -206,8 +206,13 @@ public class AlertController extends ApiController {
                 try {
                     // TODO: Add to EscalationHelper
                     for (id in ids) {
-                        escMan.acknowledgeAlert(user, ClassicEscalationAlertType.CLASSIC,
-                                                id, reason, pause)
+                        def success = escMan.acknowledgeAlert(user, ClassicEscalationAlertType.CLASSIC,
+                                                              id, reason, pause)
+                        if (!success) {
+                            // TODO: Should re-evaluate this in the future, should we return an error?
+                            log.warn("Alert id " + id + " was not in an " +
+                                     "acknowledgable state")
+                        }
                     }
                 } catch (Throwable t) {
                     failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
