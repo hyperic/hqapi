@@ -7,6 +7,7 @@ import org.hyperic.hq.hqapi1.MetricDataApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.EscalationApi;
+import org.hyperic.hq.hqapi1.EscalationActionBuilder;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
@@ -53,6 +54,7 @@ public abstract class AlertTestBase extends HQApiTestBase {
         e.setRepeat(true);
         e.setDescription("Test escalation for Alert tests");
         e.setPauseAllowed(true);
+        e.getAction().add(EscalationActionBuilder.createNoOpAction(60000));
 
         EscalationResponse response = escalationApi.createEscalation(e);
         hqAssertSuccess(response);
