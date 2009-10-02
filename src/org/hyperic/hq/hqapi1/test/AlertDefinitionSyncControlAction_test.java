@@ -4,55 +4,20 @@ import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
 import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.AlertDefinitionBuilder;
-import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.MetricsResponse;
 import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertAction;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
-import org.hyperic.hq.hqapi1.types.ResourceResponse;
-import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Random;
-import java.util.HashMap;
-import java.util.Map;
 
 public class AlertDefinitionSyncControlAction_test extends AlertDefinitionTestBase {
 
     public AlertDefinitionSyncControlAction_test(String name) {
         super(name);
-    }
-
-    // TODO: Copied from ControlTestBase in master branch.
-    private Resource createControllableResource(HQApi api)
-        throws Exception
-    {
-        ResourceApi rApi = api.getResourceApi();
-
-        ResourcePrototypeResponse protoResponse =
-                rApi.getResourcePrototype("FileServer File");
-        hqAssertSuccess(protoResponse);
-
-        Resource localPlatform = getLocalPlatformResource(false, false);
-
-        Map<String,String> config = new HashMap<String,String>();
-        // TODO: Fix for windows
-        config.put("path", "/usr/bin/true");
-
-        Random r = new Random();
-        String name = "Controllable-Resource-" + r.nextInt();
-
-        ResourceResponse resourceCreateResponse =
-                rApi.createService(protoResponse.getResourcePrototype(),
-                                   localPlatform, name, config);
-
-        hqAssertSuccess(resourceCreateResponse);
-
-        return resourceCreateResponse.getResource();
     }
 
     public void testAddRemoveControlAction() throws Exception {
@@ -105,10 +70,7 @@ public class AlertDefinitionSyncControlAction_test extends AlertDefinitionTestBa
 
         // Cleanup
         cleanup(response.getAlertDefinition());
-
-        ResourceApi rApi = api.getResourceApi();
-        StatusResponse deleteResponse = rApi.deleteResource(controllableResource.getId());
-        hqAssertSuccess(deleteResponse);
+        cleanupControllableResource(api, controllableResource);
     }
 
     public void testAddControlActionWrongAction() throws Exception {
@@ -144,10 +106,7 @@ public class AlertDefinitionSyncControlAction_test extends AlertDefinitionTestBa
 
         // Cleanup
         cleanup(response.getAlertDefinition());
-
-        ResourceApi rApi = api.getResourceApi();
-        StatusResponse deleteResponse = rApi.deleteResource(controllableResource.getId());
-        hqAssertSuccess(deleteResponse);
+        cleanupControllableResource(api, controllableResource);
     }
 
     public void testAddControlActionUncontrollableResource() throws Exception {

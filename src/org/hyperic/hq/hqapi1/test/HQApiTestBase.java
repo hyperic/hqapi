@@ -46,11 +46,15 @@ import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.UserResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.ResourceResponse;
 
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 public abstract class HQApiTestBase extends TestCase {
 
@@ -186,6 +190,44 @@ public abstract class HQApiTestBase extends TestCase {
         }
 
         return localPlatforms.get(0);
+    }
+
+    public Resource createControllableResource(HQApi api)
+        throws Exception
+    {
+        ResourceApi rApi = api.getResourceApi();
+
+        ResourcePrototypeResponse protoResponse =
+                rApi.getResourcePrototype("FileServer File");
+        hqAssertSuccess(protoResponse);
+
+        Resource localPlatform = getLocalPlatformResource(false, false);
+
+        Map<String,String> config = new HashMap<String,String>();
+        // TODO: Fix for windows
+        config.put("path", "/usr/bin/true");
+
+        Random r = new Random();
+        String name = "Controllable-Resource-" + r.nextInt();
+
+        ResourceResponse resourceCreateResponse =
+                rApi.createService(protoResponse.getResourcePrototype(),
+                                   localPlatform, name, config);
+
+        hqAssertSuccess(resourceCreateResponse);
+
+        return resourceCreateResponse.getResource();
+    }
+
+    public void cleanupControllableResource(HQApi api, Resource r)
+        throws Exception
+    {
+        pauseTest();
+
+        ResourceApi rApi = api.getResourceApi();
+
+        StatusResponse response = rApi.deleteResource(r.getId());
+        hqAssertSuccess(response);
     }
 
     /**
