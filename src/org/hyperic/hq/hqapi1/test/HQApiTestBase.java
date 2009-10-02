@@ -204,8 +204,11 @@ public abstract class HQApiTestBase extends TestCase {
         Resource localPlatform = getLocalPlatformResource(false, false);
 
         Map<String,String> config = new HashMap<String,String>();
-        // TODO: Fix for windows
-        config.put("path", "/usr/bin/true");
+        if (localPlatform.getResourcePrototype().getName().equals("Win32")) {
+            config.put("path", "C:\\windows\\system32\\cmd.exe");
+        } else {
+            config.put("path", "/usr/bin/true");
+        }
 
         Random r = new Random();
         String name = "Controllable-Resource-" + r.nextInt();
@@ -215,6 +218,8 @@ public abstract class HQApiTestBase extends TestCase {
                                    localPlatform, name, config);
 
         hqAssertSuccess(resourceCreateResponse);
+
+        pauseTest();
 
         return resourceCreateResponse.getResource();
     }
@@ -279,6 +284,7 @@ public abstract class HQApiTestBase extends TestCase {
      * are modified or deleted so quickly after being created.
      * 
      * TODO: This issue needs to be fixed in the HQ Core code
+     * @param timeMillis Time in milliseconds to pause.
      */
     void pauseTest(long timeMillis) {
         try {
