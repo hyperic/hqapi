@@ -27,7 +27,9 @@ public class AlertAck_test extends AlertTestBase {
         AlertResponse ackResponse = api.ackAlert(a.getId(), "Test ACK", 60000l);
         hqAssertSuccess(ackResponse);
 
-        // TODO: Valididate ack? Will require a getById API.
+        assertEquals("Alert not acked by hqadmin",
+                     "hqadmin",
+                     ackResponse.getAlert().getEscalationState().getAckedBy());
 
         // Cleanup
         deleteAlertDefinitionByAlert(a);
@@ -65,7 +67,8 @@ public class AlertAck_test extends AlertTestBase {
         AlertResponse ackResponse = api.ackAlert(a.getId(), "Test ACK", 60000l);
         hqAssertSuccess(ackResponse);
 
-        // TODO: Valididate ack? Will require a getById API.
+        assertNull("Alert has escalation state, should not be ackable",
+                   ackResponse.getAlert().getEscalationState());
 
         // Cleanup
         deleteAlertDefinitionByAlert(a);

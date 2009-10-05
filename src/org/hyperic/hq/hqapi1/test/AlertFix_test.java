@@ -28,7 +28,7 @@ public class AlertFix_test extends AlertTestBase {
         AlertResponse fixResponse = api.fixAlert(a.getId());
         hqAssertSuccess(fixResponse);
 
-        // TODO: Valididate fix flag was set? Will require a getById API.
+        assertTrue("Alert was not fixed!", fixResponse.getAlert().isFixed());
 
         // Cleanup
         deleteAlertDefinitionByAlert(a);
@@ -48,7 +48,6 @@ public class AlertFix_test extends AlertTestBase {
         AlertResponse fixResponse = apiUnpriv.fixAlert(a.getId());
         hqAssertFailurePermissionDenied(fixResponse);
 
-        // TODO: Valididate fix flag was set? Will require a getById API.
 
         // Cleanup
         deleteAlertDefinitionByAlert(a);
@@ -56,7 +55,6 @@ public class AlertFix_test extends AlertTestBase {
     }
 
     public void testFixServerAlertNoPermission() throws Exception {
-        AlertApi api = getAlertApi();
         ResourceApi rApi = getApi().getResourceApi();
 
         ResourcePrototypeResponse protoResponse =
@@ -85,8 +83,6 @@ public class AlertFix_test extends AlertTestBase {
         // Test marking fixed with an unprivlidged user
         AlertResponse fixResponse = apiUnpriv.fixAlert(a.getId());
         hqAssertFailurePermissionDenied(fixResponse);
-
-        // TODO: Valididate fix flag was set? Will require a getById API.
 
         // Cleanup
         deleteAlertDefinitionByAlert(a);
@@ -122,8 +118,6 @@ public class AlertFix_test extends AlertTestBase {
         // Test marking fixed with an unprivlidged user
         AlertResponse fixResponse = apiUnpriv.fixAlert(a.getId());
         hqAssertFailurePermissionDenied(fixResponse);
-
-        // TODO: Valididate fix flag was set? Will require a getById API.
 
         // Cleanup
         deleteAlertDefinitionByAlert(a);
