@@ -1,10 +1,10 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.types.Alert;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.Escalation;
 import org.hyperic.hq.hqapi1.types.User;
+import org.hyperic.hq.hqapi1.types.AlertResponse;
 import org.hyperic.hq.hqapi1.AlertApi;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class AlertAck_test extends AlertTestBase {
         validateAlert(a);
 
         // Test ack - alert will be in Escalation
-        StatusResponse ackResponse = api.ackAlert(a.getId(), "Test ACK", 60000l);
+        AlertResponse ackResponse = api.ackAlert(a.getId(), "Test ACK", 60000l);
         hqAssertSuccess(ackResponse);
 
         // TODO: Valididate ack? Will require a getById API.
@@ -45,7 +45,7 @@ public class AlertAck_test extends AlertTestBase {
         AlertApi apiUnpriv = getApi(unprivUser.getName(), TESTUSER_PASSWORD).getAlertApi();
 
         // Test ack - alert will be in Escalation
-        StatusResponse ackResponse = apiUnpriv.ackAlert(a.getId(), "Test ACK", 60000l);
+        AlertResponse ackResponse = apiUnpriv.ackAlert(a.getId(), "Test ACK", 60000l);
         hqAssertFailurePermissionDenied(ackResponse);
 
         // Cleanup
@@ -62,7 +62,7 @@ public class AlertAck_test extends AlertTestBase {
         validateAlert(a);
 
         // Test ack - alert is not in escalation
-        StatusResponse ackResponse = api.ackAlert(a.getId(), "Test ACK", 60000l);
+        AlertResponse ackResponse = api.ackAlert(a.getId(), "Test ACK", 60000l);
         hqAssertSuccess(ackResponse);
 
         // TODO: Valididate ack? Will require a getById API.
@@ -75,7 +75,7 @@ public class AlertAck_test extends AlertTestBase {
 
         AlertApi api = getAlertApi();
 
-        StatusResponse response = api.ackAlert(Integer.MAX_VALUE, "Test ACK", 60000l);
+        AlertResponse response = api.ackAlert(Integer.MAX_VALUE, "Test ACK", 60000l);
         hqAssertFailureObjectNotFound(response);
     }
 }

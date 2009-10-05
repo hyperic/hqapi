@@ -1285,7 +1285,7 @@
                 </wadl:request>
                 <wadl:response>
                     <wadl:representation mediaType="application/xml"
-                                         element="StatusResponse"/>
+                                         element="AlertsResponse"/>
                 </wadl:response>
             </wadl:method>
         </wadl:resource>
@@ -1305,7 +1305,7 @@
                 </wadl:request>
                 <wadl:response>
                     <wadl:representation mediaType="application/xml"
-                                         element="StatusResponse"/>
+                                         element="AlertsResponse"/>
                 </wadl:response>
             </wadl:method>
         </wadl:resource>

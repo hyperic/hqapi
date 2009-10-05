@@ -1,11 +1,11 @@
 package org.hyperic.hq.hqapi1.test;
 
-import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.Alert;
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.AlertResponse;
 import org.hyperic.hq.hqapi1.AlertApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
 
@@ -25,7 +25,7 @@ public class AlertFix_test extends AlertTestBase {
         validateAlert(a);
 
         // Test marking fixed
-        StatusResponse fixResponse = api.fixAlert(a.getId());
+        AlertResponse fixResponse = api.fixAlert(a.getId());
         hqAssertSuccess(fixResponse);
 
         // TODO: Valididate fix flag was set? Will require a getById API.
@@ -45,7 +45,7 @@ public class AlertFix_test extends AlertTestBase {
         AlertApi apiUnpriv = getApi(unprivUser.getName(), TESTUSER_PASSWORD).getAlertApi();
 
         // Test marking fixed with an unprivlidged user
-        StatusResponse fixResponse = apiUnpriv.fixAlert(a.getId());
+        AlertResponse fixResponse = apiUnpriv.fixAlert(a.getId());
         hqAssertFailurePermissionDenied(fixResponse);
 
         // TODO: Valididate fix flag was set? Will require a getById API.
@@ -83,7 +83,7 @@ public class AlertFix_test extends AlertTestBase {
         AlertApi apiUnpriv = getApi(unprivUser.getName(), TESTUSER_PASSWORD).getAlertApi();
 
         // Test marking fixed with an unprivlidged user
-        StatusResponse fixResponse = apiUnpriv.fixAlert(a.getId());
+        AlertResponse fixResponse = apiUnpriv.fixAlert(a.getId());
         hqAssertFailurePermissionDenied(fixResponse);
 
         // TODO: Valididate fix flag was set? Will require a getById API.
@@ -120,7 +120,7 @@ public class AlertFix_test extends AlertTestBase {
         AlertApi apiUnpriv = getApi(unprivUser.getName(), TESTUSER_PASSWORD).getAlertApi();
 
         // Test marking fixed with an unprivlidged user
-        StatusResponse fixResponse = apiUnpriv.fixAlert(a.getId());
+        AlertResponse fixResponse = apiUnpriv.fixAlert(a.getId());
         hqAssertFailurePermissionDenied(fixResponse);
 
         // TODO: Valididate fix flag was set? Will require a getById API.
@@ -134,7 +134,7 @@ public class AlertFix_test extends AlertTestBase {
 
         AlertApi api = getAlertApi();
 
-        StatusResponse response = api.fixAlert(Integer.MAX_VALUE);
+        AlertResponse response = api.fixAlert(Integer.MAX_VALUE);
         hqAssertFailureObjectNotFound(response);
     }
 }

@@ -190,6 +190,7 @@ public class AlertController extends ApiController {
         def pause = params.getOne("pause", "0").toLong()
 
         def failureXml = null
+        def alerts = []
 
         if (ids == null) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
@@ -214,6 +215,8 @@ public class AlertController extends ApiController {
                             log.warn("Alert id " + id + " was not in an " +
                                      "acknowledgable state")
                         }
+                        // Re-lookup alert so we have the correct escalation state
+                        alerts << getAlertById(id)
                     }
                 } catch (PermissionException e) {
                     failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
@@ -225,11 +228,14 @@ public class AlertController extends ApiController {
         }
 
         renderXml() {
-            StatusResponse() {
+            AlertsResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
                     out << getSuccessXML()
+                    for (alert in alerts) {
+                        out << getAlertXML(alert)
+                    }
                 }
             }
         }
@@ -265,12 +271,14 @@ public class AlertController extends ApiController {
     def fix(params) {
         def ids = params.get("id")*.toInteger()
         def failureXml = null
+        def alerts = []
+
         if (ids == null) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                        "Required parameter id not given")
 
         } else {
-            def alerts = []
+            def alertsToFix = []
             for (id in ids) {
                 def alert = getAlertById(id)
                 if (!alert) {
@@ -279,15 +287,16 @@ public class AlertController extends ApiController {
                 } else if (!canManageAlerts(alert.definition.resource)) {
                     failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
                 } else {
-                    alerts << alert
+                    alertsToFix << alert
                 }
             }
 
             if (!failureXml) {
                 try {
                     // TODO: Add to AlertCategory
-                    for (alert in alerts) {
+                    for (alert in alertsToFix) {
                         aMan.setAlertFixed(alert)
+                        alerts << getAlertById(alert.id)
                     }
                 } catch (Exception e) {
                     failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
@@ -297,11 +306,14 @@ public class AlertController extends ApiController {
         }
 
         renderXml() {
-            StatusResponse() {
+            AlertsResponse() {
                 if (failureXml) {
                     out << failureXml
                 } else {
                     out << getSuccessXML()
+                    for (alert in alerts) {
+                        out << getAlertXML(alert)
+                    }
                 }
             }
         }

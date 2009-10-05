@@ -38,6 +38,7 @@ import org.hyperic.hq.hqapi1.AlertApi;
 import org.hyperic.hq.hqapi1.types.AlertsResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.AlertResponse;
 
 public class AlertCommand extends Command {
 
@@ -162,7 +163,7 @@ public class AlertCommand extends Command {
 
         Integer id = (Integer)getRequired(options, OPT_ID);
 
-        StatusResponse response = alertApi.fixAlert(id);
+        AlertResponse response = alertApi.fixAlert(id);
         checkSuccess(response);
 
         System.out.println("Successfully fixed alert id " + id);
@@ -194,7 +195,7 @@ public class AlertCommand extends Command {
             pause = 0l;
         }
 
-        StatusResponse response = alertApi.ackAlert(id, reason, pause);
+        AlertResponse response = alertApi.ackAlert(id, reason, pause);
         checkSuccess(response);
 
         System.out.println("Successfully acknowledged alert id " + id);

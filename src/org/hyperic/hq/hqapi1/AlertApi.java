@@ -30,6 +30,7 @@ package org.hyperic.hq.hqapi1;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.AlertsResponse;
+import org.hyperic.hq.hqapi1.types.AlertResponse;
 
 import java.io.IOException;
 import java.util.Map;
@@ -138,10 +139,18 @@ public class AlertApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public StatusResponse fixAlert(Integer alertId)
+    public AlertResponse fixAlert(Integer alertId)
         throws IOException
     {
-        return fixAlerts(new Integer[] { alertId });
+        AlertsResponse response = fixAlerts(new Integer[] { alertId });
+
+        AlertResponse res = new AlertResponse();
+        res.setStatus(response.getStatus());
+        res.setError(response.getError());
+        if (response.getAlert().size() == 1) {
+            res.setAlert(response.getAlert().get(0));
+        }
+        return res;
     }
 
     /**
@@ -154,7 +163,7 @@ public class AlertApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public StatusResponse fixAlerts(Integer[] alertIds)
+    public AlertsResponse fixAlerts(Integer[] alertIds)
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String,String[]>();
@@ -165,7 +174,7 @@ public class AlertApi extends BaseApi {
 
         params.put("id", ids);
 
-        return doGet("alert/fix.hqu", params, StatusResponse.class);
+        return doGet("alert/fix.hqu", params, AlertsResponse.class);
     }
 
     /**
@@ -181,10 +190,18 @@ public class AlertApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public StatusResponse ackAlert(Integer alertId, String reason, Long pause)
+    public AlertResponse ackAlert(Integer alertId, String reason, Long pause)
         throws IOException
     {
-        return ackAlerts(new Integer[] { alertId }, reason, pause);
+        AlertsResponse response = ackAlerts(new Integer[] { alertId }, reason, pause);
+
+        AlertResponse res = new AlertResponse();
+        res.setStatus(response.getStatus());
+        res.setError(response.getError());
+        if (response.getAlert().size() == 1) {
+            res.setAlert(response.getAlert().get(0));
+        }
+        return res;
     }
 
     /**
@@ -200,7 +217,7 @@ public class AlertApi extends BaseApi {
      *
      * @throws IOException If a network error occurs while making the request.
      */
-    public StatusResponse ackAlerts(Integer[] alertIds, String reason, Long pause)
+    public AlertsResponse ackAlerts(Integer[] alertIds, String reason, Long pause)
         throws IOException
     {
         Map<String,String[]> params = new HashMap<String,String[]>();
@@ -212,7 +229,7 @@ public class AlertApi extends BaseApi {
         params.put("reason", new String[] { reason });
         params.put("pause", new String[] { Long.toString(pause)});
 
-        return doGet("alert/ack.hqu", params, StatusResponse.class);
+        return doGet("alert/ack.hqu", params, AlertsResponse.class);
     }
 
     /**

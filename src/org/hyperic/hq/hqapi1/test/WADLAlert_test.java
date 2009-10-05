@@ -24,14 +24,14 @@ public class WADLAlert_test extends WADLTestBase {
     public void testAck() throws Exception {
         Endpoint.AlertAckHqu ack = new Endpoint.AlertAckHqu();
 
-        StatusResponse response = ack.getAsStatusResponse(Integer.MAX_VALUE, "Test ack");
+        AlertsResponse response = ack.getAsAlertsResponse(Integer.MAX_VALUE, "Test ack");
         hqAssertFailure(response); // Alert will not exist
     }
 
     public void testFix() throws Exception {
         Endpoint.AlertFixHqu fix = new Endpoint.AlertFixHqu();
 
-        StatusResponse response = fix.getAsStatusResponse(Integer.MAX_VALUE);
+        AlertsResponse response = fix.getAsAlertsResponse(Integer.MAX_VALUE);
         hqAssertFailure(response); // Alert will not exist
     }
 
