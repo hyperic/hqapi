@@ -86,7 +86,7 @@ public class EventApi extends BaseApi {
          */
         ESCALATION("org.hyperic.hq.escalation.EscalationEvent"),
         /**
-         * Events for when a maintenance windows.
+         * Events for when a maintenance window occurs.
          */
         MAINTENANCE("org.hyperic.hq.events.MaintenanceEvent"),
         /**
