@@ -199,7 +199,7 @@
         <property name="log" value="info"/>
 
         <junit printsummary="yes" fork="no"
-               haltonfailure="yes" showoutput="true">
+               haltonfailure="no" showoutput="true">
 
             <sysproperty key="log" value="${log}"/>
             <classpath refid="all.classpath"/>
