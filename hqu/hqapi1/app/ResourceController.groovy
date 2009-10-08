@@ -555,10 +555,9 @@ class ResourceController extends ApiController {
             }
         }
         
-        // TODO: Support cprops?
-        //xmlResource['ResourceProperty'].each {
-        //    config[it.'@key'] = it.'@value'
-        //}
+        xmlResource['ResourceProperty'].each {
+            config[it.'@key'] = it.'@value'
+        }
 
         if (!name) {
             return getFailureXML(ErrorCode.INVALID_PARAMETERS,
