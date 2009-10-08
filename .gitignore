@@ -2,3 +2,5 @@ build
 *.iml
 *.ipr
 *.iws
+bin
+
