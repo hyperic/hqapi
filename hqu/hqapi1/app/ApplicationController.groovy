@@ -10,6 +10,7 @@ import org.hyperic.hq.appdef.shared.ServiceValue
 import org.hyperic.dao.DAOFactory
 import org.hyperic.hq.appdef.server.session.AppServiceDAO
 import org.hyperic.hq.appdef.shared.AppdefDuplicateNameException;
+import org.hyperic.hq.context.Bootstrap
 
 class ApplicationController extends ApiController {
 
@@ -324,7 +325,7 @@ class ApplicationController extends ApiController {
         // duplicates, so we need to iterate the list, first removing services
         // not present in the list, then adding the new entries.
         def sessionId = SessionManager.instance.put(user)
-        def dao = new AppServiceDAO(DAOFactory.getDAOFactory());
+        def dao = Bootstrap.getBean(AppServiceDAO.class);
 
         def svcListExisting = [] // List of AppdefEntityID's existing in the Application
         def svcListToRemove = [] // List of app service id's to remove
