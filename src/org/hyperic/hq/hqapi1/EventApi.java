@@ -23,11 +23,25 @@ public class EventApi extends BaseApi {
     }
 
     public enum EventStatus {
-
+        /**
+         * All Events.
+         */
         ANY("ANY"),
+        /**
+         * Events with a status of Error.
+         */
         ERROR("ERR"),
+        /**
+         * Events with a status of Warn.
+         */
         WARN("WRN"),
+        /**
+         * Events with a status of Info.
+         */
         INFO("INF"),
+        /**
+         * Events with a status of Debug.
+         */
         DEBUG("DBG");
 
         private final String _status;
@@ -43,14 +57,41 @@ public class EventApi extends BaseApi {
 
     public enum EventType {
 
+        /**
+         * All Events.
+         */
         ANY(null),
+        /**
+         * Events for alerts firing.
+         */
         ALERT("org.hyperic.hq.events.AlertFiredEvent"),
+        /**
+         * Events for baselines changing.
+         */
         BASELINE("org.hyperic.hq.measurement.ext.BaselineChangeEvent"),
+        /**
+         * Events for custom properties changing.
+         */
         CPROP("org.hyperic.hq.appdef.shared.CPropChangeEvent"),
+        /**
+         * Events for when a resource is cloned.
+         */
         CLONE("org.hyperic.hq.events.CloningEvent"),
+        /**
+         * Events for when control actions are run.
+         */
         CONTROL("org.hyperic.hq.control.ControlEvent"),
+        /**
+         * Events for when an escalation changes state.
+         */
         ESCALATION("org.hyperic.hq.escalation.EscalationEvent"),
+        /**
+         * Events for when a maintenance windows.
+         */
         MAINTENANCE("org.hyperic.hq.events.MaintenanceEvent"),
+        /**
+         * Events for log track messages.
+         */
         LOG("org.hyperic.hq.measurement.shared.ResourceLogEvent");
 
         private final String _type;
