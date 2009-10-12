@@ -189,7 +189,8 @@ public class MaintenanceCommand extends Command {
         MaintenanceResponse response = maintenanceApi.get(groupId);
         checkSuccess(response);
 
-        if (response.getMaintenanceEvent().getState() != null &&
+        if (response.getMaintenanceEvent() != null &&
+            response.getMaintenanceEvent().getState() != null &&
             response.getMaintenanceEvent().getStartTime() != 0 &&
             response.getMaintenanceEvent().getEndTime() != 0) {
             System.out.println("Maintenance scheudle for group " + groupId);
