@@ -34,7 +34,6 @@ import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
-import org.hyperic.hq.hqapi1.types.Agent;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -129,8 +128,6 @@ public class ResourceCreateService_test extends ResourceTestBase {
         // this test which may cause a transaction failure
         pauseTest();
         
-        Agent a = getRunningAgent();
-
         ResourceApi api = getApi().getResourceApi();
 
         // Find HTTP resource type
@@ -139,11 +136,7 @@ public class ResourceCreateService_test extends ResourceTestBase {
         ResourcePrototype pt = protoResponse.getResourcePrototype();
 
         // Find local platform
-        ResourcesResponse resourcesResponse = api.getResources(a, false, false);
-        hqAssertSuccess(resourcesResponse);
-        assertTrue("Did not find a single platform for " + a.getAddress() + ":" +
-                   a.getPort(), resourcesResponse.getResource().size() == 1);
-        Resource platform = resourcesResponse.getResource().get(0);
+        Resource platform = getLocalPlatformResource(false, false);
 
         String longDescription = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +
                                  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" +

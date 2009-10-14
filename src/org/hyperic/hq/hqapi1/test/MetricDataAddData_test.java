@@ -8,10 +8,8 @@ import org.hyperic.hq.hqapi1.types.MetricsResponse;
 import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.DataPoint;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
-import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
-import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.MetricResponse;
 import org.hyperic.hq.hqapi1.types.MetricDataResponse;
@@ -33,7 +31,6 @@ public class MetricDataAddData_test extends MetricDataTestBase {
         ResourceApi resourceApi = getApi().getResourceApi();
         MetricApi metricApi = getApi().getMetricApi();
         MetricDataApi dataApi = getApi().getMetricDataApi();
-        Agent a = getRunningAgent();
 
         // Find HTTP resource type
         ResourcePrototypeResponse protoResponse =
@@ -42,12 +39,7 @@ public class MetricDataAddData_test extends MetricDataTestBase {
         ResourcePrototype pt = protoResponse.getResourcePrototype();
 
         // Find local platform
-        ResourcesResponse resourcesResponse =
-                resourceApi.getResources(a, false, false);
-        hqAssertSuccess(resourcesResponse);
-        assertTrue("Did not find a single platform for " + a.getAddress() + ":" +
-                   a.getPort(), resourcesResponse.getResource().size() == 1);
-        Resource platform = resourcesResponse.getResource().get(0);
+        Resource platform = getLocalPlatformResource(false, false);
 
         // Configure service
         Map<String,String> params = new HashMap<String,String>();
