@@ -39,8 +39,9 @@ import org.hyperic.hq.hqapi1.types.AlertsResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.AlertResponse;
-
-public class AlertCommand extends Command {
+import org.springframework.stereotype.Component;
+@Component
+public class AlertCommand extends AbstractCommand {
 
     private static String CMD_LIST   = "list";
     private static String CMD_ACK    = "ack";
@@ -63,13 +64,17 @@ public class AlertCommand extends Command {
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
     }
+    
+    
+    public String getName() {
+        return "alert";
+     }
 
-    protected void handleCommand(String[] args) throws Exception {
+    public int handleCommand(String[] args) throws Exception {
         if (args.length == 0) {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
-
         if (args[0].equals(CMD_LIST)) {
             list(trim(args));
         } else if (args[0].equals(CMD_FIX)) {
@@ -80,8 +85,9 @@ public class AlertCommand extends Command {
             delete(trim(args));
         } else {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
+        return 0;
     }
 
     private void list(String[] args) throws Exception {

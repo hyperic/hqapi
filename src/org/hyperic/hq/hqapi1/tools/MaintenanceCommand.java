@@ -41,8 +41,9 @@ import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.MaintenanceApi;
 import org.hyperic.hq.hqapi1.types.MaintenanceResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
-
-public class MaintenanceCommand extends Command {
+import org.springframework.stereotype.Component;
+@Component
+public class MaintenanceCommand extends AbstractCommand {
 
     private static final String CMD_SCHEDULE   = "schedule";
     private static final String CMD_UNSCHEDULE = "unschedule";
@@ -58,11 +59,15 @@ public class MaintenanceCommand extends Command {
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
     }
+    
+    public String getName() {
+        return "maintenance";
+     }
 
-    protected void handleCommand(String[] args) throws Exception {
+    public int handleCommand(String[] args) throws Exception {
         if (args.length == 0) {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
 
         if (args[0].equals(CMD_SCHEDULE)) {
@@ -73,8 +78,9 @@ public class MaintenanceCommand extends Command {
             get(trim(args));
         } else {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
+        return 0;
     }
 
 

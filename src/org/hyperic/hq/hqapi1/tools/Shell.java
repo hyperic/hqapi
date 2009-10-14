@@ -27,35 +27,146 @@
 
 package org.hyperic.hq.hqapi1.tools;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.Properties;
+
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+
 
 public class Shell {
 
-    private static Map<String,Command> _commands = new TreeMap<String,Command>();
+    private final Map<String, Command> _commands;
 
-    static {
-        _commands.put("agent", new AgentCommand());
-        _commands.put("alertdefinition", new AlertDefinitionCommand());
-        _commands.put("application", new ApplicationCommand());
-        _commands.put("autodiscovery", new AutoDiscoveryCommand());
-        _commands.put("escalation", new EscalationCommand());
-        _commands.put("group", new GroupCommand());
-        _commands.put("maintenance", new MaintenanceCommand());
-        _commands.put("metric", new MetricCommand());
-        _commands.put("metricData", new MetricDataCommand());
-        _commands.put("metricTemplate", new MetricTemplateCommand());
-        _commands.put("resource", new ResourceCommand());
-        _commands.put("dependency", new ResourceEdgeCommand());
-        _commands.put("role", new RoleCommand());
-        _commands.put("user", new UserCommand());
-        _commands.put("serverConfig", new ServerConfigCommand());
-        _commands.put("alert", new AlertCommand());
-        _commands.put("event", new EventCommand());
-        _commands.put("control", new ControlCommand());
+    public Shell(Map<String, Command> commands) {
+        _commands = commands;
+    }
+    
+    static private Properties getClientProperties(String file) {
+        Properties props = new Properties();
+
+        File clientProperties;
+
+        if (file != null) {
+            clientProperties = new File(file);
+            if (!clientProperties.exists()) {
+                System.err.println("Error: " + clientProperties.toString() +
+                                   " does not exist");
+                System.exit(-1);
+            }
+        } else {
+            String home = System.getProperty("user.home");
+            File hq = new File(home, ".hq");
+            clientProperties = new File(hq, "client.properties");
+        }
+
+        if (clientProperties.exists()) {
+            FileInputStream fis = null;
+            props = new Properties();
+            try {
+                fis = new FileInputStream(clientProperties);
+                props.load(fis);
+            } catch (IOException e) {
+                return props;
+            } finally {
+                try {
+                    if (fis != null) {
+                        fis.close();
+                    }
+                } catch (IOException ioe) {
+                    // Ignore
+                }
+            }
+        }
+
+        // Trim property values
+        for (Enumeration e = props.propertyNames(); e.hasMoreElements(); ) {
+            String prop = (String)e.nextElement();
+            props.setProperty(prop, props.getProperty(prop).trim());
+        }
+
+        return props;
+    }
+    
+    static void initConnectionProperties(final String[] args) throws Exception {
+        final List<String> connectionArgs = new ArrayList<String>(5);
+        for (int i=0;i <args.length;i++) {
+            final String arg = args[i];
+            if (arg.trim().startsWith("--" + OptionParserFactory.OPT_HOST)
+                    || arg.trim().startsWith(
+                            "--" + OptionParserFactory.OPT_PORT)
+                    || arg.trim().startsWith(
+                            "--" + OptionParserFactory.OPT_PASS)
+                    || arg.trim().startsWith(
+                            "--" + OptionParserFactory.OPT_USER)
+                    || arg.trim().startsWith(
+                            "--" + OptionParserFactory.OPT_SECURE)) {
+                connectionArgs.add(arg);
+                if( i != args.length-1 && !(args[i+1].startsWith("--"))) {
+                    connectionArgs.add(args[i+1]);
+                }
+            }
+        }
+        final OptionParser optionParser = (OptionParser) new OptionParserFactory()
+                .getObject();
+        final OptionSet options = optionParser.parse(connectionArgs
+                .toArray(new String[connectionArgs.size()]));
+     
+        Properties clientProps =
+                getClientProperties((String)options.valueOf(OptionParserFactory.OPT_PROPERTIES));
+
+        String host = (String)options.valueOf(OptionParserFactory.OPT_HOST);
+        if (host == null) {
+            host = clientProps.getProperty(OptionParserFactory.OPT_HOST);
+        }
+        System.setProperty(OptionParserFactory.SYSTEM_PROP_PREFIX + OptionParserFactory.OPT_HOST, host);
+        
+        Integer port;
+        if (options.hasArgument(OptionParserFactory.OPT_PORT)) {
+            port = (Integer)options.valueOf(OptionParserFactory.OPT_PORT);
+        } else {
+            port = Integer.parseInt(clientProps.getProperty(OptionParserFactory.OPT_PORT, "7080"));
+        }
+        System.setProperty(OptionParserFactory.SYSTEM_PROP_PREFIX + OptionParserFactory.OPT_PORT, port.toString());
+
+        String user = (String)options.valueOf(OptionParserFactory.OPT_USER);
+        if (user == null) {
+            user = clientProps.getProperty(OptionParserFactory.OPT_USER);
+        }
+        System.setProperty(OptionParserFactory.SYSTEM_PROP_PREFIX + OptionParserFactory.OPT_USER, user);
+        String password = (String)options.valueOf(OptionParserFactory.OPT_PASS);
+        if (password == null) {
+            password = clientProps.getProperty(OptionParserFactory.OPT_PASS);
+        }
+
+        if (password == null) {
+            // Prompt for password
+            try {
+                char[] passwordArray = PasswordField.getPassword(System.in,
+                                                                 "Enter password: ");
+                password = String.valueOf(passwordArray);
+            } catch (IOException ioe) {
+                System.err.println("Error reading password");
+                System.exit(-1);
+            }
+        }
+        System.setProperty(OptionParserFactory.SYSTEM_PROP_PREFIX + OptionParserFactory.OPT_PASS,password);
+        Boolean secure = options.hasArgument(OptionParserFactory.OPT_SECURE[0]) ||
+                         Boolean.valueOf(clientProps.getProperty(OptionParserFactory.OPT_SECURE[1],
+                                                                 "false"));
+        System.setProperty(OptionParserFactory.SYSTEM_PROP_PREFIX + OptionParserFactory.OPT_SECURE[1], secure.toString());  
     }
 
-    private static void printHelp() {
+    private void printHelp() {
         System.out.println("HQ Api Command Shell");
         System.out.println("");
         System.out.println("Available commands:");
@@ -63,26 +174,38 @@ public class Shell {
             System.out.println("    " + command);
         }
     }
-
-    public static void main(String[] args) throws Exception {
+    
+    public int dispatchCommand(String[] args) throws Exception {
         if (args.length == 0) {
             printHelp();
-            System.exit(-1);
+            return 1;
         }
-
         Command cmd = _commands.get(args[0]);
-
         if (cmd == null) {
             printHelp();
-            System.exit(-1);
+            return 1;
         }
+        return cmd.handleCommand(AbstractCommand.trim(args));
+    }
 
+    public static void main(String[] args) throws Exception {
         try {
-            cmd.handleCommand(Command.trim(args));
+            initConnectionProperties(args);
+        } catch (Exception e) {
+           System.err.println("Error parsing command line connection properties.  Cause: "
+                            + e.getMessage());
+           System.exit(1);
+        }
+        final ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(
+              new String[] { "classpath:/META-INF/spring/hqapi-context.xml","classpath*:/**/*commands-context.xml"});
+        try {
+            final int exitCode = ((Shell) applicationContext
+                    .getBean("commandDispatcher")).dispatchCommand(args);
+            System.exit(exitCode);
         } catch (Exception e) {
             System.err.println("Error running command: " + e.getMessage());
             e.printStackTrace(System.err);
-            System.exit(-1);
+           System.exit(1);
         }
     }
 }

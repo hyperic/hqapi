@@ -6,12 +6,13 @@ import org.hyperic.hq.hqapi1.ApplicationApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.types.*;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
 import java.io.InputStream;
-
-public class ApplicationCommand extends Command {
+@Component
+public class ApplicationCommand extends AbstractCommand {
 
     private static String CMD_LIST   = "list";
     private static String CMD_SYNC   = "sync";
@@ -26,10 +27,14 @@ public class ApplicationCommand extends Command {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
     }
 
-    protected void handleCommand(String[] args) throws Exception {
+    public String getName() {
+        return "application";
+    }
+    
+    public int handleCommand(String[] args) throws Exception {
         if (args.length == 0) {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
 
         if (args[0].equals(CMD_LIST)) {
@@ -40,8 +45,9 @@ public class ApplicationCommand extends Command {
             delete(trim(args));
         } else {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
+        return 0;
     }
 
     private void list(String[] args) throws Exception {

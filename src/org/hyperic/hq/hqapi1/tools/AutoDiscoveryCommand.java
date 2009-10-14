@@ -35,12 +35,13 @@ import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.types.AIPlatform;
 import org.hyperic.hq.hqapi1.types.QueueResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-public class AutoDiscoveryCommand extends Command {
+@Component
+public class AutoDiscoveryCommand extends AbstractCommand {
 
     private static String CMD_LIST    = "list";
     private static String CMD_APPROVE = "approve";
@@ -53,10 +54,15 @@ public class AutoDiscoveryCommand extends Command {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
     }
 
-    protected void handleCommand(String[] args) throws Exception {
+    
+    public String getName() {
+        return "autodiscovery";
+     }
+    
+    public int handleCommand(String[] args) throws Exception {
         if (args.length == 0) {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
 
         if (args[0].equals(CMD_LIST)) {
@@ -65,8 +71,9 @@ public class AutoDiscoveryCommand extends Command {
             approve(trim(args));
         } else {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
+        return 0;
     }
 
     private void list(String[] args) throws Exception {

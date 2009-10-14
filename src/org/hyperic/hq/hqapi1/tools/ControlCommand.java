@@ -43,8 +43,9 @@ import org.hyperic.hq.hqapi1.types.ControlActionResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.ControlHistoryResponse;
 import org.hyperic.hq.hqapi1.types.ControlHistory;
-
-public class ControlCommand extends Command {
+import org.springframework.stereotype.Component;
+@Component
+public class ControlCommand extends AbstractCommand {
 
     private static String CMD_ACTIONS = "actions";
     private static String CMD_HISTORY = "history";
@@ -58,11 +59,15 @@ public class ControlCommand extends Command {
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
     }
+    
+    public String getName() {
+        return "control";
+     }
 
-    protected void handleCommand(String[] args) throws Exception {
+    public int handleCommand(String[] args) throws Exception {
         if (args.length == 0) {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
 
         if (args[0].equals(CMD_ACTIONS)) {
@@ -73,8 +78,9 @@ public class ControlCommand extends Command {
             execute(trim(args));
         } else {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
+        return 0;
     }
 
     private void actions(String[] args) throws Exception {

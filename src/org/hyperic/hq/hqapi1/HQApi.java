@@ -27,11 +27,15 @@
 
 package org.hyperic.hq.hqapi1;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 /**
  * The Hyperic HQ API.
  *
  * This is the main entry point into the HQ Api.
  */
+@Component
 public class HQApi {
 
     private final UserApi            _userApi;
@@ -51,7 +55,7 @@ public class HQApi {
     private final EventApi           _eventApi;
     private final ControlApi         _controlApi;
     private final ApplicationApi     _applApi;
-
+    
     /**
      * @param host The hostname of the HQ Server to connect to.
      * @param port The port on the HQ server to connect to.
@@ -59,10 +63,13 @@ public class HQApi {
      * @param user The user to connect as.
      * @param password The password for the given user.
      */
-    public HQApi(String host, int port, boolean isSecure, String user,
-                 String password) {
-        HQConnection connection = new HQConnection(host, port, isSecure,
-                                                   user, password);
+    public HQApi(String host, int port, boolean isSecure, String user, String password) {
+        this(new HQConnection(host,port, isSecure,user,password, new XmlResponseHandler()));
+    }
+
+   
+    @Autowired
+    public HQApi(HQConnection connection) {
         _userApi          = new UserApi(connection);
         _roleApi          = new RoleApi(connection);
         _groupApi         = new GroupApi(connection);

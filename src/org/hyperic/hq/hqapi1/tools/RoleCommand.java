@@ -37,12 +37,13 @@ import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.RolesResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-
-public class RoleCommand extends Command {
+@Component
+public class RoleCommand extends AbstractCommand {
 
     private static String CMD_LIST = "list";
     private static String CMD_SYNC = "sync";
@@ -56,10 +57,10 @@ public class RoleCommand extends Command {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
     }
 
-    protected void handleCommand(String[] args) throws Exception {
+    public int handleCommand(String[] args) throws Exception {
         if (args.length == 0) {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
 
         if (args[0].equals(CMD_LIST)) {
@@ -68,9 +69,14 @@ public class RoleCommand extends Command {
             sync(trim(args));
         } else {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
+        return 0;
     }
+    
+    public String getName() {
+        return "role";
+     }
 
     private void list(String[] args) throws Exception {
 

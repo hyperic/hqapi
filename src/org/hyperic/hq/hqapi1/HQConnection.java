@@ -43,21 +43,18 @@ import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.ServiceError;
 
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Iterator;
 import java.util.Map;
 
-class HQConnection {
+class HQConnection implements Connection {
 
     private static Log _log = LogFactory.getLog(HQConnection.class);
 
@@ -66,9 +63,11 @@ class HQConnection {
     private boolean _isSecure;
     private String  _user;
     private String  _password;
+    
+    private final ResponseHandler xmlResponseHandler;
 
     HQConnection(String host, int port, boolean isSecure, String user,
-                 String password) {
+                 String password, ResponseHandler xmlResponseHandler) {
         _host     = host;
         _port     = port;
         _isSecure = isSecure;
@@ -79,44 +78,10 @@ class HQConnection {
             // To allow for self signed certificates
             UntrustedSSLProtocolSocketFactory.register();
         }
+        this.xmlResponseHandler = xmlResponseHandler;
     }
 
-    /**
-     * Generate an response object with the given Error.  In some cases the
-     * HQ server will not give us a result, so we generate one ourselves.
-     * XXX: It would be nice here if we could get JAXB to generate an
-     *      interface for all response objects so we don't need to use
-     *      reflection here.
-     * 
-     * @param res The return Class
-     * @param error The ServiceError to include in the response
-     * @return A response object of the given type with the given service error.
-     * @throws IOException If an error occurs generating the error object.
-     */
-    private <T> T getErrorResponse(Class<T> res, ServiceError error)
-        throws IOException
-    {
-        try {
-            T ret = res.newInstance();
-
-            Method setResponse = res.getMethod("setStatus", ResponseStatus.class);
-            setResponse.invoke(ret, ResponseStatus.FAILURE);
-
-            Method setError = res.getMethod("setError", ServiceError.class);
-            setError.invoke(ret, error);
-
-            return ret;
-        } catch (Exception e) {
-            // This shouldn't happen unless programmer error.  For instance,
-            // a result object not containing a Status or Error field.
-            if (_log.isDebugEnabled()) {
-                _log.debug("Error generating error response", e);
-            }
-
-            throw new IOException("Error generating Error response");
-        }
-    }
-
+   
     private String urlEncode(String s)
         throws IOException
     {
@@ -134,12 +99,16 @@ class HQConnection {
      * the type given in the resultClass argument.
      * @throws IOException If a network error occurs during the request.
      */
-    <T> T doGet(String path, Map<String, String[]> params, Class<T> resultClass)
+    public <T> T doGet(String path, Map<String, String[]> params, Class<T> resultClass)
         throws IOException
     {
         GetMethod method = new GetMethod();
         method.setDoAuthentication(true);
-
+        return runMethod(method, buildUri(path,params), resultClass, xmlResponseHandler);
+    }
+    
+    private String buildUri(String path, Map<String, String[]> params)
+    throws IOException {
         StringBuffer uri = new StringBuffer(path);
         if (uri.charAt(uri.length() - 1) != '?') {
             uri.append("?");
@@ -158,8 +127,16 @@ class HQConnection {
                 }
             }
         }
+        return uri.toString();
+    }
 
-        return runMethod(method, uri.toString(), resultClass);
+    
+    public <T> T doGet(String path, Map<String, String[]> params,
+                       File targetFile, Class<T> resultClass) throws IOException {
+                   GetMethod method = new GetMethod();
+                   method.setDoAuthentication(true);
+                   return runMethod(method, buildUri(path, params), resultClass,
+                           new FileResponseHandler(targetFile));
     }
 
     /**
@@ -173,7 +150,7 @@ class HQConnection {
      * of the type given in the resultClass argument.
      * @throws IOException If a network error occurs during the request.
      */
-    <T> T doPost(String path, Object o, Class<T> resultClass)
+    public <T> T doPost(String path, Object o, Class<T> resultClass)
         throws IOException
     {
         PostMethod method = new PostMethod();
@@ -189,7 +166,7 @@ class HQConnection {
             if (_log.isDebugEnabled()) {
                 _log.debug("Unable to serialize response", e);
             }
-            return getErrorResponse(resultClass, error);
+            return xmlResponseHandler.getErrorResponse(resultClass, error);
         }
         
         Part[] parts = {
@@ -199,11 +176,11 @@ class HQConnection {
         method.setRequestEntity(new MultipartRequestEntity(parts,
                                                            method.getParams()));
 
-        return runMethod(method, path, resultClass);
+        return runMethod(method, path, resultClass, xmlResponseHandler);
     }
 
     private <T> T runMethod(HttpMethodBase method, String uri,
-                            Class<T> resultClass)
+                            Class<T> resultClass,  ResponseHandler responseHandler)
         throws IOException
     {
         String protocol = _isSecure ? "https" : "http";
@@ -219,14 +196,14 @@ class HQConnection {
                 error = new ServiceError();
                 error.setErrorCode("LoginFailure");
                 error.setReasonText("User name cannot be null or empty");
-                return getErrorResponse(resultClass, error);
+                return responseHandler.getErrorResponse(resultClass, error);
             }
 
             if (_password == null || _password.length() == 0) {
                 error = new ServiceError();
                 error.setErrorCode("LoginFailure");
                 error.setReasonText("Password cannot be null or empty");
-                return getErrorResponse(resultClass, error);
+                return responseHandler.getErrorResponse(resultClass, error);
             }
 
             // Set Basic auth creds
@@ -240,36 +217,10 @@ class HQConnection {
                     new DefaultHttpMethodRetryHandler(0, true);
             client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
                                              retryhandler);
-            
-            switch (client.executeMethod(method)) {
-                case 200:
-                    // We only deal with HTTP_OK responses
-                    InputStream is = method.getResponseBodyAsStream();
-                    try {
-                        return XmlUtil.deserialize(resultClass, is);
-                    } catch (JAXBException e) {
-                        error = new ServiceError();
-                        error.setErrorCode("UnexpectedError");
-                        error.setReasonText("Unable to deserialize result");
-                        if (_log.isDebugEnabled()) {
-                            _log.debug("Unable to deserialize result", e);
-                        }
-                        return getErrorResponse(resultClass, error);
-                    }
-                case 401:
-                    // Unauthorized
-                    error = new ServiceError();
-                    error.setErrorCode("LoginFailure");
-                    error.setReasonText("The given username and password could " +
-                                        "not be validated");
-                    return getErrorResponse(resultClass, error);
-                default:
-                    // Some other server blow up.
-                    error = new ServiceError();
-                    error.setErrorCode("UnexpectedError");
-                    error.setReasonText("An unexpected error occurred");
-                    return getErrorResponse(resultClass, error);
-            }
+
+            int responseCode = client.executeMethod(method);
+            return responseHandler.handleResponse(responseCode, method,
+                                                  resultClass);
         } catch (SocketException e) {
             throw new HttpException("Error issuing request", e);
         } finally {

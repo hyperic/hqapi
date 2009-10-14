@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<bean id="commandDispatcher" class="org.hyperic.hq.hqapi1.tools.Shell">
+		<constructor-arg>
+			<bean class="org.hyperic.hq.hqapi1.tools.CommandsFactory" />
+		</constructor-arg>
+	</bean>
+	
+	<bean id="optionParser" class="org.hyperic.hq.hqapi1.tools.OptionParserFactory"/>
+	
+	<bean id="connection" class="org.hyperic.hq.hqapi1.HQConnection">
+		<constructor-arg index="0" value="#{ systemProperties['scripting.client.host'] }" />
+		<constructor-arg index="1" value="#{ systemProperties['scripting.client.port'] }" />
+		<constructor-arg index="2" value="#{ systemProperties['scripting.client.secure'] }" />
+		<constructor-arg index="3" value="#{ systemProperties['scripting.client.user'] }" />
+		<constructor-arg index="4" value="#{ systemProperties['scripting.client.password'] }" />
+		<constructor-arg index="5">
+			<bean class="org.hyperic.hq.hqapi1.XmlResponseHandler"/>
+		</constructor-arg>
+	</bean>
+	
+	<context:annotation-config />
+		
+	<context:component-scan base-package="org.hyperic.hq.hqapi1"/>
+
+</beans>

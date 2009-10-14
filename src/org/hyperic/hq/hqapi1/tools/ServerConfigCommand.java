@@ -13,8 +13,9 @@ import org.hyperic.hq.hqapi1.ServerConfigApi;
 import org.hyperic.hq.hqapi1.types.ServerConfigResponse;
 import org.hyperic.hq.hqapi1.types.ServerConfig;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
-
-public class ServerConfigCommand extends Command {
+import org.springframework.stereotype.Component;
+@Component
+public class ServerConfigCommand extends AbstractCommand {
 
     private static String CMD_GET           = "get";
     private static String CMD_GET_PARAMETER = "getParameter";
@@ -30,11 +31,15 @@ public class ServerConfigCommand extends Command {
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
     }
+    
+    public String getName() {
+        return "serverConfig";
+     }
 
-    protected void handleCommand(String[] args) throws Exception {
+    public int handleCommand(String[] args) throws Exception {
         if (args.length == 0) {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
 
         if (args[0].equals(CMD_GET)) {
@@ -47,8 +52,9 @@ public class ServerConfigCommand extends Command {
             setParameter(trim(args));
         } else {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
+        return 0;
     }
 
     private void get(String[] args) throws Exception {
