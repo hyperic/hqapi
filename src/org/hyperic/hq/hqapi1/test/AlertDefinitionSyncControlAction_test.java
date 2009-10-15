@@ -4,6 +4,7 @@ import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
 import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.AlertDefinitionBuilder;
+import org.hyperic.hq.hqapi1.types.MetricResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.MetricsResponse;
 import org.hyperic.hq.hqapi1.types.Metric;
@@ -11,6 +12,7 @@ import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertAction;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -23,14 +25,26 @@ public class AlertDefinitionSyncControlAction_test extends AlertDefinitionTestBa
     public void testAddRemoveControlAction() throws Exception {
         HQApi api = getApi();
         AlertDefinitionApi defApi = api.getAlertDefinitionApi();
-        MetricApi metricApi = api.getMetricApi();
+        final MetricApi metricApi = api.getMetricApi();
 
-        Resource controllableResource = createControllableResource(api);
-
+        final Resource controllableResource = createControllableResource(api);
+       
+        SpinBarrier metricsAdded = new SpinBarrier( new SpinBarrierCondition() {
+            public boolean evaluate() {
+                MetricsResponse metricsResponse;
+                try {
+                    metricsResponse = metricApi.getMetrics(controllableResource);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                   return false;
+                }
+                hqAssertSuccess(metricsResponse);
+                return metricsResponse.getMetric().size() > 0;
+            }
+        });
+        assertTrue("No metrics found for " + controllableResource.getName(), metricsAdded.waitFor());
+       
         MetricsResponse metricsResponse = metricApi.getMetrics(controllableResource);
-        hqAssertSuccess(metricsResponse);
-        assertTrue("No metrics found for " + controllableResource.getName(),
-                metricsResponse.getMetric().size() > 0);
         Metric m = metricsResponse.getMetric().get(0);
 
         AlertDefinition d = generateTestDefinition();
@@ -76,14 +90,26 @@ public class AlertDefinitionSyncControlAction_test extends AlertDefinitionTestBa
     public void testAddControlActionWrongAction() throws Exception {
         HQApi api = getApi();
         AlertDefinitionApi defApi = api.getAlertDefinitionApi();
-        MetricApi metricApi = api.getMetricApi();
+        final MetricApi metricApi = api.getMetricApi();
 
-        Resource controllableResource = createControllableResource(api);
+        final Resource controllableResource = createControllableResource(api);
 
+        SpinBarrier metricsAdded = new SpinBarrier( new SpinBarrierCondition() {
+            public boolean evaluate() {
+                MetricsResponse metricsResponse;
+                try {
+                    metricsResponse = metricApi.getMetrics(controllableResource);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                   return false;
+                }
+                hqAssertSuccess(metricsResponse);
+                return metricsResponse.getMetric().size() > 0;
+            }
+        });
+        assertTrue("No metrics found for " + controllableResource.getName(), metricsAdded.waitFor());
+        
         MetricsResponse metricsResponse = metricApi.getMetrics(controllableResource);
-        hqAssertSuccess(metricsResponse);
-        assertTrue("No metrics found for " + controllableResource.getName(),
-                metricsResponse.getMetric().size() > 0);
         Metric m = metricsResponse.getMetric().get(0);
 
         AlertDefinition d = generateTestDefinition();
@@ -112,14 +138,26 @@ public class AlertDefinitionSyncControlAction_test extends AlertDefinitionTestBa
     public void testAddControlActionUncontrollableResource() throws Exception {
         HQApi api = getApi();
         AlertDefinitionApi defApi = api.getAlertDefinitionApi();
-        MetricApi metricApi = api.getMetricApi();
+        final MetricApi metricApi = api.getMetricApi();
 
-        Resource platform = getLocalPlatformResource(false, false);
+        final Resource platform = getLocalPlatformResource(false, false);
+        
+        SpinBarrier metricsAdded = new SpinBarrier( new SpinBarrierCondition() {
+            public boolean evaluate() {
+                MetricsResponse metricsResponse;
+                try {
+                    metricsResponse = metricApi.getMetrics(platform);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                   return false;
+                }
+                hqAssertSuccess(metricsResponse);
+                return metricsResponse.getMetric().size() > 0;
+            }
+        });
+        assertTrue("No metrics found for " + platform.getName(), metricsAdded.waitFor());
 
         MetricsResponse metricsResponse = metricApi.getMetrics(platform);
-        hqAssertSuccess(metricsResponse);
-        assertTrue("No metrics found for " + platform.getName(),
-                metricsResponse.getMetric().size() > 0);
         Metric m = metricsResponse.getMetric().get(0);
 
         AlertDefinition d = generateTestDefinition();
@@ -147,14 +185,26 @@ public class AlertDefinitionSyncControlAction_test extends AlertDefinitionTestBa
     public void testAddControlActionEmptyConfiguration() throws Exception {
         HQApi api = getApi();
         AlertDefinitionApi defApi = api.getAlertDefinitionApi();
-        MetricApi metricApi = api.getMetricApi();
+        final MetricApi metricApi = api.getMetricApi();
 
-        Resource platform = getLocalPlatformResource(false, false);
+        final Resource platform = getLocalPlatformResource(false, false);
+        
+        SpinBarrier metricsAdded = new SpinBarrier( new SpinBarrierCondition() {
+            public boolean evaluate() {
+                MetricsResponse metricsResponse;
+                try {
+                    metricsResponse = metricApi.getMetrics(platform);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                   return false;
+                }
+                hqAssertSuccess(metricsResponse);
+                return metricsResponse.getMetric().size() > 0;
+            }
+        });
+        assertTrue("No metrics found for " + platform.getName(), metricsAdded.waitFor());
 
         MetricsResponse metricsResponse = metricApi.getMetrics(platform);
-        hqAssertSuccess(metricsResponse);
-        assertTrue("No metrics found for " + platform.getName(),
-                metricsResponse.getMetric().size() > 0);
         Metric m = metricsResponse.getMetric().get(0);
 
         AlertDefinition d = generateTestDefinition();
