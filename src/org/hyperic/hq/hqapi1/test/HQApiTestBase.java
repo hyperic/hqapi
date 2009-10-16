@@ -49,6 +49,7 @@ import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 
+import java.io.File;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
@@ -206,8 +207,12 @@ public abstract class HQApiTestBase extends TestCase {
         Map<String,String> config = new HashMap<String,String>();
         if (localPlatform.getResourcePrototype().getName().equals("Win32")) {
             config.put("path", "C:\\windows\\system32\\cmd.exe");
-        } else {
+        } else if (new File("/usr/bin/true").exists()){
             config.put("path", "/usr/bin/true");
+        } else if (new File("/bin/true").exists()) {
+            config.put("path", "/bin/true");
+        } else {
+            fail("Cannot find a file for which to create a FileServer File resource.  Test cannot be setup.");
         }
 
         Random r = new Random();
