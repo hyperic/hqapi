@@ -11,7 +11,7 @@ import org.hyperic.hq.events.EventConstants
 import org.hyperic.hq.events.shared.ActionValue
 import org.hyperic.hq.events.shared.AlertConditionValue
 import org.hyperic.hq.events.shared.AlertDefinitionValue
-import org.hyperic.hq.events.server.session.AlertDefinitionManagerEJBImpl as AMan
+import org.hyperic.hq.events.server.session.AlertDefinitionManagerImpl as AMan
 import org.hyperic.hq.measurement.shared.ResourceLogEvent
 import org.hyperic.hq.product.LogTrackPlugin
 import org.hyperic.util.config.ConfigResponse
