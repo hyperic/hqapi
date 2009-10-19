@@ -23,5 +23,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="con" path="GROOVY_SUPPORT"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/HQ"/>
+	<classpathentry kind="lib" path="lib/org.springframework.beans-3.0.0.M4.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.context-3.0.0.M4.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.core-3.0.0.M4.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
