@@ -23,7 +23,7 @@ public class OptionParserFactory implements FactoryBean<OptionParser> {
 	static final String OPT_USER = "user";
 	static final String OPT_PASS = "password";
 	static final String[] OPT_SECURE = {"s", "secure"};
-	static final String[] OPT_HELP   = {"h","help"};
+	public static final String[] OPT_HELP   = {"h","help"};
 	public static final String SYSTEM_PROP_PREFIX = "scripting.client.";
 	static final String OPT_FILE     = "file";
 	static final String OPT_PROPERTIES = "properties";
