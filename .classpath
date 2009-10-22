@@ -12,7 +12,7 @@
 	<classpathentry kind="lib" path="lib/jaxb-api.jar"/>
 	<classpathentry kind="lib" path="lib/jaxb-impl.jar"/>
 	<classpathentry kind="lib" path="lib/jaxb-xjc.jar"/>
-	<classpathentry kind="lib" path="lib/jopt-simple-3.0-beta2-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jopt-simple-3.0-beta2-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/jsr173_1.0_api.jar"/>
 	<classpathentry kind="lib" path="lib/junit-4.4.jar"/>
 	<classpathentry kind="lib" path="lib/localizer-1.0.jar"/>
@@ -23,8 +23,10 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="con" path="GROOVY_SUPPORT"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/HQ"/>
-	<classpathentry kind="lib" path="lib/org.springframework.beans-3.0.0.M4.jar"/>
-	<classpathentry kind="lib" path="lib/org.springframework.context-3.0.0.M4.jar"/>
-	<classpathentry kind="lib" path="lib/org.springframework.core-3.0.0.M4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.beans-3.0.0.M4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.context-3.0.0.M4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.core-3.0.0.M4.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.asm-3.0.0.M4.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.expression-3.0.0.M4.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
