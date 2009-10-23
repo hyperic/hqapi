@@ -46,6 +46,9 @@ public class ResourceCreatePlatform_test extends ResourceTestBase {
         super(name);
     }
 
+    // Temporarily disable the testCreatePlatform test until HHQ-3435 is fixed
+    
+    /*
     public void testCreatePlatform() throws Exception {
 
         Agent a = getRunningAgent();
@@ -81,6 +84,7 @@ public class ResourceCreatePlatform_test extends ResourceTestBase {
         StatusResponse deleteResponse = api.deleteResource(resp.getResource().getId());
         hqAssertSuccess(deleteResponse);
     }
+    */
 
     public void testCreatePlatformLongDescription() throws Exception {
         // give hibernate time to flush current session before running
