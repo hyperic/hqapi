@@ -20,6 +20,7 @@ import org.hyperic.hq.hqapi1.types.DataPoint;
 import org.hyperic.hq.hqapi1.types.Escalation;
 import org.hyperic.hq.hqapi1.types.EscalationResponse;
 
+import java.io.IOException;
 import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
@@ -81,14 +82,14 @@ public abstract class AlertTestBase extends HQApiTestBase {
      * @return The Alert that was created.
      * @throws Exception If an error occurs generating the alerts
      */
-    protected Alert generateAlerts(Resource resource,
-                                   Escalation e) throws Exception {
+    protected Alert generateAlerts(final Resource resource,
+                                   final Escalation e) throws Exception {
         HQApi api = getApi();
         AlertDefinitionApi defApi = api.getAlertDefinitionApi();
         MetricApi metricApi = api.getMetricApi();
         MetricDataApi dataApi = api.getMetricDataApi();
 
-        long start = System.currentTimeMillis();
+        final long start = System.currentTimeMillis();
 
         // Find availability metric for the passed in resource
         MetricsResponse metricsResponse = metricApi.getMetrics(resource, true);
@@ -125,7 +126,7 @@ public abstract class AlertTestBase extends HQApiTestBase {
         hqAssertSuccess(response);
         assertEquals("Should have found only one Definition from sync",
                      1, response.getAlertDefinition().size());
-        AlertDefinition def = response.getAlertDefinition().get(0);
+        final AlertDefinition def = response.getAlertDefinition().get(0);
 
         // Insert a fake 'up' measurement
         List<DataPoint> dataPoints = new ArrayList<DataPoint>();
@@ -135,32 +136,34 @@ public abstract class AlertTestBase extends HQApiTestBase {
         dataPoints.add(dp);
         StatusResponse dataResponse = dataApi.addData(availMetric, dataPoints);
         hqAssertSuccess(dataResponse);
-
-        final int TIMEOUT = 120;
-        for (int i = 0; i < TIMEOUT; i++) {
-            // Wait for alerts
-            AlertsResponse alerts = getAlertApi().findAlerts(resource, start,
-                                                             System.currentTimeMillis(),
-                                                             10, 1, (e != null), false);
-            hqAssertSuccess(alerts);
-
-            for (Alert a : alerts.getAlert()) {
-                // Verify this alert comes from the definition we just created
-                if (a.getAlertDefinitionId() == def.getId()) {
-                    return a;
-                }
+        SpinBarrier alertsGenerated = new SpinBarrier(10000l,500l,new SpinBarrierCondition() {
+            public boolean evaluate()  {
+               try {
+                return getGeneratedAlert(resource,start,e,def) != null;
+               } catch (IOException e) {
+                   fail("Error obtaining alerts: " + e.getMessage());
+                   return false;
+               }
             }
+        });
+        assertTrue("Unable to find generated alerts for " +
+                            resource.getName() + " under alert definition " +
+                            def.getName(),alertsGenerated.waitFor());
+        return getGeneratedAlert(resource, start, e, def);
+    }
+    
+    private Alert getGeneratedAlert(final Resource resource, final long start, final Escalation e, final AlertDefinition def) throws IOException{
+        AlertsResponse alerts = getAlertApi().findAlerts(resource, start,System.currentTimeMillis(),
+            10, 1, (e != null), false);
+        hqAssertSuccess(alerts);
 
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException ex) {
-                // Ignore
+        for (Alert a : alerts.getAlert()) {
+            // Verify this alert comes from the definition we just created
+            if (a.getAlertDefinitionId() == def.getId()) {
+                return a;
             }
         }
-
-        throw new Exception("Unable to find generated alerts for " +
-                            resource.getName() + " under alert definition " +
-                            def.getName());
+        return null;
     }
 
     protected void deleteAlertDefinitionByAlert(Alert a) throws Exception {
