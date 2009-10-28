@@ -136,7 +136,7 @@ public abstract class AlertTestBase extends HQApiTestBase {
         dataPoints.add(dp);
         StatusResponse dataResponse = dataApi.addData(availMetric, dataPoints);
         hqAssertSuccess(dataResponse);
-        SpinBarrier alertsGenerated = new SpinBarrier(10000l,500l,new SpinBarrierCondition() {
+        SpinBarrier alertsGenerated = new SpinBarrier(100000l,100l,new SpinBarrierCondition() {
             public boolean evaluate()  {
                try {
                 return getGeneratedAlert(resource,start,e,def) != null;
