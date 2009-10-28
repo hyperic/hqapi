@@ -14,7 +14,7 @@ package org.hyperic.hq.hqapi1.test;
  * 
  */
 public class SpinBarrier {
-    private long timeout = 5000l;
+    private long timeout = 120000l;
     private long retryInterval = 250l;
     private final SpinBarrierCondition condition;
 

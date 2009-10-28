@@ -44,6 +44,12 @@ public abstract class AlertTestBase extends HQApiTestBase {
         assertTrue("Alert id is incorrect", a.getId() > 0);
         assertTrue("Empty long reason", a.getReason().length() > 0);
     }
+    
+    protected boolean validateAlertAttributes(Alert a) throws Exception {
+        return a.getCtime() > 0 && a.getResourceId() > 0 && 
+            a.getAlertDefinitionId() > 0 && a.getName() != null && a.getId() >0 && 
+            a.getReason().length() > 0;
+    }
 
     protected Escalation createEscalation() throws Exception {
         EscalationApi escalationApi = getApi().getEscalationApi();
@@ -136,12 +142,21 @@ public abstract class AlertTestBase extends HQApiTestBase {
         dataPoints.add(dp);
         StatusResponse dataResponse = dataApi.addData(availMetric, dataPoints);
         hqAssertSuccess(dataResponse);
-        SpinBarrier alertsGenerated = new SpinBarrier(100000l,100l,new SpinBarrierCondition() {
+        SpinBarrier alertsGenerated = new SpinBarrier(new SpinBarrierCondition() {
             public boolean evaluate()  {
                try {
-                return getGeneratedAlert(resource,start,e,def) != null;
-               } catch (IOException e) {
-                   fail("Error obtaining alerts: " + e.getMessage());
+                    Alert a = getGeneratedAlert(resource,start,e,def);
+                    if(a == null) {
+                        return false;
+                    }
+                    //We found an alert, but all fields may not be populated yet.  Specifically reason may still be blank.
+                    boolean alertValid = validateAlertAttributes(a);
+                    if(alertValid == false) {
+                        System.out.println("WARN: Found an alert, but it is missing required attributes");
+                    }
+                    return alertValid;
+               } catch (Exception e) {
+                   fail("Error obtaining or validating alerts: " + e.getMessage());
                    return false;
                }
             }
