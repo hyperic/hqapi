@@ -34,10 +34,13 @@ import org.apache.log4j.PropertyConfigurator;
 import org.hyperic.hq.hqapi1.AgentApi;
 import org.hyperic.hq.hqapi1.ErrorCode;
 import org.hyperic.hq.hqapi1.HQApi;
+import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.UserApi;
 import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.AgentsResponse;
+import org.hyperic.hq.hqapi1.types.Metric;
+import org.hyperic.hq.hqapi1.types.MetricsResponse;
 import org.hyperic.hq.hqapi1.types.PingAgentResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
@@ -49,6 +52,7 @@ import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
@@ -285,6 +289,28 @@ public abstract class HQApiTestBase extends TestCase {
             StatusResponse response = api.deleteUser(u.getId());
             hqAssertSuccess(response);
         }
+    }
+    
+    protected Metric findAvailabilityMetric(Resource resource) 
+        throws IOException {
+
+        MetricApi metricApi = getApi().getMetricApi();
+
+        // Find availability metric for the resource
+        MetricsResponse metricsResponse = metricApi.getMetrics(resource, true);
+        hqAssertSuccess(metricsResponse);
+        Metric availMetric = null;
+        for (Metric m : metricsResponse.getMetric()) {
+            if (m.getName().equals("Availability")) {
+                availMetric = m;
+                break;
+            }
+        }
+
+        assertNotNull("Unable to find Availability metric for " + resource.getName(),
+                      availMetric);
+        
+        return availMetric;
     }
     
     /**

@@ -51,6 +51,39 @@ public class AlertController extends ApiController {
         }
     }
 
+    def get(params) {
+        def id = params.getOne("id")?.toInteger()
+
+        def failureXml = null
+
+        if (id == null) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Alert id not given")
+        }
+
+        def alert
+        if (!failureXml) {
+            alert = getAlertById(id)
+            
+            if (!alert) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Alert with id " + id +
+                                           " not found")
+            }
+        }
+
+        renderXml() {
+            AlertResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    out << getAlertXML(alert)
+                }
+            }
+        }
+    }
+    
     def find(params) {
         Long    begin    = params.getOne("begin")?.toLong()
         Long    end      = params.getOne("end")?.toLong()

@@ -45,15 +45,7 @@ public class AlertDefinitionGetTypeBased_test extends AlertDefinitionTestBase {
         hqAssertSuccess(response);
 
         for (AlertDefinition d : response.getAlertDefinition()) {
-            validateDefinition(d);
-            // Type alerts have parent == 0
-            assertTrue("Invalid parent id " + d.getParent() +
-                       " for type definition " + d.getName(),
-                       d.getParent() == 0);
-            assertTrue("No ResourcePrototype found for type based alert",
-                       d.getResourcePrototype() != null);
-            // Should always have ids
-            assertNotNull("Alert id is null", d.getId());
+            validateTypeDefinition(d);
         }
     }
 
@@ -65,7 +57,12 @@ public class AlertDefinitionGetTypeBased_test extends AlertDefinitionTestBase {
         hqAssertSuccess(response);
 
         for (AlertDefinition d : response.getAlertDefinition()) {
-            validateDefinition(d);
+            assertNotNull("Alert definition name is null",
+                          d.getName());
+            assertTrue("Invalid frequency " + d.getFrequency(),
+                       d.getFrequency() >= 0 && d.getFrequency() <= 4);
+            assertTrue("Invalid priority " + d.getPriority(),
+                       d.getPriority() >= 1 & d.getPriority() <= 3);
             // Type alerts have parent == 0
             assertTrue("Invalid parent id " + d.getParent() +
                        " for type definition " + d.getName(),

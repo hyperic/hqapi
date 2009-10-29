@@ -30,6 +30,7 @@ package org.hyperic.hq.hqapi1;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
+import org.hyperic.hq.hqapi1.types.AlertDefinitionResponse;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsRequest;
 import org.hyperic.hq.hqapi1.types.Escalation;
 
@@ -54,6 +55,27 @@ public class AlertDefinitionApi extends BaseApi {
         super(conn);
     }
 
+    /**
+     * Find the {@link org.hyperic.hq.hqapi1.types.AlertDefinition} based on
+     * the given alert definition id.
+     *
+     * @param id The AlertDefinition id
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the AlertDefinition and all alert actions, including internal alert actions
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public AlertDefinitionResponse getAlertDefinition(Integer id)
+        throws IOException
+    {
+        Map<String, String[]> params = new HashMap<String, String[]>();
+
+        params.put("id", new String[] { id.toString() });
+
+        return doGet("alertdefinition/get.hqu", params, AlertDefinitionResponse.class);
+    }
+    
     /**
      * Find all {@link org.hyperic.hq.hqapi1.types.AlertDefinition}s in the system.
      *

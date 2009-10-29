@@ -55,11 +55,16 @@ public class AlertdefinitionController extends ApiController {
     }
 
     private Closure getAlertDefinitionXML(d, excludeIds) {
+    	return getAlertDefinitionXML(d, excludeIds, false)
+    }
+
+    private Closure getAlertDefinitionXML(d, excludeIds, showAllActions) {
         { out ->
             def attrs = [name: d.name,
                          description: d.description,
                          priority: d.priority,
                          active: d.active,
+                         enabled: d.enabled,
                          frequency: d.frequencyType,
                          count: d.count,
                          range: d.range,
@@ -203,12 +208,48 @@ public class AlertdefinitionController extends ApiController {
                                                   value: config.getValue('action'))
                             }
                         }
+                    } else if (showAllActions) {
+                    	AlertAction(id: a.id,
+                    				className: a.className)
                     }
                 }
             }
         }
     }
 
+    def get(params) {
+        def id = params.getOne("id")?.toInteger()
+
+        def failureXml = null
+
+        if (id == null) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Alert Definition id not given")
+        }
+
+        def definition
+        if (!failureXml) {
+            definition = alertHelper.getById(id)
+            
+            if (!definition) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Alert Definition with id " + id +
+                                           " not found")
+            }
+        }
+
+        renderXml() {
+            AlertDefinitionResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    out << getAlertDefinitionXML(definition, false, true)
+                }
+            }
+        }
+    }
+    
     def listDefinitions(params) {
 
         def alertNameFilter = params.getOne('alertNameFilter')

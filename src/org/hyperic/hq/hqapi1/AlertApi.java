@@ -53,6 +53,26 @@ public class AlertApi extends BaseApi {
     }
 
     /**
+     * Get an Alert
+     *
+     * @param alertId The id of the Alert to get.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the Alert requested
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public AlertResponse getAlert(Integer alertId)
+        throws IOException
+    {
+        Map<String, String[]> params = new HashMap<String, String[]>();
+
+        params.put("id", new String[] { alertId.toString() });
+
+        return doGet("alert/get.hqu", params, AlertResponse.class);
+    }
+    
+    /**
      * Find Alerts in the system.
      *
      * @param begin The beginning of the time window in epoch-millis.
