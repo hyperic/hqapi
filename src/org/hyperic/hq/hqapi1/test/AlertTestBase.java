@@ -109,7 +109,7 @@ public abstract class AlertTestBase extends AlertDefinitionTestBase {
         d.getAlertCondition().add(AlertDefinitionBuilder.
                 createThresholdCondition(true, availMetric.getName(),
                                          AlertDefinitionBuilder.AlertComparator.GREATER_THAN, -1));
-        AlertDefinition def = createAlertDefinition(d);
+        AlertDefinition def = syncAlertDefinition(d);
 
         // Insert a fake 'up' measurement
         sendAvailabilityDataPoint(resource, 1.0);

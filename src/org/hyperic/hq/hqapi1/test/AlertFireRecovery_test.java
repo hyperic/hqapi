@@ -30,35 +30,110 @@ public class AlertFireRecovery_test extends AlertTestBase {
         super(name);
     }
 
+    public void testFireRecoveryAlert() throws Exception {
+        createAndFireAlerts(false, false);
+    }
+    
     public void testWillRecoverAndFireRecoveryAlert() throws Exception {
+        createAndFireAlerts(false, true);
+    }
+    
+    /**
+     * To validate HQ-1894
+     */
+    public void testAddRecoveryPostCreateAndFireRecoveryAlert() 
+        throws Exception {
         
-        Resource platform = getLocalPlatformResource(false, false);
+        createAndFireAlerts(true, false);
+    }
+    
+    /**
+     * To validate HQ-1894
+     */
+    public void testWillRecoverAddRecoveryPostCreateAndFireRecoveryAlert() 
+        throws Exception {
         
-        AlertDefinition problemDef = createProblemAlertDefinition(true, platform, null, true);
-        validateWillRecover(problemDef, true);
-        
-        AlertDefinition recoveryDef = createRecoveryAlertDefinition(true, problemDef);
-        validateRecoveryAlertDefinition(recoveryDef, problemDef);
- 
-        long start = System.currentTimeMillis();
+        createAndFireAlerts(true, true);
+    }
 
+    /**
+     * To validate HQ-1903
+     */
+    public void testFireProblemAlertAndThenCreateAndFireRecoveryAlert()
+        throws Exception {
+
+        // TODO: Uncomment the test code when HQ-1903 is fixed
+        
+        /*
+        Resource platform = getLocalPlatformResource(false, false);
+
+        boolean willRecover = false;
+        AlertDefinition problemDef = createProblemAlertDefinition(platform, null, willRecover);        
+        Alert problemAlert = fireProblemAlert(problemDef, willRecover);
+
+        AlertDefinition recoveryDef = createRecoveryAlertDefinition(problemDef, false);
+        fireRecoveryAlert(recoveryDef, problemAlert, willRecover);
+
+        // Cleanup
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(problemDef);
+        definitions.add(recoveryDef);
+        cleanup(definitions);
+        */
+    }
+    
+    private void createAndFireAlerts(boolean addRecoveryPostCreate,
+                                     boolean willRecover)
+        throws Exception {
+
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition problemDef = createProblemAlertDefinition(platform, null, willRecover);        
+        AlertDefinition recoveryDef = createRecoveryAlertDefinition(problemDef, addRecoveryPostCreate);
+
+        Alert problemAlert = fireProblemAlert(problemDef, willRecover);
+        fireRecoveryAlert(recoveryDef, problemAlert, willRecover);
+
+        // Cleanup
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(problemDef);
+        definitions.add(recoveryDef);
+        cleanup(definitions);
+    }
+    
+    private Alert fireProblemAlert(AlertDefinition problemDef,
+                                   boolean willRecover)
+        throws Exception {
+        
+        long start = System.currentTimeMillis();
+        
         // Insert a fake 'down' measurement so that
         // the problem alert definition will fire.
-        sendAvailabilityDataPoint(platform, 0.0);
+        sendAvailabilityDataPoint(problemDef.getResource(), 0.0);
 
         Alert problemAlert = findAlert(problemDef, start);
         assertFalse("The problem alert should not be fixed",
                      problemAlert.isFixed());
-        
+
         // Get the updated problem alert definition
         problemDef = getAlertDefinition(problemAlert.getAlertDefinitionId());
-        validateWillRecover(problemDef, false);
+        validateProblemAlertDefinitionAttributes(problemDef, 
+                                                 willRecover, 
+                                                 willRecover ? false : true);
         
-        start = System.currentTimeMillis();
+        return problemAlert;
+    }
+    
+    private Alert fireRecoveryAlert(AlertDefinition recoveryDef, 
+                                    Alert problemAlert,
+                                    boolean willRecover)
+        throws Exception {
+        
+        long start = System.currentTimeMillis();
         
         // Insert a fake 'up' measurement so that
         // the recovery alert definition will fire.
-        sendAvailabilityDataPoint(platform, 1);
+        sendAvailabilityDataPoint(recoveryDef.getResource(), 1);
 
         Alert recoveryAlert = findAlert(recoveryDef, start);
         assertTrue("The recovery alert should be fixed",
@@ -68,22 +143,19 @@ public class AlertFireRecovery_test extends AlertTestBase {
         problemAlert = getAlert(problemAlert.getId());
         assertTrue("The problem alert should be fixed",
                     problemAlert.isFixed());
-        
+
         // Get the updated problem alert definition
-        problemDef = getAlertDefinition(problemAlert.getAlertDefinitionId());
-        validateWillRecover(problemDef, true);
+        AlertDefinition problemDef = getAlertDefinition(problemAlert.getAlertDefinitionId());
+        validateProblemAlertDefinitionAttributes(problemDef, willRecover, true);
         
-        // Cleanup
-        deleteAlertDefinitionByAlert(problemAlert);
-        deleteAlertDefinitionByAlert(recoveryAlert);
+        return recoveryAlert;
     }
     
     // TODO testWillRecoverAndFireRecoveryTypeAlert
     // TODO testFireRecoveryAlertWithEscalation
     // TODO testFireRecoveryTypeAlertWithEscalation
     
-    private AlertDefinition createProblemAlertDefinition(boolean sync,
-                                                         Resource resource, 
+    private AlertDefinition createProblemAlertDefinition(Resource resource, 
                                                          Escalation e,
                                                          boolean willRecover) 
         throws IOException {
@@ -98,41 +170,60 @@ public class AlertFireRecovery_test extends AlertTestBase {
         if (e != null) {
             d.setEscalation(e);
         }
-        d.getAlertCondition().add(AlertDefinitionBuilder.
-                createThresholdCondition(true, availMetric.getName(),
-                                         AlertDefinitionBuilder.AlertComparator.EQUALS, 0));
-
-        return (sync ? createAlertDefinition(d) : d);        
+        AlertCondition threshold =
+            AlertDefinitionBuilder.createThresholdCondition(
+                                        true, availMetric.getName(),
+                                        AlertDefinitionBuilder.AlertComparator.EQUALS, 0);                                
+        d.getAlertCondition().add(threshold);
+        AlertDefinition newDef = syncAlertDefinition(d);
+        
+        validateProblemAlertDefinitionAttributes(newDef, willRecover, true);
+        
+        return newDef;        
     }
       
-    private AlertDefinition createRecoveryAlertDefinition(boolean sync,
-                                                          AlertDefinition problemDef) 
-        throws IOException {
+    private AlertDefinition createRecoveryAlertDefinition(AlertDefinition problemDef,
+                                                          boolean addRecoveryPostCreate)
+        throws Exception {
         
         // Find availability metric for the passed in resource
         Metric availMetric = findAvailabilityMetric(problemDef.getResource());
        
         // Create recovery alert definition
         AlertDefinition recoveryDef = generateTestDefinition("Test Recovery Alert");
+        recoveryDef.setDescription("Recovery Alert for " + problemDef.getName());
         recoveryDef.setResource(problemDef.getResource());
         AlertCondition threshold = 
             AlertDefinitionBuilder.createThresholdCondition(
                                         true, availMetric.getName(),
                                         AlertDefinitionBuilder.AlertComparator.EQUALS, 1);
+        recoveryDef.getAlertCondition().add(threshold);
+
         AlertCondition recovery =
             AlertDefinitionBuilder.createRecoveryCondition(true, problemDef);
-        recoveryDef.getAlertCondition().add(threshold);
-        recoveryDef.getAlertCondition().add(recovery);
         
-        return (sync ? createAlertDefinition(recoveryDef) : recoveryDef);        
+        AlertDefinition newDef = null;
+        if (addRecoveryPostCreate) {
+            AlertDefinition tempDef = syncAlertDefinition(recoveryDef);
+            tempDef.getAlertCondition().add(recovery);
+            newDef = syncAlertDefinition(tempDef);
+        } else {
+            recoveryDef.getAlertCondition().add(recovery);
+            newDef = syncAlertDefinition(recoveryDef);
+        }
+        
+        validateRecoveryAlertDefinition(newDef, problemDef);
+        
+        return newDef;
     }
     
-    private void validateWillRecover(AlertDefinition def, boolean enabled) {
+    private void validateProblemAlertDefinitionAttributes(AlertDefinition def,
+                                                          boolean willRecover,
+                                                          boolean enabled) {
         assertTrue("The problem alert definition should be active",
                     def.isActive());
-        assertTrue("The problem alert definition should be set to "
-                        + "generate one alert and then disable until fixed",
-                    def.isWillRecover());
+        assertTrue("The problem alert definition's willRecover flag should be " + willRecover,
+                    willRecover == def.isWillRecover());
         assertTrue("The problem alert definition's internal enabled flag should be " + enabled,
                     enabled == def.isEnabled());
     }

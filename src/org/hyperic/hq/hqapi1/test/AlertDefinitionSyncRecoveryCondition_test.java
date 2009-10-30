@@ -75,7 +75,7 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
         definitions.add(def);
         definitions.add(recoveryDef);
         
-        List<AlertDefinition> createdDefinitions = createAlertDefinitions(definitions);
+        List<AlertDefinition> createdDefinitions = syncAlertDefinitions(definitions);
         
         // validate recovery alert definition
         validateRecoveryAlertDefinition(createdDefinitions);
@@ -113,7 +113,7 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
         definitions.add(def);
         definitions.add(recoveryDef);
 
-        List<AlertDefinition> createdDefinitions = createAlertDefinitions(definitions);
+        List<AlertDefinition> createdDefinitions = syncAlertDefinitions(definitions);
         
         // validate recovery alert definition
         validateRecoveryAlertDefinition(createdDefinitions);
@@ -137,7 +137,7 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
                 AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
                                                                 AlertComparator.EQUALS,
                                                                 THRESHOLD));
-        AlertDefinition problemDef = createAlertDefinition(def);
+        AlertDefinition problemDef = syncAlertDefinition(def);
         validateDefinition(problemDef);
 
         // Next, sync the recovery
@@ -152,7 +152,7 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
         def2.getAlertCondition().add(threshold);
         def2.getAlertCondition().add(recovery);
 
-        AlertDefinition recoveryDef = createAlertDefinition(def2);
+        AlertDefinition recoveryDef = syncAlertDefinition(def2);
         validateDefinition(recoveryDef);
 
         // validate recovery alert definition
@@ -180,7 +180,7 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
                 AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
                                                                 AlertComparator.EQUALS,
                                                                 THRESHOLD));
-        AlertDefinition parentDown = createAlertDefinition(def);        
+        AlertDefinition parentDown = syncAlertDefinition(def);
         validateTypeDefinition(parentDown);
 
         // Next, sync the recovery
@@ -195,7 +195,7 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
         recoveryDef.getAlertCondition().add(threshold);
         recoveryDef.getAlertCondition().add(recovery);
 
-        AlertDefinition parentRecovery = createAlertDefinition(recoveryDef);
+        AlertDefinition parentRecovery = syncAlertDefinition(recoveryDef);
         validateTypeDefinition(parentRecovery);
 
         // validate recovery alert definition

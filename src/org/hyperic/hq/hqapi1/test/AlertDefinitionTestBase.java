@@ -66,13 +66,13 @@ public abstract class AlertDefinitionTestBase extends HQApiTestBase {
         return d;
     }
     
-    protected AlertDefinition createAlertDefinition(AlertDefinition d) 
+    protected AlertDefinition syncAlertDefinition(AlertDefinition d) 
         throws IOException {
                 
-        return createAlertDefinitions(Collections.singletonList(d)).get(0);        
+        return syncAlertDefinitions(Collections.singletonList(d)).get(0);        
     }
     
-    protected List<AlertDefinition> createAlertDefinitions(List<AlertDefinition> definitions) 
+    protected List<AlertDefinition> syncAlertDefinitions(List<AlertDefinition> definitions) 
         throws IOException {
 
         AlertDefinitionApi defApi = getApi().getAlertDefinitionApi();
