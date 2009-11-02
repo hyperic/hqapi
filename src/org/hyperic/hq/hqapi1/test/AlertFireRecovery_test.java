@@ -8,6 +8,7 @@ import org.hyperic.hq.hqapi1.MetricDataApi;
 import org.hyperic.hq.hqapi1.types.Alert;
 import org.hyperic.hq.hqapi1.types.AlertCondition;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
+import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.AlertResponse;
 import org.hyperic.hq.hqapi1.types.AlertsResponse;
 import org.hyperic.hq.hqapi1.types.DataPoint;
@@ -31,19 +32,39 @@ public class AlertFireRecovery_test extends AlertTestBase {
     }
 
     public void testFireRecoveryAlert() throws Exception {
-        createAndFireAlerts(false, false);
+        createAndFireAlerts(null, false, false, false);
     }
     
+    public void testFireResourceTypeRecoveryAlert() throws Exception {
+        createAndFireAlerts(null, true, false, false);
+    }
+
     public void testFireRecoveryAlertWithEscalation() throws Exception {
         Escalation e = createEscalation();
-        createAndFireAlerts(e, false, false, true);
+        createAndFireAlerts(e, false, false, false);
+        
+        // Cleanup
+        deleteEscalation(e);
+    }
+        
+    public void testFireResourceTypeRecoveryAlertWithEscalation()
+        throws Exception {
+        
+        Escalation e = createEscalation();
+        createAndFireAlerts(e, true, false, false);
         
         // Cleanup
         deleteEscalation(e);
     }
     
     public void testWillRecoverAndFireRecoveryAlert() throws Exception {
-        createAndFireAlerts(false, true);
+        createAndFireAlerts(null, false, false, true);
+    }
+    
+    public void testWillRecoverAndFireResourceTypeRecoveryAlert()
+        throws Exception {
+        
+        createAndFireAlerts(null, true, false, true);
     }
         
     /**
@@ -52,7 +73,16 @@ public class AlertFireRecovery_test extends AlertTestBase {
     public void testAddRecoveryPostCreateAndFireRecoveryAlert() 
         throws Exception {
         
-        createAndFireAlerts(true, false);
+        createAndFireAlerts(null, false, true, false);
+    }
+
+    /**
+     * To validate HQ-1894
+     */
+    public void testAddRecoveryPostCreateAndFireResourceTypeRecoveryAlert() 
+        throws Exception {
+        
+        createAndFireAlerts(null, true, true, false);
     }
     
     /**
@@ -61,9 +91,18 @@ public class AlertFireRecovery_test extends AlertTestBase {
     public void testWillRecoverAddRecoveryPostCreateAndFireRecoveryAlert() 
         throws Exception {
         
-        createAndFireAlerts(true, true);
+        createAndFireAlerts(null, false, true, true);
     }
 
+    /**
+     * To validate HQ-1894
+     */
+    public void testWillRecoverAddRecoveryPostCreateAndFireResourceTypeRecoveryAlert() 
+        throws Exception {
+        
+        createAndFireAlerts(null, true, true, true);
+    }
+    
     /**
      * To validate HQ-1903
      */
@@ -76,10 +115,10 @@ public class AlertFireRecovery_test extends AlertTestBase {
         Resource platform = getLocalPlatformResource(false, false);
 
         boolean willRecover = false;
-        AlertDefinition problemDef = createProblemAlertDefinition(platform, null, willRecover);        
+        AlertDefinition problemDef = createProblemAlertDefinition(platform, null, false, willRecover);
         Alert problemAlert = fireProblemAlert(problemDef, willRecover);
 
-        AlertDefinition recoveryDef = createRecoveryAlertDefinition(problemDef, false);
+        AlertDefinition recoveryDef = createRecoveryAlertDefinition(platform, problemDef, false);
         fireRecoveryAlert(recoveryDef, problemAlert, willRecover);
 
         // Cleanup
@@ -90,30 +129,36 @@ public class AlertFireRecovery_test extends AlertTestBase {
         */
     }
     
-    // TODO testFireResourceTypeRecoveryAlert
-    // TODO testWillRecoverAndFireRecoveryTypeAlert
-    // TODO testFireRecoveryTypeAlertWithEscalation
-    
-    private void createAndFireAlerts(boolean addRecoveryPostCreate,
-                                     boolean willRecover)
-        throws Exception {
-        
-        createAndFireAlerts(null, false, addRecoveryPostCreate, willRecover);
-    }
-    
     private void createAndFireAlerts(Escalation escalation,
-                                     boolean resourceType,
+                                     boolean isResourceType,
                                      boolean addRecoveryPostCreate,
                                      boolean willRecover)
         throws Exception {
 
         Resource platform = getLocalPlatformResource(false, false);
 
-        AlertDefinition problemDef = createProblemAlertDefinition(platform, escalation, willRecover);
-        AlertDefinition recoveryDef = createRecoveryAlertDefinition(problemDef, addRecoveryPostCreate);
+        AlertDefinition problemDef = 
+            createProblemAlertDefinition(platform, escalation, isResourceType, willRecover);
+        AlertDefinition recoveryDef = 
+            createRecoveryAlertDefinition(platform, problemDef, addRecoveryPostCreate);
 
-        Alert problemAlert = fireProblemAlert(problemDef, willRecover);
-        fireRecoveryAlert(recoveryDef, problemAlert, willRecover);
+        AlertDefinition problemDefToFire = null;
+        if (isResourceType) {
+            problemDefToFire = getChildAlertDefinition(problemDef);
+        } else {
+            problemDefToFire = problemDef;
+        }
+        
+        Alert problemAlert = fireProblemAlert(problemDefToFire, willRecover);
+        
+        AlertDefinition recoveryDefToFire = null;
+        if (isResourceType) {
+            recoveryDefToFire = getChildAlertDefinition(recoveryDef);
+        } else {
+            recoveryDefToFire = recoveryDef;
+        }
+
+        fireRecoveryAlert(recoveryDefToFire, problemAlert, willRecover);
 
         // Cleanup
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
@@ -137,8 +182,8 @@ public class AlertFireRecovery_test extends AlertTestBase {
                      problemAlert.isFixed());
 
         // Get the updated problem alert definition
-        problemDef = getAlertDefinition(problemAlert.getAlertDefinitionId());
-        validateProblemAlertDefinitionAttributes(problemDef, 
+        AlertDefinition updatedDef = getAlertDefinition(problemAlert.getAlertDefinitionId());
+        validateProblemAlertDefinitionAttributes(updatedDef, 
                                                  willRecover, 
                                                  willRecover ? false : true);
         
@@ -174,6 +219,7 @@ public class AlertFireRecovery_test extends AlertTestBase {
     
     private AlertDefinition createProblemAlertDefinition(Resource resource, 
                                                          Escalation e,
+                                                         boolean isResourceType,
                                                          boolean willRecover) 
         throws IOException {
         
@@ -181,9 +227,14 @@ public class AlertFireRecovery_test extends AlertTestBase {
         Metric availMetric = findAvailabilityMetric(resource);
 
         // Create alert definition
-        AlertDefinition d = generateTestDefinition("Test Problem Alert");
+        String name = "Test" + (isResourceType ? " Resource Type " : " ") + "Problem Alert";
+        AlertDefinition d = generateTestDefinition(name);
         d.setWillRecover(willRecover);
-        d.setResource(resource);
+        if (isResourceType) {
+            d.setResourcePrototype(resource.getResourcePrototype());
+        } else {
+            d.setResource(resource);
+        }
         if (e != null) {
             d.setEscalation(e);
         }
@@ -193,6 +244,10 @@ public class AlertFireRecovery_test extends AlertTestBase {
                                         AlertDefinitionBuilder.AlertComparator.EQUALS, 0);                                
         d.getAlertCondition().add(threshold);
         AlertDefinition newDef = syncAlertDefinition(d);
+        
+        if (isResourceType) {
+            validateTypeDefinition(newDef);
+        }
         
         validateProblemAlertDefinitionAttributes(newDef, willRecover, true);
         
@@ -204,17 +259,24 @@ public class AlertFireRecovery_test extends AlertTestBase {
         return newDef;        
     }
       
-    private AlertDefinition createRecoveryAlertDefinition(AlertDefinition problemDef,
+    private AlertDefinition createRecoveryAlertDefinition(Resource resource,
+                                                          AlertDefinition problemDef,
                                                           boolean addRecoveryPostCreate)
         throws Exception {
         
         // Find availability metric for the passed in resource
-        Metric availMetric = findAvailabilityMetric(problemDef.getResource());
+        Metric availMetric = findAvailabilityMetric(resource);
        
         // Create recovery alert definition
-        AlertDefinition recoveryDef = generateTestDefinition("Test Recovery Alert");
+        boolean isResourceType = (problemDef.getResourcePrototype() != null);
+        String name = "Test" + (isResourceType ? " Resource Type " : " ") + "Recovery Alert";
+        AlertDefinition recoveryDef = generateTestDefinition(name);
         recoveryDef.setDescription("Recovery Alert for " + problemDef.getName());
-        recoveryDef.setResource(problemDef.getResource());
+        if (isResourceType) {
+            recoveryDef.setResourcePrototype(problemDef.getResourcePrototype());
+        } else {
+            recoveryDef.setResource(resource);
+        }
         AlertCondition threshold = 
             AlertDefinitionBuilder.createThresholdCondition(
                                         true, availMetric.getName(),
@@ -234,9 +296,30 @@ public class AlertFireRecovery_test extends AlertTestBase {
             newDef = syncAlertDefinition(recoveryDef);
         }
         
+        if (isResourceType) {
+            validateTypeDefinition(newDef);
+        }
+        
         validateRecoveryAlertDefinition(newDef, problemDef);
         
         return newDef;
+    }
+    
+    private AlertDefinition getChildAlertDefinition(AlertDefinition parent) 
+        throws IOException {
+        
+        AlertDefinitionsResponse childAlertDefResponse =
+            getApi().getAlertDefinitionApi().getAlertDefinitions(parent);
+        
+        hqAssertSuccess(childAlertDefResponse);
+        
+        assertEquals("These tests assume only one child alert definition",
+                     1, childAlertDefResponse.getAlertDefinition().size());
+        
+        AlertDefinition child = childAlertDefResponse.getAlertDefinition().get(0);
+        validateDefinition(child);
+        
+        return child; 
     }
     
     private void validateProblemAlertDefinitionAttributes(AlertDefinition def,

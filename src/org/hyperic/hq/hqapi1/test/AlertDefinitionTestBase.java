@@ -229,13 +229,12 @@ public abstract class AlertDefinitionTestBase extends HQApiTestBase {
                         actualAlertActions.add(a.getClassName()));
         }
         
-        assertEquals("Recovery alert definition has unexpected alert actions.",
+        assertEquals("Recovery alert definition has missing or unexpected alert actions.",
                      expectedAlertActions, actualAlertActions);
         
         // if it is a resource type alert definition
         // then validate the child recovery alert definition 
-        if (recoveryDef.getParent() != null
-                && recoveryDef.getParent().intValue() == 0) {
+        if (recoveryDef.getResourcePrototype() != null) {
             validateChildRecoveryAlertDefinition(recoveryDef, problemDef);
         }
     }
@@ -252,12 +251,14 @@ public abstract class AlertDefinitionTestBase extends HQApiTestBase {
         // get child alert definitions
         AlertDefinitionsResponse childRecoveryResponse = defApi.getAlertDefinitions(parentRecoveryDef);
         hqAssertSuccess(childRecoveryResponse);
-        assertEquals(1, childRecoveryResponse.getAlertDefinition().size());
+        assertEquals("These tests assume only one child alert definition",
+                     1, childRecoveryResponse.getAlertDefinition().size());
         AlertDefinition childRecoveryDef = childRecoveryResponse.getAlertDefinition().get(0);
 
         AlertDefinitionsResponse childProblemResponse = defApi.getAlertDefinitions(parentProblemDef);
         hqAssertSuccess(childProblemResponse);
-        assertEquals(1, childProblemResponse.getAlertDefinition().size());
+        assertEquals("These tests assume only one child alert definition",
+                     1, childProblemResponse.getAlertDefinition().size());
         AlertDefinition childProblemDef = childProblemResponse.getAlertDefinition().get(0);
 
         // validate child recovery alert definition
