@@ -91,14 +91,14 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
         // Find availability metric for the passed in resource
         Metric m = findAvailabilityMetric(platform);
 
-        AlertDefinition def = generateTestDefinition("Test Problem Alert");
+        AlertDefinition def = generateTestDefinition("Test Resource Type Problem Alert");
         def.setResourcePrototype(platform.getResourcePrototype());
         final double THRESHOLD = 0;
         def.getAlertCondition().add(
                 AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
                                                                 AlertComparator.EQUALS,
                                                                 THRESHOLD));
-        AlertDefinition recoveryDef = generateTestDefinition("Test Recovery Alert");
+        AlertDefinition recoveryDef = generateTestDefinition("Test Resource Type Recovery Alert");
         recoveryDef.setResourcePrototype(platform.getResourcePrototype());
         AlertCondition threshold =
                 AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
@@ -173,7 +173,7 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
         Metric m = findAvailabilityMetric(platform);
 
         // First sync the problem definition
-        AlertDefinition def = generateTestDefinition("Test Problem Alert");
+        AlertDefinition def = generateTestDefinition("Test Resource Type Problem Alert");
         def.setResourcePrototype(platform.getResourcePrototype());
         final double THRESHOLD = 0;
         def.getAlertCondition().add(
@@ -184,7 +184,7 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
         validateTypeDefinition(parentDown);
 
         // Next, sync the recovery
-        AlertDefinition recoveryDef = generateTestDefinition("Test Recovery Alert");
+        AlertDefinition recoveryDef = generateTestDefinition("Test Resource Type Recovery Alert");
         recoveryDef.setResourcePrototype(platform.getResourcePrototype());
         AlertCondition threshold =
                 AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),

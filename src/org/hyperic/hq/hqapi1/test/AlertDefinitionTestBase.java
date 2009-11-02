@@ -225,7 +225,8 @@ public abstract class AlertDefinitionTestBase extends HQApiTestBase {
         Set actualAlertActions = new HashSet();
         
         for (AlertAction a : recovery.getAlertAction()) {
-            actualAlertActions.add(a.getClassName());
+            assertTrue("There was a duplicate alert action: " + a.getClassName(),
+                        actualAlertActions.add(a.getClassName()));
         }
         
         assertEquals("Recovery alert definition has unexpected alert actions.",

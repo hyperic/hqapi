@@ -34,10 +34,18 @@ public class AlertFireRecovery_test extends AlertTestBase {
         createAndFireAlerts(false, false);
     }
     
+    public void testFireRecoveryAlertWithEscalation() throws Exception {
+        Escalation e = createEscalation();
+        createAndFireAlerts(e, false, false, true);
+        
+        // Cleanup
+        deleteEscalation(e);
+    }
+    
     public void testWillRecoverAndFireRecoveryAlert() throws Exception {
         createAndFireAlerts(false, true);
     }
-    
+        
     /**
      * To validate HQ-1894
      */
@@ -82,13 +90,26 @@ public class AlertFireRecovery_test extends AlertTestBase {
         */
     }
     
+    // TODO testFireResourceTypeRecoveryAlert
+    // TODO testWillRecoverAndFireRecoveryTypeAlert
+    // TODO testFireRecoveryTypeAlertWithEscalation
+    
     private void createAndFireAlerts(boolean addRecoveryPostCreate,
+                                     boolean willRecover)
+        throws Exception {
+        
+        createAndFireAlerts(null, false, addRecoveryPostCreate, willRecover);
+    }
+    
+    private void createAndFireAlerts(Escalation escalation,
+                                     boolean resourceType,
+                                     boolean addRecoveryPostCreate,
                                      boolean willRecover)
         throws Exception {
 
         Resource platform = getLocalPlatformResource(false, false);
 
-        AlertDefinition problemDef = createProblemAlertDefinition(platform, null, willRecover);        
+        AlertDefinition problemDef = createProblemAlertDefinition(platform, escalation, willRecover);
         AlertDefinition recoveryDef = createRecoveryAlertDefinition(problemDef, addRecoveryPostCreate);
 
         Alert problemAlert = fireProblemAlert(problemDef, willRecover);
@@ -151,10 +172,6 @@ public class AlertFireRecovery_test extends AlertTestBase {
         return recoveryAlert;
     }
     
-    // TODO testWillRecoverAndFireRecoveryTypeAlert
-    // TODO testFireRecoveryAlertWithEscalation
-    // TODO testFireRecoveryTypeAlertWithEscalation
-    
     private AlertDefinition createProblemAlertDefinition(Resource resource, 
                                                          Escalation e,
                                                          boolean willRecover) 
@@ -178,6 +195,11 @@ public class AlertFireRecovery_test extends AlertTestBase {
         AlertDefinition newDef = syncAlertDefinition(d);
         
         validateProblemAlertDefinitionAttributes(newDef, willRecover, true);
+        
+        assertTrue("The problem alert definition should have " 
+                        + ((e == null) ? "no" : "an") + " escalation",
+                    (e == null) ? newDef.getEscalation() == null 
+                                : newDef.getEscalation() != null);
         
         return newDef;        
     }
