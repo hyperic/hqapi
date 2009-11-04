@@ -28,6 +28,7 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
+import org.hyperic.hq.hqapi1.AlertDefinitionBuilder;
 import org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertPriority;
 import org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertConditionType;
 import org.hyperic.hq.hqapi1.types.AlertAction;
@@ -35,7 +36,10 @@ import org.hyperic.hq.hqapi1.types.AlertCondition;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionResponse;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
+import org.hyperic.hq.hqapi1.types.Metric;
+import org.hyperic.hq.hqapi1.types.Escalation;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -90,6 +94,48 @@ public abstract class AlertDefinitionTestBase extends HQApiTestBase {
         return response.getAlertDefinition();
     }
     
+    protected AlertDefinition createProblemAlertDefinition(Resource resource, 
+                                                           Escalation e,
+                                                           boolean isResourceType,
+                                                           boolean willRecover) 
+        throws IOException {
+
+        // Find availability metric for the passed in resource
+        Metric availMetric = findAvailabilityMetric(resource);
+
+        // Create alert definition
+        String name = "Test" + (isResourceType ? " Resource Type " : " ") + "Problem Alert";
+        AlertDefinition d = generateTestDefinition(name);
+        d.setWillRecover(willRecover);
+        if (isResourceType) {
+            d.setResourcePrototype(resource.getResourcePrototype());
+        } else {
+            d.setResource(resource);
+        }
+        if (e != null) {
+            d.setEscalation(e);
+        }
+        AlertCondition threshold =
+            AlertDefinitionBuilder.createThresholdCondition(
+                                        true, availMetric.getName(),
+                                        AlertDefinitionBuilder.AlertComparator.EQUALS, 0);                                
+        d.getAlertCondition().add(threshold);
+        AlertDefinition newDef = syncAlertDefinition(d);
+        
+        if (isResourceType) {
+            validateTypeDefinition(newDef);
+        }
+        
+        validateProblemAlertDefinition(newDef, willRecover, true);
+        
+        assertTrue("The problem alert definition should have " 
+                        + ((e == null) ? "no" : "an") + " escalation",
+                    (e == null) ? newDef.getEscalation() == null 
+                                : newDef.getEscalation() != null);
+        
+        return newDef;
+    }
+    
     protected AlertDefinition getAlertDefinition(Integer id) 
         throws IOException {
         
@@ -123,6 +169,17 @@ public abstract class AlertDefinitionTestBase extends HQApiTestBase {
                    d.getParent() == 0);
         assertTrue("No ResourcePrototype found for type based alert",
                    d.getResourcePrototype() != null);
+    }
+    
+    protected void validateProblemAlertDefinition(AlertDefinition def,
+                                                  boolean willRecover,
+                                                  boolean enabled) {
+        assertTrue("The problem alert definition should be active",
+                    def.isActive());
+        assertTrue("The problem alert definition's willRecover flag should be " + willRecover,
+                    willRecover == def.isWillRecover());
+        assertTrue("The problem alert definition's internal enabled flag should be " + enabled,
+                    enabled == def.isEnabled());
     }
     
     protected void validateRecoveryAlertDefinition(List<AlertDefinition> alertDefinitions)

@@ -183,9 +183,9 @@ public class AlertFireRecovery_test extends AlertTestBase {
 
         // Get the updated problem alert definition
         AlertDefinition updatedDef = getAlertDefinition(problemAlert.getAlertDefinitionId());
-        validateProblemAlertDefinitionAttributes(updatedDef, 
-                                                 willRecover, 
-                                                 willRecover ? false : true);
+        validateProblemAlertDefinition(updatedDef, 
+                                       willRecover, 
+                                       willRecover ? false : true);
         
         return problemAlert;
     }
@@ -212,51 +212,9 @@ public class AlertFireRecovery_test extends AlertTestBase {
 
         // Get the updated problem alert definition
         AlertDefinition problemDef = getAlertDefinition(problemAlert.getAlertDefinitionId());
-        validateProblemAlertDefinitionAttributes(problemDef, willRecover, true);
+        validateProblemAlertDefinition(problemDef, willRecover, true);
         
         return recoveryAlert;
-    }
-    
-    private AlertDefinition createProblemAlertDefinition(Resource resource, 
-                                                         Escalation e,
-                                                         boolean isResourceType,
-                                                         boolean willRecover) 
-        throws IOException {
-        
-        // Find availability metric for the passed in resource
-        Metric availMetric = findAvailabilityMetric(resource);
-
-        // Create alert definition
-        String name = "Test" + (isResourceType ? " Resource Type " : " ") + "Problem Alert";
-        AlertDefinition d = generateTestDefinition(name);
-        d.setWillRecover(willRecover);
-        if (isResourceType) {
-            d.setResourcePrototype(resource.getResourcePrototype());
-        } else {
-            d.setResource(resource);
-        }
-        if (e != null) {
-            d.setEscalation(e);
-        }
-        AlertCondition threshold =
-            AlertDefinitionBuilder.createThresholdCondition(
-                                        true, availMetric.getName(),
-                                        AlertDefinitionBuilder.AlertComparator.EQUALS, 0);                                
-        d.getAlertCondition().add(threshold);
-        AlertDefinition newDef = syncAlertDefinition(d);
-        
-        if (isResourceType) {
-            validateTypeDefinition(newDef);
-        }
-        
-        validateProblemAlertDefinitionAttributes(newDef, willRecover, true);
-        
-        assertTrue("The problem alert definition should have " 
-                        + ((e == null) ? "no" : "an") + " escalation",
-                    (e == null) ? newDef.getEscalation() == null 
-                                : newDef.getEscalation() != null);
-        
-        return newDef;        
     }
       
     private AlertDefinition createRecoveryAlertDefinition(Resource resource,
@@ -320,16 +278,5 @@ public class AlertFireRecovery_test extends AlertTestBase {
         validateDefinition(child);
         
         return child; 
-    }
-    
-    private void validateProblemAlertDefinitionAttributes(AlertDefinition def,
-                                                          boolean willRecover,
-                                                          boolean enabled) {
-        assertTrue("The problem alert definition should be active",
-                    def.isActive());
-        assertTrue("The problem alert definition's willRecover flag should be " + willRecover,
-                    willRecover == def.isWillRecover());
-        assertTrue("The problem alert definition's internal enabled flag should be " + enabled,
-                    enabled == def.isEnabled());
     }
 }
