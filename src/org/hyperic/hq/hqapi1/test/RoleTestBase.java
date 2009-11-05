@@ -42,9 +42,6 @@ public abstract class RoleTestBase extends HQApiTestBase {
     static final String GUEST_ROLENAME = "Guest Role";
     static final String SUPER_USER_ROLENAME = "Super User Role";
 
-    static final String TESTROLE_NAME_PREFIX = "API Test Role ";
-    static final String TESTROLE_DESCRIPTION = "API Test Role Description";
-
     // Collections of Operations for test purposes.
     static final List<Operation> VIEW_OPS;
     static final List<Operation> MODIFY_OPS;
@@ -85,20 +82,6 @@ public abstract class RoleTestBase extends HQApiTestBase {
 
     public RoleApi getRoleApi(String name, String password){
     	return getApi(name, password).getRoleApi();
-    }
-    /**
-     * Generate a valid Role object that's guaranteed to have a unique Name
-     * @return A valid Role object.
-     */
-    public Role generateTestRole() {
-
-        Random r = new Random();
-
-        Role role = new Role();
-        role.setName(TESTROLE_NAME_PREFIX + r.nextInt());
-        role.setDescription(TESTROLE_DESCRIPTION);
-
-        return role;
     }
 
     /**

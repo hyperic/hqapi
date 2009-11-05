@@ -46,6 +46,7 @@ import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.Response;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
+import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.UserResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
@@ -77,6 +78,9 @@ public abstract class HQApiTestBase extends TestCase {
     static final String  TESTUSER_LASTNAME    = "Test";
     static final String  TESTUSER_EMAIL       = "apitest@hyperic.com";
     static final boolean TESTUSER_ACTIVE      = true;
+
+    static final String TESTROLE_NAME_PREFIX = "API Test Role ";
+    static final String TESTROLE_DESCRIPTION = "API Test Role Description";
 
     private Log _log = LogFactory.getLog(HQApiTestBase.class);
 
@@ -289,6 +293,21 @@ public abstract class HQApiTestBase extends TestCase {
             StatusResponse response = api.deleteUser(u.getId());
             hqAssertSuccess(response);
         }
+    }
+    
+    /**
+     * Generate a valid Role object that's guaranteed to have a unique Name
+     * @return A valid Role object.
+     */
+    protected Role generateTestRole() {
+
+        Random r = new Random();
+
+        Role role = new Role();
+        role.setName(TESTROLE_NAME_PREFIX + r.nextInt());
+        role.setDescription(TESTROLE_DESCRIPTION);
+
+        return role;
     }
     
     protected Metric findAvailabilityMetric(Resource resource) 

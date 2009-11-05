@@ -27,11 +27,15 @@
 
 package org.hyperic.hq.hqapi1.test;
 
+import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.MaintenanceApi;
 import org.hyperic.hq.hqapi1.types.MaintenanceResponse;
 import org.hyperic.hq.hqapi1.types.Group;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.MaintenanceEvent;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.User;
+
+import java.util.List;
 
 public class MaintenanceGet_test extends MaintenanceTestBase {
 
@@ -82,6 +86,22 @@ public class MaintenanceGet_test extends MaintenanceTestBase {
         StatusResponse unscheduleResponse = mApi.unschedule(g.getId());
         hqAssertSuccess(unscheduleResponse);
 
+        cleanupGroup(g);
+    }
+    
+    public void testGetNoGroupPermission() throws Exception {
+
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+        
+        HQApi apiUnpriv = getApi(user.getName(), TESTUSER_PASSWORD);
+        MaintenanceApi mApi = apiUnpriv.getMaintenanceApi();
+        
+        Group g = getFileServerMountCompatibleGroup();
+        MaintenanceResponse response = mApi.get(g.getId());
+        hqAssertFailurePermissionDenied(response);
+
+        deleteTestUsers(users);
         cleanupGroup(g);
     }
 }

@@ -27,10 +27,18 @@
 
 package org.hyperic.hq.hqapi1.test;
 
+import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.MaintenanceApi;
 import org.hyperic.hq.hqapi1.types.MaintenanceResponse;
 import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.GroupResponse;
+import org.hyperic.hq.hqapi1.types.Operation;
+import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.User;
+
+import java.util.List;
 
 public class MaintenanceUnschedule_test extends MaintenanceTestBase {
 
@@ -78,5 +86,65 @@ public class MaintenanceUnschedule_test extends MaintenanceTestBase {
         hqAssertSuccess(unscheduleResponse);
 
         cleanupGroup(g);
+    }
+    
+    public void testUnscheduleNoGroupPermission() throws Exception {
+        
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+        
+        HQApi apiUnpriv = getApi(user.getName(), TESTUSER_PASSWORD);
+        MaintenanceApi mApi = apiUnpriv.getMaintenanceApi();
+
+        Group g = getFileServerMountCompatibleGroup();
+
+        StatusResponse response = mApi.unschedule(g.getId());
+        hqAssertFailurePermissionDenied(response);
+
+        deleteTestUsers(users);
+        cleanupGroup(g);         
+    }
+    
+    /**
+     * To validate HQ-1832
+     */
+    public void testUnscheduleNoMaintenancePermission() throws Exception {
+        
+        // create user
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+
+        // create role with view group permissions
+        Role r = generateTestRole();
+        r.getOperation().add(Operation.VIEW_RESOURCE_GROUP);
+        r.getUser().add(user);
+        RoleResponse roleResponse = getApi().getRoleApi().createRole(r);
+        hqAssertSuccess(roleResponse);
+        Role viewRole = roleResponse.getRole();
+        assertEquals("The role should have one user",
+                     1, viewRole.getUser().size());
+        assertTrue("The role should have view group permissions",
+                   viewRole.getOperation().contains(Operation.VIEW_RESOURCE_GROUP));
+        
+        // create group with view role
+        Group g = getFileServerMountCompatibleGroup();
+        g.getRole().add(viewRole);
+        GroupResponse groupResponse = getApi().getGroupApi().updateGroup(g);
+        hqAssertSuccess(groupResponse);
+        Group groupWithRole = groupResponse.getGroup();
+        assertEquals("The group should have one role",
+                     1, groupWithRole.getRole().size());
+
+        // unschedule maintanence with insufficient permissions
+        HQApi apiUnpriv = getApi(user.getName(), TESTUSER_PASSWORD);
+        MaintenanceApi mApi = apiUnpriv.getMaintenanceApi();
+
+        StatusResponse statusResponse = mApi.unschedule(groupWithRole.getId());
+        hqAssertFailurePermissionDenied(statusResponse);
+
+        // cleanup
+        deleteTestUsers(users);
+        cleanupRole(viewRole);
+        cleanupGroup(groupWithRole);
     }
 }

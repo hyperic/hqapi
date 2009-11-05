@@ -44,22 +44,22 @@ class MaintenanceController extends ApiController {
 
         def result
         if (!failureXml) {
-            def group = resourceHelper.findGroup(groupId)
-            if (!group) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                           "Group with id " + groupId +
-                                           " not found")
-            } else {
-                try {
+            try {
+            	def group = resourceHelper.findGroup(groupId)
+            	if (!group) {
+                	failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           	   "Group with id " + groupId +
+                                           	   " not found")
+            	} else {
                     result = group.scheduleMaintenance(user, start, end)
-                } catch (UnsupportedOperationException e) {
-                    failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED)
-                } catch (PermissionException e) {
-                    failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
-                } catch (Exception e) {
-                    failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
-                                               e.getMessage())
                 }
+            } catch (UnsupportedOperationException e) {
+                failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED)
+            } catch (PermissionException e) {
+                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+            } catch (Exception e) {
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
+                                           e.getMessage())
             }
         }
 
@@ -86,22 +86,22 @@ class MaintenanceController extends ApiController {
         }
 
         if (!failureXml) {
-            def group = resourceHelper.findGroup(groupId)
-            if (!group) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                           "Group with id " + groupId +
-                                           " not found")
-            } else {
-                try {
+            try {
+            	def group = resourceHelper.findGroup(groupId)
+            	if (!group) {
+                	failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           	   "Group with id " + groupId +
+                                           	   " not found")
+            	} else {
                     group.unscheduleMaintenance(user)
-                } catch (UnsupportedOperationException e) {
-                    failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED)
-                } catch (PermissionException e) {
-                    failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
-                } catch (Exception e) {
-                    failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
-                                               e.getMessage())
                 }
+            } catch (UnsupportedOperationException e) {
+                failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED)
+            } catch (PermissionException e) {
+                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+            } catch (Exception e) {
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
+                                           e.getMessage())
             }
         }        
 
@@ -128,22 +128,22 @@ class MaintenanceController extends ApiController {
 
         def result
         if (!failureXml) {
-            def group = resourceHelper.findGroup(groupId)
-            if (!group) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                           "Group with id " + groupId +
-                                           " not found")
-            } else {
-                try {
+            try {
+            	def group = resourceHelper.findGroup(groupId)
+            	if (!group) {
+                	failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           	   "Group with id " + groupId +
+                                           	   " not found")
+            	} else {
                     result = group.getMaintenanceEvent(user)
-                } catch (UnsupportedOperationException e) {
-                    failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED)
-                } catch (PermissionException e) {
-                    failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
-                } catch (Exception e) {
-                    failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
-                                               e.getMessage())
                 }
+            } catch (UnsupportedOperationException e) {
+                failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED)
+            } catch (PermissionException e) {
+                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+            } catch (Exception e) {
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
+                                           e.getMessage())
             }
         }
 
