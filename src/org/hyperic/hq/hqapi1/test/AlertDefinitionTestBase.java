@@ -44,8 +44,10 @@ import org.hyperic.hq.hqapi1.types.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -254,9 +256,8 @@ public abstract class AlertDefinitionTestBase extends HQApiTestBase {
         
         for (AlertCondition c : recovery.getAlertCondition()) {
             if (c.getType() == AlertConditionType.RECOVERY.getType()) {
-                // TODO: Need to match on the alert definition id
-                // since resource type alert definitions will have
-                // the same alert definition name
+                assertEquals("Recovery alert definition does not have a valid recovery condition",
+                             problem.getId(), c.getRecoverId());
                 assertEquals("Recovery alert definition does not have a valid recovery condition",
                              problem.getName(), c.getRecover());
                 recoveryCondition = c;
@@ -311,18 +312,45 @@ public abstract class AlertDefinitionTestBase extends HQApiTestBase {
         // get child alert definitions
         AlertDefinitionsResponse childRecoveryResponse = defApi.getAlertDefinitions(parentRecoveryDef);
         hqAssertSuccess(childRecoveryResponse);
-        assertEquals("These tests assume only one child alert definition",
-                     1, childRecoveryResponse.getAlertDefinition().size());
-        AlertDefinition childRecoveryDef = childRecoveryResponse.getAlertDefinition().get(0);
+        List<AlertDefinition> childRecoveryDefs = childRecoveryResponse.getAlertDefinition();
+        assertTrue("There must be at least one child recovery alert definition",
+                    childRecoveryDefs.size() > 0);
 
         AlertDefinitionsResponse childProblemResponse = defApi.getAlertDefinitions(parentProblemDef);
         hqAssertSuccess(childProblemResponse);
-        assertEquals("These tests assume only one child alert definition",
-                     1, childProblemResponse.getAlertDefinition().size());
-        AlertDefinition childProblemDef = childProblemResponse.getAlertDefinition().get(0);
+        List<AlertDefinition> childProblemDefs = childProblemResponse.getAlertDefinition();
+        assertTrue("There must be at least one child problem alert definition",
+                    childProblemDefs.size() > 0);
+        assertEquals(childRecoveryDefs.size(), childProblemDefs.size());
+        
+        // now need to match up the child recovery alert definition with the
+        // corresponding child problem alert definition and validate the pair
+        
+        // create map for the child problem alert definitions for easy lookup
+        Map problemDefs = new HashMap();
+        for (AlertDefinition def : childProblemDefs) {
+            problemDefs.put(def.getId(), def);
+        }
 
-        // validate child recovery alert definition
-        validateRecoveryAlertDefinition(childRecoveryDef, childProblemDef);
+        // validate the proper pair of recovery and problem alert definitions
+        for (AlertDefinition recoveryDef : childRecoveryDefs) {
+            for (AlertCondition c : recoveryDef.getAlertCondition()) {
+                if (c.getType() == AlertConditionType.RECOVERY.getType()) {
+                    // validate child recovery alert definition
+                    validateRecoveryAlertDefinition(
+                            recoveryDef, (AlertDefinition) problemDefs.get(c.getRecoverId()));
+                    // remove so that we can verify at the end that all
+                    // child problem alert definitions were validated with
+                    // the corresponding child recovery alert definition
+                    assertNotNull(problemDefs.remove(c.getRecoverId()));
+                    break;
+                }
+            }
+        }
+        
+        assertTrue("Could not validate " + problemDefs.size() 
+                        + " child recovery alert definitions",
+                    problemDefs.isEmpty());
     }
     
     protected void cleanup(List<AlertDefinition> definitions) throws IOException {

@@ -760,6 +760,7 @@
         <xs:attribute name="logLevel"            type="xs:string"  use="optional"/>
         <xs:attribute name="logMatches"          type="xs:string"  use="optional"/>
         <!-- Recovery conditions -->
+        <xs:attribute name="recoverId"           type="xs:int"     use="optional"/>
         <xs:attribute name="recover"             type="xs:string"  use="optional"/>
         <!-- Metric change condition -->
         <xs:attribute name="metricChange"        type="xs:string"  use="optional"/>

@@ -154,6 +154,7 @@ public class AlertdefinitionController extends ApiController {
                                      c.measurementId + " for " + c.name)
                             continue
                         } else {
+                        	conditionAttrs["recoverId"] = alert.id
                             conditionAttrs["recover"] = alert.name
                         }
                     } else if (c.type == EventConstants.TYPE_CFG_CHG) {
@@ -774,6 +775,9 @@ public class AlertdefinitionController extends ApiController {
                         isRecovery = true
 
                         // If a resource alert, look up alert by name
+                        // TODO: This needs to be looked up by alert definition id
+                        // to avoid collisions where the alert definition names
+                        // are the same
                         if (resource) {
                             log.debug("Looking up alerts for resource=" + resource.id)
                             def resourceDefs = resource.getAlertDefinitions(user)
