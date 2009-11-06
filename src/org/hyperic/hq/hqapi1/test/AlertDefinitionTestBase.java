@@ -94,17 +94,19 @@ public abstract class AlertDefinitionTestBase extends HQApiTestBase {
         return response.getAlertDefinition();
     }
     
-    protected AlertDefinition createProblemAlertDefinition(Resource resource, 
-                                                           Escalation e,
-                                                           boolean isResourceType,
-                                                           boolean willRecover) 
+    protected AlertDefinition createAvailabilityAlertDefinition(Resource resource, 
+                                                                Escalation e,
+                                                                boolean isResourceType,
+                                                                boolean willRecover,
+                                                                double availability) 
         throws IOException {
 
         // Find availability metric for the passed in resource
         Metric availMetric = findAvailabilityMetric(resource);
 
         // Create alert definition
-        String name = "Test" + (isResourceType ? " Resource Type " : " ") + "Problem Alert";
+        String name = "Test" + (isResourceType ? " Resource Type " : " ") 
+                             + "Availability=" + availability + " Alert";
         AlertDefinition d = generateTestDefinition(name);
         d.setWillRecover(willRecover);
         if (isResourceType) {
@@ -118,7 +120,8 @@ public abstract class AlertDefinitionTestBase extends HQApiTestBase {
         AlertCondition threshold =
             AlertDefinitionBuilder.createThresholdCondition(
                                         true, availMetric.getName(),
-                                        AlertDefinitionBuilder.AlertComparator.EQUALS, 0);                                
+                                        AlertDefinitionBuilder.AlertComparator.EQUALS, 
+                                        availability);                                
         d.getAlertCondition().add(threshold);
         AlertDefinition newDef = syncAlertDefinition(d);
         
@@ -126,9 +129,9 @@ public abstract class AlertDefinitionTestBase extends HQApiTestBase {
             validateTypeDefinition(newDef);
         }
         
-        validateProblemAlertDefinition(newDef, willRecover, true);
+        validateAvailabilityAlertDefinition(newDef, willRecover, true);
         
-        assertTrue("The problem alert definition should have " 
+        assertTrue("The alert definition should have " 
                         + ((e == null) ? "no" : "an") + " escalation",
                     (e == null) ? newDef.getEscalation() == null 
                                 : newDef.getEscalation() != null);
@@ -171,9 +174,9 @@ public abstract class AlertDefinitionTestBase extends HQApiTestBase {
                    d.getResourcePrototype() != null);
     }
     
-    protected void validateProblemAlertDefinition(AlertDefinition def,
-                                                  boolean willRecover,
-                                                  boolean enabled) {
+    protected void validateAvailabilityAlertDefinition(AlertDefinition def,
+                                                       boolean willRecover,
+                                                       boolean enabled) {
         assertTrue("The problem alert definition should be active",
                     def.isActive());
         assertTrue("The problem alert definition's willRecover flag should be " + willRecover,

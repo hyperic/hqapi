@@ -29,25 +29,68 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
+import org.hyperic.hq.hqapi1.types.MaintenanceEvent;
+import org.hyperic.hq.hqapi1.types.MaintenanceResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
-import org.hyperic.hq.hqapi1.types.MaintenanceEvent;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.RoleApi;
 
+import java.util.List;
 import java.util.Random;
 
-public abstract class MaintenanceTestBase extends HQApiTestBase {
+public abstract class MaintenanceTestBase extends AlertTestBase {
 
     public MaintenanceTestBase(String name) {
         super(name);
     }
 
+    MaintenanceEvent get(Group g) throws Exception {
+
+        MaintenanceResponse getResponse = 
+            getApi().getMaintenanceApi().get(g.getId());
+        
+        hqAssertSuccess(getResponse);
+
+        return getResponse.getMaintenanceEvent();
+    }
+    
+    MaintenanceEvent schedule(Group g, long start, long end)
+        throws Exception {
+
+        MaintenanceResponse response = 
+            getApi().getMaintenanceApi().schedule(g.getId(), start, end);
+        
+        hqAssertSuccess(response);
+        
+        MaintenanceEvent event = response.getMaintenanceEvent();
+        assertNotNull("The scheduled maintenance event should not be null",
+                      event);
+        valididateMaintenanceEvent(event, g, start, end);
+        
+        return event;
+    }
+    
     void cleanupGroup(Group g) throws Exception {
+        cleanupGroup(g, false);
+    }
+
+    void cleanupGroup(Group g, boolean deleteMembers) throws Exception {
+        
+        if (deleteMembers) {
+            ResourceApi api = getApi().getResourceApi();
+            for (Resource r : g.getResource()) {
+                StatusResponse response = api.deleteResource(r.getId());
+                hqAssertSuccess(response);
+            }
+        }
+        
         GroupApi api = getApi().getGroupApi();
         StatusResponse response = api.deleteGroup(g.getId());
         hqAssertSuccess(response);
@@ -61,9 +104,7 @@ public abstract class MaintenanceTestBase extends HQApiTestBase {
 
     Group getFileServerMountCompatibleGroup() throws Exception {
 
-        HQApi api = getApi();
-        ResourceApi resourceApi = api.getResourceApi();
-        GroupApi groupApi = api.getGroupApi();
+        ResourceApi resourceApi = getApi().getResourceApi();
 
         ResourcePrototypeResponse protoResponse =
                 resourceApi.getResourcePrototype("FileServer Mount");
@@ -76,16 +117,49 @@ public abstract class MaintenanceTestBase extends HQApiTestBase {
                    protoResponse.getResourcePrototype().getName(),
                    resources.getResource().size() > 0);
 
+        return createGroup(resources.getResource());
+    }
+    
+    Group createGroup(List<Resource> resources) throws Exception {
+
+        // determine whether to create a mixed or compatible group
+        ResourcePrototype prototype = null;
+        for (Resource r : resources) {
+            if (prototype == null) {
+                prototype = r.getResourcePrototype();
+            } else {
+                if (!prototype.getName().equals(r.getResourcePrototype().getName())) {
+                    prototype = null;
+                    break;
+                }
+            }
+        }
+        
+        // create group
         Random r = new Random();
         Group g = new Group();
-        g.setName("Compatible Group for Maintenance Tests" + r.nextInt());
-        g.setResourcePrototype(protoResponse.getResourcePrototype());
-        g.getResource().addAll(resources.getResource());
-
-        GroupResponse groupResponse = groupApi.createGroup(g);
+        String name = (prototype == null ? "Mixed" : "Compatible") 
+                        + " Group for Maintenance Tests" + r.nextInt();
+        g.setName(name);
+        if (prototype != null) {
+            g.setResourcePrototype(prototype);
+        }
+        g.getResource().addAll(resources);
+        GroupResponse groupResponse = getApi().getGroupApi().createGroup(g);
         hqAssertSuccess(groupResponse);
-
-        return groupResponse.getGroup();
+        Group createdGroup = groupResponse.getGroup();
+        assertEquals(resources.size(), createdGroup.getResource().size());
+        if (prototype == null) {
+            assertNull("This should be a mixed group",
+                        createdGroup.getResourcePrototype());
+        } else {
+            assertNotNull("This should be a compatible group",
+                           createdGroup.getResourcePrototype());
+            assertEquals(prototype.getName(),
+                         createdGroup.getResourcePrototype().getName());
+        }
+        
+        return createdGroup;
     }
 
     void valididateMaintenanceEvent(MaintenanceEvent e, Group g, long start, long end) {

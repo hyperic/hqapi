@@ -27,7 +27,7 @@ public abstract class HierarchicalAlertingTestBase extends AlertTestBase {
         
         Resource platform = getLocalPlatformResource(false, true);
         AlertDefinition platformAlertDef =
-            createProblemAlertDefinition(platform, null, false, true);
+            createAvailabilityAlertDefinition(platform, null, false, true, 0);
         
         List<AlertDefinition> problemAlertDefs = new ArrayList<AlertDefinition>();
         for (Resource server : platform.getResource()) {
@@ -39,7 +39,8 @@ public abstract class HierarchicalAlertingTestBase extends AlertTestBase {
                 
                 // set alert definition to willRecover=true
                 // so that it will fire only once
-                problemAlertDefs.add(createProblemAlertDefinition(server, null, false, true));
+                problemAlertDefs.add(
+                        createAvailabilityAlertDefinition(server, null, false, true, 0));
             }
         }
         

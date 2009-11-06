@@ -117,6 +117,30 @@ public abstract class AlertTestBase extends AlertDefinitionTestBase {
         return findAlert(def, start);
     }
     
+    protected Alert fireAvailabilityAlert(AlertDefinition def,
+                                          boolean willRecover,
+                                          double availability)
+        throws Exception {
+        
+        long start = System.currentTimeMillis();
+        
+        // Insert a fake availability data point so that
+        // the alert definition will fire.
+        sendAvailabilityDataPoint(def.getResource(), availability);
+
+        Alert alert = findAlert(def, start);
+        assertFalse("The alert should not be fixed",
+                     alert.isFixed());
+
+        // Get the updated alert definition
+        AlertDefinition updatedDef = getAlertDefinition(alert.getAlertDefinitionId());
+        validateAvailabilityAlertDefinition(updatedDef, 
+                                            willRecover, 
+                                            willRecover ? false : true);
+        
+        return alert;
+    }
+    
     protected void sendAvailabilityDataPoint(Resource resource, double availability) 
         throws IOException {
     

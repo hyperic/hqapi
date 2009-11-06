@@ -27,22 +27,32 @@
 
 package org.hyperic.hq.hqapi1.test;
 
+import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.MaintenanceApi;
+import org.hyperic.hq.hqapi1.types.Alert;
+import org.hyperic.hq.hqapi1.types.AlertDefinition;
+import org.hyperic.hq.hqapi1.types.MaintenanceEvent;
 import org.hyperic.hq.hqapi1.types.MaintenanceResponse;
+import org.hyperic.hq.hqapi1.types.MaintenanceState;
 import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.Operation;
+import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.User;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class MaintenanceSchedule_test extends MaintenanceTestBase {
 
-    private static final long HOUR = 60 * 60 * 1000;
+    private static final long SECOND = 1000;
+    private static final long MINUTE = 60 * SECOND;
+    private static final long HOUR = 60 * MINUTE;
 
     public MaintenanceSchedule_test(String name) {
         super(name);
@@ -92,17 +102,77 @@ public class MaintenanceSchedule_test extends MaintenanceTestBase {
         Group g = getFileServerMountCompatibleGroup();
         long start = System.currentTimeMillis() + HOUR;
         long end = start + HOUR;
-        MaintenanceResponse response = mApi.schedule(g.getId(),
-                                                     start, end);
-        hqAssertSuccess(response);
-
-        assertNotNull(response.getMaintenanceEvent());
-        valididateMaintenanceEvent(response.getMaintenanceEvent(), g, start, end);
+        
+        MaintenanceEvent event = schedule(g, start, end);
 
         StatusResponse unscheduleResponse = mApi.unschedule(g.getId());
         hqAssertSuccess(unscheduleResponse);
 
         cleanupGroup(g);         
+    }
+    
+    public void testFireAlertsBeforeSchedulingCompatibleGroup()
+        throws Exception {
+
+        HQApi api = getApi();
+
+        // create resource
+        Resource resource = createControllableResource(api);
+        
+        // create group
+        Group maintGroup = createGroup(Collections.singletonList(resource));
+
+        // create alert definitions
+        AlertDefinition alertDefFireOnce = 
+            createAvailabilityAlertDefinition(resource, null, false, true, 1);
+        AlertDefinition alertDefFireEveryTime = 
+            createAvailabilityAlertDefinition(resource, null, false, false, 1);
+
+        // insert a fake 'up' measurement so that
+        // the alert definitions will fire.
+        long alertStart = System.currentTimeMillis();
+        Alert alertFireOnce = fireAvailabilityAlert(alertDefFireOnce, true, 1);
+        Alert alertFireEveryTime = fireAvailabilityAlert(alertDefFireEveryTime, false, 1);
+        
+        // TODO check measurement enabled status       
+        
+        // schedule maintenance
+        MaintenanceApi mApi = api.getMaintenanceApi();
+        long maintStart = System.currentTimeMillis() + 5*SECOND;
+        long maintEnd = maintStart + MINUTE;
+
+        MaintenanceEvent event = schedule(maintGroup, maintStart, maintEnd);
+
+        // wait for maintenance to start
+        waitForMaintenanceStateChange(maintGroup, MaintenanceState.RUNNING);
+        
+        // validate alert definitions during the maintenance
+        // the internal enabled flag should be false for all alert definitions
+        alertDefFireOnce = getAlertDefinition(alertDefFireOnce.getId());
+        validateAvailabilityAlertDefinition(alertDefFireOnce, true, false);
+        
+        alertDefFireEveryTime = getAlertDefinition(alertDefFireEveryTime.getId());
+        validateAvailabilityAlertDefinition(alertDefFireEveryTime, false, false);
+        
+        // TODO check measurement enabled status
+        
+        // wait for maintenance to end
+        waitForMaintenanceStateChange(maintGroup, MaintenanceState.COMPLETE);
+        
+        // validate alert definitions after the maintenance
+        // the internal enabled flag should still be false for the willRecover
+        // alert definition that fired before the maintenance
+        alertDefFireOnce = getAlertDefinition(alertDefFireOnce.getId());
+        validateAvailabilityAlertDefinition(alertDefFireOnce, true, false);
+        
+        // the internal enabled flag should be true after the maintenance for
+        // the alert definition that is configured to fire every time
+        alertDefFireEveryTime = getAlertDefinition(alertDefFireEveryTime.getId());
+        validateAvailabilityAlertDefinition(alertDefFireEveryTime, false, true);
+        
+        // TODO check measurement enabled status       
+        
+        cleanupGroup(maintGroup, true);         
     }
     
     public void testScheduleNoGroupPermission() throws Exception {
@@ -172,5 +242,41 @@ public class MaintenanceSchedule_test extends MaintenanceTestBase {
         deleteTestUsers(users);
         cleanupRole(viewRole);
         cleanupGroup(groupWithRole);
+    }
+    
+    private void waitForMaintenanceStateChange(Group g, MaintenanceState newState) 
+        throws Exception{
+    
+        MaintenanceEvent event = get(g);
+        assertNotNull("The group must have a scheduled maintenance event",
+                       event);
+        MaintenanceState initialState = event.getState();
+        MaintenanceState currentState = event.getState();
+        
+        long timeout = 0;
+        if (newState.value().equals(MaintenanceState.RUNNING.value())) {
+            timeout = event.getStartTime() + 30*SECOND;
+        } else if (newState.value().equals(MaintenanceState.COMPLETE.value())) {
+            timeout = event.getEndTime() + 30*SECOND;
+        }
+        
+        while (!currentState.value().equals(newState.value())) {
+            if (System.currentTimeMillis() >= timeout) {
+                String message = "The maintenance event did not change state from "
+                                    + initialState.value() + " to " 
+                                    + newState.value() + " in time.";
+                throw new Exception(message);
+            }
+            
+            pauseTest(5*SECOND);
+            
+            event = get(g);
+            
+            if (event == null) {
+                currentState = MaintenanceState.COMPLETE;
+            } else {
+                currentState = get(g).getState();
+            }
+        }
     }
 }

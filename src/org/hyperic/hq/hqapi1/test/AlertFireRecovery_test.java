@@ -115,10 +115,12 @@ public class AlertFireRecovery_test extends AlertTestBase {
         Resource platform = getLocalPlatformResource(false, false);
 
         boolean willRecover = false;
-        AlertDefinition problemDef = createProblemAlertDefinition(platform, null, false, willRecover);
-        Alert problemAlert = fireProblemAlert(problemDef, willRecover);
+        AlertDefinition problemDef = 
+            createAvailabilityAlertDefinition(platform, null, false, willRecover, 0);
+        Alert problemAlert = fireAvailabilityAlert(problemDef, willRecover, 0);
 
-        AlertDefinition recoveryDef = createRecoveryAlertDefinition(platform, problemDef, false);
+        AlertDefinition recoveryDef = 
+            createRecoveryAlertDefinition(platform, problemDef, false);
         fireRecoveryAlert(recoveryDef, problemAlert, willRecover);
 
         // Cleanup
@@ -138,7 +140,7 @@ public class AlertFireRecovery_test extends AlertTestBase {
         Resource platform = getLocalPlatformResource(false, false);
 
         AlertDefinition problemDef = 
-            createProblemAlertDefinition(platform, escalation, isResourceType, willRecover);
+            createAvailabilityAlertDefinition(platform, escalation, isResourceType, willRecover, 0);
         AlertDefinition recoveryDef = 
             createRecoveryAlertDefinition(platform, problemDef, addRecoveryPostCreate);
 
@@ -149,7 +151,7 @@ public class AlertFireRecovery_test extends AlertTestBase {
             problemDefToFire = problemDef;
         }
         
-        Alert problemAlert = fireProblemAlert(problemDefToFire, willRecover);
+        Alert problemAlert = fireAvailabilityAlert(problemDefToFire, willRecover, 0);
         
         AlertDefinition recoveryDefToFire = null;
         if (isResourceType) {
@@ -167,29 +169,6 @@ public class AlertFireRecovery_test extends AlertTestBase {
         cleanup(definitions);
     }
     
-    private Alert fireProblemAlert(AlertDefinition problemDef,
-                                   boolean willRecover)
-        throws Exception {
-        
-        long start = System.currentTimeMillis();
-        
-        // Insert a fake 'down' measurement so that
-        // the problem alert definition will fire.
-        sendAvailabilityDataPoint(problemDef.getResource(), 0.0);
-
-        Alert problemAlert = findAlert(problemDef, start);
-        assertFalse("The problem alert should not be fixed",
-                     problemAlert.isFixed());
-
-        // Get the updated problem alert definition
-        AlertDefinition updatedDef = getAlertDefinition(problemAlert.getAlertDefinitionId());
-        validateProblemAlertDefinition(updatedDef, 
-                                       willRecover, 
-                                       willRecover ? false : true);
-        
-        return problemAlert;
-    }
-    
     private Alert fireRecoveryAlert(AlertDefinition recoveryDef, 
                                     Alert problemAlert,
                                     boolean willRecover)
@@ -204,7 +183,11 @@ public class AlertFireRecovery_test extends AlertTestBase {
         Alert recoveryAlert = findAlert(recoveryDef, start);
         assertTrue("The recovery alert should be fixed",
                     recoveryAlert.isFixed());
-        
+
+        // Get the updated recovery alert definition
+        AlertDefinition updatedRecoveryDef = getAlertDefinition(recoveryDef.getId());
+        validateAvailabilityAlertDefinition(updatedRecoveryDef, false, true);        
+
         // Get the updated problem alert
         problemAlert = getAlert(problemAlert.getId());
         assertTrue("The problem alert should be fixed",
@@ -212,7 +195,7 @@ public class AlertFireRecovery_test extends AlertTestBase {
 
         // Get the updated problem alert definition
         AlertDefinition problemDef = getAlertDefinition(problemAlert.getAlertDefinitionId());
-        validateProblemAlertDefinition(problemDef, willRecover, true);
+        validateAvailabilityAlertDefinition(problemDef, willRecover, true);
         
         return recoveryAlert;
     }
