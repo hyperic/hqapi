@@ -5,7 +5,7 @@ import org.hyperic.hq.auth.shared.SessionManager
 import org.hyperic.hq.authz.shared.PermissionException
 import org.hyperic.hq.appdef.shared.AppdefEntityID
 import org.hyperic.hq.appdef.shared.AppdefEntityTypeID
-import org.hyperic.hq.bizapp.server.session.EventsBossEJBImpl as EventsBoss
+import org.hyperic.hq.bizapp.server.session.EventsBossImpl as EventsBoss
 import org.hyperic.hq.events.AlertSeverity
 import org.hyperic.hq.events.EventConstants
 import org.hyperic.hq.events.shared.ActionValue
