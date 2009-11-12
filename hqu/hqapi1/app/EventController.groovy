@@ -1,7 +1,7 @@
 
 import org.hyperic.hq.hqapi1.ErrorCode
 import org.hyperic.hq.events.EventLogStatus
-import org.hyperic.hq.events.server.session.EventLogManagerEJBImpl as EMan
+import org.hyperic.hq.events.server.session.EventLogManagerImpl as EMan
 import org.hyperic.hq.events.server.session.EventLogSortField
 import org.hyperic.hibernate.PageInfo
 
