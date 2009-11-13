@@ -35,16 +35,16 @@ public class AlertFireRecovery_test extends AlertTestBase {
         createAndFireAlerts(null, false, false, false);
     }
     
-    public void testFireResourceTypeRecoveryAlert() throws Exception {
-        createAndFireAlerts(null, true, false, false);
-    }
-
     public void testFireRecoveryAlertWithEscalation() throws Exception {
         Escalation e = createEscalation();
         createAndFireAlerts(e, false, false, false);
         
         // Cleanup
         deleteEscalation(e);
+    }
+    
+    public void testFireResourceTypeRecoveryAlert() throws Exception {
+        createAndFireAlerts(null, true, false, false);
     }
         
     public void testFireResourceTypeRecoveryAlertWithEscalation()
@@ -60,13 +60,33 @@ public class AlertFireRecovery_test extends AlertTestBase {
     public void testWillRecoverAndFireRecoveryAlert() throws Exception {
         createAndFireAlerts(null, false, false, true);
     }
+
+    public void testWillRecoverAndFireRecoveryAlertWithEscalation() 
+        throws Exception {
+        
+        Escalation e = createEscalation();
+        createAndFireAlerts(e, false, false, true);
+        
+        // Cleanup
+        deleteEscalation(e);        
+    }
     
     public void testWillRecoverAndFireResourceTypeRecoveryAlert()
         throws Exception {
         
         createAndFireAlerts(null, true, false, true);
     }
+
+    public void testWillRecoverAndFireResourceTypeRecoveryAlertWithEscalation()
+        throws Exception {
+    
+        Escalation e = createEscalation();
+        createAndFireAlerts(e, true, false, true);
         
+        // Cleanup
+        deleteEscalation(e);
+    }
+    
     /**
      * To validate HQ-1894
      */
@@ -79,10 +99,36 @@ public class AlertFireRecovery_test extends AlertTestBase {
     /**
      * To validate HQ-1894
      */
+    public void testAddRecoveryPostCreateAndFireRecoveryAlertWithEscalation() 
+        throws Exception {
+        
+        Escalation e = createEscalation();
+        createAndFireAlerts(e, false, true, false);
+        
+        // Cleanup
+        deleteEscalation(e);
+    }
+    
+    /**
+     * To validate HQ-1894
+     */
     public void testAddRecoveryPostCreateAndFireResourceTypeRecoveryAlert() 
         throws Exception {
         
         createAndFireAlerts(null, true, true, false);
+    }
+
+    /**
+     * To validate HQ-1894
+     */
+    public void testAddRecoveryPostCreateAndFireResourceTypeRecoveryAlertWithEscalation() 
+        throws Exception {
+        
+        Escalation e = createEscalation();
+        createAndFireAlerts(e, true, true, false);
+        
+        // Cleanup
+        deleteEscalation(e);
     }
     
     /**
@@ -97,10 +143,36 @@ public class AlertFireRecovery_test extends AlertTestBase {
     /**
      * To validate HQ-1894
      */
+    public void testWillRecoverAddRecoveryPostCreateAndFireRecoveryAlertWithEscalation() 
+        throws Exception {
+        
+        Escalation e = createEscalation();
+        createAndFireAlerts(e, false, true, true);
+        
+        // Cleanup
+        deleteEscalation(e);
+    }
+    
+    /**
+     * To validate HQ-1894
+     */
     public void testWillRecoverAddRecoveryPostCreateAndFireResourceTypeRecoveryAlert() 
         throws Exception {
         
         createAndFireAlerts(null, true, true, true);
+    }
+
+    /**
+     * To validate HQ-1894
+     */
+    public void testWillRecoverAddRecoveryPostCreateAndFireResourceTypeRecoveryAlertWithEscalation() 
+        throws Exception {
+     
+        Escalation e = createEscalation();
+        createAndFireAlerts(e, true, true, true);
+        
+        // Cleanup
+        deleteEscalation(e);
     }
     
     /**

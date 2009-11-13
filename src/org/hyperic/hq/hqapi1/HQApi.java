@@ -192,7 +192,6 @@ public class HQApi {
     }
 
     /**
-<<<<<<< HEAD
      * Manipulate HQ server configuration settings
      *
      * @return The API for modifying HQ server settings
