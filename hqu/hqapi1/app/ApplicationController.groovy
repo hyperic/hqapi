@@ -1,5 +1,5 @@
 import org.hyperic.hq.hqapi1.ErrorCode
-import org.hyperic.hq.appdef.server.session.ApplicationManagerEJBImpl as AppMan
+import org.hyperic.hq.appdef.server.session.ApplicationManagerImpl as AppMan
 import org.hyperic.hq.bizapp.server.session.AppdefBossImpl as ABoss
 import org.hyperic.hq.authz.server.session.ResourceManagerImpl as ResMan
 import org.hyperic.util.pager.PageControl
