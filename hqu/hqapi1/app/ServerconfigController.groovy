@@ -1,4 +1,4 @@
-import org.hyperic.hq.common.server.session.ServerConfigManagerEJBImpl as SMan
+import org.hyperic.hq.common.server.session.ServerConfigManagerImpl as SMan
 import org.hyperic.hq.hqapi1.ErrorCode
 
 class ServerconfigController extends ApiController {
