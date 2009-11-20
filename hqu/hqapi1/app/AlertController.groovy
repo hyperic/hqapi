@@ -77,7 +77,7 @@ public class AlertController extends ApiController {
                 PageInfo pInfo = PageInfo.create(0, count, AlertSortField.DATE,
                                                  false);
 
-                // TODO: Work around incorrect TimingVoodoo in AlertManagerEJBImpl
+                // TODO: Work around incorrect TimingVoodoo in AlertManagerImpl
                 long roundedEnd = end + (ROUNDING_VOODOO - (end % ROUNDING_VOODOO))
                 long timerange = roundedEnd - begin
 
@@ -137,7 +137,7 @@ public class AlertController extends ApiController {
                                                "Unable to find resource with " +
                                                "id=" + rid)
                 } else {
-                    // TODO: Work around incorrect TimingVoodoo in AlertManagerEJBImpl
+                    // TODO: Work around incorrect TimingVoodoo in AlertManagerImpl
                     long roundedEnd = end + (ROUNDING_VOODOO - (end % ROUNDING_VOODOO))
                     alerts = resource.getAlerts(user, begin, roundedEnd,
                                                 count, severity)
