@@ -5,7 +5,7 @@ import org.hyperic.hq.events.AlertSeverity
 import org.hyperic.hibernate.PageInfo
 import org.hyperic.hq.events.server.session.AlertSortField
 import org.hyperic.hq.events.server.session.AlertManagerImpl as AlertMan
-import org.hyperic.hq.escalation.server.session.EscalationManagerEJBImpl as EscMan
+import org.hyperic.hq.escalation.server.session.EscalationManagerImpl as EscMan
 import org.hyperic.hq.events.server.session.ClassicEscalationAlertType
 import org.hyperic.hq.authz.shared.PermissionException
 
