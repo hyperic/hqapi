@@ -29,12 +29,31 @@ class ApplicationController extends ApiController {
                         opsContact  : a.opsContact,
                         bizContact  : a.businessContact) {
                 def sessionId = SessionManager.instance.put(user)
-                for (appService in aBoss.findServiceInventoryByApplication(sessionId, a.id, PageControl.PAGE_ALL)) {
+                def resHelper = resourceHelper
+                def legacy = true
+                def inventory = aBoss.findServiceInventoryByApplication(sessionId, a.id, PageControl.PAGE_ALL)
+                
+                for (appService in inventory) {
                     if (appService instanceof ServiceValue) {
-                        def resource = resourceHelper.find('service':appService.id)
-                        Resource(id :          resource.id,
-                                 name :        resource.name,
-                                 description : resource.description)
+                    	if (appService.metaClass.respondsTo(appService, "getResourceId")) {
+                    		legacy = false
+                    	}
+                    	break
+                    }
+                }
+                
+                for (appService in inventory) {
+                    if (appService instanceof ServiceValue) {
+                        def resourceId = null
+                        if (legacy) {
+                        	def resource = resHelper.find('service':appService.id)
+                        	resourceId = resource.id
+                        } else {
+                        	resourceId = appService.resourceId
+                        }
+                        Resource(id :          resourceId,
+                                 name :        appService.name,
+                                 description : appService.description)
                     }
                 }
             }
