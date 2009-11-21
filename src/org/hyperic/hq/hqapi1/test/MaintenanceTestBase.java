@@ -165,6 +165,8 @@ public abstract class MaintenanceTestBase extends AlertTestBase {
     void valididateMaintenanceEvent(MaintenanceEvent e, Group g, long start, long end) {
         assertEquals(e.getGroupId(), g.getId().intValue());
         assertEquals(e.getStartTime(), start);
-        assertEquals(e.getEndTime(), end);        
+        assertEquals(e.getEndTime(), end);
+        assertNotNull(e.getModifiedBy());
+        assertTrue(e.getModifiedBy().trim().length() > 0);
     }
 }

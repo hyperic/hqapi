@@ -863,7 +863,8 @@
         </xs:sequence>
         <xs:attribute name="endTime"        type="xs:long"    use="required"/>
         <xs:attribute name="startTime"      type="xs:long"    use="required"/>
-        <xs:attribute name="groupId"        type="xs:int"     use="required"/>     
+        <xs:attribute name="groupId"        type="xs:int"     use="required"/>
+        <xs:attribute name="modifiedBy"     type="xs:string"  use="optional" />
     </xs:complexType>
 
     <!-- Maintenance response objects -->
