@@ -1,4 +1,9 @@
 
+Changes in HQApi 2.4
+
+ *) [HHQ-3565] Fix issue in MetricAPI causing all metrics to be shown as
+    defaultOn=false.
+
 Changes in HQApi 2.3
 
  *) [HQ-3076] Add ApplicationApi.
