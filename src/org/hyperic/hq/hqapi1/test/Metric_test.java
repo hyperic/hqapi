@@ -36,13 +36,19 @@ public class Metric_test extends MetricTestBase {
         hqAssertSuccess(resp);
 
         int numNotDefaultOn = 0;
+        int numDefaultOn = 0;
         for (Metric m : resp.getMetric()) {
             validateMetric(m);
             if (!m.isDefaultOn()) {
                 numNotDefaultOn++;
+            } else {
+                numDefaultOn++;
             }
         }
-        assertTrue("All metrics are defaultOn", numNotDefaultOn > 0);
+        assertTrue("All metrics are defaultOn, on = " + numDefaultOn +
+                   " off = " + numNotDefaultOn, numNotDefaultOn > 0);
+        assertTrue("No metrics are not defaultOn, on = " + numDefaultOn +
+                   " off = " + numNotDefaultOn, numDefaultOn > 0);
     }
 
     public void testListEnabledMetrics() throws Exception {

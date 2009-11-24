@@ -10,7 +10,7 @@ class MetricController extends ApiController {
                    interval       : m.interval,
                    enabled        : m.enabled,
                    name           : m.template.name,
-                   defalutOn      : m.template.defaultOn,
+                   defaultOn      : m.template.defaultOn,
                    indicator      : m.template.designate,
                    collectionType : m.template.collectionType) {
             MetricTemplate(id              : m.template.id,
