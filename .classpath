@@ -21,6 +21,6 @@
 	<classpathentry kind="lib" path="lib/wadl-core-1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="con" path="GROOVY_SUPPORT"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/HQ"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/hq-web"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
