@@ -31,6 +31,7 @@ import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.GroupsRequest;
 import org.hyperic.hq.hqapi1.types.GroupsResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 
@@ -209,6 +210,36 @@ public class GroupApi extends BaseApi {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("compatible", new String[] { Boolean.toString(false) });
         return doGet("group/list.hqu", params, GroupsResponse.class);
+    }
+
+    /**
+     * List all {@link org.hyperic.hq.hqapi1.types.Group}s containing
+     * the input resource.
+     * 
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public GroupsResponse getGroupsContaining(Resource r)
+        throws IOException
+    {
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("containing", new String[] { Boolean.toString(true) });
+        params.put("resourceId", new String[] { Integer.toString(r.getId()) });
+        return doGet("group/list.hqu", params, GroupsResponse.class);        
+    }
+    
+    /**
+     * List all {@link org.hyperic.hq.hqapi1.types.Group}s not containing
+     * the input resource.
+     * 
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public GroupsResponse getGroupsNotContaining(Resource r)
+        throws IOException
+    {
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("containing", new String[] { Boolean.toString(false) });
+        params.put("resourceId", new String[] { Integer.toString(r.getId()) });
+        return doGet("group/list.hqu", params, GroupsResponse.class);        
     }
 
     /**

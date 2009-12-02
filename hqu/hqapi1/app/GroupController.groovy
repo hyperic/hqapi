@@ -240,21 +240,47 @@ class GroupController extends ApiController {
 
     def list(params) {
         def compatible = params.getOne('compatible')?.toBoolean()
+        def containing = params.getOne('containing')?.toBoolean()
 
-        def groups = resourceHelper.findViewableGroups()
+		def groups = null
+		def failureXml = null
+		
+        if (containing != null) {
+        	def resourceId = params.getOne('resourceId')?.toInteger()
+        	def resource = getResource(resourceId)
+        	
+            if (resource) {
+        		if (containing) {
+        			groups = resource.getGroupsContaining(user)
+        		} else {
+        			groups = resource.getGroupsNotContaining(user)
+        		}            
+            } else {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Resource id=" + resourceId +
+                                           " not found")
+            }
+        } else {
+        	groups = resourceHelper.findViewableGroups()
 
-        if (compatible != null) {
-            if (compatible)
-                groups = groups.grep { it.resourcePrototype != null }
-            else
-                groups = groups.grep { it.resourcePrototype == null }
+        	if (compatible != null) {
+            	if (compatible) {
+                	groups = groups.grep { it.resourcePrototype != null }
+            	} else {
+                	groups = groups.grep { it.resourcePrototype == null }
+            	}
+            }        
         }
 
         renderXml() {
             out << GroupsResponse() {
-                out << getSuccessXML()
-                for (g in  groups.sort {a, b -> a.name <=> b.name}) {
-                    out << getGroupXML(g)
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                	out << getSuccessXML()
+                	for (g in  groups.sort {a, b -> a.name <=> b.name}) {
+                    	out << getGroupXML(g)
+                	}
                 }
             }
         }
