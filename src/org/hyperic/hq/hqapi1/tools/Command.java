@@ -168,7 +168,7 @@ public abstract class Command {
             password = clientProps.getProperty(OPT_PASS);
         }
 
-        Boolean secure = s.hasArgument(OPT_SECURE[0]) ||
+        Boolean secure = s.has(OPT_SECURE[0]) ||
                          Boolean.valueOf(clientProps.getProperty(OPT_SECURE[1],
                                                                  "false"));
 
