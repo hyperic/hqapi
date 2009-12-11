@@ -11,11 +11,25 @@ class ResourceController extends ApiController {
     private static final String PROP_INSTALLPATH = "installPath"
     private static final String PROP_AIIDENIFIER = "autoIdentifier"
 
+    // TODO: move into ResourceCategory
+    private getLocation(r) {
+        if (r.isPlatform()) {
+            return r.toPlatform().location
+        } else if (r.isServer()) {
+            return r.toServer().location
+        } else if (r.isService()) {
+            return r.toService().location
+        }
+        throw new IllegalArgumentException("getLocation() called for invalid resource " +
+                                           r.name + " (id=" + r.id + ")")
+    }
+
     private Closure getResourceXML(user, r, boolean verbose, boolean children) {
         { doc ->
             Resource(id : r.id,
                      name : r.name,
-                     description : r.description) {
+                     description : r.description,
+                     location : getLocation(r)) {
                 if (verbose) {
                     def config = r.getConfig()
                     config.each { k, v ->
@@ -545,9 +559,12 @@ class ResourceController extends ApiController {
         def id   = xmlResource.'@id'?.toInteger()
         def name = xmlResource.'@name'
         def description = xmlResource.'@description'
+        def location = xmlResource.'@location'
 
         def config = [name: name,
-                      description: description]
+                      description: description,
+                      location: location]
+        
         xmlResource['ResourceConfig'].each {
             // Do not set configs for empty keys
             if (it.'@value' && it.'@value'.length() > 0) {

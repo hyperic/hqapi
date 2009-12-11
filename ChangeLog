@@ -49,6 +49,8 @@ Changes in HQApi 3.0
 
 Changes in HQApi 2.4
 
+ *) [HHQ-3603] Add support for location field for Resources.
+
  *) [HHQ-3583] Fix handling of -s and --secure CLI options.
 
  *) [HHQ-3565] Fix issue in MetricAPI causing all metrics to be shown as
