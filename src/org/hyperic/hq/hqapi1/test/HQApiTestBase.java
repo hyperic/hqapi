@@ -62,7 +62,7 @@ public abstract class HQApiTestBase extends TestCase {
     private static boolean _logConfigured = false;
 
     private static final String  HOST        = "localhost";
-    private static final int     PORT        = 7080;
+    private static final int     PORT        = 8080;
     private static final int     SSL_PORT    = 7443;
     private static final boolean IS_SECURE   = false;
     private static final String  USER        = "hqadmin";
