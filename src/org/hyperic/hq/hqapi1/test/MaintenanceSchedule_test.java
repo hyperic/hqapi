@@ -37,6 +37,7 @@ import org.hyperic.hq.hqapi1.types.MaintenanceResponse;
 import org.hyperic.hq.hqapi1.types.MaintenanceState;
 import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
+import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.Operation;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.Role;
@@ -122,22 +123,26 @@ public class MaintenanceSchedule_test extends MaintenanceTestBase {
         // create group
         Group maintGroup = createGroup(Collections.singletonList(resource));
 
-        // create alert definitions
+        // create classic alert definitions
         AlertDefinition alertDefFireOnce = 
             createAvailabilityAlertDefinition(resource, null, false, true, 1);
         AlertDefinition alertDefFireEveryTime = 
             createAvailabilityAlertDefinition(resource, null, false, false, 1);
 
+        // TODO create group alert definitions
+        
         // insert a fake 'up' measurement so that
         // the alert definitions will fire.
         long alertStart = System.currentTimeMillis();
         Alert alertFireOnce = fireAvailabilityAlert(alertDefFireOnce, true, 1);
         Alert alertFireEveryTime = fireAvailabilityAlert(alertDefFireEveryTime, false, 1);
         
-        // TODO check measurement enabled status       
+        // check that availability measurement is enabled before the maintenance
+        Metric availMetric = findAvailabilityMetric(resource);
+        assertTrue("Availability measurement is not enabled for " + resource.getName(),
+                    availMetric.isEnabled());
         
         // schedule maintenance
-        MaintenanceApi mApi = api.getMaintenanceApi();
         long maintStart = System.currentTimeMillis() + 5*SECOND;
         long maintEnd = maintStart + MINUTE;
 
@@ -154,7 +159,10 @@ public class MaintenanceSchedule_test extends MaintenanceTestBase {
         alertDefFireEveryTime = getAlertDefinition(alertDefFireEveryTime.getId());
         validateAvailabilityAlertDefinition(alertDefFireEveryTime, false, false);
         
-        // TODO check measurement enabled status
+        // check that availability measurement is disabled during the maintenance      
+        availMetric = findAvailabilityMetric(resource, false);
+        assertFalse("Availability measurement is enabled for " + resource.getName(),
+                    availMetric.isEnabled());
         
         // wait for maintenance to end
         waitForMaintenanceStateChange(maintGroup, MaintenanceState.COMPLETE);
@@ -170,7 +178,10 @@ public class MaintenanceSchedule_test extends MaintenanceTestBase {
         alertDefFireEveryTime = getAlertDefinition(alertDefFireEveryTime.getId());
         validateAvailabilityAlertDefinition(alertDefFireEveryTime, false, true);
         
-        // TODO check measurement enabled status       
+        // check that availability measurement is enabled after the maintenance
+        availMetric = findAvailabilityMetric(resource);
+        assertTrue("Availability measurement is not re-enabled for " + resource.getName(),
+                    availMetric.isEnabled());
         
         cleanupGroup(maintGroup, true);         
     }

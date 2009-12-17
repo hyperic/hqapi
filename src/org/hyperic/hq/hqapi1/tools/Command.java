@@ -99,8 +99,8 @@ public abstract class Command {
                                  "not specified, stdin will be used.").
                 withRequiredArg().ofType(String.class);
 
-        parser.accepts(OPT_PROPERTIES, "Specify the file to read for connection " +
-                                      "properties.  Defaults to ~/.hq/client.properties")
+        parser.accepts(OPT_PROPERTIES, "File to read for connection properties. " +
+                                       "Path must be absolute and defaults to ~/.hq/client.properties")
                 .withRequiredArg().ofType(String.class);
 
         return parser;

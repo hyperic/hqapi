@@ -310,13 +310,19 @@ public abstract class HQApiTestBase extends TestCase {
         return role;
     }
     
-    protected Metric findAvailabilityMetric(Resource resource) 
+    protected Metric findAvailabilityMetric(Resource resource)
+        throws IOException {
+        
+        return findAvailabilityMetric(resource, true); 
+    }
+    
+    protected Metric findAvailabilityMetric(Resource resource, boolean enabled) 
         throws IOException {
 
         MetricApi metricApi = getApi().getMetricApi();
 
         // Find availability metric for the resource
-        MetricsResponse metricsResponse = metricApi.getMetrics(resource, true);
+        MetricsResponse metricsResponse = metricApi.getMetrics(resource, enabled);
         hqAssertSuccess(metricsResponse);
         Metric availMetric = null;
         for (Metric m : metricsResponse.getMetric()) {
@@ -326,7 +332,9 @@ public abstract class HQApiTestBase extends TestCase {
             }
         }
 
-        assertNotNull("Unable to find Availability metric for " + resource.getName(),
+        assertNotNull("Unable to find "
+                        + (enabled ? "an enabled" : "a disabled") 
+                        + " availability metric for " + resource.getName(),
                       availMetric);
         
         return availMetric;
