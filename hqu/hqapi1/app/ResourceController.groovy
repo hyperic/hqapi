@@ -1,5 +1,6 @@
 import org.hyperic.hq.hqapi1.ErrorCode
 import org.hyperic.hq.appdef.shared.AppdefEntityID
+import org.hyperic.hq.appdef.shared.AppdefUtil;
 import org.hyperic.hq.authz.shared.AuthzConstants
 import org.hyperic.hq.authz.shared.PermissionException
 import org.hyperic.hq.authz.shared.ResourceEdgeCreateException
@@ -890,7 +891,7 @@ class ResourceController extends ApiController {
         resourceFrom = getResource(xmlResource.'@id'?.toInteger())
         
         if (resourceFrom) {
-        	parent = new AppdefEntityID(resourceFrom)
+        	parent = AppdefUtil.newAppdefEntityId(resourceFrom)
         } else {
            	return getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                            "Unable to find resource with id = " +
@@ -900,7 +901,7 @@ class ResourceController extends ApiController {
 		xmlResourceTo['Resource'].each {
             resourceTo = getResource(it.'@id'?.toInteger())
             if (resourceTo) {
-            	children << new AppdefEntityID(resourceTo)
+            	children << AppdefUtil.newAppdefEntityId(resourceTo)
             } else {
             	return getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                            "Unable to find resource with id = " +
