@@ -12,7 +12,7 @@
         <wadl:include href="HQApi1.xsd"/>
     </wadl:grammars>
 
-    <wadl:resources base="http://localhost:7080/hqu/hqapi1/">
+    <wadl:resources base="http://localhost:8080/hqu/hqapi1/">
 
         <wadl:resource path="user/get.hqu">
             <wadl:doc title="HQApi User get command">

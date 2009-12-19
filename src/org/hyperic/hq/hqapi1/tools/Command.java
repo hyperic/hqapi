@@ -193,7 +193,7 @@ public abstract class Command {
         if (s.hasArgument(OPT_PORT)) {
             port = (Integer)s.valueOf(OPT_PORT);
         } else {
-            port = Integer.parseInt(clientProps.getProperty(OPT_PORT, "7080"));
+            port = Integer.parseInt(clientProps.getProperty(OPT_PORT, "8080"));
         }
 
         String user = (String)s.valueOf(OPT_USER);
