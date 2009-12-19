@@ -172,6 +172,8 @@
                        unless="single.test">
                 <fileset dir="src">
                     <include name="**/*_test.java"/>
+					<!-- temp exclude until we re-enable SSL -->
+ 					<exclude name="**/SSL_test.java"/>
                 </fileset>
             </batchtest>
         </junit>
