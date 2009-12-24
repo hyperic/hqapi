@@ -172,8 +172,10 @@ public abstract class AlertDefinitionTestBase extends HQApiTestBase {
         assertTrue("Invalid parent id " + d.getParent() +
                    " for type definition " + d.getName(),
                    d.getParent() == 0);
-        assertTrue("No ResourcePrototype found for type based alert",
-                   d.getResourcePrototype() != null);
+        assertNotNull("No ResourcePrototype found for resource type alert definition",
+                       d.getResourcePrototype());
+        assertNull("Resource type alert definition should have no resource",
+                    d.getResource());
     }
     
     protected void validateAvailabilityAlertDefinition(AlertDefinition def,
