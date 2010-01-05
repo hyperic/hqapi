@@ -180,10 +180,7 @@ public class AlertFireRecovery_test extends AlertTestBase {
      */
     public void testFireProblemAlertAndThenCreateAndFireRecoveryAlert()
         throws Exception {
-
-        // TODO: Uncomment the test code when HQ-1903 is fixed
         
-        /*
         Resource platform = getLocalPlatformResource(false, false);
 
         boolean willRecover = false;
@@ -191,8 +188,10 @@ public class AlertFireRecovery_test extends AlertTestBase {
             createAvailabilityAlertDefinition(platform, null, false, willRecover, 0);
         Alert problemAlert = fireAvailabilityAlert(problemDef, willRecover, 0);
 
+        String description = "Test for HQ-1903; Recovery Alert for " + problemDef.getName();
         AlertDefinition recoveryDef = 
-            createRecoveryAlertDefinition(platform, problemDef, false);
+            createRecoveryAlertDefinition(platform, problemDef, 
+                                          description, false);
         fireRecoveryAlert(recoveryDef, problemAlert, willRecover);
 
         // Cleanup
@@ -200,7 +199,6 @@ public class AlertFireRecovery_test extends AlertTestBase {
         definitions.add(problemDef);
         definitions.add(recoveryDef);
         cleanup(definitions);
-        */
     }
     
     private void createAndFireAlerts(Escalation escalation,
@@ -271,9 +269,19 @@ public class AlertFireRecovery_test extends AlertTestBase {
         
         return recoveryAlert;
     }
-      
+    
     private AlertDefinition createRecoveryAlertDefinition(Resource resource,
                                                           AlertDefinition problemDef,
+                                                          boolean addRecoveryPostCreate)
+        throws Exception {
+        
+        return createRecoveryAlertDefinition(resource, problemDef, 
+                                             null, addRecoveryPostCreate);
+    }
+    
+    private AlertDefinition createRecoveryAlertDefinition(Resource resource,
+                                                          AlertDefinition problemDef,
+                                                          String description,
                                                           boolean addRecoveryPostCreate)
         throws Exception {
         
@@ -284,7 +292,13 @@ public class AlertFireRecovery_test extends AlertTestBase {
         boolean isResourceType = (problemDef.getResourcePrototype() != null);
         String name = "Test" + (isResourceType ? " Resource Type " : " ") + "Recovery Alert";
         AlertDefinition recoveryDef = generateTestDefinition(name);
-        recoveryDef.setDescription("Recovery Alert for " + problemDef.getName());
+        
+        if (description == null) {
+            recoveryDef.setDescription("Recovery Alert for " + problemDef.getName());
+        } else {
+            recoveryDef.setDescription(description);
+        }
+        
         if (isResourceType) {
             recoveryDef.setResourcePrototype(problemDef.getResourcePrototype());
         } else {

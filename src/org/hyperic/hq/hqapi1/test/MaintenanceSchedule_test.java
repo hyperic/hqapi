@@ -32,6 +32,8 @@ import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.MaintenanceApi;
 import org.hyperic.hq.hqapi1.types.Alert;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
+import org.hyperic.hq.hqapi1.types.DataPoint;
+import org.hyperic.hq.hqapi1.types.LastMetricDataResponse;
 import org.hyperic.hq.hqapi1.types.MaintenanceEvent;
 import org.hyperic.hq.hqapi1.types.MaintenanceResponse;
 import org.hyperic.hq.hqapi1.types.MaintenanceState;
@@ -133,14 +135,19 @@ public class MaintenanceSchedule_test extends MaintenanceTestBase {
         
         // insert a fake 'up' measurement so that
         // the alert definitions will fire.
+        final double AVAIL_UP = 1;
         long alertStart = System.currentTimeMillis();
-        Alert alertFireOnce = fireAvailabilityAlert(alertDefFireOnce, true, 1);
-        Alert alertFireEveryTime = fireAvailabilityAlert(alertDefFireEveryTime, false, 1);
+        Alert alertFireOnce = fireAvailabilityAlert(alertDefFireOnce, true, AVAIL_UP);
+        Alert alertFireEveryTime = fireAvailabilityAlert(alertDefFireEveryTime, false, AVAIL_UP);
         
         // check that availability measurement is enabled before the maintenance
         Metric availMetric = findAvailabilityMetric(resource);
         assertTrue("Availability measurement is not enabled for " + resource.getName(),
                     availMetric.isEnabled());
+        
+        // check that the resource's availability is UP before the maintenance
+        DataPoint lastAvail = getLastAvailability(availMetric);
+        assertEquals(AVAIL_UP, lastAvail.getValue());
         
         // schedule maintenance
         long maintStart = System.currentTimeMillis() + 5*SECOND;
@@ -163,6 +170,12 @@ public class MaintenanceSchedule_test extends MaintenanceTestBase {
         availMetric = findAvailabilityMetric(resource, false);
         assertFalse("Availability measurement is enabled for " + resource.getName(),
                     availMetric.isEnabled());
+        
+        // check that the resource's availability is in a PAUSED state
+        // during the maintenance
+        final double AVAIL_PAUSED = -0.01;
+        lastAvail = getLastAvailability(availMetric);
+        assertEquals(AVAIL_PAUSED, lastAvail.getValue());
         
         // wait for maintenance to end
         waitForMaintenanceStateChange(maintGroup, MaintenanceState.COMPLETE);
@@ -253,6 +266,19 @@ public class MaintenanceSchedule_test extends MaintenanceTestBase {
         deleteTestUsers(users);
         cleanupRole(viewRole);
         cleanupGroup(groupWithRole);
+    }
+    
+    private DataPoint getLastAvailability(Metric availMetric) 
+        throws Exception {
+        
+        LastMetricDataResponse lastAvailResponse = 
+            getApi().getMetricDataApi().getData(availMetric);
+        hqAssertSuccess(lastAvailResponse);
+        assertNotNull(lastAvailResponse.getLastMetricData());
+        DataPoint lastAvail = lastAvailResponse.getLastMetricData().getDataPoint();
+        assertNotNull(lastAvail);
+        
+        return lastAvail;
     }
     
     private void waitForMaintenanceStateChange(Group g, MaintenanceState newState) 
