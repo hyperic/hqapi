@@ -37,17 +37,21 @@ import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.MetricsResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
 
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 
 public class MetricCommand extends Command {
 
     private static String CMD_LIST = "list";
     private static String CMD_SYNC = "sync";
+    private static String CMD_RESCHEDULE = "reschedule";
 
-    private static String[] COMMANDS = { CMD_LIST, CMD_SYNC };
+    private static String[] COMMANDS = { CMD_LIST, CMD_SYNC, CMD_RESCHEDULE };
 
     private static final String OPT_RESOURCE_ID = "id";
     private static final String OPT_ENABLED = "enabled";
@@ -66,6 +70,8 @@ public class MetricCommand extends Command {
             list(trim(args));
         } else if (args[0].equals(CMD_SYNC)) {
             sync(trim(args));
+        } else if (args[0].equals(CMD_RESCHEDULE)) {
+            reschedule(trim(args));
         } else {
             printUsage();
             System.exit(-1);
@@ -122,5 +128,37 @@ public class MetricCommand extends Command {
         checkSuccess(syncResponse);
 
         System.out.println("Successfully synced " + metrics.size() + " metrics.");        
+    }
+
+    private long getResourceCount(List<Resource> resources) {
+        long num = 0;
+        for (Resource r : resources) {
+            num++;
+            if (r.getResource().size() > 0) {
+                num += getResourceCount(r.getResource());
+            }
+        }
+        return num;
+    }
+
+    private void reschedule(String args[]) throws Exception {
+
+        OptionParser p = getOptionParser();
+        OptionSet options = getOptions(p, args);
+
+        HQApi api = getApi(options);
+
+        MetricApi metricApi = api.getMetricApi();
+
+        InputStream is = getInputStream(options);
+
+        ResourcesResponse resp = XmlUtil.deserialize(ResourcesResponse.class, is);
+        checkSuccess(resp);
+
+        StatusResponse response = metricApi.reschedule(resp.getResource());
+        checkSuccess(response);
+
+        System.out.println("Successfully rescheduled " + getResourceCount(resp.getResource()) +
+                           " resources");
     }
 }
