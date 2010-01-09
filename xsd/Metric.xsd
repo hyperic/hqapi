@@ -97,5 +97,14 @@
         </xs:complexType>
     </xs:element>
 
+    <!-- Reschedule request -->
 
+    <xs:element name="MetricsRescheduleRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Resource" type="Resource" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+       
 </xs:schema>

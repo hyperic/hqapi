@@ -13,11 +13,13 @@ import org.hyperic.hq.hqapi1.types.MetricsResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.MetricsRescheduleRequest;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 /**
  * The Hyperic HQ Metric API.
@@ -276,5 +278,43 @@ public class MetricApi extends BaseApi {
 
         return doGet("metric/getResourceData.hqu", params,
                      MetricsDataResponse.class);
+    }
+
+    // Helper function to unroll a resource and it's children into a single list.
+    private List<Resource> getFlattenResources(List<Resource> resources) {
+        List<Resource> result = new ArrayList<Resource>();
+
+        for (Resource r : resources) {
+            result.add(r);
+            if (r.getResource().size() > 0) {
+                result.addAll(getFlattenResources(r.getResource()));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Reschedule metrics for the given list of {@link org.hyperic.hq.hqapi1.types.Resource}s.
+     * If the passed in List has child resources, those Resources will also be
+     * rescheduled.
+     *
+     * @param resources A List of {@link org.hyperic.hq.hqapi1.types.Resource}'s
+     * to reschedule.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * metrics were successfully retrieved.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public StatusResponse reschedule(List<Resource> resources)
+        throws IOException {
+
+        List<Resource> flattened = getFlattenResources(resources);
+
+        MetricsRescheduleRequest request = new MetricsRescheduleRequest();
+        request.getResource().addAll(flattened);
+
+        return doPost("metric/reschedule.hqu", request,
+                      StatusResponse.class);
     }
 }
