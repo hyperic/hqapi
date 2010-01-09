@@ -1,6 +1,8 @@
 import org.hyperic.hq.hqu.rendit.BaseController
 
 import org.hyperic.hq.hqapi1.ErrorCode;
+import org.hyperic.hq.zevents.ZeventManager;
+import org.hyperic.hq.appdef.server.session.ResourceRefreshZevent;
 
 class MetricController extends ApiController {
 
@@ -538,6 +540,48 @@ class MetricController extends ApiController {
                 for (result in results) {
                     out << getMetricDataXML(result)
                 }
+            }
+        }
+    }
+
+    def reschedule(params) {
+
+        def schedRequest = new XmlParser().parseText(getUpload('postdata'))
+        def xmlResources = schedRequest['Resource']
+
+        if (!xmlResources) {
+            renderXml() {
+                StatusResponse() {
+                    out << getFailureXML(ErrorCode.INVALID_PARAMETERS)
+                }
+            }
+            return
+        }
+
+        def zevents = []
+        for (res in xmlResources) {
+            def resource = getResource(res.'@id'.toInteger())
+            if (!resource) {
+                renderXml() {
+                    StatusResponse() {
+                        out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                             "Resource with id " + id +
+                                             " not found")
+                    }
+                }
+                return
+            }
+
+            def zevent = new ResourceRefreshZevent(user,
+                                                   resource.entityId);
+            zevents.add(zevent);
+        }
+
+        ZeventManager.getInstance().enqueueEvents(zevents);
+
+        renderXml() {
+            StatusResponse() {
+                out << getSuccessXML()
             }
         }
     }
