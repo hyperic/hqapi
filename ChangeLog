@@ -1,6 +1,10 @@
 
 Changes in HQApi 2.4
 
+ *) [HHQ-3624] For resource type alert definitions, update the "basic"
+    information in a separate call so that the instance alert 
+    definitions are also updated 
+ 
  *) [HHQ-3658] Add MetricApi.reschedule() API.
 
  *) [HHQ-3603] Add support for location field for Resources.
