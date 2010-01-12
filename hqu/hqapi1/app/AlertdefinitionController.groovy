@@ -818,6 +818,16 @@ public class AlertdefinitionController extends ApiController {
                     }
                     adv.id = newDef.id
                 } else {
+                	if (typeBased 
+                			&& (!adv.name.equals(existing.name)
+                				|| !adv.description.equals(existing.description)
+                				|| adv.priority != existing.priority
+                				|| adv.active != existing.active)) {
+                		
+                		eventBoss.updateAlertDefinitionBasic(sessionId, adv.id,
+                										 	 adv.name, adv.description, 
+                										 	 adv.priority, adv.active)
+                	}
                     eventBoss.updateAlertDefinition(sessionId, adv)
                 }
             } catch (Exception e) {
