@@ -49,6 +49,10 @@ Changes in HQApi 3.0
 
 Changes in HQApi 2.4
 
+ *) [HHQ-3664] Increase application update/create by not using Groovy's
+    Collection.minus() and pre-fetch the application inventory prior to the
+    session being marked read-write.
+
  *) [HHQ-3624] For resource type alert definitions, update the "basic"
     information in a separate call so that the instance alert 
     definitions are also updated 
