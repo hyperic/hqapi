@@ -90,6 +90,22 @@ class ApplicationController extends ApiController {
         return true
     }
 
+    private buildServiceList(resources) {
+        def svcList = [] // List of AppdefEntityID's to add to the application
+
+        if (resources) {
+            resources.each { res ->
+                def rid = res.'@id'?.toInteger()
+                def sid = resMan.findResourceById(rid)?.instanceId
+                def entId = AppdefEntityID.newServiceID(sid)
+                if (!svcList.contains(entId)) {
+                    svcList.add(entId)
+                }
+            }
+        }
+        svcList
+    }
+
     /**
      * Create an Application via XML.
      *
@@ -117,6 +133,10 @@ class ApplicationController extends ApiController {
         applicationValue.opsContact      = appOps
         applicationValue.businessContact = appBiz
 
+        // Build resource list prior to update to avoid dirty checking of
+        // all Resource objects.
+        def resources = buildServiceList(xmlApplication['Resource'])
+
         def newApp
         try {
             applicationValue.applicationType = appMan.findApplicationType(1)
@@ -135,7 +155,6 @@ class ApplicationController extends ApiController {
             return null
         }
 
-        def resources = xmlApplication['Resource']
         updateAppServices(newApp, resources)
         return newApp
     }
@@ -209,6 +228,10 @@ class ApplicationController extends ApiController {
         applicationValue.opsContact      = appOps
         applicationValue.businessContact = appBiz
 
+        // Build resource list prior to update to avoid dirty checking of
+        // all Resource objects.
+        def resources = buildServiceList(xmlApplication['Resource'])
+
         try {
             appMan.updateApplication(user, applicationValue)
         } catch (AppdefDuplicateNameException e) {
@@ -222,7 +245,6 @@ class ApplicationController extends ApiController {
             return null
         }
 
-        def resources = xmlApplication['Resource']
         updateAppServices(updateApp, resources)
         return getApplication(appId)
     }
@@ -324,19 +346,7 @@ class ApplicationController extends ApiController {
         }
     }
 
-    private updateAppServices(app, resources) {
-        def svcList = [] // List of AppdefEntityID's to add to the application
-
-        if (resources) {
-            resources.each { res ->
-                def rid = res.'@id'?.toInteger()
-                def sid = resMan.findResourceById(rid)?.instanceId
-                def entId = AppdefEntityID.newServiceID(sid)
-                if (!svcList.contains(entId)) {
-                    svcList.add(entId)
-                }
-            }
-        }
+    private updateAppServices(app, svcList) {
 
         // Setting the application services does not remove any app services
         // that may have been removed from the application.  It will also add
@@ -358,7 +368,13 @@ class ApplicationController extends ApiController {
             }
         }
 
-        def toAdd = svcList - svcListExisting
+        def toAdd = []
+        for (svc in svcList) {
+            if (!svcListExisting.contains(svc)) {
+                toAdd << svc
+            }
+        }
+
         appMan.setApplicationServices(user, app.id, toAdd)
 
         // Remove all deleted services
