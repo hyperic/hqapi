@@ -189,15 +189,15 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
 
     public void testSyncCountAndRangeTypeAlert() throws Exception {
         AlertDefinitionApi api = getApi().getAlertDefinitionApi();
-        final int count = 3;
-        final int range = 1800;
+        final int COUNT = 3;
+        final int RANGE = 1800;
         Resource platform = getLocalPlatformResource(false, false);
 
         AlertDefinition d = generateTestDefinition();
         d.setResourcePrototype(platform.getResourcePrototype());
         d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
-        d.setCount(count);
-        d.setRange(range);
+        d.setCount(COUNT);
+        d.setRange(RANGE);
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
 
@@ -206,10 +206,20 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         assertEquals(response.getAlertDefinition().size(), 1);
         for (AlertDefinition def : response.getAlertDefinition()) {
             validateTypeDefinition(def);
-            assertEquals(count, def.getCount());
-            assertEquals(range, def.getRange());
+            assertEquals(COUNT, def.getCount());
+            assertEquals(RANGE, def.getRange());
             
-            // TODO: validate child alert definitions
+            // validate child alert definitions
+            AlertDefinitionsResponse childrenResponse = api.getAlertDefinitions(def);
+            hqAssertSuccess(response);
+            List<AlertDefinition> childrenDefinitions = childrenResponse.getAlertDefinition();
+            assertTrue("No child alert definition exists for " + def.getName(),
+                        childrenDefinitions.size() > 0);
+            for (AlertDefinition child : childrenDefinitions) {
+                validateDefinition(child);
+                assertEquals(COUNT, child.getCount());
+                assertEquals(RANGE, child.getRange());
+            }
         }
 
         // Cleanup
@@ -386,8 +396,8 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
 
         response = api.syncAlertDefinitions(definitions);
         hqAssertSuccess(response);
-        for (AlertDefinition d: definitions) {
-            assertEquals(d.getDescription(), UPDATED_DESCRIPTION);
+        for (AlertDefinition d: response.getAlertDefinition()) {
+            assertEquals(UPDATED_DESCRIPTION, d.getDescription());
             for (AlertCondition c : d.getAlertCondition()) {
                 assertTrue(c.getProperty().equals("otherProp"));
             }
@@ -430,6 +440,8 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
                         childrenDefinitions.size() > 0);
             for (AlertDefinition child : childrenDefinitions) {
                 validateDefinition(child);
+                assertEquals(INITIAL_PRIORITY, child.getPriority());
+                assertEquals(INITIAL_ACTIVE, child.isActive());
             }            
         }
 
@@ -471,15 +483,11 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
             assertTrue("No child alert definition exists for " + d.getName(),
                         childrenDefinitions.size() > 0);
             for (AlertDefinition child : childrenDefinitions) {
-                validateDefinition(child);
-                
-                // TODO: uncomment when HHQ-3624 is fixed
-                /*
+                validateDefinition(child);                
                 assertEquals(UPDATED_PRIORITY, child.getPriority());
                 assertEquals(UPDATED_ACTIVE, child.isActive());
                 assertEquals(UPDATED_NAME, child.getName());
                 assertEquals(UPDATED_DESCRIPTION, child.getDescription());
-                */
             } 
         }
         
