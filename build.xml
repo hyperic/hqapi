@@ -189,9 +189,9 @@
 
     <!-- Target to hot deploy the plugins into a running HQ instance -->
     <target name="deploy" depends="dist">
-        <delete dir="${ENV.JBOSS_HOME}/server/default/deploy/hq.war/hqu/hqapi1"/>
+        <delete dir="${ENV.TOMCAT_HOME}/webapps/ROOT/hqu/hqapi1"/>
         <sleep seconds="2"/>
-        <copy toDir="${ENV.JBOSS_HOME}/server/default/deploy/hq.war/hqu/">
+        <copy toDir="${ENV.TOMCAT_HOME}/webapps/ROOT/hqu/">
             <fileset dir="${dist.dir}">
                 <include name="hqapi1/**"/>
             </fileset>
