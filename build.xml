@@ -88,6 +88,7 @@
         <copy todir="${client.dir}/lib">
             <fileset dir="${basedir}/lib">
                 <include name="*.jar"/>
+				<exclude name="*clover*.jar"/>
             </fileset>
         </copy>
         <copy todir="${client.dir}">
@@ -142,16 +143,6 @@
 
     </target>
 
-    <!-- Run a single test -->
-    <target name="single-test">
-        <fail message="Must specify a test case system property: -Dtestcase=org.hyperic.My_test"
-              unless="testcase"/>
-        <echo message="Running Single Test: ${testcase}"/>
-        <antcall target="test">
-            <param name="single.test" value="true" />
-        </antcall>
-    </target>
-
     <!-- Run the full test suite -->
     <target name="test" depends="compile">
         <mkdir dir="${build.dir}/testresults"/>
@@ -162,18 +153,16 @@
                haltonfailure="no" showoutput="true">
 
             <sysproperty key="log" value="${log}"/>
+			<sysproperty key="clover.distributed.coverage" value="ON"/>
+			<sysproperty key="clover.server" value="true"/>
             <classpath refid="all.classpath"/>
             <formatter type="xml"/>
-
-            <test name="${testcase}" todir="${build.dir}/testresults"
-                  if="single.test" />
             
-            <batchtest fork="no" todir="${build.dir}/testresults"
-                       unless="single.test">
-                <fileset dir="src">
-                    <include name="**/*_test.java"/>
+            <batchtest fork="no" todir="${build.dir}/testresults">
+                <fileset dir="${build.dir}/classes">
+                    <include name="**/*_test.class"/>
 					<!-- temp exclude until we re-enable SSL -->
- 					<exclude name="**/SSL_test.java"/>
+ 					<exclude name="**/SSL_test.class"/>
                 </fileset>
             </batchtest>
         </junit>
@@ -227,5 +216,76 @@
         </javadoc>
         
     </target>
+
+	<property name="clover.output.dir" value="${build.dir}/clover"/>
+	 <property name="clover.staging.dir" value="${clover.output.dir}/staging"/>
+	 <property name="clover.coverage" value="0%"/>
+	 <property name="clover.enforce" value="false"/>
+
+	  <target name="clover" depends="clover.pre, clover.instrument, clover.compile, test" description="Executes all tests resulting from a compilation of the test tree returning test coverage metrics."/>
+
+	 <target name="clover.init">
+	    <taskdef resource="cloverlib.xml" classpathref="compile.classpath"/>
+	  </target>
+
+	 <target name="clover.pre">
+	    <delete dir="${clover.output.dir}" quiet="true"/>
+	    <mkdir dir="${clover.output.dir}"/>
+	 </target>
+
+	<target name="clover.instrument" depends="clover.init">
+	    <instrument input.dir="src" output.dir="${clover.staging.dir}"/>
+	</target>
+
+	  <target name="clover.compile" depends="generate">
+	       <javac destdir="${build.dir}/classes"
+	              optimize="off"
+	              debug="on"
+	              target="1.5" source="1.5"
+	              classpathref="compile.classpath">
+	           <src>
+	               <path location="${build.dir}/src"/>
+	               <path location="${clover.staging.dir}"/>
+	           </src>
+	       </javac>
+	  </target>
+
+
+		<macrodef name="instrument">
+		    <attribute name="input.dir"/>
+		    <attribute name="output.dir"/>
+		    <sequential>
+		      <clover-instr initstring="${clover.db.file}" destdir="@{output.dir}" source="1.5">
+		        <fileset dir="@{input.dir}">
+		          <include name="**/*.java"/>
+		        </fileset>
+		      </clover-instr>
+		      <copy todir="@{output.dir}">
+		        <fileset dir="@{input.dir}">
+		          <exclude name="**/*.java"/>
+		          <exclude name="*.java"/>
+		        </fileset>
+		      </copy>
+		    </sequential>
+		  </macrodef>
+
+		<target name="clover.post" depends="clover.init">
+		    <clover-report initstring="${clover.db.file}">
+		      <current outfile="${clover.output.dir}/clover.xml">
+		        <format type="xml"/> 
+		      </current>
+		    </clover-report>
+		    <clover-report initstring="${clover.db.file}">
+		      <current outfile="${clover.output.dir}/html">
+		        <format type="html"/>
+		      </current>
+		    </clover-report>
+		    <clover-report initstring="${clover.db.file}">
+		      <current outfile="${clover.output.dir}/clover.pdf" summary="true">
+		        <format type="pdf"/>
+		      </current>
+		    </clover-report>
+		    <clover-check initstring="${clover.db.file}" target="${clover.coverage}" haltOnFailure="${clover.enforce}"/>
+		  </target>
 
 </project>
