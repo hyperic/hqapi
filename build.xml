@@ -248,8 +248,8 @@
 	               <path location="${clover.staging.dir}"/>
 	           </src>
 	       </javac>
+		  <delete dir="${clover.staging.dir}" quiet="true"/>
 	  </target>
-
 
 		<macrodef name="instrument">
 		    <attribute name="input.dir"/>
