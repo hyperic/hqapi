@@ -1,13 +1,14 @@
 
+import org.hyperic.hq.events.shared.EventLogManager;
 import org.hyperic.hq.hqapi1.ErrorCode
 import org.hyperic.hq.events.EventLogStatus
-import org.hyperic.hq.events.server.session.EventLogManagerImpl as EMan
+import org.hyperic.hq.context.Bootstrap;
 import org.hyperic.hq.events.server.session.EventLogSortField
 import org.hyperic.hibernate.PageInfo
 
 class EventController extends ApiController {
 
-    private eMan = EMan.one
+    private eMan = Bootstrap.getBean(EventLogManager.class)
 
     private Closure getEventXML(e) {
         { doc ->

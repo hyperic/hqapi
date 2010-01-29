@@ -4,8 +4,9 @@ import org.hyperic.hq.hqapi1.ErrorCode
 import org.hyperic.hq.auth.shared.SessionManager
 import org.hyperic.hq.authz.shared.PermissionException
 import org.hyperic.hq.appdef.shared.AppdefEntityID
+import org.hyperic.hq.bizapp.shared.EventsBoss;
 import org.hyperic.hq.appdef.shared.AppdefEntityTypeID
-import org.hyperic.hq.bizapp.server.session.EventsBossImpl as EventsBoss
+import org.hyperic.hq.context.Bootstrap;
 import org.hyperic.hq.events.AlertSeverity
 import org.hyperic.hq.events.EventConstants
 import org.hyperic.hq.events.shared.ActionValue
@@ -18,7 +19,7 @@ import org.hyperic.util.config.ConfigResponse
 import ApiController
 
 public class AlertdefinitionController extends ApiController {
-    private eventBoss   = EventsBoss.one
+    private eventBoss   = Bootstrap.gtBean(EventsBoss.class)
     private aMan        = AMan.one
 
     private EVENT_LEVEL_TO_NUM = [
