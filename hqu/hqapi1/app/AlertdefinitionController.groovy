@@ -19,7 +19,7 @@ import org.hyperic.util.config.ConfigResponse
 import ApiController
 
 public class AlertdefinitionController extends ApiController {
-    private eventBoss   = Bootstrap.gtBean(EventsBoss.class)
+    private eventBoss   = Bootstrap.getBean(EventsBoss.class)
     private aMan        = AMan.one
 
     private EVENT_LEVEL_TO_NUM = [
