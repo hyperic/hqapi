@@ -1,11 +1,12 @@
 
 import org.hyperic.hq.appdef.shared.ServiceManager;
+import org.hyperic.hq.common.shared.ServerConfigManager;
 import org.hyperic.hq.context.Bootstrap;
 import org.hyperic.hq.hqapi1.ErrorCode
 
 class ServerconfigController extends ApiController {
 
-    private _serverMan = Bootstrap.getBean(ServiceManager.class)
+    private _serverMan = Bootstrap.getBean(ServerConfigManager.class)
         
     def getConfig(params) {
 
