@@ -5,7 +5,7 @@ import org.hyperic.hq.hqapi1.ErrorCode
 import org.hyperic.hq.events.AlertSeverity
 import org.hyperic.hibernate.PageInfo
 import org.hyperic.hq.events.server.session.AlertSortField
-import org.hyperic.hq.escalation.server.session.EscalationManagerImpl as EscMan
+import org.hyperic.hq.escalation.shared.EscalationManager;
 import org.hyperic.hq.context.Bootstrap;
 import org.hyperic.hq.events.server.session.ClassicEscalationAlertType
 import org.hyperic.hq.authz.shared.PermissionException
@@ -13,7 +13,7 @@ import org.hyperic.hq.authz.shared.PermissionException
 public class AlertController extends ApiController {
 
     private aMan = Bootstrap.getBean(AlertManager.class)
-    private escMan = EscMan.one
+    private escMan = Bootstrap.getBean(EscalationManager.class)
 
     private static final int ROUNDING_VOODOO = 60000
 

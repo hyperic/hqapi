@@ -1,6 +1,6 @@
 import org.hyperic.hq.hqapi1.ErrorCode
-import org.hyperic.hq.bizapp.server.session.AppdefBossImpl as ABoss
-import org.hyperic.hq.authz.server.session.ResourceManagerImpl as ResMan
+import org.hyperic.hq.bizapp.shared.AppdefBoss;
+import org.hyperic.hq.authz.shared.ResourceManager;
 import org.hyperic.util.pager.PageControl
 import org.hyperic.hq.auth.shared.SessionManager
 import org.hyperic.hq.appdef.shared.AppdefEntityID
@@ -15,8 +15,8 @@ import org.hyperic.hq.context.Bootstrap
 class ApplicationController extends ApiController {
 
     def appMan = Bootstrap.getBean(ApplicationManager.class)
-    def aBoss  = ABoss.one
-    def resMan = ResMan.one
+    def aBoss  = Bootstrap.getBean(AppdefBoss.class)
+    def resMan = Bootstrap.getBean(ResourceManager.class)
 
     def failureXml = null
 
