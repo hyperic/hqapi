@@ -17,6 +17,7 @@ import org.hyperic.hq.hqapi1.types.Alert;
 import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.DataPoint;
 import org.hyperic.hq.hqapi1.types.Escalation;
+import org.hyperic.hq.hqapi1.types.EscalationAction;
 import org.hyperic.hq.hqapi1.types.EscalationResponse;
 
 import java.io.IOException;
@@ -55,6 +56,11 @@ public abstract class AlertTestBase extends AlertDefinitionTestBase {
     }
 
     protected Escalation createEscalation() throws Exception {
+        EscalationAction action = EscalationActionBuilder.createNoOpAction(60000);
+        return createEscalation(action);
+    }
+
+    protected Escalation createEscalation(EscalationAction action) throws Exception {
         EscalationApi escalationApi = getApi().getEscalationApi();
 
         Escalation e = new Escalation();
@@ -64,7 +70,7 @@ public abstract class AlertTestBase extends AlertDefinitionTestBase {
         e.setRepeat(true);
         e.setDescription("Test escalation for Alert tests");
         e.setPauseAllowed(true);
-        e.getAction().add(EscalationActionBuilder.createNoOpAction(60000));
+        e.getAction().add(action);
 
         EscalationResponse response = escalationApi.createEscalation(e);
         hqAssertSuccess(response);
@@ -116,8 +122,17 @@ public abstract class AlertTestBase extends AlertDefinitionTestBase {
 
         return findAlert(def, start);
     }
-    
+
     protected Alert fireAvailabilityAlert(AlertDefinition def,
+                                          boolean willRecover,
+                                          double availability)
+        throws Exception {
+        
+        return fireAvailabilityAlert(def, false, willRecover, availability);
+    }
+
+    protected Alert fireAvailabilityAlert(AlertDefinition def,
+                                          boolean withEscalationLog,
                                           boolean willRecover,
                                           double availability)
         throws Exception {
@@ -128,7 +143,7 @@ public abstract class AlertTestBase extends AlertDefinitionTestBase {
         // the alert definition will fire.
         sendAvailabilityDataPoint(def.getResource(), availability);
 
-        Alert alert = findAlert(def, start);
+        Alert alert = findAlert(def, withEscalationLog, start);
         assertFalse("The alert should not be fixed",
                      alert.isFixed());
 
@@ -160,8 +175,16 @@ public abstract class AlertTestBase extends AlertDefinitionTestBase {
     
     protected Alert findAlert(AlertDefinition def, long start) 
         throws Exception {
+        
+        return findAlert(def, false, start);
+    }
+    
+    protected Alert findAlert(AlertDefinition def,
+                              boolean withEscalationLog,
+                              long start) 
+        throws Exception {
 
-        final int TIMEOUT = 120;
+        final int TIMEOUT = 90;
         for (int i = 0; i < TIMEOUT; i++) {
             // Wait for alerts
             AlertsResponse alerts = getAlertApi().findAlerts(def.getResource(), start,
@@ -174,12 +197,18 @@ public abstract class AlertTestBase extends AlertDefinitionTestBase {
             for (Alert a : alerts.getAlert()) {
                 // Verify this alert comes from the definition we just created
                 if (a.getAlertDefinitionId() == def.getId()) {
+                    if (withEscalationLog
+                            && a.getAlertActionLog().isEmpty()) {
+                        // wait for the next loop iteration so that the 
+                        // escalation action has time to be executed 
+                        continue;
+                    }
                     validateAlert(a);
                     return a;
                 }
             }
 
-            pauseTest(500);
+            pauseTest(1000);
         }
 
         throw new Exception("Unable to find generated alerts for " +

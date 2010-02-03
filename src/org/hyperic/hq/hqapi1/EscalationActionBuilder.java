@@ -7,7 +7,7 @@
  * normal use of the program, and does *not* fall under the heading of
  * "derived work".
  * 
- * Copyright (C) [2008, 2009], Hyperic, Inc.
+ * Copyright (C) [2008-2010], Hyperic, Inc.
  * This file is part of HQ.
  * 
  * HQ is free software; you can redistribute it and/or modify
@@ -43,7 +43,8 @@ public class EscalationActionBuilder {
 
         EMAIL("EmailAction"),
         NOOP("NoOpAction"),
-        SYSLOG("SyslogAction");
+        SYSLOG("SyslogAction"),
+        SNMP("SnmpAction");
         
         private final String _type;
 
@@ -166,6 +167,33 @@ public class EscalationActionBuilder {
         a.setSyslogMeta(meta);
         a.setSyslogProduct(product);
         a.setSyslogVersion(version);
+        return a;
+    }
+    
+    /**
+     * Create a SNMP action
+     * 
+     * @param wait The wait time in ms before escalating.
+     * @param address The IP address (xxx.xxx.xxx.xxx/port) of the target engine.
+     * @param notificationMechanism The notification mechanisim.
+     * @param oid The first SNMP variable binding OID.
+     *            This OID is required and the value is the output from snmp_trap.gsp.
+     * @param variableBindings Optional SNMP variable bindings in JSONArray format. 
+     * 
+     * @return A SNMP {@link org.hyperic.hq.hqapi1.types.EscalationAction}
+     */
+    public static EscalationAction createSnmpAction(long wait,
+                                                    String address,
+                                                    String notificationMechanism,
+                                                    String oid,
+                                                    String variableBindings) {
+        EscalationAction a = new EscalationAction();
+        a.setActionType(EscalationActionType.SNMP.getType());
+        a.setWait(wait);
+        a.setSnmpAddress(address);
+        a.setSnmpNotificationMechanism(notificationMechanism);
+        a.setSnmpOid(oid);
+        a.setSnmpVariableBindings(variableBindings);
         return a;
     }
 

@@ -152,6 +152,46 @@
         </antcall>
     </target>
 
+    <!-- Run a SNMP test -->
+    <target name="snmp-test" depends="compile">
+        <fail message="Must specify a test case system property: -Dtestcase=org.hyperic.My_test"
+              unless="testcase"/>
+        <fail message="Must specify a target address system property: -Daddress=10.1.2.3/162"
+              unless="address"/>
+        <echo message="Running SNMP Test: ${testcase}"/>
+
+        <mkdir dir="${build.dir}/testresults"/>
+
+        <property name="log" value="info"/>
+
+        <junit printsummary="yes" fork="no"
+               haltonfailure="yes" showoutput="true">
+
+            <sysproperty key="log" value="${log}"/>
+        	<sysproperty key="snmp-address" value="${address}"/>
+        	<sysproperty key="snmp-oid" value="${oid}"/>
+        	<sysproperty key="snmp-variable-bindings" value="${variable-bindings}"/>
+        	<sysproperty key="snmp-community" value="${community}"/>
+        	<sysproperty key="snmp-security-name" value="${security-name}"/>
+        	<sysproperty key="snmp-auth-protocol" value="${auth-protocol}"/>
+        	<sysproperty key="snmp-auth-passphrase" value="${auth-passphrase}"/>
+        	<sysproperty key="snmp-priv-protocol" value="${priv-protocol}"/>
+        	<sysproperty key="snmp-priv-passphrase" value="${priv-passphrase}"/>
+        	
+            <classpath refid="all.classpath"/>
+            <formatter type="xml"/>
+
+            <test name="${testcase}" todir="${build.dir}/testresults" />
+        </junit>
+
+        <junitreport todir="${build.dir}/testresults">
+            <fileset dir="${build.dir}/testresults">
+                <include name="*.xml" />
+            </fileset>
+            <report todir="${build.dir}/testresults" />
+        </junitreport>
+    </target>
+	
     <!-- Run the full test suite -->
     <target name="test" depends="compile">
         <mkdir dir="${build.dir}/testresults"/>
@@ -172,6 +212,9 @@
                        unless="single.test">
                 <fileset dir="src">
                     <include name="**/*_test.java"/>
+                	
+                    <!-- The SNMP tests need to be run with the snmp-test target -->
+                    <exclude name="**/SNMP*_test.java"/>
                 </fileset>
             </batchtest>
         </junit>

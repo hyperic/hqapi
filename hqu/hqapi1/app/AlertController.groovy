@@ -40,8 +40,8 @@ public class AlertController extends ApiController {
                                     nextActionTime: e.nextActionTime)
                 }
                 for (l in a.actionLog) {
-                    if (l.subject) {
-                        // Ignore 'internal' logs.
+                    if (l.subject || (l.action && !l.action.alertDefinition)) {
+                        // Ignore 'internal' logs, but include escalation logs
                         AlertActionLog(timestamp: l.timeStamp,
                                        detail: l.detail,
                                        user: l.subject?.name)

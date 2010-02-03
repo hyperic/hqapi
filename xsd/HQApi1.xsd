@@ -626,6 +626,11 @@
         <xs:attribute name="syslogMeta"    use="optional"/>
         <xs:attribute name="syslogProduct" use="optional"/>
         <xs:attribute name="syslogVersion" use="optional"/>
+        <!-- SNMP attributes -->
+        <xs:attribute name="snmpAddress" type="xs:string" use="optional"/>
+        <xs:attribute name="snmpNotificationMechanism" type="xs:string" use="optional"/>
+        <xs:attribute name="snmpOid" type="xs:string" use="optional"/>
+        <xs:attribute name="snmpVariableBindings" type="xs:string" use="optional"/>
         <!-- Base attributes -->
         <xs:attribute name="wait"       type="xs:long" use="required"/>
         <xs:attribute name="actionType" type="xs:string" use="required"/>

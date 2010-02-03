@@ -2,6 +2,7 @@ import org.hyperic.hq.hqu.rendit.BaseController
 
 import org.hyperic.hq.authz.shared.PermissionException
 import org.hyperic.hq.bizapp.shared.action.EmailActionConfig
+import org.hyperic.hq.bizapp.shared.action.SnmpActionConfig
 import org.hyperic.hq.bizapp.shared.action.SyslogActionConfig
 import org.hyperic.hq.events.NoOpAction
 import org.hyperic.hq.hqapi1.ErrorCode
@@ -345,6 +346,17 @@ class EscalationController extends ApiController {
                 action.setProduct(xmlAct.'@syslogProduct')
                 action.setVersion(xmlAct.'@syslogVersion')
                 break
+            case 'SnmpAction' :
+            	action = Class.forName(SnmpActionConfig.implementor).newInstance()
+            	try {
+            		action.setAddress(xmlAct.'@snmpAddress')
+            		action.setSnmpNotificationMechanism(xmlAct.'@snmpNotificationMechanism')
+            		action.setOid(xmlAct.'@snmpOid')
+            		action.setVariableBindings(xmlAct.'@snmpVariableBindings')
+            	} catch (IllegalArgumentException ie) {
+            		failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS, ie.getMessage())
+            	}
+            	break
             case 'NoOpAction' :
                 action = new NoOpAction()
                 break

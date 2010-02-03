@@ -1,6 +1,8 @@
 
 Changes in HQApi 3.1
 
+ *) Add support to create and update escalations with SNMPAction.
+ 
  *) [HHQ-3473] Updated GroupApi to list groups containing a resource and
     to list groups not containing a resource. Functionality added primarily
     to do integration testing for HHQ-3473. No corresponding CLI command
