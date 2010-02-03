@@ -67,6 +67,7 @@ public class GroupCommand extends Command {
     private static String OPT_REGEX         = "regex";
     private static String OPT_DELETEMISSING = "deleteMissing";
     private static String OPT_DESC          = "description";
+    private static String OPT_CHILDREN      = "children";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -136,6 +137,8 @@ public class GroupCommand extends Command {
         p.accepts(OPT_COMPAT, "If specified, attempt to make the group compatible");
         p.accepts(OPT_DESC, "If specified, set the description for the group").
                 withRequiredArg().ofType(String.class);
+        p.accepts(OPT_CHILDREN, "If specified, include child resources of the " +
+                  "specified prototype and regex");
 
         OptionSet options = getOptions(p, args);
 
@@ -159,6 +162,19 @@ public class GroupCommand extends Command {
         System.out.println("Successfully synced " + groups.size() + " groups.");
     }
 
+    // Helper function to unroll a resource and it's children into a single list.
+    private List<Resource> getFlattenResources(List<Resource> resources) {
+        List<Resource> result = new ArrayList<Resource>();
+
+        for (Resource r : resources) {
+            result.add(r);
+            if (r.getResource().size() > 0) {
+                result.addAll(getFlattenResources(r.getResource()));
+            }
+        }
+        return result;
+    }
+
     private void syncViaCommandLineArgs(OptionSet s) throws Exception
     {
         // Required args
@@ -170,6 +186,7 @@ public class GroupCommand extends Command {
         String description = (String)s.valueOf(OPT_DESC);
         boolean deleteMissing = s.has(OPT_DELETEMISSING);
         boolean compatible = s.has(OPT_COMPAT);
+        boolean children = s.has(OPT_CHILDREN);
 
         HQApi api = getApi(s);
 
@@ -180,7 +197,7 @@ public class GroupCommand extends Command {
 
         // Query resources
         ResourcesResponse resourceResponse = api.getResourceApi().
-                getResources(protoResponse.getResourcePrototype(), false, false);
+                getResources(protoResponse.getResourcePrototype(), false, children);
         checkSuccess(resourceResponse);
 
         List<Resource> resources = resourceResponse.getResource();
@@ -223,8 +240,9 @@ public class GroupCommand extends Command {
         if (s.hasArgument(OPT_DESC)) {
             group.setDescription((String)s.valueOf(OPT_DESC));
         }
-        
-        group.getResource().addAll(resources);
+
+        List<Resource> flattenedResources = getFlattenResources(resources);
+        group.getResource().addAll(flattenedResources);
         List<Group> groups = new ArrayList<Group>();
         groups.add(group);
         GroupsResponse syncResponse = api.getGroupApi().syncGroups(groups);
