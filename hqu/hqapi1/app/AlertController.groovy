@@ -303,6 +303,7 @@ public class AlertController extends ApiController {
 
     def fix(params) {
         def ids = params.get("id")*.toInteger()
+        def reason = params.getOne("reason")
         def failureXml = null
         def alerts = []
 
@@ -317,8 +318,6 @@ public class AlertController extends ApiController {
                 if (!alert) {
                     failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                                "Unable to find alert with id = " + id)
-                } else if (!canManageAlerts(alert.definition.resource)) {
-                    failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
                 } else {
                     alertsToFix << alert
                 }
@@ -326,11 +325,13 @@ public class AlertController extends ApiController {
 
             if (!failureXml) {
                 try {
-                    // TODO: Add to AlertCategory
                     for (alert in alertsToFix) {
-                        aMan.setAlertFixed(alert)
+                    	alert.fix(user, reason)
+                        
                         alerts << getAlertById(alert.id)
                     }
+                } catch (PermissionException p) {
+                	failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
                 } catch (Exception e) {
                     failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
                                                e.getMessage())

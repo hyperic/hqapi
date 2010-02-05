@@ -162,7 +162,24 @@ public class AlertApi extends BaseApi {
     public AlertResponse fixAlert(Integer alertId)
         throws IOException
     {
-        AlertsResponse response = fixAlerts(new Integer[] { alertId });
+        return fixAlert(alertId, "");
+    }
+    
+    /**
+     * Fix an Alert
+     *
+     * @param alertId The id of the Alert to fix.
+     * @param reason The reason for the fix.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * if the Alert was successfully fixed.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public AlertResponse fixAlert(Integer alertId, String reason)
+        throws IOException
+    {
+        AlertsResponse response = fixAlerts(new Integer[] { alertId }, reason);
 
         AlertResponse res = new AlertResponse();
         res.setStatus(response.getStatus());
@@ -186,6 +203,23 @@ public class AlertApi extends BaseApi {
     public AlertsResponse fixAlerts(Integer[] alertIds)
         throws IOException
     {
+        return fixAlerts(alertIds, "");
+    }
+    
+    /**
+     * Fix multiple Alerts
+     *
+     * @param alertIds An array of Alert id's to fix.
+     * @param reason The reason for the fix.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * if the Alert was successfully fixed.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public AlertsResponse fixAlerts(Integer[] alertIds, String reason)
+        throws IOException
+    {
         Map<String,String[]> params = new HashMap<String,String[]>();
         String[] ids = new String[alertIds.length];
         for (int i = 0; i < alertIds.length; i++) {
@@ -193,6 +227,7 @@ public class AlertApi extends BaseApi {
         }
 
         params.put("id", ids);
+        params.put("reason", new String[] { reason });
 
         return doGet("alert/fix.hqu", params, AlertsResponse.class);
     }
