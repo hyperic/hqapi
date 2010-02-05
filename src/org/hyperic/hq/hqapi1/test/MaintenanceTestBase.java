@@ -7,7 +7,7 @@
  * normal use of the program, and does *not* fall under the heading of
  * "derived work".
  *
- * Copyright (C) [2008, 2009], Hyperic, Inc.
+ * Copyright (C) [2008-2010], Hyperic, Inc.
  * This file is part of HQ.
  *
  * HQ is free software; you can redistribute it and/or modify
@@ -38,9 +38,7 @@ import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.HQApi;
-import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
-import org.hyperic.hq.hqapi1.RoleApi;
 
 import java.util.List;
 import java.util.Random;
@@ -76,31 +74,6 @@ public abstract class MaintenanceTestBase extends AlertTestBase {
         
         return event;
     }
-    
-    void cleanupGroup(Group g) throws Exception {
-        cleanupGroup(g, false);
-    }
-
-    void cleanupGroup(Group g, boolean deleteMembers) throws Exception {
-        
-        if (deleteMembers) {
-            ResourceApi api = getApi().getResourceApi();
-            for (Resource r : g.getResource()) {
-                StatusResponse response = api.deleteResource(r.getId());
-                hqAssertSuccess(response);
-            }
-        }
-        
-        GroupApi api = getApi().getGroupApi();
-        StatusResponse response = api.deleteGroup(g.getId());
-        hqAssertSuccess(response);
-    }
-    
-    void cleanupRole(Role r) throws Exception {
-        RoleApi api = getApi().getRoleApi();
-        StatusResponse response = api.deleteRole(r.getId());
-        hqAssertSuccess(response);
-    }
 
     Group getFileServerMountCompatibleGroup() throws Exception {
 
@@ -118,48 +91,6 @@ public abstract class MaintenanceTestBase extends AlertTestBase {
                    resources.getResource().size() > 0);
 
         return createGroup(resources.getResource());
-    }
-    
-    Group createGroup(List<Resource> resources) throws Exception {
-
-        // determine whether to create a mixed or compatible group
-        ResourcePrototype prototype = null;
-        for (Resource r : resources) {
-            if (prototype == null) {
-                prototype = r.getResourcePrototype();
-            } else {
-                if (!prototype.getName().equals(r.getResourcePrototype().getName())) {
-                    prototype = null;
-                    break;
-                }
-            }
-        }
-        
-        // create group
-        Random r = new Random();
-        Group g = new Group();
-        String name = (prototype == null ? "Mixed" : "Compatible") 
-                        + " Group for Maintenance Tests" + r.nextInt();
-        g.setName(name);
-        if (prototype != null) {
-            g.setResourcePrototype(prototype);
-        }
-        g.getResource().addAll(resources);
-        GroupResponse groupResponse = getApi().getGroupApi().createGroup(g);
-        hqAssertSuccess(groupResponse);
-        Group createdGroup = groupResponse.getGroup();
-        assertEquals(resources.size(), createdGroup.getResource().size());
-        if (prototype == null) {
-            assertNull("This should be a mixed group",
-                        createdGroup.getResourcePrototype());
-        } else {
-            assertNotNull("This should be a compatible group",
-                           createdGroup.getResourcePrototype());
-            assertEquals(prototype.getName(),
-                         createdGroup.getResourcePrototype().getName());
-        }
-        
-        return createdGroup;
     }
 
     void valididateMaintenanceEvent(MaintenanceEvent e, Group g, long start, long end) {

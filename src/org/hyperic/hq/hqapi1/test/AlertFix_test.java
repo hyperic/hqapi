@@ -1,6 +1,7 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.types.Alert;
+import org.hyperic.hq.hqapi1.types.AlertActionLog;
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
@@ -27,13 +28,47 @@ public class AlertFix_test extends AlertTestBase {
         // Test marking fixed
         AlertResponse fixResponse = api.fixAlert(a.getId());
         hqAssertSuccess(fixResponse);
-
-        assertTrue("Alert was not fixed!", fixResponse.getAlert().isFixed());
-
+        a = fixResponse.getAlert();
+        List<AlertActionLog> logs = a.getAlertActionLog();
+                
+        assertTrue("Alert was not fixed!", a.isFixed());
+        assertTrue("Alert action log for the fix is missing",
+                    logs.size() > 0);
+        assertTrue("Expecting an alert action log containing 'Fixed by'",
+                    logs.get(0).getDetail().indexOf("Fixed by") > -1 );
+        
         // Cleanup
         deleteAlertDefinitionByAlert(a);
     }
 
+    public void testFixAlertWithReason() throws Exception {
+        AlertApi api = getAlertApi();
+        Resource platform = getLocalPlatformResource(false, false);
+        Alert a = generateAlerts(platform);
+
+        validateAlert(a);
+
+        // Test marking fixed
+        String REASON = "HQApi Alert Fix Test";
+        AlertResponse fixResponse = api.fixAlert(a.getId(), REASON);
+        hqAssertSuccess(fixResponse);
+        a = fixResponse.getAlert();
+        List<AlertActionLog> logs = a.getAlertActionLog();
+        
+        for (AlertActionLog log : logs) {
+            System.out.println(log.getDetail());
+        }
+        
+        assertTrue("Alert was not fixed!", a.isFixed());
+        assertTrue("Alert action log for the fix is missing",
+                    logs.size() > 0);
+        assertEquals("Wrong reason for the alert fix",
+                     REASON, logs.get(0).getDetail());
+        
+        // Cleanup
+        deleteAlertDefinitionByAlert(a);
+    }
+    
     public void testFixPlatformAlertNoPermission() throws Exception {
         Resource platform = getLocalPlatformResource(false, false);
         Alert a = generateAlerts(platform);

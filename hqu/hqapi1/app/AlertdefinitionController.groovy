@@ -230,12 +230,18 @@ public class AlertdefinitionController extends ApiController {
 
         def definition
         if (!failureXml) {
-            definition = alertHelper.getById(id)
-            
-            if (!definition) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                           "Alert Definition with id " + id +
-                                           " not found")
+            try {
+                definition = alertHelper.getById(id)
+                
+                if (!definition) {
+                	failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                							   "Alert Definition with id " + id +
+                							   " not found")
+            	}
+            } catch (PermissionException e) {
+                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+            } catch (Exception e) {
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
             }
         }
 
@@ -880,6 +886,8 @@ public class AlertdefinitionController extends ApiController {
                 	}
                     eventBoss.updateAlertDefinition(sessionId, adv)
                 }
+            } catch (PermissionException e) {
+            	failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)    
             } catch (Exception e) {
                 log.error("Error updating alert definition", e)
                 failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,

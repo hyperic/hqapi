@@ -7,7 +7,7 @@
  * normal use of the program, and does *not* fall under the heading of
  * "derived work".
  * 
- * Copyright (C) [2008, 2009], Hyperic, Inc.
+ * Copyright (C) [2008-2010], Hyperic, Inc.
  * This file is part of HQ.
  * 
  * HQ is free software; you can redistribute it and/or modify
@@ -28,8 +28,19 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
+import org.hyperic.hq.hqapi1.AlertDefinitionBuilder;
+import org.hyperic.hq.hqapi1.types.AlertDefinitionResponse;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
+import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.Operation;
+import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.User;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class AlertDefinitionGet_test extends AlertDefinitionTestBase {
 
@@ -70,5 +81,44 @@ public class AlertDefinitionGet_test extends AlertDefinitionTestBase {
             assertTrue("No Resource found for AlertDefinition",
                        d.getResource() != null);            
         }
+    }
+    
+    public void testGetNoViewPermission() throws Exception {
+
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+        Resource platform = getLocalPlatformResource(false, false);
+
+        // Create alert definition as hqadmin
+        AlertDefinition d = generateTestDefinition();
+        d.setResource(platform);
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+        assertEquals(response.getAlertDefinition().size(), 1);
+        AlertDefinition def = response.getAlertDefinition().get(0);
+        validateDefinition(def);
+        
+        // Create user/group/role with insufficient permissions
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+        Role alertRole = createRole(Collections.singletonList(user),
+                                    Collections.singletonList(Operation.MANAGE_PLATFORM_ALERTS));
+        Group groupWithRole = createGroup(Collections.singletonList(platform),
+                                          Collections.singletonList(alertRole));
+        
+        // get alert definition with insufficient permissions
+        AlertDefinitionApi unprivApi = 
+            getApi(user.getName(), TESTUSER_PASSWORD).getAlertDefinitionApi();
+        AlertDefinitionResponse unprivResponse = unprivApi.getAlertDefinition(def.getId());
+        hqAssertFailurePermissionDenied(unprivResponse);
+
+        // cleanup
+        cleanup(Collections.singletonList(def));
+        deleteTestUsers(users);
+        cleanupRole(alertRole);
+        cleanupGroup(groupWithRole);
     }
 }

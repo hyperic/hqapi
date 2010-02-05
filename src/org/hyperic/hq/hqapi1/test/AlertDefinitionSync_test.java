@@ -7,7 +7,7 @@
  * normal use of the program, and does *not* fall under the heading of
  * "derived work".
  * 
- * Copyright (C) [2008, 2009], Hyperic, Inc.
+ * Copyright (C) [2008-2010], Hyperic, Inc.
  * This file is part of HQ.
  * 
  * HQ is free software; you can redistribute it and/or modify
@@ -36,11 +36,18 @@ import org.hyperic.hq.hqapi1.types.AlertCondition;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.Escalation;
+import org.hyperic.hq.hqapi1.types.EscalationResponse;
+import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.GroupResponse;
+import org.hyperic.hq.hqapi1.types.Operation;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
-import org.hyperic.hq.hqapi1.types.EscalationResponse;
+import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.RoleResponse;
+import org.hyperic.hq.hqapi1.types.User;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -145,6 +152,92 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         hqAssertFailureInvalidParameters(response);
     }
 
+    public void testSyncNoPermission() throws Exception {
+        List<User> users = createTestUsers(1);
+        User unprivUser = users.get(0);
+
+        syncWithInsufficientPermissions(unprivUser);
+
+        // Cleanup
+        deleteTestUsers(users);
+    }
+    
+    public void testSyncAlertingPermission() throws Exception {
+        // create user
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+
+        // operations
+        List<Operation> operations = new ArrayList<Operation>();
+        operations.add(Operation.MANAGE_PLATFORM_ALERTS);
+        
+        // create role with manage platform alerts permissions
+        Role alertRole = createRole(Collections.singletonList(user),
+                                    operations);
+        
+        // create group with role
+        Resource platform = getLocalPlatformResource(false, true);
+        Group groupWithRole = createGroup(Collections.singletonList(platform),
+                                          Collections.singletonList(alertRole));
+        
+        // create alert definition with insufficient permissions.
+        // role needs some resource level permissions
+        // in order to properly sync
+        syncWithInsufficientPermissions(user);
+
+        // cleanup
+        deleteTestUsers(users);
+        cleanupRole(alertRole);
+        cleanupGroup(groupWithRole);
+    }
+
+    public void testSyncAlertingAndViewPermission() throws Exception {
+        // create user
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+
+        // operations
+        List<Operation> operations = new ArrayList<Operation>();
+        operations.add(Operation.MANAGE_PLATFORM_ALERTS);
+        operations.add(Operation.VIEW_PLATFORM);
+        
+        // create role with manage platform alerts permissions
+        Role alertRole = createRole(Collections.singletonList(user),
+                                    operations);
+        
+        // create group with role
+        Resource platform = getLocalPlatformResource(false, true);
+        Group groupWithRole = createGroup(Collections.singletonList(platform),
+                                          Collections.singletonList(alertRole));
+        
+        // create alert definition with insufficient permissions.
+        // roles needs at least create resource permissions
+        // in order to properly sync
+        syncWithInsufficientPermissions(user);
+
+        // cleanup
+        deleteTestUsers(users);
+        cleanupRole(alertRole);
+        cleanupGroup(groupWithRole);
+    }
+    
+    private void syncWithInsufficientPermissions(User unprivUser) 
+        throws Exception {
+    
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = generateTestDefinition();
+        d.setResource(platform);
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        HQApi apiUnpriv = getApi(unprivUser.getName(), TESTUSER_PASSWORD);
+        AlertDefinitionApi alertDefApi = apiUnpriv.getAlertDefinitionApi();
+        AlertDefinitionsResponse response = alertDefApi.syncAlertDefinitions(definitions);
+        hqAssertFailurePermissionDenied(response);
+    }
+    
     public void testSyncCreateDefinition() throws Exception {
         AlertDefinitionApi api = getApi().getAlertDefinitionApi();
         Resource platform = getLocalPlatformResource(false, false);

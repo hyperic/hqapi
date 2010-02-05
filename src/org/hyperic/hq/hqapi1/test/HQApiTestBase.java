@@ -7,7 +7,7 @@
  * normal use of the program, and does *not* fall under the heading of
  * "derived work".
  * 
- * Copyright (C) [2008, 2009], Hyperic, Inc.
+ * Copyright (C) [2008-2010], Hyperic, Inc.
  * This file is part of HQ.
  * 
  * HQ is free software; you can redistribute it and/or modify
@@ -33,20 +33,27 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.PropertyConfigurator;
 import org.hyperic.hq.hqapi1.AgentApi;
 import org.hyperic.hq.hqapi1.ErrorCode;
+import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
+import org.hyperic.hq.hqapi1.RoleApi;
 import org.hyperic.hq.hqapi1.UserApi;
 import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.AgentsResponse;
+import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.Metric;
 import org.hyperic.hq.hqapi1.types.MetricsResponse;
+import org.hyperic.hq.hqapi1.types.Operation;
 import org.hyperic.hq.hqapi1.types.PingAgentResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.Response;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.UserResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
@@ -251,6 +258,66 @@ public abstract class HQApiTestBase extends TestCase {
         hqAssertSuccess(response);
     }
 
+    protected Group createGroup(List<Resource> resources)
+        throws Exception {
+        
+        return createGroup(resources, null);
+    }
+
+    protected Group createGroup(List<Resource> resources, List<Role> roles) 
+        throws Exception {
+
+        // determine whether to create a mixed or compatible group
+        ResourcePrototype prototype = null;
+        for (Resource r : resources) {
+            if (prototype == null) {
+                prototype = r.getResourcePrototype();
+            } else {
+                if (!prototype.getName().equals(r.getResourcePrototype().getName())) {
+                    prototype = null;
+                    break;
+                }
+            }
+        }
+        
+        // create group
+        Random r = new Random();
+        Group g = new Group();
+        String name = (prototype == null ? "Mixed" : "Compatible") 
+                        + " Group for Tests" + r.nextInt();
+        g.setName(name);
+        if (prototype != null) {
+            g.setResourcePrototype(prototype);
+        }
+        g.getResource().addAll(resources);
+        GroupResponse groupResponse = getApi().getGroupApi().createGroup(g);
+        hqAssertSuccess(groupResponse);
+        Group createdGroup = groupResponse.getGroup();
+        assertEquals(resources.size(), createdGroup.getResource().size());
+        if (prototype == null) {
+            assertNull("This should be a mixed group",
+                        createdGroup.getResourcePrototype());
+        } else {
+            assertNotNull("This should be a compatible group",
+                           createdGroup.getResourcePrototype());
+            assertEquals(prototype.getName(),
+                         createdGroup.getResourcePrototype().getName());
+        }
+        
+        if (roles != null) {
+            createdGroup.getRole().addAll(roles);
+
+            groupResponse = getApi().getGroupApi().updateGroup(createdGroup);
+            hqAssertSuccess(groupResponse);
+            
+            createdGroup = groupResponse.getGroup();
+            
+            assertEquals(roles.size(), createdGroup.getRole().size());            
+        }
+        
+        return createdGroup;
+    }
+    
     /**
      * Generate a valid User object that's guaranteed to have a unique Name
      * @return A valid User object.
@@ -308,6 +375,54 @@ public abstract class HQApiTestBase extends TestCase {
         role.setDescription(TESTROLE_DESCRIPTION);
 
         return role;
+    }
+    
+    protected Role createRole(List<User> users, List<Operation> operations) 
+        throws Exception {
+        
+        Role r = generateTestRole();
+        
+        r.getOperation().addAll(operations);
+        r.getUser().addAll(users);
+        
+        RoleResponse roleResponse = getApi().getRoleApi().createRole(r);
+        hqAssertSuccess(roleResponse);
+        Role createdRole = roleResponse.getRole();
+
+        assertEquals("The role should have one user",
+                     users.size(), createdRole.getUser().size());
+
+        for (Operation o : operations) {
+            assertTrue("Created role does not contain operation " + o.value(),
+                       createdRole.getOperation().contains(o));
+        }
+        
+        return createdRole;
+    }
+
+    protected void cleanupRole(Role r) throws Exception {
+        RoleApi api = getApi().getRoleApi();
+        StatusResponse response = api.deleteRole(r.getId());
+        hqAssertSuccess(response);
+    }
+    
+    protected void cleanupGroup(Group g) throws Exception {
+        cleanupGroup(g, false);
+    }
+
+    protected void cleanupGroup(Group g, boolean deleteMembers) throws Exception {
+        
+        if (deleteMembers) {
+            ResourceApi api = getApi().getResourceApi();
+            for (Resource r : g.getResource()) {
+                StatusResponse response = api.deleteResource(r.getId());
+                hqAssertSuccess(response);
+            }
+        }
+        
+        GroupApi api = getApi().getGroupApi();
+        StatusResponse response = api.deleteGroup(g.getId());
+        hqAssertSuccess(response);
     }
     
     protected Metric findAvailabilityMetric(Resource resource)

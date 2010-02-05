@@ -132,7 +132,7 @@ public abstract class AlertTestBase extends AlertDefinitionTestBase {
     }
 
     protected Alert fireAvailabilityAlert(AlertDefinition def,
-                                          boolean withEscalationLog,
+                                          boolean withActionLog,
                                           boolean willRecover,
                                           double availability)
         throws Exception {
@@ -143,7 +143,7 @@ public abstract class AlertTestBase extends AlertDefinitionTestBase {
         // the alert definition will fire.
         sendAvailabilityDataPoint(def.getResource(), availability);
 
-        Alert alert = findAlert(def, withEscalationLog, start);
+        Alert alert = findAlert(def, withActionLog, start);
         assertFalse("The alert should not be fixed",
                      alert.isFixed());
 
@@ -180,7 +180,7 @@ public abstract class AlertTestBase extends AlertDefinitionTestBase {
     }
     
     protected Alert findAlert(AlertDefinition def,
-                              boolean withEscalationLog,
+                              boolean withActionLog,
                               long start) 
         throws Exception {
 
@@ -197,7 +197,7 @@ public abstract class AlertTestBase extends AlertDefinitionTestBase {
             for (Alert a : alerts.getAlert()) {
                 // Verify this alert comes from the definition we just created
                 if (a.getAlertDefinitionId() == def.getId()) {
-                    if (withEscalationLog
+                    if (withActionLog
                             && a.getAlertActionLog().isEmpty()) {
                         // wait for the next loop iteration so that the 
                         // escalation action has time to be executed 

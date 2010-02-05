@@ -230,16 +230,8 @@ public class MaintenanceSchedule_test extends MaintenanceTestBase {
         User user = users.get(0);
 
         // create role with view group permissions
-        Role r = generateTestRole();
-        r.getOperation().add(Operation.VIEW_RESOURCE_GROUP);
-        r.getUser().add(user);
-        RoleResponse roleResponse = getApi().getRoleApi().createRole(r);
-        hqAssertSuccess(roleResponse);
-        Role viewRole = roleResponse.getRole();
-        assertEquals("The role should have one user",
-                     1, viewRole.getUser().size());
-        assertTrue("The role should have view group permissions",
-                   viewRole.getOperation().contains(Operation.VIEW_RESOURCE_GROUP));
+        Role viewRole = createRole(Collections.singletonList(user),
+                                   Collections.singletonList(Operation.VIEW_RESOURCE_GROUP));
         
         // create group with view role
         Group g = getFileServerMountCompatibleGroup();
