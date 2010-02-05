@@ -109,7 +109,9 @@ public class AlertDefinitionGet_test extends AlertDefinitionTestBase {
         Group groupWithRole = createGroup(Collections.singletonList(platform),
                                           Collections.singletonList(alertRole));
         
-        // get alert definition with insufficient permissions
+        // Get alert definition with insufficient permissions.
+        // Role needs at least view resource permissions
+        // in order to properly get/view an alert definition
         AlertDefinitionApi unprivApi = 
             getApi(user.getName(), TESTUSER_PASSWORD).getAlertDefinitionApi();
         AlertDefinitionResponse unprivResponse = unprivApi.getAlertDefinition(def.getId());

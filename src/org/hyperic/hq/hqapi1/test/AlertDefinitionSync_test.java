@@ -211,7 +211,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
                                           Collections.singletonList(alertRole));
         
         // create alert definition with insufficient permissions.
-        // roles needs at least create resource permissions
+        // roles needs at least modify resource permissions
         // in order to properly sync
         syncWithInsufficientPermissions(user);
 
@@ -238,7 +238,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         hqAssertFailurePermissionDenied(response);
     }
     
-    public void testSyncCreateDefinition() throws Exception {
+    public void testSyncCreateDefinitionSuperUser() throws Exception {
         AlertDefinitionApi api = getApi().getAlertDefinitionApi();
         Resource platform = getLocalPlatformResource(false, false);
 
@@ -259,6 +259,44 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         cleanup(response.getAlertDefinition());
     }    
 
+    public void testSyncCreateDefinitionNonSuperUser() throws Exception {
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = generateTestDefinition();
+        d.setResource(platform);
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        // Create user/group/role with sufficient permissions
+        List<User> users = createTestUsers(1);
+        User privUser = users.get(0);
+
+        List<Operation> operations = new ArrayList<Operation>();
+        operations.add(Operation.MANAGE_PLATFORM_ALERTS);
+        operations.add(Operation.MODIFY_PLATFORM);
+        
+        Role alertRole = createRole(Collections.singletonList(privUser),
+                                    operations);
+        Group groupWithRole = createGroup(Collections.singletonList(platform),
+                                          Collections.singletonList(alertRole));
+
+        AlertDefinitionApi api = getApi(privUser.getName(), TESTUSER_PASSWORD).getAlertDefinitionApi();
+
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+        assertEquals(response.getAlertDefinition().size(), 1);
+        for (AlertDefinition def : response.getAlertDefinition()) {
+            validateDefinition(def);
+        }
+
+        // Cleanup
+        cleanup(response.getAlertDefinition());
+        deleteTestUsers(users);
+        cleanupRole(alertRole);
+        cleanupGroup(groupWithRole);
+    }
+    
     public void testSyncCreateTypeDefinition() throws Exception {
         AlertDefinitionApi api = getApi().getAlertDefinitionApi();
         Resource platform = getLocalPlatformResource(false, false);

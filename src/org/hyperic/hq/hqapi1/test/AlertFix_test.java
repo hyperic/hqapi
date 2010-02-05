@@ -2,14 +2,18 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.types.Alert;
 import org.hyperic.hq.hqapi1.types.AlertActionLog;
-import org.hyperic.hq.hqapi1.types.User;
+import org.hyperic.hq.hqapi1.types.AlertResponse;
+import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.Operation;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
-import org.hyperic.hq.hqapi1.types.AlertResponse;
+import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.AlertApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
 
+import java.util.Collections;
 import java.util.List;
 
 public class AlertFix_test extends AlertTestBase {
@@ -55,10 +59,6 @@ public class AlertFix_test extends AlertTestBase {
         a = fixResponse.getAlert();
         List<AlertActionLog> logs = a.getAlertActionLog();
         
-        for (AlertActionLog log : logs) {
-            System.out.println(log.getDetail());
-        }
-        
         assertTrue("Alert was not fixed!", a.isFixed());
         assertTrue("Alert action log for the fix is missing",
                     logs.size() > 0);
@@ -89,6 +89,35 @@ public class AlertFix_test extends AlertTestBase {
         deleteTestUsers(users);
     }
 
+    public void testFixPlatformAlertingPermission() throws Exception {
+        Resource platform = getLocalPlatformResource(false, false);
+        Alert a = generateAlerts(platform);
+
+        validateAlert(a);
+
+        // Create user/group/role with insufficient permissions
+        List<User> users = createTestUsers(1);
+        User unprivUser = users.get(0);
+        Role alertRole = createRole(Collections.singletonList(unprivUser),
+                                    Collections.singletonList(Operation.MANAGE_PLATFORM_ALERTS));
+        Group groupWithRole = createGroup(Collections.singletonList(platform),
+                                          Collections.singletonList(alertRole));
+
+        AlertApi apiUnpriv = getApi(unprivUser.getName(), TESTUSER_PASSWORD).getAlertApi();
+
+        // Test marking fixed with an unprivileged user.
+        // Role needs alerting and at least view resource permissions
+        // in order to fix alerts
+        AlertResponse fixResponse = apiUnpriv.fixAlert(a.getId());
+        hqAssertFailurePermissionDenied(fixResponse);
+
+        // Cleanup
+        deleteAlertDefinitionByAlert(a);
+        deleteTestUsers(users);
+        cleanupRole(alertRole);
+        cleanupGroup(groupWithRole);
+    }
+    
     public void testFixServerAlertNoPermission() throws Exception {
         ResourceApi rApi = getApi().getResourceApi();
 
