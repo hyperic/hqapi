@@ -197,9 +197,12 @@ public abstract class HQApiTestBase extends TestCase {
         hqAssertSuccess(resourceResponse);
 
         Resource localPlatform = null;
+        List<String> invalidPlatforms = new ArrayList<String>();
+        invalidPlatforms.add("Network Device");
+        invalidPlatforms.add("Network Host");
         
         for (Resource r : resourceResponse.getResource()) {
-            if (!r.getResourcePrototype().getName().equals("Network Device")) {
+            if (!invalidPlatforms.contains(r.getResourcePrototype().getName())) {
                 localPlatform = r;
                 break;
             }
