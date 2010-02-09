@@ -51,6 +51,9 @@ Changes in HQApi 3.0
 
 Changes in HQApi 2.4
 
+ *) Add support for --platform argument to command line group syncing.
+    Like resource list, one of --prototype or --platform is required.
+
  *) [HHQ-3709] Allow group syncing via command line arguments to include
     child resources.
 
