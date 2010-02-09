@@ -40,6 +40,7 @@ import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourceResponse;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -64,6 +65,7 @@ public class GroupCommand extends Command {
     // Additional sync commands when syncing via command line options.
     private static String OPT_NAME          = "name";
     private static String OPT_PROTOTYPE     = "prototype";
+    private static String OPT_PLATFORM      = "platform";
     private static String OPT_REGEX         = "regex";
     private static String OPT_DELETEMISSING = "deleteMissing";
     private static String OPT_DESC          = "description";
@@ -130,6 +132,8 @@ public class GroupCommand extends Command {
                 withRequiredArg().ofType(String.class);
         p.accepts(OPT_PROTOTYPE, "The resource type to query for group membership").
                 withRequiredArg().ofType(String.class);
+        p.accepts(OPT_PLATFORM, "The platform to query for group membership").
+                withRequiredArg().ofType(String.class);
         p.accepts(OPT_REGEX, "The regular expression to apply to the " + OPT_PROTOTYPE +
                   " flag").withRequiredArg().ofType(String.class);
         p.accepts(OPT_DELETEMISSING, "Remove resources in the group not included in " +
@@ -179,28 +183,47 @@ public class GroupCommand extends Command {
     {
         // Required args
         String name = (String)getRequired(s, OPT_NAME);
-        String prototype = (String)getRequired(s, OPT_PROTOTYPE);
-        
+        String prototype = (String)s.valueOf(OPT_PROTOTYPE);
+        String platform = (String)s.valueOf(OPT_PLATFORM);
+
         // Optional
         String regex = (String)s.valueOf(OPT_REGEX);
-        String description = (String)s.valueOf(OPT_DESC);
         boolean deleteMissing = s.has(OPT_DELETEMISSING);
         boolean compatible = s.has(OPT_COMPAT);
         boolean children = s.has(OPT_CHILDREN);
 
         HQApi api = getApi(s);
 
-        // Get prototype
-        ResourcePrototypeResponse protoResponse =
-                api.getResourceApi().getResourcePrototype(prototype);
-        checkSuccess(protoResponse);
+        List<Resource> resources;
 
-        // Query resources
-        ResourcesResponse resourceResponse = api.getResourceApi().
-                getResources(protoResponse.getResourcePrototype(), false, children);
-        checkSuccess(resourceResponse);
+        if (prototype != null && platform != null) {
+            System.err.println("Only one of " + OPT_PROTOTYPE + " or " +
+                               OPT_PLATFORM + " is allowed.");
+            return;
+        }
 
-        List<Resource> resources = resourceResponse.getResource();
+        if (prototype != null) {
+            // Get prototype
+            ResourcePrototypeResponse protoResponse =
+                    api.getResourceApi().getResourcePrototype(prototype);
+            checkSuccess(protoResponse);
+
+            // Query resources
+            ResourcesResponse resourcesResponse = api.getResourceApi().
+                    getResources(protoResponse.getResourcePrototype(), false, children);
+            checkSuccess(resourcesResponse);
+            resources = resourcesResponse.getResource();
+        } else if (platform != null) {
+            ResourceResponse resourceResponse = api.getResourceApi().
+                    getPlatformResource(platform, false, children);
+            checkSuccess(resourceResponse);
+            resources = new ArrayList<Resource>();
+            resources.add(resourceResponse.getResource());
+        } else {
+            System.err.println("One of " + OPT_PROTOTYPE + " or " +
+                               OPT_PLATFORM + " is required.");
+            return;
+        }
 
         // Filter based on regex, if given.
         if (regex != null) {
@@ -231,7 +254,10 @@ public class GroupCommand extends Command {
         } else {
             group = new Group();
             group.setName(name);
-            if (compatible) {
+            if (prototype != null && compatible) {
+                ResourcePrototypeResponse protoResponse =
+                        api.getResourceApi().getResourcePrototype(prototype);
+                checkSuccess(protoResponse);
                 group.setResourcePrototype(protoResponse.getResourcePrototype());
             }
             System.out.println(name + ": Creating new group");
