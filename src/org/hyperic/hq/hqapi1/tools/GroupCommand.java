@@ -70,6 +70,7 @@ public class GroupCommand extends Command {
     private static String OPT_PROTOTYPE     = "prototype";
     private static String OPT_PLATFORM      = "platform";
     private static String OPT_REGEX         = "regex";
+    private static String OPT_CLEAR         = "clear";
     private static String OPT_DELETEMISSING = "deleteMissing";
     private static String OPT_DESC          = "description";
     private static String OPT_CHILDREN      = "children";
@@ -140,6 +141,7 @@ public class GroupCommand extends Command {
                 withRequiredArg().ofType(String.class);
         p.accepts(OPT_REGEX, "The regular expression to apply to the " + OPT_PROTOTYPE +
                   " flag").withRequiredArg().ofType(String.class);
+        p.accepts(OPT_CLEAR, "Clear the resources for the specified group.");
         p.accepts(OPT_DELETEMISSING, "Remove resources in the group not included in " +
                   "the " + OPT_PROTOTYPE + " and " + OPT_REGEX);
         p.accepts(OPT_COMPAT, "If specified, attempt to make the group compatible");
@@ -190,11 +192,12 @@ public class GroupCommand extends Command {
     {
         // Required args
         String name = (String)getRequired(s, OPT_NAME);
-        String prototype = (String)s.valueOf(OPT_PROTOTYPE);
-        String platform = (String)s.valueOf(OPT_PLATFORM);
 
         // Optional
+        String prototype = (String)s.valueOf(OPT_PROTOTYPE);
+        String platform = (String)s.valueOf(OPT_PLATFORM);
         String regex = (String)s.valueOf(OPT_REGEX);
+        boolean clear = s.has(OPT_CLEAR);
         boolean deleteMissing = s.has(OPT_DELETEMISSING);
         boolean compatible = s.has(OPT_COMPAT);
         boolean children = s.has(OPT_CHILDREN);
@@ -207,6 +210,20 @@ public class GroupCommand extends Command {
         if (prototype != null && platform != null) {
             System.err.println("Only one of " + OPT_PROTOTYPE + " or " +
                                OPT_PLATFORM + " is allowed.");
+            return;
+        }
+
+        if (clear) {
+            // Handle --clear as a one-off.
+            GroupResponse groupResponse = api.getGroupApi().getGroup(name);
+            checkSuccess(groupResponse);
+            Group g = groupResponse.getGroup();
+            System.out.println(name + ": Clearing " + g.getResource().size() + " members");
+            g.getResource().clear();
+            GroupResponse clearResponse = api.getGroupApi().updateGroup(g);
+            checkSuccess(clearResponse);
+            System.out.println(name + ": Success (" +
+                               clearResponse.getGroup().getResource().size() + " members)");
             return;
         }
 
