@@ -240,7 +240,7 @@ class HQConnection {
                     // Some other server blow up.
                     error = new ServiceError();
                     error.setErrorCode("UnexpectedError");
-                    error.setReasonText("An unexpected error occured");
+                    error.setReasonText("An unexpected error occurred");
                     return getErrorResponse(resultClass, error);
             }
         } catch (SocketException e) {
