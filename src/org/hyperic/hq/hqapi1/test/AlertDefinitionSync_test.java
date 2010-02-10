@@ -274,6 +274,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
 
         List<Operation> operations = new ArrayList<Operation>();
         operations.add(Operation.MANAGE_PLATFORM_ALERTS);
+        operations.add(Operation.VIEW_PLATFORM);
         operations.add(Operation.MODIFY_PLATFORM);
         
         Role alertRole = createRole(Collections.singletonList(privUser),
