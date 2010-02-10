@@ -285,4 +285,4 @@ class GroupController extends ApiController {
             }
         }
     }
-}
+} 
