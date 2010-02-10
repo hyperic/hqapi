@@ -49,10 +49,10 @@ public enum ErrorCode {
     INVALID_PARAMETERS("InvalidParameters",
                        "The given parameters are incorrect"),
     /**
-     * An unexpected error occured.
+     * An unexpected error occurred.
      */
     UNEXPECTED_ERROR("UnexpectedError",
-                     "An unexpected error occured"),
+                     "An unexpected error occurred"),
     /**
      * The current user does not have permission for this operation.
      */
