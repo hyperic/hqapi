@@ -170,7 +170,9 @@ class GroupController extends ApiController {
                         }
                     }
 
-                    resources.add(resource)
+                    if (!resources.contains(resource)) {
+                        resources.add(resource)
+                    }
                 }
             }
 
