@@ -20,6 +20,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collection;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -43,6 +46,7 @@ public class GroupCommand extends Command {
     private static String OPT_DELETEMISSING = "deleteMissing";
     private static String OPT_DESC          = "description";
     private static String OPT_CHILDREN      = "children";
+    private static String OPT_DELETE        = "delete";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -116,6 +120,8 @@ public class GroupCommand extends Command {
                 withRequiredArg().ofType(String.class);
         p.accepts(OPT_CHILDREN, "If specified, include child resources of the " +
                   "specified prototype and regex");
+        p.accepts(OPT_DELETE, "If specifed, remove the specified resources from " +
+                  "the given group");
 
         OptionSet options = getOptions(p, args);
 
@@ -140,13 +146,14 @@ public class GroupCommand extends Command {
     }
 
     // Helper function to unroll a resource and it's children into a single list.
-    private List<Resource> getFlattenResources(List<Resource> resources) {
-        List<Resource> result = new ArrayList<Resource>();
+    private Map<Integer,Resource> getFlattenResources(Collection<Resource> resources) {
+
+        Map<Integer,Resource> result = new HashMap<Integer,Resource>();
 
         for (Resource r : resources) {
-            result.add(r);
+            result.put(r.getId(), r);
             if (r.getResource().size() > 0) {
-                result.addAll(getFlattenResources(r.getResource()));
+                result.putAll(getFlattenResources(r.getResource()));
             }
         }
         return result;
@@ -164,10 +171,11 @@ public class GroupCommand extends Command {
         boolean deleteMissing = s.has(OPT_DELETEMISSING);
         boolean compatible = s.has(OPT_COMPAT);
         boolean children = s.has(OPT_CHILDREN);
+        boolean delete = s.has(OPT_DELETE);
 
         HQApi api = getApi(s);
 
-        List<Resource> resources;
+        Map<Integer,Resource> resources = new HashMap<Integer,Resource>();
 
         if (prototype != null && platform != null) {
             System.err.println("Only one of " + OPT_PROTOTYPE + " or " +
@@ -185,13 +193,15 @@ public class GroupCommand extends Command {
             ResourcesResponse resourcesResponse = api.getResourceApi().
                     getResources(protoResponse.getResourcePrototype(), false, children);
             checkSuccess(resourcesResponse);
-            resources = resourcesResponse.getResource();
+            for (Resource r : resourcesResponse.getResource()) {
+                resources.put(r.getId(), r);
+            }
         } else if (platform != null) {
             ResourceResponse resourceResponse = api.getResourceApi().
                     getPlatformResource(platform, false, children);
             checkSuccess(resourceResponse);
-            resources = new ArrayList<Resource>();
-            resources.add(resourceResponse.getResource());
+            resources.put(resourceResponse.getResource().getId(),
+                          resourceResponse.getResource());
         } else {
             System.err.println("One of " + OPT_PROTOTYPE + " or " +
                                OPT_PLATFORM + " is required.");
@@ -201,7 +211,7 @@ public class GroupCommand extends Command {
         // Filter based on regex, if given.
         if (regex != null) {
             Pattern pattern = Pattern.compile(regex);
-            for (Iterator<Resource> i = resources.iterator(); i.hasNext(); ) {
+            for (Iterator<Resource> i = resources.values().iterator(); i.hasNext(); ) {
                 Resource r = i.next();
                 Matcher m = pattern.matcher(r.getName());
                 if (!m.matches()) {
@@ -225,6 +235,13 @@ public class GroupCommand extends Command {
                 group.getResource().clear();
             }
         } else {
+
+            if (delete) {
+                System.err.println("Option " + OPT_DELETE + " not applicable for " +
+                                   "new groups");
+                return;
+            }
+
             group = new Group();
             group.setName(name);
             if (prototype != null && compatible) {
@@ -240,8 +257,19 @@ public class GroupCommand extends Command {
             group.setDescription((String)s.valueOf(OPT_DESC));
         }
 
-        List<Resource> flattenedResources = getFlattenResources(resources);
-        group.getResource().addAll(flattenedResources);
+        Map<Integer,Resource> flattenedResources = getFlattenResources(resources.values());
+        if (delete) {
+            for(Iterator<Resource> i = group.getResource().iterator(); i.hasNext();) {
+                Resource r = i.next();
+                if (flattenedResources.containsKey(r.getId())) {
+                    i.remove();
+                }
+            }
+        } else {
+            // TODO: could be more efficent here, server side will prune dups
+            group.getResource().addAll(flattenedResources.values());
+        }
+
         List<Group> groups = new ArrayList<Group>();
         groups.add(group);
         GroupsResponse syncResponse = api.getGroupApi().syncGroups(groups);
