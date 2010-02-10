@@ -112,6 +112,7 @@ public class AlertDefinitionDelete_test extends AlertDefinitionTestBase {
         User user = users.get(0);
         List<Operation> operations = new ArrayList<Operation>();
         operations.add(Operation.MANAGE_PLATFORM_ALERTS);
+        operations.add(Operation.VIEW_PLATFORM);
         operations.add(Operation.MODIFY_PLATFORM);
 
         Role alertRole = createRole(Collections.singletonList(user),
@@ -120,7 +121,7 @@ public class AlertDefinitionDelete_test extends AlertDefinitionTestBase {
                                           Collections.singletonList(alertRole));
         
         // Delete alert definition with insufficient permissions.
-        // Role needs delete resource permissions
+        // Role needs modify resource permissions
         // in order to delete an alert definition
         AlertDefinitionApi privApi = 
             getApi(user.getName(), TESTUSER_PASSWORD).getAlertDefinitionApi();
@@ -154,8 +155,12 @@ public class AlertDefinitionDelete_test extends AlertDefinitionTestBase {
         // Create user/group/role with insufficient permissions
         List<User> users = createTestUsers(1);
         User user = users.get(0);
+        List<Operation> operations = new ArrayList<Operation>();
+        operations.add(Operation.MANAGE_PLATFORM_ALERTS);
+        operations.add(Operation.VIEW_PLATFORM);
+        
         Role alertRole = createRole(Collections.singletonList(user),
-                                    Collections.singletonList(Operation.MANAGE_PLATFORM_ALERTS));
+                                    operations);
         Group groupWithRole = createGroup(Collections.singletonList(platform),
                                           Collections.singletonList(alertRole));
         
