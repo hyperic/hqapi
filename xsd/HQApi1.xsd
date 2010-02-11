@@ -803,6 +803,8 @@
         <xs:attribute name="description" type="xs:string"      use="required" />
         <xs:attribute name="name"        type="xs:string"      use="required" />
         <xs:attribute name="id"          type="xs:int"         use="optional" />
+        <xs:attribute name="ctime"       type="xs:long"        use="optional" />
+        <xs:attribute name="mtime"       type="xs:long"        use="optional" />
     </xs:complexType>
 
     <xs:element name="AlertDefinitionResponse">
