@@ -143,6 +143,16 @@
 
     </target>
 
+    <!-- Run a single test -->
+    <target name="single-test">
+        <fail message="Must specify a test case system property: -Dtestcase=org.hyperic.My_test"
+              unless="testcase"/>
+        <echo message="Running Single Test: ${testcase}"/>
+        <antcall target="test">
+            <param name="single.test" value="true" />
+        </antcall>
+    </target>
+	
     <!-- Run the full test suite -->
     <target name="test" depends="compile">
         <mkdir dir="${build.dir}/testresults"/>
@@ -157,8 +167,12 @@
 			<sysproperty key="clover.server" value="true"/>
             <classpath refid="all.classpath"/>
             <formatter type="xml"/>
-            
-            <batchtest fork="no" todir="${build.dir}/testresults">
+
+            <test name="${testcase}" todir="${build.dir}/testresults"
+                  if="single.test" />
+        	
+            <batchtest fork="no" todir="${build.dir}/testresults"
+            		   unless="single.test">
                 <fileset dir="${build.dir}/classes">
                     <include name="**/*_test.class"/>
 					<!-- temp exclude until we re-enable SSL -->
