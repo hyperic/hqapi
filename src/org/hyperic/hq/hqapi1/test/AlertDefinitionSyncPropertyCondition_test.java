@@ -64,7 +64,7 @@ public class AlertDefinitionSyncPropertyCondition_test extends AlertDefinitionTe
         hqAssertSuccess(response);
 
         for (AlertDefinition def : response.getAlertDefinition()) {
-            validateDefinition(d);
+            validateDefinition(def);
             for (AlertCondition c : def.getAlertCondition()) {
                 assertNotNull("Condition was null", c);
                 assertEquals(c.getProperty(), PROP_NAME);
@@ -94,7 +94,7 @@ public class AlertDefinitionSyncPropertyCondition_test extends AlertDefinitionTe
         hqAssertSuccess(response);
 
         for (AlertDefinition def : response.getAlertDefinition()) {
-            validateDefinition(d);
+            validateDefinition(def);
             for (AlertCondition c : def.getAlertCondition()) {
                 assertNotNull("Condition was null", c);
                 assertEquals(c.getProperty(), PROP_NAME);
