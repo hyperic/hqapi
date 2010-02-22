@@ -1,6 +1,8 @@
 
 Changes in HQApi 3.1
 
+ *) [HHQ-3481] Add support to fix alerts with a reason/comment
+ 
  *) Add support to create and update escalations with SNMPAction.
  
  *) [HHQ-3473] Updated GroupApi to list groups containing a resource and
