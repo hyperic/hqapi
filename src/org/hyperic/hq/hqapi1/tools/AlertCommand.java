@@ -153,8 +153,10 @@ public class AlertCommand extends Command {
 
         OptionParser p = getOptionParser();
 
-        p.accepts(OPT_ID, "The id of the Alert to fix").
-                withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_ID, "The id of the alert to fix")
+                .withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_REASON, "The reason for fixing the alert")
+                .withRequiredArg().ofType(String.class);
 
         OptionSet options = getOptions(p, args);
 
@@ -162,8 +164,9 @@ public class AlertCommand extends Command {
         AlertApi alertApi = api.getAlertApi();
 
         Integer id = (Integer)getRequired(options, OPT_ID);
+        String reason = (String)options.valueOf(OPT_REASON);
 
-        AlertResponse response = alertApi.fixAlert(id);
+        AlertResponse response = alertApi.fixAlert(id, reason);
         checkSuccess(response);
 
         System.out.println("Successfully fixed alert id " + id);
@@ -175,7 +178,7 @@ public class AlertCommand extends Command {
 
         p.accepts(OPT_ID, "The id of the Alert to acknowledge").
                 withRequiredArg().ofType(Integer.class);
-        p.accepts(OPT_REASON, "The reason for acknoledging the alert")
+        p.accepts(OPT_REASON, "The reason for acknowledging the alert")
                 .withRequiredArg().ofType(String.class);
         p.accepts(OPT_PAUSE, "If specified, pause the Escalation for the " +
                              "given number of milliseconds")
