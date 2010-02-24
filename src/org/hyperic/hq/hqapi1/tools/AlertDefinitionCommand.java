@@ -262,7 +262,7 @@ public class AlertDefinitionCommand extends Command {
             int numBatches = (int)Math.ceil(definitions.size()/((double)batchSize));
 
             for (int i = 0; i < numBatches; i++) {
-                System.out.println("Syncing batch " + (i + 1) + " of " + numBatches);
+                long start = System.currentTimeMillis();
                 int fromIndex = i * batchSize;
                 int toIndex = (fromIndex + batchSize) > definitions.size() ? 
                               definitions.size() : (fromIndex + batchSize);
@@ -271,6 +271,9 @@ public class AlertDefinitionCommand extends Command {
                                                                      toIndex));
                 checkSuccess(syncResponse);
                 numSynced += (toIndex - fromIndex);
+                System.out.println("Synced batch " + (i + 1) + " of " + numBatches + " in " +
+                                   (System.currentTimeMillis() - start) + " ms");
+
             }
         } else {
             AlertDefinitionsResponse syncResponse = api.syncAlertDefinitions(definitions);

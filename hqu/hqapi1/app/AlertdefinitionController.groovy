@@ -414,6 +414,7 @@ public class AlertdefinitionController extends ApiController {
     def sync(params) {
         def syncRequest = new XmlParser().parseText(getPostData())
         def definitions = []
+        def sess = org.hyperic.hq.hibernate.SessionManager.currentSession()
 
         for (xmlDef in syncRequest['AlertDefinition']) {
             def failureXml = null
@@ -919,15 +920,17 @@ public class AlertdefinitionController extends ApiController {
                 pojo.unsetEscalation(user)
             }
 
-            // Keep synced defintions for sync return XML
-            definitions << pojo
+            // Keep synced definitions for sync return XML
+            definitions << pojo.id
+            sess.flush()
+            sess.clear()
         }
 
         renderXml() {
             out << AlertDefinitionsResponse() {
                 out << getSuccessXML()
-                for (alertdef in definitions) {
-                    out << getAlertDefinitionXML(alertdef, false)
+                for (alertdefid in definitions) {
+                    out << getAlertDefinitionXML(alertHelper.getById(alertdefid), false)
                 }
             }
         }
