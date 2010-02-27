@@ -1,7 +1,9 @@
+import org.hyperic.hq.context.Bootstrap;
 import org.hyperic.hq.hqapi1.ErrorCode;
 
-import org.hyperic.hq.measurement.server.session.MeasurementStartupListener as MListener
+
 import org.hyperic.hq.measurement.server.session.DataPoint as DP
+import org.hyperic.hq.measurement.server.session.MeasurementInserterHolder;
 
 class MetricdataController extends ApiController {
 
@@ -219,7 +221,7 @@ class MetricdataController extends ApiController {
     }
 
     def put(params) {
-        def inserter = MListener.dataInserter
+        def inserter = Bootstrap.getBean(MeasurementInserterHolder.class).dataInserter
         def failureXml = null
 
         def dataRequest = new XmlParser().parseText(getPostData())
