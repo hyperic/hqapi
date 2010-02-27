@@ -59,6 +59,10 @@ public abstract class AlertDefinitionTestBase extends HQApiTestBase {
                    d.getFrequency() >= 0 && d.getFrequency() <= 4);
         assertTrue("Invalid priority " + d.getPriority(),
                    d.getPriority() >= 1 & d.getPriority() <= 3);
+        assertTrue("Create time must be greater than 0",
+        		   d.getCtime() > 0);
+        assertTrue("Modify time must be greater than 0",
+        		   d.getMtime() > 0);
     }
 
     protected void cleanup(List<AlertDefinition> definitions) throws IOException {

@@ -67,7 +67,7 @@ public class AlertDefinitionSyncControlCondition_test extends AlertDefinitionTes
         hqAssertSuccess(response);
 
         for (AlertDefinition def : response.getAlertDefinition()) {
-            validateDefinition(d);
+            validateDefinition(def);
             for (AlertCondition c : def.getAlertCondition()) {
                 assertNotNull("Condition was null", c);
                 assertEquals(c.getType(), AlertConditionType.CONTROL.getType());
@@ -101,7 +101,7 @@ public class AlertDefinitionSyncControlCondition_test extends AlertDefinitionTes
         hqAssertSuccess(response);
 
         for (AlertDefinition def : response.getAlertDefinition()) {
-            validateDefinition(d);
+            validateDefinition(def);
             for (AlertCondition c : def.getAlertCondition()) {
                 assertNotNull("Condition was null", c);
                 assertEquals(c.getType(), AlertConditionType.CONTROL.getType());

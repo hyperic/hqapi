@@ -66,7 +66,9 @@ public class AlertdefinitionController extends ApiController {
                          range: d.range,
                          willRecover: d.willRecover,
                          notifyFiltered: d.notifyFiltered,
-                         controlFiltered: d.controlFiltered]
+                         controlFiltered: d.controlFiltered,
+                         ctime: d.ctime,
+                         mtime: d.mtime]
 
             if (!excludeIds) {
                 attrs['id'] = d.id
