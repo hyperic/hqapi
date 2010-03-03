@@ -197,7 +197,7 @@ public class Shell {
            System.exit(1);
         }
         final ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-              new String[] { "classpath:/META-INF/spring/hqapi-context.xml","classpath*:/**/*commands-context.xml"});
+              new String[] { "classpath:/META-INF/spring/hqapi-context.xml","classpath*:/META-INF/**/*commands-context.xml"});
         try {
             final int exitCode = ((Shell) applicationContext
                     .getBean("commandDispatcher")).dispatchCommand(args);
