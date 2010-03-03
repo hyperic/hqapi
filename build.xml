@@ -95,6 +95,19 @@
                 <include name="javadoc/**"/>
             </fileset>            
         </copy>
+        <!-- Include the Spring app context-->
+        <mkdir dir="${build.dir}/classes/META-INF/spring"/>
+        <copy todir="${build.dir}/classes/META-INF/spring">
+            <fileset dir="${basedir}/resources/META-INF/spring">
+                <include name="*.xml" />
+            </fileset>
+        </copy>
+        <!-- Include the HQApi1.xsd in the jar file -->
+        <copy todir="${build.dir}/classes">
+            <fileset dir="${basedir}/xsd">
+                <include name="*.xsd" />
+            </fileset>
+        </copy>
         <jar file="${client.dir}/hqapi1-${plugin.version}.jar">
             <fileset dir="${build.dir}/classes">
                 <include name="**"/>
@@ -103,6 +116,7 @@
                 <exclude name="**/wadl/*.class"/>
             </fileset>
         </jar>
+        
         <mkdir dir="${client.dir}/xsd"/>
         <copy toDir="${client.dir}/xsd">
             <fileset dir="${basedir}/xsd">
@@ -115,6 +129,18 @@
             <fileset dir="${basedir}/bin">
                 <include name="*.sh"/>
                 <include name="*.bat"/>
+            </fileset>
+        </copy>
+        <!-- 
+          Create a conf dir to hold the log4j.properties file. This allows
+          the logging config to be changed easier than when it's packed inside 
+          the jar file.
+        -->
+        <mkdir dir="${client.dir}/conf"/>
+        <copy todir="${client.dir}/conf">
+            <fileset dir="${basedir}/resources">
+                <include name="*.properties"/>
+                <include name="*.xml"/>
             </fileset>
         </copy>
         <chmod perm="+x" type="file">
