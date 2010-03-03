@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface Connection {
     
-    <T> T doGet(String path, Map<String, String[]> params, File targetFile, Class<T> resultClass) 
+    <T> T doGet(String path, Map<String, String[]> params, File targetFile, ResponseHandler<T> responseHandler) 
         throws IOException;
 
     /**
@@ -24,7 +24,7 @@ public interface Connection {
      * @throws IOException
      *             If a network error occurs during the request.
      */
-    <T> T doGet(String path, Map<String, String[]> params, Class<T> resultClass)
+    <T> T doGet(String path, Map<String, String[]> params, ResponseHandler<T> responseHandler)
             throws IOException;
 
     /**
@@ -45,7 +45,7 @@ public interface Connection {
      * @throws IOException
      *             If a network error occurs during the request.
      */
-    <T> T doPost(String path, Map<String, String[]> params, Class<T> resultClass)
+    <T> T doPost(String path, Map<String, String[]> params, ResponseHandler<T> responseHandler)
            throws IOException;
 
     /**
@@ -65,7 +65,7 @@ public interface Connection {
      *             If a network error occurs during the request.
      */
     <T> T doPost(String path, Map<String, String> params, File file,
-            Class<T> resultClass) throws IOException;
+    		ResponseHandler<T> responseHandler) throws IOException;
 
     /**
      * Issue a POST against the API.
@@ -82,6 +82,6 @@ public interface Connection {
      * @throws IOException
      *             If a network error occurs during the request.
      */
-   <T> T doPost(String path, Object o, Class<T> resultClass)
+   <T> T doPost(String path, Object o, ResponseHandler<T> responseHandler)
             throws IOException;
 }

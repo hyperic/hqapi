@@ -29,6 +29,7 @@ package org.hyperic.hq.hqapi1;
 
 import org.hyperic.hq.hqapi1.types.ControlHistoryResponse;
 import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.QueueResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ControlActionResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
@@ -92,7 +93,8 @@ public class ControlApi extends BaseApi {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("resourceId", new String[] { Integer.toString(resourceId)});
 
-        return doGet("control/history.hqu", params, ControlHistoryResponse.class);
+        return doGet("control/history.hqu", params, 
+        		new XmlResponseHandler<ControlHistoryResponse>(ControlHistoryResponse.class));
     }
     
     /**
@@ -135,7 +137,8 @@ public class ControlApi extends BaseApi {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("resourceId", new String[] { Integer.toString(resourceId)});
 
-        return doGet("control/actions.hqu", params, ControlActionResponse.class);
+        return doGet("control/actions.hqu", params, 
+        		new XmlResponseHandler<ControlActionResponse>(ControlActionResponse.class));
     }
     
     /**
@@ -185,6 +188,7 @@ public class ControlApi extends BaseApi {
         params.put("action", new String[] { action });
         params.put("arguments", arguments);
 
-        return doGet("control/execute.hqu", params, StatusResponse.class);
+        return doGet("control/execute.hqu", params, 
+        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 }

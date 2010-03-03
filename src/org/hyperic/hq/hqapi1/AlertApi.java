@@ -27,6 +27,7 @@
 
 package org.hyperic.hq.hqapi1;
 
+import org.hyperic.hq.hqapi1.types.AgentResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.AlertsResponse;
@@ -106,7 +107,8 @@ public class AlertApi extends BaseApi {
             params.put("notFixed", new String[] { Boolean.toString(notFixed)});
         }
 
-        return doGet("alert/find.hqu", params, AlertsResponse.class);
+        return doGet("alert/find.hqu", params, 
+        		new XmlResponseHandler<AlertsResponse>(AlertsResponse.class));
     }
 
     /**
@@ -146,7 +148,8 @@ public class AlertApi extends BaseApi {
             params.put("notFixed", new String[] { Boolean.toString(notFixed)});
         }
         
-        return doGet("alert/findByResource.hqu", params, AlertsResponse.class);
+        return doGet("alert/findByResource.hqu", params, 
+        		new XmlResponseHandler<AlertsResponse>(AlertsResponse.class));
     }
 
     /**
@@ -229,7 +232,8 @@ public class AlertApi extends BaseApi {
         params.put("id", ids);
         params.put("reason", new String[] { reason });
 
-        return doGet("alert/fix.hqu", params, AlertsResponse.class);
+        return doGet("alert/fix.hqu", params, 
+        		new XmlResponseHandler<AlertsResponse>(AlertsResponse.class));
     }
 
     /**
@@ -284,7 +288,8 @@ public class AlertApi extends BaseApi {
         params.put("reason", new String[] { reason });
         params.put("pause", new String[] { Long.toString(pause)});
 
-        return doGet("alert/ack.hqu", params, AlertsResponse.class);
+        return doGet("alert/ack.hqu", params, 
+        		new XmlResponseHandler<AlertsResponse>(AlertsResponse.class));
     }
 
     /**
@@ -323,6 +328,7 @@ public class AlertApi extends BaseApi {
         }
         params.put("id", ids);
 
-        return doGet("alert/delete.hqu", params, StatusResponse.class);
+        return doGet("alert/delete.hqu", params, 
+        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 }

@@ -22,11 +22,13 @@ import org.hyperic.hq.hqapi1.types.ServiceError;
  * @author Jennifer Hickey
  * 
  */
-public class FileResponseHandler implements ResponseHandler {
+public class FileResponseHandler<T> implements ResponseHandler<T> {
 
 	private static Log _log = LogFactory.getLog(FileResponseHandler.class);
 
 	private final File targetFile;
+
+	private Class<T> clazz;
 
 	/**
 	 * 
@@ -34,20 +36,20 @@ public class FileResponseHandler implements ResponseHandler {
 	 *            The local file to which the contents of the method response
 	 *            body should be written
 	 */
-	public FileResponseHandler(File targetFile) {
+	public FileResponseHandler(File targetFile, Class<T> clazz) {
 		this.targetFile = targetFile;
+		this.clazz = clazz;
 	}
 
-	public <T> T getErrorResponse(Class<T> res, ServiceError error)
+	public T getErrorResponse(ServiceError error)
 			throws IOException {
 		try {
-			T ret = res.newInstance();
+			T ret = clazz.newInstance();
 
-			Method setResponse = res.getMethod("setStatus",
-					ResponseStatus.class);
+			Method setResponse = clazz.getMethod("setStatus", ResponseStatus.class);
 			setResponse.invoke(ret, ResponseStatus.FAILURE);
 
-			Method setError = res.getMethod("setError", ServiceError.class);
+			Method setError = clazz.getMethod("setError", ServiceError.class);
 			setError.invoke(ret, error);
 
 			return ret;
@@ -62,12 +64,11 @@ public class FileResponseHandler implements ResponseHandler {
 		}
 	}
 	
-	private <T> T getSuccessResponse(Class<T> res) throws IOException {
+	private T getSuccessResponse() throws IOException {
 		try {
-			T ret = res.newInstance();
+			T ret = clazz.newInstance();
 
-			Method setResponse = res.getMethod("setStatus",
-					ResponseStatus.class);
+			Method setResponse = clazz.getMethod("setStatus", ResponseStatus.class);
 			setResponse.invoke(ret, ResponseStatus.SUCCESS);
 			return ret;
 		} catch (Exception e) {
@@ -81,28 +82,27 @@ public class FileResponseHandler implements ResponseHandler {
 		}
 	}
 
-	public <T> T handleResponse(int responseCode, HttpMethodBase method,
-			Class<T> resultClass)  throws IOException {
+	public T handleResponse(int responseCode, HttpMethodBase method)
+		throws IOException {
 		ServiceError error;
 		switch (responseCode) {
 		case 200:
 			FileOutputStream fileOutputStream = null;
 			InputStream in = method.getResponseBodyAsStream();
 			try {
-				fileOutputStream = new FileOutputStream(targetFile
-						.getAbsolutePath());
+				fileOutputStream = new FileOutputStream(targetFile.getAbsolutePath());
 				final byte[] buf = new byte[1024];
 				int len;
 				while ((len = in.read(buf)) > 0) {
 					fileOutputStream.write(buf, 0, len);
 				}
-				return getSuccessResponse(resultClass);
+				return getSuccessResponse();
 			} catch (Exception e) {
 				error = new ServiceError();
 				error.setErrorCode("UnexpectedError");
 				error.setReasonText("Unable to deserialize result");
 				_log.warn("Unable to deserialize result", e);
-				return getErrorResponse(resultClass, error);
+				return getErrorResponse(error);
 			} finally {
 				if (fileOutputStream != null) {
 					try {
@@ -119,7 +119,7 @@ public class FileResponseHandler implements ResponseHandler {
 			error.setErrorCode("LoginFailure");
 			error.setReasonText("The given username and password could "
 					+ "not be validated");
-			return getErrorResponse(resultClass, error);
+			return getErrorResponse(error);
 		default:
 			error = new ServiceError();
 			error.setErrorCode("Unexpected Error");
@@ -128,7 +128,7 @@ public class FileResponseHandler implements ResponseHandler {
 			} else {
 				error.setReasonText("An unexpected error occured");
 			}
-			return getErrorResponse(resultClass, error);
+			return getErrorResponse(error);
 		}
 	}
 

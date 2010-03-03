@@ -21,9 +21,6 @@
 		<constructor-arg index="2" value="#{ systemProperties['scripting.client.secure'] }" />
 		<constructor-arg index="3" value="#{ systemProperties['scripting.client.user'] }" />
 		<constructor-arg index="4" value="#{ systemProperties['scripting.client.password'] }" />
-		<constructor-arg index="5">
-			<bean class="org.hyperic.hq.hqapi1.XmlResponseHandler"/>
-		</constructor-arg>
 	</bean>
 	
 	<context:annotation-config />

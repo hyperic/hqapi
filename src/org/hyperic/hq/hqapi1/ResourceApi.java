@@ -31,6 +31,7 @@ import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.CreatePlatformRequest;
 import org.hyperic.hq.hqapi1.types.CreateResourceRequest;
 import org.hyperic.hq.hqapi1.types.Ip;
+import org.hyperic.hq.hqapi1.types.MetricDataResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourceConfig;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
@@ -85,8 +86,8 @@ public class ResourceApi extends BaseApi {
         throws IOException
     {   
         return doGet("resource/getResourcePrototypes.hqu",
-                     new HashMap<String,String[]>(),
-                     ResourcePrototypesResponse.class);
+               new HashMap<String,String[]>(),
+               new XmlResponseHandler<ResourcePrototypesResponse>(ResourcePrototypesResponse.class));
     }
 
     /**
@@ -105,7 +106,7 @@ public class ResourceApi extends BaseApi {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("existing", new String[] { Boolean.toString(Boolean.TRUE) });
         return doGet("resource/getResourcePrototypes.hqu", params,
-                     ResourcePrototypesResponse.class);
+        		new XmlResponseHandler<ResourcePrototypesResponse>(ResourcePrototypesResponse.class));
     }
 
     /**
@@ -124,7 +125,7 @@ public class ResourceApi extends BaseApi {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("name", new String[] { name });
         return doGet("resource/getResourcePrototype.hqu",
-                     params, ResourcePrototypeResponse.class);
+                     params, new XmlResponseHandler<ResourcePrototypeResponse>(ResourcePrototypeResponse.class));
     }
 
     /**
@@ -169,7 +170,7 @@ public class ResourceApi extends BaseApi {
         request.getIp().addAll(ips);
 
         return doPost("resource/createPlatform.hqu", request,
-                      ResourceResponse.class);
+        		new XmlResponseHandler<ResourceResponse>(ResourceResponse.class));
     }
 
     private ResourceResponse createResource(ResourcePrototype type,
@@ -194,7 +195,7 @@ public class ResourceApi extends BaseApi {
         request.setPrototype(type);
 
         return doPost("resource/createResource.hqu", request,
-                      ResourceResponse.class);
+        		new XmlResponseHandler<ResourceResponse>(ResourceResponse.class));
     }
 
     /**
@@ -268,7 +269,7 @@ public class ResourceApi extends BaseApi {
         params.put("verbose", new String[] { Boolean.toString(verbose) });
         params.put("children", new String[] { Boolean.toString(children)});
         return doGet("resource/get.hqu", params,
-                     ResourceResponse.class);
+        		new XmlResponseHandler<ResourceResponse>(ResourceResponse.class));
     }
 
     /**
@@ -295,7 +296,7 @@ public class ResourceApi extends BaseApi {
         params.put("verbose", new String[] { Boolean.toString(verbose) });
         params.put("children", new String[] { Boolean.toString(children)});
         return doGet("resource/get.hqu", params,
-                     ResourceResponse.class);
+        		new XmlResponseHandler<ResourceResponse>(ResourceResponse.class));
     }
 
     /**
@@ -324,7 +325,7 @@ public class ResourceApi extends BaseApi {
         params.put("verbose", new String[] { Boolean.toString(verbose) });
         params.put("children", new String[] { Boolean.toString(children)});
         return doGet("resource/find.hqu", params,
-                     ResourcesResponse.class);
+        		new XmlResponseHandler<ResourcesResponse>(ResourcesResponse.class));
     }
 
     /**
@@ -352,7 +353,7 @@ public class ResourceApi extends BaseApi {
         params.put("verbose", new String[] { Boolean.toString(verbose) });
         params.put("children", new String[] { Boolean.toString(children)});
         return doGet("resource/find.hqu", params,
-                     ResourcesResponse.class);
+        		new XmlResponseHandler<ResourcesResponse>(ResourcesResponse.class));
     }
 
     /**
@@ -371,7 +372,8 @@ public class ResourceApi extends BaseApi {
         ResourcesRequest request = new ResourcesRequest();
         request.getResource().add(resource);
 
-        return doPost("resource/update.hqu", request, StatusResponse.class);
+        return doPost("resource/update.hqu", request, 
+        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 
     /**
@@ -390,7 +392,8 @@ public class ResourceApi extends BaseApi {
         ResourcesRequest request = new ResourcesRequest();
         request.getResource().addAll(resources);
 
-        return doPost("resource/sync.hqu", request, StatusResponse.class);
+        return doPost("resource/sync.hqu", request, 
+        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 
     /**
@@ -409,7 +412,8 @@ public class ResourceApi extends BaseApi {
     {
         Map<String,String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id) });
-        return doGet("resource/delete.hqu", params, StatusResponse.class);
+        return doGet("resource/delete.hqu", params, 
+        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 
     /**
@@ -429,6 +433,7 @@ public class ResourceApi extends BaseApi {
         Map<String,String[]> params = new HashMap<String, String[]>();
         params.put("targetId", new String[] { Integer.toString(target.getId()) });
         params.put("destinationId", new String[] { Integer.toString(destination.getId() )});
-        return doGet("resource/move.hqu", params, StatusResponse.class);
+        return doGet("resource/move.hqu", params, 
+        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 }

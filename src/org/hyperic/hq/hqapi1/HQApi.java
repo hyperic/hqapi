@@ -64,7 +64,7 @@ public class HQApi {
      * @param password The password for the given user.
      */
     public HQApi(String host, int port, boolean isSecure, String user, String password) {
-        this(new HQConnection(host,port, isSecure,user,password, new XmlResponseHandler()));
+        this(new HQConnection(host,port, isSecure,user,password));
     }
 
    

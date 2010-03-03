@@ -28,6 +28,7 @@
 package org.hyperic.hq.hqapi1;
 
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
+import org.hyperic.hq.hqapi1.types.AlertsResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionResponse;
@@ -119,7 +120,7 @@ public class AlertDefinitionApi extends BaseApi {
         }
 
         return doGet("alertdefinition/listDefinitions.hqu", params,
-                     AlertDefinitionsResponse.class);
+        		new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
     }
 
     /**
@@ -158,7 +159,7 @@ public class AlertDefinitionApi extends BaseApi {
         params.put("parentId", new String[] { Integer.toString(parent.getId()) });
 
         return doGet("alertdefinition/listDefinitions.hqu", params,
-                     AlertDefinitionsResponse.class); 
+        		new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class)); 
     }
 
     /**
@@ -178,7 +179,7 @@ public class AlertDefinitionApi extends BaseApi {
         params.put("excludeIds", new String[] { Boolean.toString(excludeIds)});
 
         return doGet("alertdefinition/listTypeDefinitions.hqu", params,
-                     AlertDefinitionsResponse.class);
+        		new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
     }
 
     /**
@@ -198,7 +199,8 @@ public class AlertDefinitionApi extends BaseApi {
 
         params.put("id", new String[] { Integer.toString(id) });
 
-        return doGet("alertdefinition/delete.hqu", params, StatusResponse.class);
+        return doGet("alertdefinition/delete.hqu", params, 
+        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 
     /**
@@ -218,6 +220,6 @@ public class AlertDefinitionApi extends BaseApi {
         request.getAlertDefinition().addAll(definitions);
 
         return doPost("alertdefinition/sync.hqu", request,
-                      AlertDefinitionsResponse.class);
+        		new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
     }
 }

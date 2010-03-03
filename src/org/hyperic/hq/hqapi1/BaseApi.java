@@ -49,10 +49,10 @@ abstract class BaseApi {
      * parameter may have multiple values.
      */
     <T> T doGet(String action, Map<String, String[]> params,
-                          Class<T> resultClass)
+    		ResponseHandler<T> responseHandler)
         throws IOException
     {
-        return _conn.doGet(BASE_URI + action, params, resultClass);
+        return _conn.doGet(BASE_URI + action, params, responseHandler);
     }
 
     /**
@@ -63,9 +63,9 @@ abstract class BaseApi {
      *                like:  '/hqu/hqapi1/user/syncUsers.hqu'
      *                ex:  'resource/syncResources.hqu'
      */
-    <T> T doPost(String action, Object o, Class<T> resultClass)
+    <T> T doPost(String action, Object o, ResponseHandler<T> responseHandler)
         throws IOException
     {
-        return _conn.doPost(BASE_URI + action, o, resultClass);
+        return _conn.doPost(BASE_URI + action, o, responseHandler);
     }
 }

@@ -31,6 +31,7 @@ import org.hyperic.hq.hqapi1.types.Escalation;
 import org.hyperic.hq.hqapi1.types.EscalationResponse;
 import org.hyperic.hq.hqapi1.types.EscalationsRequest;
 import org.hyperic.hq.hqapi1.types.EscalationsResponse;
+import org.hyperic.hq.hqapi1.types.QueueResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 import java.io.IOException;
@@ -68,7 +69,8 @@ public class EscalationApi extends BaseApi {
         throws IOException {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id) });
-        return doGet("escalation/get.hqu", params, EscalationResponse.class);
+        return doGet("escalation/get.hqu", params, 
+        		new XmlResponseHandler<EscalationResponse>(EscalationResponse.class));
     }
 
     /**
@@ -87,7 +89,7 @@ public class EscalationApi extends BaseApi {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("name", new String[] { name });
         return doGet("escalation/get.hqu",
-                     params, EscalationResponse.class);
+                     params, new XmlResponseHandler<EscalationResponse>(EscalationResponse.class));
     }
     
     /**
@@ -106,7 +108,7 @@ public class EscalationApi extends BaseApi {
         EscalationsRequest req = new EscalationsRequest();
         req.getEscalation().add(esc);
         return doPost("escalation/create.hqu", req,
-                      EscalationResponse.class);
+        		new XmlResponseHandler<EscalationResponse>(EscalationResponse.class));
     }
 
     /**
@@ -124,7 +126,7 @@ public class EscalationApi extends BaseApi {
         EscalationsRequest req = new EscalationsRequest();
         req.getEscalation().add(esc);
         return doPost("escalation/update.hqu",
-                      req, EscalationResponse.class);
+                      req, new XmlResponseHandler<EscalationResponse>(EscalationResponse.class));
     }
 
     /**
@@ -139,7 +141,7 @@ public class EscalationApi extends BaseApi {
     public EscalationsResponse getEscalations()
         throws IOException {
         return doGet("escalation/list.hqu", new HashMap<String,String[]>(),
-                     EscalationsResponse.class);
+        		new XmlResponseHandler<EscalationsResponse>(EscalationsResponse.class));
     }
     
     /**
@@ -156,7 +158,8 @@ public class EscalationApi extends BaseApi {
         throws IOException {
         EscalationsRequest req = new EscalationsRequest();
         req.getEscalation().addAll(escs);
-        return doPost("escalation/sync.hqu", req, StatusResponse.class);
+        return doPost("escalation/sync.hqu", req, 
+        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 
     /**
@@ -174,6 +177,6 @@ public class EscalationApi extends BaseApi {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id) });
         return doGet("escalation/delete.hqu",
-                     params, StatusResponse.class);
+                     params, new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 }

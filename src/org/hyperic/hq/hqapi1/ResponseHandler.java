@@ -10,9 +10,10 @@ import org.hyperic.hq.hqapi1.types.ServiceError;
 /**
  * Handles responses from Web Service calls
  * @author Jennifer Hickey
+ * @author Greg Turnquist
  *
  */
-public interface ResponseHandler {
+public interface ResponseHandler<T> {
 
 	/**
 	 * Generate an response object with the given Error. In some cases the HQ
@@ -28,7 +29,7 @@ public interface ResponseHandler {
 	 * @throws IOException
 	 *             If an error occurs generating the error object.
 	 */
-	 <T> T getErrorResponse(Class<T> res, ServiceError error)
+	 T getErrorResponse(ServiceError error)
 		throws IOException;
 	/**
 	 * Handles the method response and creates a response object of the given class
@@ -39,6 +40,5 @@ public interface ResponseHandler {
 	 * @return A response object of the given type
 	 * @throws IOException
 	 */
-	<T> T handleResponse(int responseCode, HttpMethodBase method,
-			Class<T> resultClass) throws IOException;
+	T handleResponse(int responseCode, HttpMethodBase method) throws IOException;
 }

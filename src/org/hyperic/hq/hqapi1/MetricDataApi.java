@@ -3,6 +3,7 @@ package org.hyperic.hq.hqapi1;
 import org.hyperic.hq.hqapi1.types.DataPoint;
 import org.hyperic.hq.hqapi1.types.MetricDataResponse;
 import org.hyperic.hq.hqapi1.types.DataPointsRequest;
+import org.hyperic.hq.hqapi1.types.MetricsResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.LastMetricsDataResponse;
 import org.hyperic.hq.hqapi1.types.LastMetricDataResponse;
@@ -51,7 +52,8 @@ public class MetricDataApi extends BaseApi {
         params.put("id", new String[] { Integer.toString(metric.getId()) });
         params.put("start", new String[] { Long.toString(start)});
         params.put("end", new String[] { Long.toString(end)});
-        return doGet("metricData/get.hqu", params, MetricDataResponse.class);
+        return doGet("metricData/get.hqu", params, 
+        		new XmlResponseHandler<MetricDataResponse>(MetricDataResponse.class));
     }
 
     /**
@@ -72,7 +74,8 @@ public class MetricDataApi extends BaseApi {
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(metric.getId()) });
-        return doGet("metricData/getLast.hqu", params, LastMetricDataResponse.class);
+        return doGet("metricData/getLast.hqu", params, 
+        		new XmlResponseHandler<LastMetricDataResponse>(LastMetricDataResponse.class));
     }
 
     /**
@@ -101,7 +104,8 @@ public class MetricDataApi extends BaseApi {
         params.put("id", ids);
         params.put("start", new String[] { Long.toString(start)});
         params.put("end", new String[] { Long.toString(end)});
-        return doGet("metricData/getMulti.hqu", params, MetricsDataResponse.class);
+        return doGet("metricData/getMulti.hqu", params, 
+        		new XmlResponseHandler<MetricsDataResponse>(MetricsDataResponse.class));
     }
 
     /**
@@ -127,7 +131,8 @@ public class MetricDataApi extends BaseApi {
 
         }
         params.put("id", ids);
-        return doGet("metricData/getMultiLast.hqu", params, LastMetricsDataResponse.class);
+        return doGet("metricData/getMultiLast.hqu", params, 
+        		new XmlResponseHandler<LastMetricsDataResponse>(LastMetricsDataResponse.class));
     }
 
     /**
@@ -149,6 +154,7 @@ public class MetricDataApi extends BaseApi {
         request.setMetricId(metric.getId());
         request.getDataPoint().addAll(data);
 
-        return doPost("metricData/put.hqu", request, StatusResponse.class);
+        return doPost("metricData/put.hqu", request, 
+        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 }

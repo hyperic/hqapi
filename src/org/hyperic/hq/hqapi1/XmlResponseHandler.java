@@ -21,12 +21,17 @@ import org.hyperic.hq.hqapi1.types.ServiceError;
  * @author Jennifer Hickey
  * 
  */
-public class XmlResponseHandler implements ResponseHandler {
+public class XmlResponseHandler<T> implements ResponseHandler<T> {
 
 	private static Log _log = LogFactory.getLog(XmlResponseHandler.class);
 
-	public <T> T handleResponse(int responseCode, HttpMethodBase method,
-			Class<T> resultClass) throws IOException {
+	private Class<T> clazz;
+	
+	public XmlResponseHandler(Class<T> clazz) {
+		this.clazz = clazz;
+	}
+
+	public T handleResponse(int responseCode, HttpMethodBase method) throws IOException {
 	    
 	    ServiceError error;
 	    switch (responseCode) {
@@ -34,7 +39,7 @@ public class XmlResponseHandler implements ResponseHandler {
                 // We only deal with HTTP_OK responses
                 InputStream is = method.getResponseBodyAsStream();
                 try {
-                    return XmlUtil.deserialize(resultClass, is);
+                    return XmlUtil.deserialize(clazz, is);
                 } catch (JAXBException e) {
                     error = new ServiceError();
                     error.setErrorCode("UnexpectedError");
@@ -42,7 +47,7 @@ public class XmlResponseHandler implements ResponseHandler {
                     if (_log.isDebugEnabled()) {
                         _log.debug("Unable to deserialize result", e);
                     }
-                    return getErrorResponse(resultClass, error);
+                    return getErrorResponse(error);
                 }
             case 401:
                 // Unauthorized
@@ -50,13 +55,13 @@ public class XmlResponseHandler implements ResponseHandler {
                 error.setErrorCode("LoginFailure");
                 error.setReasonText("The given username and password could " +
                                     "not be validated");
-                return getErrorResponse(resultClass, error);
+                return getErrorResponse(error);
             default:
                 // Some other server blow up.
                 error = new ServiceError();
                 error.setErrorCode("UnexpectedError");
                 error.setReasonText("An unexpected error occured");
-                return getErrorResponse(resultClass, error);
+                return getErrorResponse(error);
         }
 		
 	
@@ -74,16 +79,16 @@ public class XmlResponseHandler implements ResponseHandler {
      * @return A response object of the given type with the given service error.
      * @throws IOException If an error occurs generating the error object.
      */
-    public <T> T getErrorResponse(Class<T> res, ServiceError error)
+    public T getErrorResponse(ServiceError error)
         throws IOException
     {
         try {
-            T ret = res.newInstance();
+            T ret = clazz.newInstance();
 
-            Method setResponse = res.getMethod("setStatus", ResponseStatus.class);
+            Method setResponse = clazz.getMethod("setStatus", ResponseStatus.class);
             setResponse.invoke(ret, ResponseStatus.FAILURE);
 
-            Method setError = res.getMethod("setError", ServiceError.class);
+            Method setError = clazz.getMethod("setError", ServiceError.class);
             setError.invoke(ret, error);
 
             return ret;

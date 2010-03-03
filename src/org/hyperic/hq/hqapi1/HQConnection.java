@@ -58,14 +58,11 @@ class HQConnection implements Connection {
     private String _user;
     private String _password;
 
-    private final ResponseHandler xmlResponseHandler;
-
     HQConnection(String host,
                  int port,
                  boolean isSecure,
                  String user,
-                 String password,
-                 ResponseHandler xmlResponseHandler)
+                 String password)
     {
         _host = host;
         _port = port;
@@ -77,7 +74,6 @@ class HQConnection implements Connection {
             // To allow for self signed certificates
             UntrustedSSLProtocolSocketFactory.register();
         }
-        this.xmlResponseHandler = xmlResponseHandler;
     }
 
     private String urlEncode(String s) throws IOException {
@@ -95,10 +91,10 @@ class HQConnection implements Connection {
      *         the type given in the resultClass argument.
      * @throws IOException If a network error occurs during the request.
      */
-    public <T> T doGet(String path, Map<String, String[]> params, Class<T> resultClass) throws IOException {
+    public <T> T doGet(String path, Map<String, String[]> params, ResponseHandler<T> responseHandler) throws IOException {
         GetMethod method = new GetMethod();
         method.setDoAuthentication(true);
-        return runMethod(method, buildUri(path, params), resultClass, xmlResponseHandler);
+        return runMethod(method, buildUri(path, params), responseHandler);
     }
 
     private String buildUri(String path, Map<String, String[]> params) throws IOException {
@@ -123,17 +119,17 @@ class HQConnection implements Connection {
         return uri.toString();
     }
 
-    public <T> T doGet(String path, Map<String, String[]> params, File targetFile, Class<T> resultClass) throws IOException
+    public <T> T doGet(String path, Map<String, String[]> params, File targetFile, ResponseHandler<T> responseHandler) throws IOException
     {
         GetMethod method = new GetMethod();
         method.setDoAuthentication(true);
-        return runMethod(method, buildUri(path, params), resultClass, new FileResponseHandler(targetFile));
+        return runMethod(method, buildUri(path, params), responseHandler);
     }
 
-    public <T> T doPost(String path, Map<String, String[]> params, Class<T> resultClass) throws IOException {
+    public <T> T doPost(String path, Map<String, String[]> params, ResponseHandler<T> responseHandler) throws IOException {
         PostMethod method = new PostMethod();
         method.setDoAuthentication(true);
-        return runMethod(method, buildUri(path, params), resultClass, xmlResponseHandler);
+        return runMethod(method, buildUri(path, params), responseHandler);
     }
     
     /**
@@ -153,7 +149,7 @@ class HQConnection implements Connection {
      *             If a network error occurs during the request.
      */
     public <T> T doPost(String path, Map<String, String> params, File file,
-            Class<T> resultClass) throws IOException {
+    		ResponseHandler<T> responseHandler) throws IOException {
         PostMethod method = new PostMethod();
         method.setDoAuthentication(true);
         final List<Part> parts = new ArrayList<Part>();
@@ -165,7 +161,7 @@ class HQConnection implements Connection {
         }
         method.setRequestEntity(new MultipartRequestEntity(parts
                 .toArray(new Part[parts.size()]), method.getParams()));
-        return runMethod(method, path, resultClass, xmlResponseHandler);
+        return runMethod(method, path, responseHandler);
     }
 
     /**
@@ -179,7 +175,7 @@ class HQConnection implements Connection {
      *         the type given in the resultClass argument.
      * @throws IOException If a network error occurs during the request.
      */
-    public <T> T doPost(String path, Object o, Class<T> resultClass) throws IOException {
+    public <T> T doPost(String path, Object o, ResponseHandler<T> responseHandler) throws IOException {
         PostMethod method = new PostMethod();
         method.setDoAuthentication(true);
 
@@ -193,22 +189,23 @@ class HQConnection implements Connection {
             if (_log.isDebugEnabled()) {
                 _log.debug("Unable to serialize response", e);
             }
-            return xmlResponseHandler.getErrorResponse(resultClass, error);
+            return responseHandler.getErrorResponse(error);
         }
 
         Part[] parts = { new StringPart("postdata", bos.toString()) };
 
         method.setRequestEntity(new MultipartRequestEntity(parts, method.getParams()));
 
-        return runMethod(method, path, resultClass, xmlResponseHandler);
+        return runMethod(method, path, responseHandler);
     }
 
-    private <T> T runMethod(HttpMethodBase method, String uri, Class<T> resultClass, ResponseHandler responseHandler) throws IOException
+    private <T> T runMethod(HttpMethodBase method, String uri, ResponseHandler<T> responseHandler) throws IOException
     {
         String protocol = _isSecure ? "https" : "http";
         ServiceError error;
         URL url = new URL(protocol, _host, _port, uri);
         method.setURI(new URI(url.toString(), true));
+        _log.debug("Setting URI: " + url.toString());
 
         try {
             HttpClient client = new HttpClient();
@@ -218,14 +215,14 @@ class HQConnection implements Connection {
                 error = new ServiceError();
                 error.setErrorCode("LoginFailure");
                 error.setReasonText("User name cannot be null or empty");
-                return responseHandler.getErrorResponse(resultClass, error);
+                return responseHandler.getErrorResponse(error);
             }
 
             if (_password == null || _password.length() == 0) {
                 error = new ServiceError();
                 error.setErrorCode("LoginFailure");
                 error.setReasonText("Password cannot be null or empty");
-                return responseHandler.getErrorResponse(resultClass, error);
+                return responseHandler.getErrorResponse(error);
             }
 
             // Set Basic auth creds
@@ -237,7 +234,7 @@ class HQConnection implements Connection {
             DefaultHttpMethodRetryHandler retryhandler = new DefaultHttpMethodRetryHandler(0, true);
             client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, retryhandler);
             int responseCode = client.executeMethod(method);
-            return responseHandler.handleResponse(responseCode, method, resultClass);
+            return responseHandler.handleResponse(responseCode, method);
         } catch (SocketException e) {
             throw new HttpException("Error issuing request", e);
         } finally {

@@ -27,14 +27,14 @@
 
 package org.hyperic.hq.hqapi1;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.AgentResponse;
 import org.hyperic.hq.hqapi1.types.AgentsResponse;
 import org.hyperic.hq.hqapi1.types.PingAgentResponse;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The Hyperic HQ Agent API.
@@ -68,7 +68,8 @@ public class AgentApi extends BaseApi {
     {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("id", new String[] { String.valueOf(id) });
-        return doGet("agent/get.hqu", params, AgentResponse.class);
+        return doGet("agent/get.hqu", params, 
+        		new XmlResponseHandler<AgentResponse>(AgentResponse.class));
     }
 
     /**
@@ -90,7 +91,8 @@ public class AgentApi extends BaseApi {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("address", new String[] { address });
         params.put("port", new String[] { String.valueOf(port) });
-        return doGet("agent/get.hqu", params, AgentResponse.class);
+        return doGet("agent/get.hqu", params, 
+        		new XmlResponseHandler<AgentResponse>(AgentResponse.class));
     }
 
     /**
@@ -106,7 +108,7 @@ public class AgentApi extends BaseApi {
         throws IOException
     {
         return doGet("agent/list.hqu", new HashMap<String,String[]>(),
-                     AgentsResponse.class);
+        		new XmlResponseHandler<AgentsResponse>(AgentsResponse.class));
     }
 
     /**
@@ -125,6 +127,7 @@ public class AgentApi extends BaseApi {
     {
         Map <String,String[]> params = new HashMap<String,String[]>();
         params.put("id", new String[] { String.valueOf(agent.getId()) });
-        return doGet("agent/ping.hqu", params, PingAgentResponse.class);
+        return doGet("agent/ping.hqu", params,
+        			new XmlResponseHandler<PingAgentResponse>(PingAgentResponse.class));
     }
 }
