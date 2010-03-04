@@ -49,7 +49,7 @@ abstract class BaseApi {
      * parameter may have multiple values.
      */
     <T> T doGet(String action, Map<String, String[]> params,
-    		ResponseHandler<T> responseHandler)
+                ResponseHandler<T> responseHandler)
         throws IOException
     {
         return _conn.doGet(BASE_URI + action, params, responseHandler);

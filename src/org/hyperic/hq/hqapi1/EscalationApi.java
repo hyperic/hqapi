@@ -70,7 +70,7 @@ public class EscalationApi extends BaseApi {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id) });
         return doGet("escalation/get.hqu", params, 
-        		new XmlResponseHandler<EscalationResponse>(EscalationResponse.class));
+                     new XmlResponseHandler<EscalationResponse>(EscalationResponse.class));
     }
 
     /**
@@ -108,7 +108,7 @@ public class EscalationApi extends BaseApi {
         EscalationsRequest req = new EscalationsRequest();
         req.getEscalation().add(esc);
         return doPost("escalation/create.hqu", req,
-        		new XmlResponseHandler<EscalationResponse>(EscalationResponse.class));
+                      new XmlResponseHandler<EscalationResponse>(EscalationResponse.class));
     }
 
     /**
@@ -126,7 +126,8 @@ public class EscalationApi extends BaseApi {
         EscalationsRequest req = new EscalationsRequest();
         req.getEscalation().add(esc);
         return doPost("escalation/update.hqu",
-                      req, new XmlResponseHandler<EscalationResponse>(EscalationResponse.class));
+                      req,
+                      new XmlResponseHandler<EscalationResponse>(EscalationResponse.class));
     }
 
     /**
@@ -141,7 +142,7 @@ public class EscalationApi extends BaseApi {
     public EscalationsResponse getEscalations()
         throws IOException {
         return doGet("escalation/list.hqu", new HashMap<String,String[]>(),
-        		new XmlResponseHandler<EscalationsResponse>(EscalationsResponse.class));
+                     new XmlResponseHandler<EscalationsResponse>(EscalationsResponse.class));
     }
     
     /**
@@ -159,7 +160,7 @@ public class EscalationApi extends BaseApi {
         EscalationsRequest req = new EscalationsRequest();
         req.getEscalation().addAll(escs);
         return doPost("escalation/sync.hqu", req, 
-        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
+                      new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 
     /**

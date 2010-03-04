@@ -128,7 +128,7 @@ public class EventApi extends BaseApi {
         params.put("resourceId", new String[] { Integer.toString(r.getId())});
 
         return doGet("event/findByResource.hqu", params, 
-        		new XmlResponseHandler<EventsResponse>(EventsResponse.class));
+                     new XmlResponseHandler<EventsResponse>(EventsResponse.class));
     }
 
     /**
@@ -159,6 +159,6 @@ public class EventApi extends BaseApi {
         params.put("count", new String[] { Integer.toString(count)});
 
         return doGet("event/find.hqu", params, 
-        		new XmlResponseHandler<EventsResponse>(EventsResponse.class));   
+                     new XmlResponseHandler<EventsResponse>(EventsResponse.class));   
     }
 }

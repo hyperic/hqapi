@@ -22,7 +22,7 @@ public interface ResponseHandler<T> {
 	 * response objects so we don't need to use reflection here.
      *
 	 * @param error
-	 *            The ServiceError to include in the response
+     *            The ServiceError to include in the response
 	 * @return A response object of the given type with the given service error.
 	 * @throws IOException
 	 *             If an error occurs generating the error object.
@@ -35,7 +35,7 @@ public interface ResponseHandler<T> {
 	 * @param responseCode The status code from the Method execution
 	 * @param method The method that was executed
 	 * @return A response object of the given type
-	 * @throws IOException
+	 * @throws IOException If there is an error handling the response.
 	 */
 	T handleResponse(int responseCode, HttpMethodBase method) throws IOException;
 }

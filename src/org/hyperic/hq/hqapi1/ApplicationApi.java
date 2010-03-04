@@ -36,7 +36,7 @@ public class ApplicationApi extends BaseApi {
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         return doGet("application/list.hqu", params, 
-        		new XmlResponseHandler<ApplicationsResponse>(ApplicationsResponse.class));
+             new XmlResponseHandler<ApplicationsResponse>(ApplicationsResponse.class));
     }
 
     /**
@@ -56,7 +56,7 @@ public class ApplicationApi extends BaseApi {
         ApplicationRequest appRequest = new ApplicationRequest();
         appRequest.setApplication(app);
         return doPost("application/create.hqu", appRequest,
-        		new XmlResponseHandler<ApplicationResponse>(ApplicationResponse.class));
+              new XmlResponseHandler<ApplicationResponse>(ApplicationResponse.class));
     }
 
     /**
@@ -76,7 +76,7 @@ public class ApplicationApi extends BaseApi {
         ApplicationRequest appRequest = new ApplicationRequest();
         appRequest.setApplication(app);
         return doPost("application/update.hqu", appRequest,
-        		new XmlResponseHandler<ApplicationResponse>(ApplicationResponse.class));
+              new XmlResponseHandler<ApplicationResponse>(ApplicationResponse.class));
     }
 
     /**
@@ -95,7 +95,7 @@ public class ApplicationApi extends BaseApi {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id)});
         return doGet("application/delete.hqu", params, 
-        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
+             new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 
     /**
@@ -115,6 +115,6 @@ public class ApplicationApi extends BaseApi {
         ApplicationsRequest applicationsRequest = new ApplicationsRequest();
         applicationsRequest.getApplication().addAll(applications);
         return doPost("application/sync.hqu", applicationsRequest, 
-        		new XmlResponseHandler<ApplicationsResponse>(ApplicationsResponse.class));
+              new XmlResponseHandler<ApplicationsResponse>(ApplicationsResponse.class));
     }
 }

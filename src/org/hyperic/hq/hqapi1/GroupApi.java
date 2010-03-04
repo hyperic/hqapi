@@ -76,7 +76,7 @@ public class GroupApi extends BaseApi {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("name", new String[] { name });
         return doGet("group/get.hqu", params, 
-        		new XmlResponseHandler<GroupResponse>(GroupResponse.class));
+                     new XmlResponseHandler<GroupResponse>(GroupResponse.class));
     }
 
     /**
@@ -96,7 +96,7 @@ public class GroupApi extends BaseApi {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id) });
         return doGet("group/get.hqu", params, 
-        		new XmlResponseHandler<GroupResponse>(GroupResponse.class));
+                     new XmlResponseHandler<GroupResponse>(GroupResponse.class));
     }
 
     private GroupResponse syncSingleGroup(Group group)
@@ -162,7 +162,7 @@ public class GroupApi extends BaseApi {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("id", new String[] { Integer.toString(id) });
         return doGet("group/delete.hqu", params, 
-        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
+                     new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 
     /**
@@ -177,7 +177,7 @@ public class GroupApi extends BaseApi {
         throws IOException
     {
         return doGet("group/list.hqu", new HashMap<String,String[]>(),
-        		new XmlResponseHandler<GroupsResponse>(GroupsResponse.class));
+                     new XmlResponseHandler<GroupsResponse>(GroupsResponse.class));
     }
 
     /**
@@ -196,7 +196,7 @@ public class GroupApi extends BaseApi {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("compatible", new String[] { Boolean.toString(true) });
         return doGet("group/list.hqu", params, 
-        		new XmlResponseHandler<GroupsResponse>(GroupsResponse.class));
+                     new XmlResponseHandler<GroupsResponse>(GroupsResponse.class));
     }
 
     /**
@@ -215,7 +215,7 @@ public class GroupApi extends BaseApi {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("compatible", new String[] { Boolean.toString(false) });
         return doGet("group/list.hqu", params,
-        		new XmlResponseHandler<GroupsResponse>(GroupsResponse.class));
+                     new XmlResponseHandler<GroupsResponse>(GroupsResponse.class));
     }
 
     /**
@@ -266,6 +266,6 @@ public class GroupApi extends BaseApi {
         GroupsRequest groupRequest = new GroupsRequest();
         groupRequest.getGroup().addAll(groups);
         return doPost("group/sync.hqu", groupRequest, 
-        		new XmlResponseHandler<GroupsResponse>(GroupsResponse.class));
+                      new XmlResponseHandler<GroupsResponse>(GroupsResponse.class));
     }
 }

@@ -53,7 +53,7 @@ public class MetricDataApi extends BaseApi {
         params.put("start", new String[] { Long.toString(start)});
         params.put("end", new String[] { Long.toString(end)});
         return doGet("metricData/get.hqu", params, 
-        		new XmlResponseHandler<MetricDataResponse>(MetricDataResponse.class));
+                     new XmlResponseHandler<MetricDataResponse>(MetricDataResponse.class));
     }
 
     /**
@@ -75,7 +75,7 @@ public class MetricDataApi extends BaseApi {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(metric.getId()) });
         return doGet("metricData/getLast.hqu", params, 
-        		new XmlResponseHandler<LastMetricDataResponse>(LastMetricDataResponse.class));
+                     new XmlResponseHandler<LastMetricDataResponse>(LastMetricDataResponse.class));
     }
 
     /**
@@ -105,7 +105,7 @@ public class MetricDataApi extends BaseApi {
         params.put("start", new String[] { Long.toString(start)});
         params.put("end", new String[] { Long.toString(end)});
         return doGet("metricData/getMulti.hqu", params, 
-        		new XmlResponseHandler<MetricsDataResponse>(MetricsDataResponse.class));
+                     new XmlResponseHandler<MetricsDataResponse>(MetricsDataResponse.class));
     }
 
     /**
@@ -132,7 +132,7 @@ public class MetricDataApi extends BaseApi {
         }
         params.put("id", ids);
         return doGet("metricData/getMultiLast.hqu", params, 
-        		new XmlResponseHandler<LastMetricsDataResponse>(LastMetricsDataResponse.class));
+                     new XmlResponseHandler<LastMetricsDataResponse>(LastMetricsDataResponse.class));
     }
 
     /**
@@ -155,6 +155,6 @@ public class MetricDataApi extends BaseApi {
         request.getDataPoint().addAll(data);
 
         return doPost("metricData/put.hqu", request, 
-        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
+                      new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 }

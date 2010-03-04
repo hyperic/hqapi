@@ -62,7 +62,7 @@ public interface Connection {
      *             If a network error occurs during the request.
      */
     <T> T doPost(String path, Map<String, String> params, File file,
-    		ResponseHandler<T> responseHandler) throws IOException;
+                 ResponseHandler<T> responseHandler) throws IOException;
 
     /**
      * Issue a POST against the API.

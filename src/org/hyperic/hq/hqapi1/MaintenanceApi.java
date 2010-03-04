@@ -76,7 +76,7 @@ public class MaintenanceApi extends BaseApi {
         params.put("start", new String[] { Long.toString(start) });
         params.put("end", new String[] { Long.toString(end) });
         return doGet("maintenance/schedule.hqu", params,
-        		new XmlResponseHandler<MaintenanceResponse>(MaintenanceResponse.class));
+                     new XmlResponseHandler<MaintenanceResponse>(MaintenanceResponse.class));
     }
 
     /**
@@ -93,7 +93,7 @@ public class MaintenanceApi extends BaseApi {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("groupId", new String[] { Integer.toString(groupId) });
         return doGet("maintenance/unschedule.hqu", params,
-        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
+                     new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 
     /**
@@ -112,6 +112,6 @@ public class MaintenanceApi extends BaseApi {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("groupId", new String[] { Integer.toString(groupId) });
         return doGet("maintenance/get.hqu", params,
-        		new XmlResponseHandler<MaintenanceResponse>(MaintenanceResponse.class));
+                     new XmlResponseHandler<MaintenanceResponse>(MaintenanceResponse.class));
     }
 }

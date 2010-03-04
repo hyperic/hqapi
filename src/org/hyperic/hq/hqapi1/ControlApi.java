@@ -94,7 +94,7 @@ public class ControlApi extends BaseApi {
         params.put("resourceId", new String[] { Integer.toString(resourceId)});
 
         return doGet("control/history.hqu", params, 
-        		new XmlResponseHandler<ControlHistoryResponse>(ControlHistoryResponse.class));
+                     new XmlResponseHandler<ControlHistoryResponse>(ControlHistoryResponse.class));
     }
     
     /**
@@ -138,7 +138,7 @@ public class ControlApi extends BaseApi {
         params.put("resourceId", new String[] { Integer.toString(resourceId)});
 
         return doGet("control/actions.hqu", params, 
-        		new XmlResponseHandler<ControlActionResponse>(ControlActionResponse.class));
+                     new XmlResponseHandler<ControlActionResponse>(ControlActionResponse.class));
     }
     
     /**
@@ -189,6 +189,6 @@ public class ControlApi extends BaseApi {
         params.put("arguments", arguments);
 
         return doGet("control/execute.hqu", params, 
-        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
+                     new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 }

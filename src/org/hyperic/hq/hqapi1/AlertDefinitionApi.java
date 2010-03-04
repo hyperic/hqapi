@@ -121,7 +121,7 @@ public class AlertDefinitionApi extends BaseApi {
         }
 
         return doGet("alertdefinition/listDefinitions.hqu", params,
-        		new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
+                     new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
     }
 
     /**
@@ -160,7 +160,7 @@ public class AlertDefinitionApi extends BaseApi {
         params.put("parentId", new String[] { Integer.toString(parent.getId()) });
 
         return doGet("alertdefinition/listDefinitions.hqu", params,
-        		new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class)); 
+                     new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
     }
 
     /**
@@ -180,7 +180,7 @@ public class AlertDefinitionApi extends BaseApi {
         params.put("excludeIds", new String[] { Boolean.toString(excludeIds)});
 
         return doGet("alertdefinition/listTypeDefinitions.hqu", params,
-        		new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
+                     new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
     }
 
     /**
@@ -201,7 +201,7 @@ public class AlertDefinitionApi extends BaseApi {
         params.put("id", new String[] { Integer.toString(id) });
 
         return doGet("alertdefinition/delete.hqu", params, 
-        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
+                     new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 
     /**
@@ -221,6 +221,6 @@ public class AlertDefinitionApi extends BaseApi {
         request.getAlertDefinition().addAll(definitions);
 
         return doPost("alertdefinition/sync.hqu", request,
-        		new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
+                      new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
     }
 }

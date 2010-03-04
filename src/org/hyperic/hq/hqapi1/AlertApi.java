@@ -109,7 +109,7 @@ public class AlertApi extends BaseApi {
         }
 
         return doGet("alert/find.hqu", params, 
-        		new XmlResponseHandler<AlertsResponse>(AlertsResponse.class));
+                     new XmlResponseHandler<AlertsResponse>(AlertsResponse.class));
     }
 
     /**
@@ -150,7 +150,7 @@ public class AlertApi extends BaseApi {
         }
         
         return doGet("alert/findByResource.hqu", params, 
-        		new XmlResponseHandler<AlertsResponse>(AlertsResponse.class));
+                     new XmlResponseHandler<AlertsResponse>(AlertsResponse.class));
     }
 
     /**
@@ -234,7 +234,7 @@ public class AlertApi extends BaseApi {
         params.put("reason", new String[] { reason });
 
         return doGet("alert/fix.hqu", params, 
-        		new XmlResponseHandler<AlertsResponse>(AlertsResponse.class));
+                     new XmlResponseHandler<AlertsResponse>(AlertsResponse.class));
     }
 
     /**
@@ -290,7 +290,7 @@ public class AlertApi extends BaseApi {
         params.put("pause", new String[] { Long.toString(pause)});
 
         return doGet("alert/ack.hqu", params, 
-        		new XmlResponseHandler<AlertsResponse>(AlertsResponse.class));
+                     new XmlResponseHandler<AlertsResponse>(AlertsResponse.class));
     }
 
     /**
@@ -330,6 +330,6 @@ public class AlertApi extends BaseApi {
         params.put("id", ids);
 
         return doGet("alert/delete.hqu", params, 
-        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
+                     new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 }

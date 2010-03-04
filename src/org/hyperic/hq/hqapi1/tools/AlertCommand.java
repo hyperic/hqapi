@@ -64,8 +64,7 @@ public class AlertCommand extends AbstractCommand {
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
     }
-    
-    
+
     public String getName() {
         return "alert";
      }

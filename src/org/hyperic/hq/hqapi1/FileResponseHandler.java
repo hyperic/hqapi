@@ -131,5 +131,4 @@ public class FileResponseHandler<T> implements ResponseHandler<T> {
 			return getErrorResponse(error);
 		}
 	}
-
 }

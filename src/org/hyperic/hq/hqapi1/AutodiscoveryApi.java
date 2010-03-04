@@ -64,7 +64,7 @@ public class AutodiscoveryApi extends BaseApi {
         throws IOException
     {
         return doGet("autodiscovery/getQueue.hqu", new HashMap<String,String[]>(),
-        		new XmlResponseHandler<QueueResponse>(QueueResponse.class));
+                     new XmlResponseHandler<QueueResponse>(QueueResponse.class));
     }
 
     /**
@@ -86,6 +86,6 @@ public class AutodiscoveryApi extends BaseApi {
         params.put("id", new String[] { String.valueOf(id) });
 
         return doGet("autodiscovery/approve.hqu", params,
-        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
+                     new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 }

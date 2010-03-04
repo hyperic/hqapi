@@ -27,8 +27,6 @@
 
 package org.hyperic.hq.hqapi1;
 
-import org.hyperic.hq.hqapi1.types.ResourceResponse;
-import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.ResourceEdge;
 import org.hyperic.hq.hqapi1.types.ResourceEdgesRequest;
@@ -36,7 +34,6 @@ import org.hyperic.hq.hqapi1.types.ResourceEdgesResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +63,7 @@ public class ResourceEdgeApi extends BaseApi {
             params.put("id", new String[] { resourceId.toString() });
         }
         return doGet("resource/getResourceEdges.hqu", params,
-        		new XmlResponseHandler<ResourceEdgesResponse>(ResourceEdgesResponse.class));
+                     new XmlResponseHandler<ResourceEdgesResponse>(ResourceEdgesResponse.class));
     }
     
     public ResourcesResponse getParentResourcesByRelation(String resourceRelation, 
@@ -81,7 +78,7 @@ public class ResourceEdgeApi extends BaseApi {
         params.put("resourceRelation", new String[] { resourceRelation });
         params.put("hasChildren", new String[] { Boolean.valueOf(hasChildren).toString() });
         return doGet("resource/getParentResourcesByRelation.hqu", params,
-        		new XmlResponseHandler<ResourcesResponse>(ResourcesResponse.class));        
+                     new XmlResponseHandler<ResourcesResponse>(ResourcesResponse.class));
     }
     
     public ResourcesResponse getResourcesByNoRelation(String resourceRelation, 
@@ -94,7 +91,7 @@ public class ResourceEdgeApi extends BaseApi {
         params.put("name", new String[] { name });
         params.put("resourceRelation", new String[] { resourceRelation });
         return doGet("resource/getResourcesByNoRelation.hqu", params,
-        		new XmlResponseHandler<ResourcesResponse>(ResourcesResponse.class));        
+                     new XmlResponseHandler<ResourcesResponse>(ResourcesResponse.class));
     }
 
     public StatusResponse syncResourceEdges(List<ResourceEdge> edges)
@@ -103,7 +100,7 @@ public class ResourceEdgeApi extends BaseApi {
         ResourceEdgesRequest request = new ResourceEdgesRequest();
         request.getResourceEdge().addAll(edges);
         return doPost("resource/syncResourceEdges.hqu", request, 
-        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));        
+                      new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
     
     public StatusResponse createResourceEdges(List<ResourceEdge> edges)
@@ -112,7 +109,7 @@ public class ResourceEdgeApi extends BaseApi {
         ResourceEdgesRequest request = new ResourceEdgesRequest();
         request.getResourceEdge().addAll(edges);
         return doPost("resource/createResourceEdges.hqu", request, 
-        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));        
+                      new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
     
     public StatusResponse deleteResourceEdges(List<ResourceEdge> edges)
@@ -121,7 +118,7 @@ public class ResourceEdgeApi extends BaseApi {
         ResourceEdgesRequest request = new ResourceEdgesRequest();
         request.getResourceEdge().addAll(edges);
         return doPost("resource/deleteResourceEdges.hqu", request, 
-        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));        
+                      new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
     
     public StatusResponse deleteResourceEdges(String resourceRelation, int id)
@@ -131,6 +128,6 @@ public class ResourceEdgeApi extends BaseApi {
         params.put("resourceRelation", new String[] { resourceRelation });
         params.put("id", new String[] { Integer.toString(id) });
         return doGet("resource/deleteAllResourceEdges.hqu", params,
-        		new XmlResponseHandler<StatusResponse>(StatusResponse.class));
+                     new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 }

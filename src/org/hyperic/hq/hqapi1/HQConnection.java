@@ -86,12 +86,16 @@ class HQConnection implements Connection {
      * @param path The web service endpoint.
      * @param params A Map of key value pairs that are converted into query
      *        arguments.
-     * @param resultClass The response object type.
+     * @param responseHandler
+     *            The {@link org.hyperic.hq.hqapi1.ResponseHandler} to handle this response.
      * @return The response object from the operation. This response will be of
-     *         the type given in the resultClass argument.
+     *         the type given in the responseHandler argument.
      * @throws IOException If a network error occurs during the request.
      */
-    public <T> T doGet(String path, Map<String, String[]> params, ResponseHandler<T> responseHandler) throws IOException {
+    public <T> T doGet(String path, Map<String, String[]> params,
+                       ResponseHandler<T> responseHandler)
+            throws IOException
+    {
         GetMethod method = new GetMethod();
         method.setDoAuthentication(true);
         return runMethod(method, buildUri(path, params), responseHandler);
@@ -119,14 +123,19 @@ class HQConnection implements Connection {
         return uri.toString();
     }
 
-    public <T> T doGet(String path, Map<String, String[]> params, File targetFile, ResponseHandler<T> responseHandler) throws IOException
+    public <T> T doGet(String path, Map<String, String[]> params, File targetFile,
+                       ResponseHandler<T> responseHandler)
+            throws IOException
     {
         GetMethod method = new GetMethod();
         method.setDoAuthentication(true);
         return runMethod(method, buildUri(path, params), responseHandler);
     }
 
-    public <T> T doPost(String path, Map<String, String[]> params, ResponseHandler<T> responseHandler) throws IOException {
+    public <T> T doPost(String path, Map<String, String[]> params,
+                        ResponseHandler<T> responseHandler)
+            throws IOException
+    {
         PostMethod method = new PostMethod();
         method.setDoAuthentication(true);
         return runMethod(method, buildUri(path, params), responseHandler);
@@ -141,15 +150,17 @@ class HQConnection implements Connection {
      *            A Map of key value pairs that are added to the post data
      * @param file
      *            The file to post
-     * @param resultClass
-     *            The result object type.
+     * @param responseHandler
+     *            The {@link org.hyperic.hq.hqapi1.ResponseHandler} to handle this response.
      * @return The response object from the operation. This response will be of
-     *         the type given in the resultClass argument.
+     *         the type given in the responseHandler argument.
      * @throws IOException
      *             If a network error occurs during the request.
      */
     public <T> T doPost(String path, Map<String, String> params, File file,
-    		ResponseHandler<T> responseHandler) throws IOException {
+    		            ResponseHandler<T> responseHandler)
+            throws IOException
+    {
         PostMethod method = new PostMethod();
         method.setDoAuthentication(true);
         final List<Part> parts = new ArrayList<Part>();
@@ -170,12 +181,15 @@ class HQConnection implements Connection {
      * @param path The web service endpoint
      * @param o The object to POST. This object will be serialized into XML
      *        prior to being sent.
-     * @param resultClass The result object type.
+     * @param responseHandler
+     *            The {@link org.hyperic.hq.hqapi1.ResponseHandler} to handle this response.
      * @return The response object from the operation. This response will be of
-     *         the type given in the resultClass argument.
+     *         the type given in the responseHandler argument.
      * @throws IOException If a network error occurs during the request.
      */
-    public <T> T doPost(String path, Object o, ResponseHandler<T> responseHandler) throws IOException {
+    public <T> T doPost(String path, Object o, ResponseHandler<T> responseHandler)
+            throws IOException
+    {
         PostMethod method = new PostMethod();
         method.setDoAuthentication(true);
 
@@ -199,7 +213,9 @@ class HQConnection implements Connection {
         return runMethod(method, path, responseHandler);
     }
 
-    private <T> T runMethod(HttpMethodBase method, String uri, ResponseHandler<T> responseHandler) throws IOException
+    private <T> T runMethod(HttpMethodBase method, String uri,
+                            ResponseHandler<T> responseHandler)
+            throws IOException
     {
         String protocol = _isSecure ? "https" : "http";
         ServiceError error;
