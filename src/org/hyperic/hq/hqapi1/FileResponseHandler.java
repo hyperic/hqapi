@@ -126,7 +126,7 @@ public class FileResponseHandler<T> implements ResponseHandler<T> {
 			if (method.getStatusText() != null) {
 				error.setReasonText(method.getStatusText());
 			} else {
-				error.setReasonText("An unexpected error occured");
+				error.setReasonText("An unexpected error occurred");
 			}
 			return getErrorResponse(error);
 		}
