@@ -230,7 +230,8 @@ public class GroupApi extends BaseApi {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("containing", new String[] { Boolean.toString(true) });
         params.put("resourceId", new String[] { Integer.toString(r.getId()) });
-        return doGet("group/list.hqu", params, GroupsResponse.class);        
+        return doGet("group/list.hqu", params,
+                     new XmlResponseHandler<GroupsResponse>(GroupsResponse.class));
     }
     
     /**
@@ -245,7 +246,8 @@ public class GroupApi extends BaseApi {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("containing", new String[] { Boolean.toString(false) });
         params.put("resourceId", new String[] { Integer.toString(r.getId()) });
-        return doGet("group/list.hqu", params, GroupsResponse.class);        
+        return doGet("group/list.hqu", params,
+                     new XmlResponseHandler<GroupsResponse>(GroupsResponse.class));
     }
 
     /**

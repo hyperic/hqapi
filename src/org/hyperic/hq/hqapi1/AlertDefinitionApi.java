@@ -74,7 +74,8 @@ public class AlertDefinitionApi extends BaseApi {
 
         params.put("id", new String[] { id.toString() });
 
-        return doGet("alertdefinition/get.hqu", params, AlertDefinitionResponse.class);
+        return doGet("alertdefinition/get.hqu", params,
+                     new XmlResponseHandler<AlertDefinitionResponse>(AlertDefinitionResponse.class));
     }
     
     /**

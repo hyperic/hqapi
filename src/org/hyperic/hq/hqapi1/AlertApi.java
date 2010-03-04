@@ -70,7 +70,8 @@ public class AlertApi extends BaseApi {
 
         params.put("id", new String[] { alertId.toString() });
 
-        return doGet("alert/get.hqu", params, AlertResponse.class);
+        return doGet("alert/get.hqu", params,
+                     new XmlResponseHandler<AlertResponse>(AlertResponse.class));
     }
     
     /**

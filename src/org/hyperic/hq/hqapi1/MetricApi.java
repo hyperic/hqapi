@@ -370,6 +370,6 @@ public class MetricApi extends BaseApi {
         request.getResource().addAll(flattened);
 
         return doPost("metric/reschedule.hqu", request,
-                      StatusResponse.class);
+                      new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 }
