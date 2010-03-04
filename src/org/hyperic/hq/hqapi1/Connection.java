@@ -17,8 +17,8 @@ public interface Connection {
      * @param params
      *            A Map of key value pairs that are converted into query
      *            arguments.
-     * @param resultClass
-     *            The response object type.
+     * @param responseHandler
+     *            The @{link ResponseHandler} that will process this response.
      * @return The response object from the operation. This response will be of
      *         the type given in the resultClass argument.
      * @throws IOException
@@ -35,11 +35,8 @@ public interface Connection {
      * @param params
      *            A Map of key value pairs that are converted into query
      *            arguments.
-     * @param o
-     *            The object to POST. This object will be serialized into XML
-     *            prior to being sent.
-     * @param resultClass
-     *            The result object type.
+     * @param responseHandler
+     *            The @{link ResponseHandler} that will process this response.
      * @return The response object from the operation. This response will be of
      *         the type given in the resultClass argument.
      * @throws IOException
@@ -57,8 +54,8 @@ public interface Connection {
      *            A Map of key value pairs that are added to the post data
      * @param file
      *            The file to post
-     * @param resultClass
-     *            The result object type.
+     * @param responseHandler
+     *            The @{link ResponseHandler} that will process this response.
      * @return The response object from the operation. This response will be of
      *         the type given in the resultClass argument.
      * @throws IOException
@@ -75,8 +72,8 @@ public interface Connection {
      * @param o
      *            The object to POST. This object will be serialized into XML
      *            prior to being sent.
-     * @param resultClass
-     *            The result object type.
+     * @param responseHandler
+     *            The @{link ResponseHandler} that will process this response.
      * @return The response object from the operation. This response will be of
      *         the type given in the resultClass argument.
      * @throws IOException
