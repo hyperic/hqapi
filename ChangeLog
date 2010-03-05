@@ -1,6 +1,8 @@
 
 Changes in HQApi 3.1
 
+ *) Update Spring to 3.0.1.RELEASE.
+
  *) [HHQ-3773] Allow extension of APIs and CLI using Spring
 
  *) [HHQ-3481] Add support to fix alerts with a reason/comment
