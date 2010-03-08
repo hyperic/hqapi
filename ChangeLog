@@ -1,6 +1,8 @@
 
 Changes in HQApi 2.4
 
+ *) [HHQ-3768] Add --id and --name options to the group list CLI command.
+
  *) [HHQ-3785] Add command lines options to alertdefinition sync command
     to allow for escalations and alert actions to be set and reset.
 
