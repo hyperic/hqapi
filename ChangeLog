@@ -1,6 +1,9 @@
 
 Changes in HQApi 2.4
 
+ *) [HHQ-3785] Add command lines options to alertdefinition sync command
+    to allow for escalations and alert actions to be set and reset.
+
  *) [HHQ-3740] Allow hqapi.sh to be executed from a symlinked directory.
 
  *) Add support for --platform argument to command line group syncing.
