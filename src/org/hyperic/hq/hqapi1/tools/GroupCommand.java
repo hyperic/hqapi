@@ -110,6 +110,10 @@ public class GroupCommand extends AbstractCommand {
 
         p.accepts(OPT_COMPAT, "List only compatible groups");
         p.accepts(OPT_MIXED, "List only mixed groups");
+        p.accepts(OPT_ID, "List group with the given id")
+                .withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_NAME, "Lit group with the given name")
+                .withRequiredArg().ofType(String.class);
 
         OptionSet options = getOptions(p, args);
 
@@ -128,6 +132,22 @@ public class GroupCommand extends AbstractCommand {
             groups = groupApi.getCompatibleGroups();
         } else if (options.has(OPT_MIXED)) {
             groups = groupApi.getMixedGroups();
+        } else if (options.has(OPT_ID)) {
+            // Wrap in a GroupsResponse to allow returned XML to be synced.
+            Integer id = (Integer)getRequired(options, OPT_ID);
+            GroupResponse groupResponse = groupApi.getGroup(id);
+            checkSuccess(groupResponse);
+            groups = new GroupsResponse();
+            groups.setStatus(groupResponse.getStatus());
+            groups.getGroup().add(groupResponse.getGroup());
+        } else if (options.has(OPT_NAME)) {
+            // Wrap in a GroupsResponse to allow returned XML to be synced.
+            String name = (String)getRequired(options, OPT_NAME);
+            GroupResponse groupResponse = groupApi.getGroup(name);
+            checkSuccess(groupResponse);
+            groups = new GroupsResponse();
+            groups.setStatus(groupResponse.getStatus());
+            groups.getGroup().add(groupResponse.getGroup());
         } else {
             groups = groupApi.getGroups();
         }
