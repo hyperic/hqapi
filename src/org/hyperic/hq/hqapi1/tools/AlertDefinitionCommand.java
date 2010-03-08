@@ -30,9 +30,11 @@ package org.hyperic.hq.hqapi1.tools;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
+import org.hyperic.hq.hqapi1.AlertDefinitionBuilder;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.EscalationApi;
+import org.hyperic.hq.hqapi1.types.AlertAction;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
@@ -66,6 +68,13 @@ public class AlertDefinitionCommand extends AbstractCommand {
     private static String OPT_COND_COUNT = "conditionCount";
     private static String OPT_COND_INCLUDE = "conditionTypeInclude";
     private static String OPT_COND_EXCLUDE = "conditionTypeExclude";
+
+    // Command line syncing options
+    private static String OPT_ASSIGN_ESC = "assignEscalation";
+    private static String OPT_ASSIGN_SCRIPTACTION = "assignScriptAction";
+    private static String OPT_ASSIGN_CONTROLACTION = "assignControlAction";
+    private static String OPT_CLEAR_ESC = "clearEscalation";
+    private static String OPT_CLEAR_ACTIONS = "clearActions";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -248,10 +257,25 @@ public class AlertDefinitionCommand extends AbstractCommand {
 
         p.accepts(OPT_BATCH_SIZE, "Process the sync in batches of the given size").
                 withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_ASSIGN_ESC, "If specified, assign the given Escalation " +
+                                   "to all alert definitions in this sync").
+                withRequiredArg().ofType(String.class);
+        p.accepts(OPT_ASSIGN_SCRIPTACTION, "If specified, assign the given Escalation " +
+                                           "to all alert definitions in this sync").
+                withRequiredArg().ofType(String.class);
+        p.accepts(OPT_ASSIGN_CONTROLACTION, "If specified, assign the given Escalation " +
+                                            "to all alert definitions in this sync").
+                withRequiredArg().ofType(String.class);
+        p.accepts(OPT_CLEAR_ESC, "If specified, clear the assigned escalation from " +
+                                 "all alert definitions in this sync");
+        p.accepts(OPT_CLEAR_ACTIONS, "If specified, clear alert actions from " +
+                                     "all alert definitions in this sync");
 
         OptionSet options = getOptions(p, args);
 
-        AlertDefinitionApi api = getApi(options).getAlertDefinitionApi();
+        HQApi api = getApi(options);
+        AlertDefinitionApi adApi = api.getAlertDefinitionApi();
+        EscalationApi escApi = api.getEscalationApi();
 
         InputStream is = getInputStream(options);
 
@@ -259,6 +283,53 @@ public class AlertDefinitionCommand extends AbstractCommand {
                 XmlUtil.deserialize(AlertDefinitionsResponse.class, is);
         
         List<AlertDefinition> definitions = resp.getAlertDefinition();
+
+        if (options.has(OPT_ASSIGN_ESC)) {
+            String esc = (String)getRequired(options, OPT_ASSIGN_ESC);
+            EscalationResponse escResponse = escApi.getEscalation(esc);
+            checkSuccess(escResponse);
+            System.out.println("Assigning escalation '" + esc + "' to all alert definitions");
+
+            for (AlertDefinition a : definitions) {
+                a.setEscalation(escResponse.getEscalation());
+            }
+        }
+
+        if (options.has(OPT_ASSIGN_SCRIPTACTION)) {
+            String script = (String)getRequired(options, OPT_ASSIGN_SCRIPTACTION);
+            AlertAction a = AlertDefinitionBuilder.createScriptAction(script);
+            System.out.println("Assigning script action '" + script + "' to all alert definitions");
+
+            for (AlertDefinition def : definitions) {
+                def.getAlertAction().add(a);
+            }
+        }
+
+        if (options.has(OPT_ASSIGN_CONTROLACTION)) {
+            String action = (String)getRequired(options, OPT_ASSIGN_CONTROLACTION);
+            System.out.println("Assigning control action '" + action + "' to all alert definitions");
+
+            for (AlertDefinition def : definitions) {
+                AlertAction a = AlertDefinitionBuilder.createControlAction(def.getResource(), action);
+                def.getAlertAction().add(a);
+            }
+        }
+
+        if (options.has(OPT_CLEAR_ESC)) {
+            System.out.println("Clearing escalations for all alert definitions");
+
+            for (AlertDefinition def : definitions) {
+                def.setEscalation(null);
+            }
+        }
+
+        if (options.has(OPT_CLEAR_ACTIONS)) {
+            System.out.println("Clearing alert actions for all alert definitions");
+
+            for (AlertDefinition def : definitions) {
+                def.getAlertAction().clear();
+            }
+        }
 
         System.out.println("Syncing " + definitions.size() + " alert definitions");
 
@@ -273,8 +344,8 @@ public class AlertDefinitionCommand extends AbstractCommand {
                 int toIndex = (fromIndex + batchSize) > definitions.size() ? 
                               definitions.size() : (fromIndex + batchSize);
                 AlertDefinitionsResponse syncResponse =
-                        api.syncAlertDefinitions(definitions.subList(fromIndex,
-                                                                     toIndex));
+                        adApi.syncAlertDefinitions(definitions.subList(fromIndex,
+                                                                       toIndex));
                 checkSuccess(syncResponse);
                 numSynced += (toIndex - fromIndex);
                 System.out.println("Synced batch " + (i + 1) + " of " + numBatches + " in " +
@@ -282,7 +353,7 @@ public class AlertDefinitionCommand extends AbstractCommand {
 
             }
         } else {
-            AlertDefinitionsResponse syncResponse = api.syncAlertDefinitions(definitions);
+            AlertDefinitionsResponse syncResponse = adApi.syncAlertDefinitions(definitions);
             checkSuccess(syncResponse);
             numSynced = definitions.size();
         }
