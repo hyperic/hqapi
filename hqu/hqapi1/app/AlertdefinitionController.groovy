@@ -263,6 +263,7 @@ public class AlertdefinitionController extends ApiController {
         def resourceNameFilter = params.getOne('resourceNameFilter')
         def groupName = params.getOne('groupName')
         def escalationId = params.getOne('escalationId')?.toInteger()
+        def resourceId = params.getOne('resourceId')?.toInteger()
 
         def excludeTypeBased = params.getOne('excludeTypeBased')?.toBoolean()
         if (excludeTypeBased == null) {
@@ -297,6 +298,19 @@ public class AlertdefinitionController extends ApiController {
             } else {
                 // TODO: Add to alert helper
                 definitions = aMan.getUsing(escalation)
+                if (excludeTypeBased) {
+                    definitions = definitions.findAll { it.parent == null }
+                }
+            }
+        } else if (resourceId != null) {
+            def resource = getResource(resourceId)
+            if (!resource) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Resource with id = " + resourceId +
+                                           " not found")
+            } else {
+                // TODO: Add to alert helper
+                definitions = aMan.findRelatedAlertDefinitions(user, resource)
                 if (excludeTypeBased) {
                     definitions = definitions.findAll { it.parent == null }
                 }

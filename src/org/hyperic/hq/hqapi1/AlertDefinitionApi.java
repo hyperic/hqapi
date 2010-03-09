@@ -28,7 +28,7 @@
 package org.hyperic.hq.hqapi1;
 
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
-import org.hyperic.hq.hqapi1.types.AlertsResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionResponse;
@@ -158,6 +158,27 @@ public class AlertDefinitionApi extends BaseApi {
         // TODO: This should allow for filtering
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("parentId", new String[] { Integer.toString(parent.getId()) });
+
+        return doGet("alertdefinition/listDefinitions.hqu", params,
+                     new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
+    }
+
+    /**
+     * Find all {@link org.hyperic.hq.hqapi1.types.AlertDefinition}s on the
+     * given {@link Resource} including all descendant resources.
+     *
+     * @param r The Resource to query for alert definitions
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * a list of AlertDefinitions are returned.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public AlertDefinitionsResponse getAlertDefinitions(Resource r)
+        throws IOException {
+
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("resourceId", new String[] { Integer.toString(r.getId()) });
 
         return doGet("alertdefinition/listDefinitions.hqu", params,
                      new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
