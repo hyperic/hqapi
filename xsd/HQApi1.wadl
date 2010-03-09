@@ -820,6 +820,14 @@
                             contained in the specified Group.
                         </wadl:doc>
                     </wadl:param>
+                    <wadl:param name="resourceId" style="query" required="false"
+                                type="xs:int">
+                        <wadl:doc>
+                            If specified, only return AlertDefinitions that are
+                            assigned to the specified Resource or any descendent
+                            Resource.
+                        </wadl:doc>
+                    </wadl:param>
                     <wadl:param name="escalationId" style="query" required="false"
                                 type="xs:int">
                         <wadl:doc>

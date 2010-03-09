@@ -1,6 +1,8 @@
 
 Changes in HQApi 2.4
 
+ *) [HHQ-3231,HHQ-3786] Allow alert definitions to be listed by platform.
+
  *) [HHQ-3768] Add --id and --name options to the group list CLI command.
 
  *) [HHQ-3785] Add command lines options to alertdefinition sync command

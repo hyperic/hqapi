@@ -32,11 +32,14 @@ import joptsimple.OptionSet;
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
 import org.hyperic.hq.hqapi1.AlertDefinitionBuilder;
 import org.hyperic.hq.hqapi1.HQApi;
+import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.EscalationApi;
 import org.hyperic.hq.hqapi1.types.AlertAction;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.EscalationResponse;
 import org.hyperic.hq.hqapi1.types.Escalation;
@@ -67,6 +70,7 @@ public class AlertDefinitionCommand extends Command {
     private static String OPT_COND_COUNT = "conditionCount";
     private static String OPT_COND_INCLUDE = "conditionTypeInclude";
     private static String OPT_COND_EXCLUDE = "conditionTypeExclude";
+    private static String OPT_PLATFORM = "platform";
 
     // Command line syncing options
     private static String OPT_ASSIGN_ESC = "assignEscalation";
@@ -111,6 +115,9 @@ public class AlertDefinitionCommand extends Command {
         p.accepts(OPT_GROUP, "If specified, only show alert definitions for " +
                              "resources that belong to the specified group.").
                 withRequiredArg().ofType(String.class);
+        p.accepts(OPT_PLATFORM, "Return all alerts on the given platform and " +
+                                "all descendant children").
+                withRequiredArg().ofType(String.class);
         p.accepts(OPT_RESOURCE_NAME, "If specified, only show alert definitions " +
                                      "belonging to a resource with the given " +
                                      "resource name regex.").
@@ -139,6 +146,7 @@ public class AlertDefinitionCommand extends Command {
         HQApi api = getApi(options);
         AlertDefinitionApi definitionApi = api.getAlertDefinitionApi();
         EscalationApi escalationApi = api.getEscalationApi();
+        ResourceApi rApi = api.getResourceApi();
 
         AlertDefinitionsResponse alertDefs;
         
@@ -149,6 +157,13 @@ public class AlertDefinitionCommand extends Command {
             }
             
             alertDefs = definitionApi.getTypeAlertDefinitions(excludeIds);
+        } else if (options.has(OPT_PLATFORM)) {
+            String platformName = (String)getRequired(options, OPT_PLATFORM);
+            ResourceResponse resourceResponse =
+                    rApi.getPlatformResource(platformName, false, false);
+            checkSuccess(resourceResponse);
+
+            alertDefs = definitionApi.getAlertDefinitions(resourceResponse.getResource());
         } else {
             boolean excludeTypeAlerts = false;
             if (options.has(OPT_EXCLUDE_TYPEALERTS)) {
