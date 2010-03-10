@@ -300,7 +300,7 @@
 
         <wadl:resource path="resource/find.hqu">
             <wadl:doc title="HQApi Resource find command">
-                Find Resources by Agent id or by ResourcePrototype
+                Find Resources by Agent id, ResourcePrototype, or description.
             </wadl:doc>
             <wadl:method name="GET" id="ResourceFind">
                 <wadl:request>
@@ -314,6 +314,13 @@
                                 type="xs:string">
                         <wadl:doc>
                             Find Resources of the given ResourcePrototype
+                        </wadl:doc>
+                    </wadl:param>
+                    <wadl:param name="description" style="query" required="false"
+                                type="xs:string">
+                        <wadl:doc>
+                            Find Resources matching in whole or part the given
+                            description.
                         </wadl:doc>
                     </wadl:param>
                     <wadl:param name="verbose" style="query" required="false"
@@ -842,6 +849,22 @@
                             as part of a Resource type definition.
                         </wadl:doc>
                     </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="AlertDefinitionsResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+
+        <wadl:resource path="alertdefinition/listDefinitionsByResources.hqu">
+            <wadl:doc title="HQApi Alertdefinition listDefinitionsByResources command">
+                Sync AlertDefinitions
+            </wadl:doc>
+            <wadl:method name="POST" id="AlertDefinitionListDefinitionsByResources">
+                <wadl:request>
+                    <wadl:representation mediaType="application/xml"
+                                         element="ResourcesRequest"/>
                 </wadl:request>
                 <wadl:response>
                     <wadl:representation mediaType="application/xml"

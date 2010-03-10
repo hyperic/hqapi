@@ -4,6 +4,7 @@ import org.hyperic.hq.authz.shared.AuthzConstants
 import org.hyperic.hq.authz.shared.PermissionException
 import org.hyperic.hq.authz.shared.ResourceEdgeCreateException
 import org.hyperic.hq.common.VetoException
+import org.hyperic.dao.DAOFactory
 
 class ResourceController extends ApiController {
 
@@ -396,13 +397,14 @@ class ResourceController extends ApiController {
     def find(params) {
         def agentId = params.getOne("agentId")?.toInteger()
         def prototype = params.getOne("prototype")
+        def description = params.getOne("description")
         def children = params.getOne("children", "false").toBoolean()
         def verbose = params.getOne("verbose", "false").toBoolean()
 
         def resources = []
         def failureXml
         
-        if (!agentId && !prototype ) {
+        if (!agentId && !prototype && !description) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             if (agentId) {
@@ -417,6 +419,15 @@ class ResourceController extends ApiController {
                 }
             } else if (prototype) {
                 resources = resourceHelper.find('byPrototype': prototype)
+            } else if (description) {
+                // TODO: Move into HQ.
+                def session = DAOFactory.getDAOFactory().currentSession
+                resources.addAll(session.createQuery(
+                    "select p.resource from Platform p where p.description like '%${description}%'").list())
+                resources.addAll(session.createQuery(
+                    "select s.resource from Server s where s.description like '%${description}%'").list())
+                resources.addAll(session.createQuery(
+                    "select s.resource from Service s where s.description like '%${description}%'").list())
             } else {
                 // Shouldn't happen
                 failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)

@@ -40,6 +40,7 @@ import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.EscalationResponse;
 import org.hyperic.hq.hqapi1.types.Escalation;
@@ -63,6 +64,7 @@ public class AlertDefinitionCommand extends Command {
     private static String OPT_EXCLUDE_IDS = "excludeTypeIds";
     private static String OPT_GROUP = "group";
     private static String OPT_RESOURCE_NAME = "resourceName";
+    private static String OPT_RESOURCE_DESC = "resourceDescription";
     private static String OPT_ALERT_NAME = "alertName";
     private static String OPT_ID   = "id";
     private static String OPT_BATCH_SIZE = "batchSize";
@@ -122,6 +124,10 @@ public class AlertDefinitionCommand extends Command {
                                      "belonging to a resource with the given " +
                                      "resource name regex.").
                 withRequiredArg().ofType(String.class);
+        p.accepts(OPT_RESOURCE_DESC, "If specified, only show alert definitions " +
+                                     "belonging to a resource with a description " +
+                                     "matching in whole or part the given description").
+                withRequiredArg().ofType(String.class);
         p.accepts(OPT_ALERT_NAME, "If specified, only show alert definitions " +
                                    "with names that match the given regex.").
                 withRequiredArg().ofType(String.class);
@@ -163,7 +169,13 @@ public class AlertDefinitionCommand extends Command {
                     rApi.getPlatformResource(platformName, false, false);
             checkSuccess(resourceResponse);
 
-            alertDefs = definitionApi.getAlertDefinitions(resourceResponse.getResource());
+            alertDefs = definitionApi.getAlertDefinitions(resourceResponse.getResource(), true);
+        } else if (options.has(OPT_RESOURCE_DESC)) {
+            String description = (String)getRequired(options, OPT_RESOURCE_DESC);
+            ResourcesResponse resourcesResponse =
+                    rApi.getResources(description, false, false);
+            checkSuccess(resourcesResponse);
+            alertDefs = definitionApi.getAlertDefinitions(resourcesResponse.getResource());
         } else {
             boolean excludeTypeAlerts = false;
             if (options.has(OPT_EXCLUDE_TYPEALERTS)) {

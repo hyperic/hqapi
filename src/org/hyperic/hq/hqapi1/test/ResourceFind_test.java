@@ -102,4 +102,34 @@ public class ResourceFind_test extends ResourceTestBase {
             api.getResourcePrototype(INVALID_TYPE);
         hqAssertFailureObjectNotFound(protoResponse);
     }
+
+    public void testFindByDescription() throws Exception {
+        final String DESC = "Hyperic HQ monitor Agent";
+        ResourceApi api = getApi().getResourceApi();
+
+        ResourcesResponse response = api.getResources(DESC, false, false);
+        hqAssertSuccess(response);
+
+        assertTrue("Found no matches for '" + DESC + "'", response.getResource().size() > 0);
+    }
+
+    public void testFindByDescriptionPartialMatch() throws Exception {
+        final String DESC = "HQ monitor";
+        ResourceApi api = getApi().getResourceApi();
+
+        ResourcesResponse response = api.getResources(DESC, false, false);
+        hqAssertSuccess(response);
+
+        assertTrue("Found no matches for '" + DESC + "'", response.getResource().size() > 0);
+    }
+
+    public void testFindByDescriptionNoMatches() throws Exception {
+        final String DESC = "ASDFASDFASDF";
+        ResourceApi api = getApi().getResourceApi();
+
+        ResourcesResponse response = api.getResources(DESC, false, false);
+        hqAssertSuccess(response);
+
+        assertTrue("Found matches for '" + DESC + "'", response.getResource().size() == 0);
+    }
 }
