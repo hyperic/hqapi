@@ -2,6 +2,9 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.wadl.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class WADLAlertDefinition_test extends WADLTestBase {
 
     public void testListDefinitions() throws Exception {
@@ -9,6 +12,16 @@ public class WADLAlertDefinition_test extends WADLTestBase {
                 new Endpoint.AlertdefinitionListDefinitionsHqu();
 
         AlertDefinitionsResponse response = adList.getAsAlertDefinitionsResponse();
+        hqAssertSuccess(response);
+    }
+
+    public void testListDefinitionsByResources() throws Exception {
+        Endpoint.AlertdefinitionListDefinitionsByResourcesHqu adList =
+                new Endpoint.AlertdefinitionListDefinitionsByResourcesHqu();
+        List<Resource> resources = new ArrayList<Resource>();
+        ResourcesRequest request = new ResourcesRequest();
+        request.getResource().addAll(resources);
+        AlertDefinitionsResponse response = adList.postAsAlertDefinitionsResponse(request);
         hqAssertSuccess(response);
     }
 

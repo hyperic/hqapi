@@ -49,7 +49,7 @@ public class WADLMetric_test extends WADLTestBase {
                 new Endpoint.MetricGetDataHqu();
 
         ResourcesResponse resources =
-                resourceFind.getAsResourcesResponse(null, "CPU", false, false);
+                resourceFind.getAsResourcesResponse(null, "CPU", null, false, false);
         hqAssertSuccess(resources);
         assertTrue("No resources found", resources.getResource().size() > 0);
 

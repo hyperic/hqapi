@@ -15,6 +15,11 @@ import org.hyperic.hq.events.server.session.AlertDefinitionManagerEJBImpl as AMa
 import org.hyperic.hq.measurement.shared.ResourceLogEvent
 import org.hyperic.hq.product.LogTrackPlugin
 import org.hyperic.util.config.ConfigResponse
+import org.hyperic.dao.DAOFactory
+import org.hyperic.hq.appdef.server.session.Platform
+import org.hyperic.hq.appdef.server.session.Server
+import org.hyperic.hq.appdef.server.session.Service
+import org.hyperic.hq.authz.server.session.Resource
 import ApiController
 
 public class AlertdefinitionController extends ApiController {
@@ -256,7 +261,47 @@ public class AlertdefinitionController extends ApiController {
             }
         }
     }
-    
+
+    def listDefinitionsByResources(params) {
+        def failureXml = null
+        def postRequest = new XmlParser().parseText(getPostData())
+        def resources = []
+        for (xmlDef in postRequest['Resource']) {
+            def resource = getResource(xmlDef.'@id'?.toInteger())
+            if (!resource) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Unable to find resource with id " + xmlDef.'@id')
+                break
+            }
+        }
+
+        def definitions = []
+        if (!failureXml) {
+            def session = DAOFactory.getDAOFactory().currentSession
+            final int BATCH = 500;
+            for (int x = 0; x < resources.size(); x+=BATCH) {
+                int end = Math.min(x+BATCH, resources.size())
+                definitions.addAll(session.createQuery(
+                        "select d from AlertDefinition d where d.deleted=false " +
+                        "and d.resource in (:resources)").
+                        setParameterList("resources", resources.subList(x, end)).list())
+            }
+        }
+
+        renderXml() {
+            out << AlertDefinitionsResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    for (definition in definitions.sort {a, b -> a.id <=> b.id}) {
+                        out << getAlertDefinitionXML(definition, false)
+                    }
+                }
+            }
+        }
+    }
+
     def listDefinitions(params) {
 
         def alertNameFilter = params.getOne('alertNameFilter')
@@ -264,6 +309,7 @@ public class AlertdefinitionController extends ApiController {
         def groupName = params.getOne('groupName')
         def escalationId = params.getOne('escalationId')?.toInteger()
         def resourceId = params.getOne('resourceId')?.toInteger()
+        def children = params.getOne('children')?.toBoolean()
 
         def excludeTypeBased = params.getOne('excludeTypeBased')?.toBoolean()
         if (excludeTypeBased == null) {
@@ -310,9 +356,10 @@ public class AlertdefinitionController extends ApiController {
                                            " not found")
             } else {
                 // TODO: Add to alert helper
-                definitions = aMan.findRelatedAlertDefinitions(user, resource)
-                if (excludeTypeBased) {
-                    definitions = definitions.findAll { it.parent == null }
+                if (children) {
+                    definitions = aMan.findRelatedAlertDefinitions(user, resource)
+                } else {
+                    definitions = aMan.findAlertDefinitions(user, resource.entityId)
                 }
             }
         } else {

@@ -29,6 +29,7 @@ package org.hyperic.hq.hqapi1;
 
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourcesRequest;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionResponse;
@@ -165,23 +166,46 @@ public class AlertDefinitionApi extends BaseApi {
 
     /**
      * Find all {@link org.hyperic.hq.hqapi1.types.AlertDefinition}s on the
-     * given {@link Resource} including all descendant resources.
+     * given {@link Resource}.
      *
      * @param r The Resource to query for alert definitions
+     * @param children If specified, include alerts on descendant Resources.
      *
      * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
      * a list of AlertDefinitions are returned.
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public AlertDefinitionsResponse getAlertDefinitions(Resource r)
+    public AlertDefinitionsResponse getAlertDefinitions(Resource r, boolean children)
         throws IOException {
 
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("resourceId", new String[] { Integer.toString(r.getId()) });
+        params.put("children", new String[] { Boolean.toString(children)});
 
         return doGet("alertdefinition/listDefinitions.hqu", params,
                      new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
+    }
+
+    /**
+     * Find all {@link org.hyperic.hq.hqapi1.types.AlertDefinition}s attached
+     * to the given list of Resources.
+     *
+     * @param resources The list of Resources to query for definitions.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * a list of AlertDefinitions are returned.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public AlertDefinitionsResponse getAlertDefinitions(List<Resource> resources)
+        throws IOException {
+
+        ResourcesRequest request = new ResourcesRequest();
+        request.getResource().addAll(resources);
+
+        return doPost("alertdefinition/listDefinitionsByResources.hqu", request,
+                      new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
     }
 
     /**

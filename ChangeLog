@@ -59,7 +59,18 @@ Changes in HQApi 3.0
 
 Changes in HQApi 2.4
 
- *) [HHQ-3231,HHQ-3786] Allow alert definitions to be listed by platform.
+ *) [HHQ-3786] Allow for listing of alerts from the CLI based on resource 
+    description.
+
+ *) Add getAlertDefinitions() API to AlertDefinitionApi for finding alerts
+    definitions for a list of Resources.
+
+ *) Add getResources() API to ResourceApi for finding Resources based on
+    a description.
+
+ *) [HHQ-3231,HHQ-3786] Allow alert definitions to be listed by resource,
+    allowing for children resources to also be included.  CLI support only
+    includes platform Resource types via --platform.
 
  *) [HHQ-3768] Add --id and --name options to the group list CLI command.
 

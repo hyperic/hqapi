@@ -10,11 +10,28 @@ public class AlertDefinitionGetByResource_test extends AlertDefinitionTestBase {
         super(name);
     }
 
+    public void testGetByResourceWithChildren() throws Exception {
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+
+        Resource localPlatform = getLocalPlatformResource(false, false);
+        AlertDefinitionsResponse response = api.getAlertDefinitions(localPlatform, true);
+        hqAssertSuccess(response);
+    }
+
+    public void testGetByInvalidResourceWithChildren() throws Exception {
+        AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+
+        Resource r = new Resource();
+        r.setId(Integer.MAX_VALUE);
+        AlertDefinitionsResponse response = api.getAlertDefinitions(r, true);
+        hqAssertFailureObjectNotFound(response);
+    }
+
     public void testGetByResource() throws Exception {
         AlertDefinitionApi api = getApi().getAlertDefinitionApi();
 
         Resource localPlatform = getLocalPlatformResource(false, false);
-        AlertDefinitionsResponse response = api.getAlertDefinitions(localPlatform);
+        AlertDefinitionsResponse response = api.getAlertDefinitions(localPlatform, false);
         hqAssertSuccess(response);
     }
 
@@ -23,7 +40,7 @@ public class AlertDefinitionGetByResource_test extends AlertDefinitionTestBase {
 
         Resource r = new Resource();
         r.setId(Integer.MAX_VALUE);
-        AlertDefinitionsResponse response = api.getAlertDefinitions(r);
+        AlertDefinitionsResponse response = api.getAlertDefinitions(r, false);
         hqAssertFailureObjectNotFound(response);
     }
 }
