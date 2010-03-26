@@ -1,6 +1,9 @@
 
 Changes in HQApi 3.2
 
+ *) [HQ-2038] Improve error handling when resource group membership 
+ 	is being updated while scheduled downtime is in progress.
+
 Changes in HQApi 3.1
 
  *) Update Spring to 3.0.1.RELEASE.

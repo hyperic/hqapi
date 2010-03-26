@@ -89,14 +89,7 @@ public abstract class RoleTestBase extends HQApiTestBase {
      */
     public void tearDown() throws Exception {
 
-        RoleApi api = getRoleApi();
-        RolesResponse response = api.getRoles();
-
-        for (Role r : response.getRole()) {
-            if (r.getName().startsWith(TESTROLE_NAME_PREFIX)) {
-                api.deleteRole(r.getId());
-            }
-        }
+        cleanupRoles();
 
         super.tearDown();
     }

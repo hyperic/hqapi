@@ -33,6 +33,7 @@ import org.hyperic.hq.hqapi1.MaintenanceApi;
 import org.hyperic.hq.hqapi1.types.Alert;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.DataPoint;
+import org.hyperic.hq.hqapi1.types.GroupsResponse;
 import org.hyperic.hq.hqapi1.types.LastMetricDataResponse;
 import org.hyperic.hq.hqapi1.types.MaintenanceEvent;
 import org.hyperic.hq.hqapi1.types.MaintenanceResponse;
@@ -47,6 +48,7 @@ import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.User;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -158,6 +160,9 @@ public class MaintenanceSchedule_test extends MaintenanceTestBase {
         // wait for maintenance to start
         waitForMaintenanceStateChange(maintGroup, MaintenanceState.RUNNING);
         
+        // try to modify group membership while downtime is in progress
+        modifyGroupMembershipDuringDowntime(maintGroup);
+        
         // validate alert definitions during the maintenance
         // the internal enabled flag should be false for all alert definitions
         alertDefFireOnce = getAlertDefinition(alertDefFireOnce.getId());
@@ -197,6 +202,29 @@ public class MaintenanceSchedule_test extends MaintenanceTestBase {
                     availMetric.isEnabled());
         
         cleanupGroup(maintGroup, true);         
+    }
+
+    /**
+     * To validate HQ-2038
+     */
+    private void modifyGroupMembershipDuringDowntime(Group g) 
+        throws Exception {
+        
+        GroupApi groupApi = getApi().getGroupApi();
+        
+        List<Resource> existingResources = new ArrayList<Resource>();
+        existingResources.addAll(g.getResource());
+        assertTrue(existingResources.size() > 0);
+
+        // remove resources from group
+        g.getResource().clear();
+
+        GroupsResponse syncResponse = groupApi.syncGroups(Collections.singletonList(g));
+        hqAssertFailureOperationDenied(syncResponse);
+        
+        // reset by adding resources back to group
+        g.getResource().addAll(existingResources);
+        assertTrue(g.getResource().size() > 0);
     }
     
     public void testScheduleNoGroupPermission() throws Exception {

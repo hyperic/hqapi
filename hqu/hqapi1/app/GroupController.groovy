@@ -1,5 +1,6 @@
 import org.hyperic.hq.hqapi1.ErrorCode
 import org.hyperic.hq.authz.shared.PermissionException
+import org.hyperic.hq.common.VetoException
 
 class GroupController extends ApiController {
 
@@ -198,13 +199,18 @@ class GroupController extends ApiController {
             if (!failureXml) {
                 if (existing) {
                     // TODO: This needs to be moved out to the Manager.
-                    existing.setRoles(roles)
-                    existing.setResources(user, resources)
-                    existing.updateGroup(user,
-                                         xmlGroup.'@name',
-                                         xmlGroup.'@description',
-                                         xmlGroup.'@location')
-                    groups << existing
+                    try {
+                    	existing.setResources(user, resources)
+                    	existing.setRoles(roles)
+                    	existing.updateGroup(user,
+                                         	 xmlGroup.'@name',
+                                         	 xmlGroup.'@description',
+                                         	 xmlGroup.'@location')
+                    	groups << existing
+                    } catch (VetoException ve) {
+                    	failureXml = getFailureXML(ErrorCode.OPERATION_DENIED,
+                    							   ve.getMessage())
+                    }
                 } else {
                     // TODO: private groups
                     def group = resourceHelper.createGroup(xmlGroup.'@name',

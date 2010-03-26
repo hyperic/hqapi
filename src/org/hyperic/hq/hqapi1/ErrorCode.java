@@ -7,7 +7,7 @@
  * normal use of the program, and does *not* fall under the heading of
  * "derived work".
  * 
- * Copyright (C) [2008, 2009], Hyperic, Inc.
+ * Copyright (C) [2008-2010], Hyperic, Inc.
  * This file is part of HQ.
  * 
  * HQ is free software; you can redistribute it and/or modify
@@ -59,6 +59,11 @@ public enum ErrorCode {
     PERMISSION_DENIED("PermissionDenied",
                       "The current user does not have permission for this operation"),
 
+    /**
+     * The requested operation was denied.
+     */
+    OPERATION_DENIED("OperationDenied",
+                     "The request operation was denied"),
     /**
      * The requested API is not implemented.
      */

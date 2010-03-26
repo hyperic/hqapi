@@ -54,6 +54,7 @@ import org.hyperic.hq.hqapi1.types.Response;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.RoleResponse;
+import org.hyperic.hq.hqapi1.types.RolesResponse;
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.UserResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
@@ -392,7 +393,7 @@ public abstract class HQApiTestBase extends TestCase {
         hqAssertSuccess(roleResponse);
         Role createdRole = roleResponse.getRole();
 
-        assertEquals("The role should have one user",
+        assertEquals("The role should have " + users.size() + " users",
                      users.size(), createdRole.getUser().size());
 
         for (Operation o : operations) {
@@ -407,6 +408,17 @@ public abstract class HQApiTestBase extends TestCase {
         RoleApi api = getApi().getRoleApi();
         StatusResponse response = api.deleteRole(r.getId());
         hqAssertSuccess(response);
+    }
+    
+    protected void cleanupRoles() throws Exception {
+        RoleApi api = getApi().getRoleApi();
+        RolesResponse response = api.getRoles();
+
+        for (Role r : response.getRole()) {
+            if (r.getName().startsWith(TESTROLE_NAME_PREFIX)) {
+                api.deleteRole(r.getId());
+            }
+        }
     }
     
     protected void cleanupGroup(Group g) throws Exception {
@@ -531,6 +543,13 @@ public abstract class HQApiTestBase extends TestCase {
                      response.getError().getErrorCode());
     }
 
+    void hqAssertFailureOperationDenied(Response response) {
+        assertEquals(ResponseStatus.FAILURE, response.getStatus());
+        assertEquals(response.getError().getReasonText(),
+                     ErrorCode.OPERATION_DENIED.getErrorCode(),
+                     response.getError().getErrorCode());
+    }
+    
     void hqAssertFailureNotImplemented(Response response) {
         assertEquals(ResponseStatus.FAILURE, response.getStatus());
         assertEquals(response.getError().getReasonText(),
