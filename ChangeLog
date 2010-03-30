@@ -1,6 +1,10 @@
 
 Changes in HQApi 3.2
 
+ *) [HQ-1309] Updated GroupApi to list groups by role. Functionality
+ 	added primarily to do integration testing for HQ-1309. No
+ 	corresponding CLI command was added.
+ 
  *) [HQ-2038] Improve error handling when resource group membership 
  	is being updated while scheduled downtime is in progress.
 

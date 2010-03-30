@@ -34,6 +34,7 @@ import org.hyperic.hq.hqapi1.types.GroupsRequest;
 import org.hyperic.hq.hqapi1.types.GroupsResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
+import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 import java.io.IOException;
@@ -180,6 +181,24 @@ public class GroupApi extends BaseApi {
                      new XmlResponseHandler<GroupsResponse>(GroupsResponse.class));
     }
 
+    /**
+     * List all {@link org.hyperic.hq.hqapi1.types.Group}s
+     * by {@link org.hyperic.hq.hqapi1.types.Role} 
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if
+     * all the groups were successfully retrieved from the server.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public GroupsResponse getGroups(Role role)
+        throws IOException
+    {
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("roleId", new String[] { role.getId().toString() });
+        return doGet("group/list.hqu", params,
+                     new XmlResponseHandler<GroupsResponse>(GroupsResponse.class));
+    }
+    
     /**
      * List all compatible {@link org.hyperic.hq.hqapi1.types.Group}s.  A
      * compatible group is a group where all members of the group have the

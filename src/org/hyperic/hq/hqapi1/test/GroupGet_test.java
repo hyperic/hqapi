@@ -27,22 +27,28 @@
 
 package org.hyperic.hq.hqapi1.test;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.hyperic.hq.hqapi1.GroupApi;
-import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
+import org.hyperic.hq.hqapi1.RoleApi;
 import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.GroupsResponse;
+import org.hyperic.hq.hqapi1.types.Operation;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.RoleResponse;
+import org.hyperic.hq.hqapi1.types.RolesResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 public class GroupGet_test extends GroupTestBase {
 
@@ -231,7 +237,71 @@ public class GroupGet_test extends GroupTestBase {
         GroupsResponse getResponse = groupApi.getGroupsNotContaining(service);
         hqAssertFailureObjectNotFound(getResponse);
     }
-    
+
+    /**
+     * To validate HQ-1309
+     * 
+     * @throws Exception
+     */
+    public void testGetGroupsByRole() throws Exception {
+        GroupApi groupApi = getApi().getGroupApi();
+        RoleApi roleApi = getApi().getRoleApi();
+        
+        List<Operation> operations = new ArrayList<Operation>();
+        operations.add(Operation.MANAGE_PLATFORM_ALERTS);
+        operations.add(Operation.VIEW_PLATFORM);
+        
+        Role role1 = createRole(Collections.EMPTY_LIST,
+                                operations);
+
+        operations.add(Operation.MODIFY_PLATFORM);
+        Role role2 = createRole(Collections.EMPTY_LIST,
+                                operations);
+
+        List<Role> roles = new ArrayList<Role>();
+        roles.add(role1);
+        roles.add(role2);
+
+        // Create test roles
+        StatusResponse response = roleApi.syncRoles(roles);
+        hqAssertSuccess(response);
+
+        List<Role> createdRoles = new ArrayList<Role>();
+        
+        for (Role r : roles) {
+            RoleResponse getResponse = roleApi.getRole(r.getName());
+            hqAssertSuccess(getResponse);
+            Role role = getResponse.getRole();
+            createdRoles.add(role);
+        }
+        
+        Resource platform = getLocalPlatformResource(false, false);
+
+        // Create test group with the test roles
+        Group groupWithRoles = createGroup(Collections.singletonList(platform),
+                                           createdRoles);
+        
+        for (Role r : createdRoles) {
+            // This is the code being tested to validate HQ-1309.
+            GroupsResponse groupsResponse = groupApi.getGroups(r);
+            hqAssertSuccess(groupsResponse);
+            List<Group> roleGroups = groupsResponse.getGroup();
+            
+            assertEquals("Only 1 group should belong to this role.",
+                         1, roleGroups.size());
+            
+            Group g = roleGroups.get(0);
+            
+            assertEquals(groupWithRoles.getId(), g.getId());                
+            assertEquals("The group should be assigned to " + createdRoles.size() + " roles.",
+                         createdRoles.size(), g.getRole().size());
+        }
+        
+        // Cleanup
+        cleanupRoles();
+        cleanupGroup(groupWithRoles);
+    }
+
     private void createAndGetGroupsForPlatform(boolean containing) 
         throws Exception {
 

@@ -247,6 +247,7 @@ class GroupController extends ApiController {
     def list(params) {
         def compatible = params.getOne('compatible')?.toBoolean()
         def containing = params.getOne('containing')?.toBoolean()
+        def roleId = params.getOne('roleId')?.toInteger()
 
 		def groups = null
 		def failureXml = null
@@ -265,6 +266,15 @@ class GroupController extends ApiController {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                            "Resource id=" + resourceId +
                                            " not found")
+            }
+        } else if (roleId != null) {
+        	def role = getRole(roleId, null)
+        	if (!role) {
+            	failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                       	   "Role id=" + roleId + 
+                                       	   " not found")
+            } else {
+       			groups = role.getGroups(user)        	
             }
         } else {
         	groups = resourceHelper.findViewableGroups()
