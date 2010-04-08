@@ -15,6 +15,30 @@
 	<packaging>jar</packaging>
 	<name>Hyperic HQAPI</name>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<configuration>
+					<outputDirectory>${project.build.sourceDirectory}</outputDirectory>
+					<schemaDirectory>src/main/schemas</schemaDirectory>
+					<extension>true</extension>
+					<packageName>org.hyperic.hq.hqapi1.types</packageName>
+				</configuration>
+				<executions>
+					<execution>
+						<id>package</id>
+						<phase>package</phase>
+						<goals>
+							<goal>xjc</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencies>
 		<!--dependency>
 			<groupId>org.hyperic.hq</groupId>
