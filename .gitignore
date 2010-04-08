@@ -1,6 +1,1 @@
-build
-*.iml
-*.ipr
-*.iws
-bin
-
+target
