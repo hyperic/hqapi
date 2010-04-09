@@ -251,7 +251,7 @@ public abstract class HQApiTestBase extends TestCase {
         return resourceCreateResponse.getResource();
     }
 
-    public void cleanupControllableResource(HQApi api, Resource r)
+    public void cleanupResource(HQApi api, Resource r)
         throws Exception
     {
         pauseTest();

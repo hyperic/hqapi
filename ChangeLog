@@ -1,6 +1,10 @@
 
 Changes in HQApi 3.2
 
+ *) Add support to execute control actions for compatible groups.
+ 	Functionality added primarily to do integration testing
+ 	for HQ-2080.
+ 	
  *) [HQ-1309] Updated GroupApi to list groups by role. Functionality
  	added primarily to do integration testing for HQ-1309. No
  	corresponding CLI command was added.

@@ -7,7 +7,7 @@
  * normal use of the program, and does *not* fall under the heading of
  * "derived work".
  *
- * Copyright (C) [2008, 2009], Hyperic, Inc.
+ * Copyright (C) [2008-2010], Hyperic, Inc.
  * This file is part of HQ.
  *
  * HQ is free software; you can redistribute it and/or modify
@@ -29,8 +29,10 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.ControlApi;
 import org.hyperic.hq.hqapi1.HQApi;
+import org.hyperic.hq.hqapi1.types.ControlHistory;
 import org.hyperic.hq.hqapi1.types.ControlHistoryResponse;
 import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.User;
 
@@ -55,17 +57,25 @@ public class GroupControlHistory_test extends ControlTestBase {
     public void testControlHistoryValidGroupWithHistory() throws Exception {
         HQApi api = getApi();
         
-        Group controlGroup = createControllableGroup(api);
+        Group controlGroup = createControllableGroup(api, 5);
 
         ControlApi cApi = getApi().getControlApi();
         StatusResponse executeResponse = cApi.executeAction(controlGroup,
                                                             "run", new String[0]);
 
-        // TODO Update this when group control action execution is supported
-        //hqAssertSuccess(executeResponse);
-        hqAssertFailureNotSupported(executeResponse);
+        hqAssertSuccess(executeResponse);
 
-        // TODO Add control history test when group control action execution is supported
+        // validate the control history for the group and it's members        
+        ControlHistory groupHistory = findControlHistory(controlGroup, 60);
+        
+        for (Resource r : controlGroup.getResource()) {
+            findControlHistory(r, 1);
+        }
+        
+        // verify that the group control action is started without "significant" delay
+        // TODO: ideally, this needs to be less than 1 second
+        long timeToStart = groupHistory.getStartTime() - groupHistory.getDateScheduled();
+        assertTrue(timeToStart < (40*SECOND));
 
         cleanupControllableGroup(api, controlGroup);
     }
