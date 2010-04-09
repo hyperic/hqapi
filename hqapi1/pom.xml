@@ -21,7 +21,6 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jaxb2-maven-plugin</artifactId>
 				<configuration>
-					<schemaDirectory>src/main/schemas</schemaDirectory>
 					<extension>true</extension>
 					<packageName>org.hyperic.hq.hqapi1.types</packageName>
 				</configuration>
