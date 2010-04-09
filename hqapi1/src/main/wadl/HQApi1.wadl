@@ -9,7 +9,7 @@
     </wadl:doc>
 
     <wadl:grammars>
-        <wadl:include href="HQApi1.xsd"/>
+        <wadl:include href="../xsd/HQApi1.xsd"/>
     </wadl:grammars>
 
     <wadl:resources base="http://localhost:8080/hqu/hqapi1/">

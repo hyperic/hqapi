@@ -21,13 +21,26 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jaxb2-maven-plugin</artifactId>
 				<configuration>
-					<extension>true</extension>
 					<packageName>org.hyperic.hq.hqapi1.types</packageName>
 				</configuration>
 				<executions>
 					<execution>
 						<goals>
 							<goal>xjc</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jvnet.ws.wadl</groupId>
+				<artifactId>wadl-maven-plugin</artifactId>
+				<configuration>
+					<packageName>org.hyperic.hq.hqapi1.wadl</packageName>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
 						</goals>
 					</execution>
 				</executions>
