@@ -7,7 +7,7 @@
  * normal use of the program, and does *not* fall under the heading of
  * "derived work".
  *
- * Copyright (C) [2008, 2009], Hyperic, Inc.
+ * Copyright (C) [2008-2010], Hyperic, Inc.
  * This file is part of HQ.
  *
  * HQ is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@ package org.hyperic.hq.hqapi1.test;
 import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.MaintenanceApi;
+import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.types.Alert;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.DataPoint;
@@ -41,17 +42,16 @@ import org.hyperic.hq.hqapi1.types.MaintenanceState;
 import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.Metric;
+import org.hyperic.hq.hqapi1.types.MetricResponse;
 import org.hyperic.hq.hqapi1.types.Operation;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.Role;
-import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 public class MaintenanceSchedule_test extends MaintenanceTestBase {
 
@@ -138,7 +138,6 @@ public class MaintenanceSchedule_test extends MaintenanceTestBase {
         // insert a fake 'up' measurement so that
         // the alert definitions will fire.
         final double AVAIL_UP = 1;
-        long alertStart = System.currentTimeMillis();
         Alert alertFireOnce = fireAvailabilityAlert(alertDefFireOnce, true, AVAIL_UP);
         Alert alertFireEveryTime = fireAvailabilityAlert(alertDefFireEveryTime, false, AVAIL_UP);
         
@@ -146,6 +145,9 @@ public class MaintenanceSchedule_test extends MaintenanceTestBase {
         Metric availMetric = findAvailabilityMetric(resource);
         assertTrue("Availability measurement is not enabled for " + resource.getName(),
                     availMetric.isEnabled());
+        
+        // update the availability interval to 1 minute
+        setMetricInterval(availMetric, MINUTE);
         
         // check that the resource's availability is UP before the maintenance
         DataPoint lastAvail = getLastAvailability(availMetric);
@@ -179,6 +181,9 @@ public class MaintenanceSchedule_test extends MaintenanceTestBase {
         // check that the resource's availability is in a PAUSED state
         // during the maintenance
         final double AVAIL_PAUSED = -0.01;
+        // TODO: there's been some intermittent timing issues where HQ does not save
+        // availability data fast enough for the test. pausing testing as a workaround.
+        pauseTest(2*SECOND);
         lastAvail = getLastAvailability(availMetric);
         assertEquals(AVAIL_PAUSED, lastAvail.getValue());
         
@@ -201,9 +206,30 @@ public class MaintenanceSchedule_test extends MaintenanceTestBase {
         assertTrue("Availability measurement is not re-enabled for " + resource.getName(),
                     availMetric.isEnabled());
         
+        // need to check that the resources's availability has recovered from a pause state
+        long timeout = 10*MINUTE;
+        long now = System.currentTimeMillis();
+        
+        while (System.currentTimeMillis() < (now + (timeout))) {
+            lastAvail = getLastAvailability(availMetric);
+                        
+            if (lastAvail.getValue() == AVAIL_UP) {
+                break;
+            } else {
+                // if it's not up, it should still be paused
+                assertEquals(AVAIL_PAUSED, lastAvail.getValue());
+                
+                lastAvail = null;
+            }
+            Thread.sleep(30*SECOND);
+        }
+        
+        assertNotNull("The resource's availability did not recover from a pause state",
+                      lastAvail);
+        
         cleanupGroup(maintGroup, true);         
     }
-
+    
     /**
      * To validate HQ-2038
      */
@@ -286,6 +312,25 @@ public class MaintenanceSchedule_test extends MaintenanceTestBase {
         deleteTestUsers(users);
         cleanupRole(viewRole);
         cleanupGroup(groupWithRole);
+    }
+
+    private void setMetricInterval(Metric metric, long interval) 
+        throws Exception {
+        
+        MetricApi metricApi = getApi().getMetricApi();
+        
+        metric.setInterval(interval);
+
+        List<Metric> syncMetrics = new ArrayList<Metric>();
+        syncMetrics.add(metric);
+        StatusResponse syncResponse = metricApi.syncMetrics(syncMetrics);
+        hqAssertSuccess(syncResponse);
+
+        MetricResponse metricResponse = metricApi.getMetric(metric.getId());
+        hqAssertSuccess(metricResponse);
+        
+        assertEquals("Interval for metric " + metric.getName() + " not updated",
+                     interval, metricResponse.getMetric().getInterval());
     }
     
     private DataPoint getLastAvailability(Metric availMetric) 
