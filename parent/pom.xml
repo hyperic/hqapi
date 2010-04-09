@@ -11,10 +11,13 @@
 	<name>Hyperic HQAPI - Parent</name>
 
 	<properties>
+		<clover.version>3.0.1</clover.version>
 		<commons-logging.version>1.0.4</commons-logging.version>
 		<httpclient.version>3.1</httpclient.version>
 		<jopt-simple.version>3.2</jopt-simple.version>
+		<junit.version>4.4</junit.version>
 		<log4j.version>1.2.14</log4j.version>
+		<wadl.version>1.0-SNAPSHOT</wadl.version>
 	</properties>
 
 	<dependencyManagement>
@@ -30,14 +33,24 @@
 				<version>${commons-logging.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>net.sf.jopt-simple</groupId>
-				<artifactId>jopt-simple</artifactId>
-				<version>${jopt-simple.version}</version>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
 				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sf.jopt-simple</groupId>
+				<artifactId>jopt-simple</artifactId>
+				<version>${jopt-simple.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jvnet.ws.wadl</groupId>
+				<artifactId>wadl-core</artifactId>
+				<version>${wadl.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -53,6 +66,21 @@
 						<target>5</target>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>org.jvnet.ws.wadl</groupId>
+					<artifactId>wadl-maven-plugin</artifactId>
+					<version>${wadl.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>com.atlassian.maven.plugins</groupId>
+					<artifactId>maven-clover2-plugin</artifactId>
+					<version>${clover.version}</version>
+					<configuration>
+						<generatePdf>true</generatePdf>
+						<generateXml>true</generateXml>
+						<generateHtml>false</generateHtml>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<extensions>
@@ -65,11 +93,11 @@
 	</build>
 
 	<repositories>
-		<!--repository>
+		<repository>
 			<id>hyperic-external</id>
 			<name>Hyperic External Dependencies Repository</name>
 			<url>http://maven.hyperic.org/external</url>
-		</repository-->
+		</repository>
 		<repository>
 			<id>spring-release</id>
 			<name>Spring Release Repository</name>
@@ -79,9 +107,9 @@
 
 	<pluginRepositories>
 		<pluginRepository>
-			<id>java-net</id>
-			<name>Java.net Repository</name>
-			<url>http://download.java.net/maven/2</url>
+			<id>hyperic-external</id>
+			<name>Hyperic External Dependencies Repository</name>
+			<url>http://maven.hyperic.org/external</url>
 		</pluginRepository>
 	</pluginRepositories>
 
