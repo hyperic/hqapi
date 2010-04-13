@@ -28,10 +28,8 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.ResourceApi;
-import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
-import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 
 public class ResourceGet_test extends ResourceTestBase {
 
@@ -49,17 +47,9 @@ public class ResourceGet_test extends ResourceTestBase {
 
     public void testGetResource() throws Exception {
 
-        Agent a = getRunningAgent();
-
         ResourceApi api = getApi().getResourceApi();
 
-        ResourcesResponse findResponse = api.getResources(a, false, false);
-        hqAssertSuccess(findResponse);
-
-        assertTrue("Found 0 platform resources for agent " + a.getId(),
-                   findResponse.getResource().size() > 0);
-
-        Resource r = findResponse.getResource().get(0);
+        Resource r = getLocalPlatformResource(false, false);
 
         ResourceResponse getResponse = api.getResource(r.getId(), false, false);
         hqAssertSuccess(getResponse);
@@ -69,17 +59,9 @@ public class ResourceGet_test extends ResourceTestBase {
 
     public void testGetResourceVerboseWithChildren() throws Exception {
 
-        Agent a = getRunningAgent();
-
         ResourceApi api = getApi().getResourceApi();
 
-        ResourcesResponse findResponse = api.getResources(a, false, false);
-        hqAssertSuccess(findResponse);
-
-        assertTrue("Found 0 platform resources for agent " + a.getId(),
-                   findResponse.getResource().size() > 0);
-
-        Resource r = findResponse.getResource().get(0);
+        Resource r = getLocalPlatformResource(false, false);
 
         ResourceResponse getResponse = api.getResource(r.getId(), true, true);
         hqAssertSuccess(getResponse);
@@ -95,17 +77,9 @@ public class ResourceGet_test extends ResourceTestBase {
 
     public void testGetResourceNoConfigNoChildren() throws Exception {
 
-        Agent a = getRunningAgent();
-
         ResourceApi api = getApi().getResourceApi();
 
-        ResourcesResponse findResponse = api.getResources(a, false, false);
-        hqAssertSuccess(findResponse);
-
-        assertTrue("Found 0 platform resources for agent " + a.getId(),
-                   findResponse.getResource().size() > 0);
-
-        Resource r = findResponse.getResource().get(0);
+        Resource r = getLocalPlatformResource(false, false);
 
         ResourceResponse getResponse = api.getResource(r.getId(), false, false);
         hqAssertSuccess(getResponse);
@@ -121,17 +95,9 @@ public class ResourceGet_test extends ResourceTestBase {
 
     public void testGetResourceConfigOnly() throws Exception {
 
-        Agent a = getRunningAgent();
-
         ResourceApi api = getApi().getResourceApi();
 
-        ResourcesResponse findResponse = api.getResources(a, false, false);
-        hqAssertSuccess(findResponse);
-
-        assertTrue("Found 0 platform resources for agent " + a.getId(),
-                   findResponse.getResource().size() > 0);
-
-        Resource r = findResponse.getResource().get(0);
+        Resource r = getLocalPlatformResource(false, false);
 
         ResourceResponse getResponse = api.getResource(r.getId(), true, false);
         hqAssertSuccess(getResponse);
@@ -147,17 +113,9 @@ public class ResourceGet_test extends ResourceTestBase {
 
     public void testGetResourceChildrenOnly() throws Exception {
 
-        Agent a = getRunningAgent();
-
         ResourceApi api = getApi().getResourceApi();
 
-        ResourcesResponse findResponse = api.getResources(a, false, false);
-        hqAssertSuccess(findResponse);
-
-        assertTrue("Found 0 platform resources for agent " + a.getId(),
-                   findResponse.getResource().size() > 0);
-
-        Resource r = findResponse.getResource().get(0);
+        Resource r = getLocalPlatformResource(false, false);
 
         ResourceResponse getResponse = api.getResource(r.getId(), false, true);
         hqAssertSuccess(getResponse);
@@ -173,17 +131,9 @@ public class ResourceGet_test extends ResourceTestBase {
 
     public void testGetPlatformResource() throws Exception {
 
-        Agent a = getRunningAgent();
-
         ResourceApi api = getApi().getResourceApi();
 
-        ResourcesResponse findResponse = api.getResources(a, false, false);
-        hqAssertSuccess(findResponse);
-
-        assertTrue("Found 0 platform resources for agent " + a.getId(),
-                   findResponse.getResource().size() > 0);
-
-        Resource r = findResponse.getResource().get(0);
+        Resource r = getLocalPlatformResource(false, false);
 
         ResourceResponse getResponse = api.getPlatformResource(r.getName(),
                                                                false, false);

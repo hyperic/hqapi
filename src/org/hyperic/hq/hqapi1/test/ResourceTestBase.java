@@ -28,14 +28,12 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.ResourceApi;
-import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourceConfig;
 import org.hyperic.hq.hqapi1.types.ResourceProperty;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
-import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -78,8 +76,6 @@ public abstract class ResourceTestBase extends HQApiTestBase {
 
     protected Resource createTestHTTPService() throws Exception {
         
-        Agent a = getRunningAgent();
-
         ResourceApi api = getApi().getResourceApi();
 
         // Find HTTP resource type
@@ -88,11 +84,7 @@ public abstract class ResourceTestBase extends HQApiTestBase {
         ResourcePrototype pt = protoResponse.getResourcePrototype();
 
         // Find local platform
-        ResourcesResponse resourcesResponse = api.getResources(a, false, false);
-        hqAssertSuccess(resourcesResponse);
-        assertTrue("Did not find a single platform for " + a.getAddress() + ":" +
-                   a.getPort(), resourcesResponse.getResource().size() == 1);
-        Resource platform = resourcesResponse.getResource().get(0);
+        Resource platform = getLocalPlatformResource(false, false);
 
         // Configure service
         Map<String,String> params = new HashMap<String,String>();

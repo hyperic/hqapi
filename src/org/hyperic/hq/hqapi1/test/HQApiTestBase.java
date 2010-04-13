@@ -182,15 +182,23 @@ public abstract class HQApiTestBase extends TestCase {
                                                               children);
         hqAssertSuccess(resourceResponse);
 
-        List<Resource> localPlatforms = resourceResponse.getResource();
-        if (localPlatforms.size() == 0) {
+        Resource localPlatform = null;
+        
+        for (Resource r : resourceResponse.getResource()) {
+            if (!r.getResourcePrototype().getName().equals("Network Device")) {
+                localPlatform = r;
+                break;
+            }
+        }
+        
+        if (localPlatform == null) {
             String err = "Unable to find platform associated with agent " +
                          a.getAddress() + ":" + a.getPort();
             getLog().error(err);
             throw new Exception(err);
         }
 
-        return localPlatforms.get(0);
+        return localPlatform;
     }
 
     public Resource createControllableResource(HQApi api)
