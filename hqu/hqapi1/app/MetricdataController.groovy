@@ -221,7 +221,9 @@ class MetricdataController extends ApiController {
     }
 
     def put(params) {
-        def inserter = Bootstrap.getBean(MeasurementInserterHolder.class).dataInserter
+
+        def inserter = null
+
         def failureXml = null
 
         def dataRequest = new XmlParser().parseText(getPostData())
@@ -233,15 +235,24 @@ class MetricdataController extends ApiController {
                                        "Unable to find metric with id = " +
                                        metricId)
         } else {
-            def points = []
-            for (dp in dataRequest["DataPoint"]) {
-                long ts = dp.'@timestamp'?.toLong()
-                double val = dp.'@value'?.toDouble()
-                points << new DP(metricId, val, ts)
-            }
-            log.info("Inserting " + points.size() + " metrics for " + metric.template.name)
             try {
+            	def points = []
+            	for (dp in dataRequest["DataPoint"]) {
+                	long ts = dp.'@timestamp'?.toLong()
+                	double val = dp.'@value'?.toDouble()
+                	points << createDataPoint(metric, val, ts)
+            	}
+            	log.info("Inserting " + points.size() + " metrics for " + metric.template.name)
+
+            	if (metric.getTemplate().isAvailability()) {
+            		inserter = Bootstrap.getBean(MeasurementInserterHolder.class).availDataInserter
+            	} else {
+                	inserter = Bootstrap.getBean(MeasurementInserterHolder.class).dataInserter
+                }
                 inserter.insertMetrics(points)
+            } catch (IllegalArgumentException ia) {
+            	failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+            							   ia.getMessage()) 
             } catch (Exception e) {
                 failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
                                            "Error inserting metrics: " +
@@ -259,5 +270,15 @@ class MetricdataController extends ApiController {
                 }
             }
         }
+    }
+    
+    private createDataPoint(metric, value, timestamp) {
+    	if (metric.getTemplate().isAvailability()) {
+    		if (value != 0.0 && value != 1.0 && value != -0.01) {
+    			throw new IllegalArgumentException("Invalid availability data point: " + value)
+    		}
+    	}
+    	
+    	return new DP(metric.id, value, timestamp)
     }
 }

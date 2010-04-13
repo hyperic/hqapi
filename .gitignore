@@ -3,4 +3,5 @@ build
 *.ipr
 *.iws
 bin
+logs
 

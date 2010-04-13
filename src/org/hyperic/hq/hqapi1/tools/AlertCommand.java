@@ -39,8 +39,9 @@ import org.hyperic.hq.hqapi1.types.AlertsResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.AlertResponse;
-
-public class AlertCommand extends Command {
+import org.springframework.stereotype.Component;
+@Component
+public class AlertCommand extends AbstractCommand {
 
     private static String CMD_LIST   = "list";
     private static String CMD_ACK    = "ack";
@@ -64,12 +65,15 @@ public class AlertCommand extends Command {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
     }
 
-    protected void handleCommand(String[] args) throws Exception {
+    public String getName() {
+        return "alert";
+     }
+
+    public int handleCommand(String[] args) throws Exception {
         if (args.length == 0) {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
-
         if (args[0].equals(CMD_LIST)) {
             list(trim(args));
         } else if (args[0].equals(CMD_FIX)) {
@@ -80,8 +84,9 @@ public class AlertCommand extends Command {
             delete(trim(args));
         } else {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
+        return 0;
     }
 
     private void list(String[] args) throws Exception {
@@ -153,8 +158,10 @@ public class AlertCommand extends Command {
 
         OptionParser p = getOptionParser();
 
-        p.accepts(OPT_ID, "The id of the Alert to fix").
-                withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_ID, "The id of the alert to fix")
+                .withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_REASON, "The reason for fixing the alert")
+                .withRequiredArg().ofType(String.class);
 
         OptionSet options = getOptions(p, args);
 
@@ -162,8 +169,9 @@ public class AlertCommand extends Command {
         AlertApi alertApi = api.getAlertApi();
 
         Integer id = (Integer)getRequired(options, OPT_ID);
+        String reason = (String)options.valueOf(OPT_REASON);
 
-        AlertResponse response = alertApi.fixAlert(id);
+        AlertResponse response = alertApi.fixAlert(id, reason);
         checkSuccess(response);
 
         System.out.println("Successfully fixed alert id " + id);
@@ -175,7 +183,7 @@ public class AlertCommand extends Command {
 
         p.accepts(OPT_ID, "The id of the Alert to acknowledge").
                 withRequiredArg().ofType(Integer.class);
-        p.accepts(OPT_REASON, "The reason for acknoledging the alert")
+        p.accepts(OPT_REASON, "The reason for acknowledging the alert")
                 .withRequiredArg().ofType(String.class);
         p.accepts(OPT_PAUSE, "If specified, pause the Escalation for the " +
                              "given number of milliseconds")

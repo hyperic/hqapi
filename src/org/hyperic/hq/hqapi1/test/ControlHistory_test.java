@@ -7,7 +7,7 @@
  * normal use of the program, and does *not* fall under the heading of
  * "derived work".
  *
- * Copyright (C) [2008, 2009], Hyperic, Inc.
+ * Copyright (C) [2008-2010], Hyperic, Inc.
  * This file is part of HQ.
  *
  * HQ is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.ControlApi;
 import org.hyperic.hq.hqapi1.HQApi;
+import org.hyperic.hq.hqapi1.types.ControlHistory;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ControlHistoryResponse;
 import org.hyperic.hq.hqapi1.types.User;
@@ -64,6 +65,11 @@ public class ControlHistory_test extends ControlTestBase {
                      response.getControlHistory().size());
     }
 
+    /**
+     * To validate HQ-2080
+     * 
+     * @throws Exception
+     */
     public void testControlHistoryValidResource() throws Exception {
         HQApi api = getApi();
         ControlApi cApi = getApi().getControlApi();
@@ -74,24 +80,15 @@ public class ControlHistory_test extends ControlTestBase {
                                                             "run", new String[0]);
         hqAssertSuccess(executeResponse);
 
-        long start = System.currentTimeMillis();
-        while (System.currentTimeMillis() < (start + 60000)) {
+        ControlHistory controlHistory = findControlHistory(controllableResource, 5);            
 
-            ControlHistoryResponse historyResponse = cApi.getHistory(controllableResource);
-            hqAssertSuccess(historyResponse);
-            if (historyResponse.getControlHistory().size() > 0) {
-                assertEquals("Wrong number of items in control history for " +
-                             controllableResource.getName(), 1,
-                             historyResponse.getControlHistory().size());
-                cleanupControllableResource(api, controllableResource);
-                return;
-
-            }
-            Thread.sleep(1000);
-        }
-
-        cleanupControllableResource(api, controllableResource);
-        fail("Unable to find control history in timeout of 60 seconds");
+        // HQ-2080 eliminated Quartz when running a control action on 
+        // a resource (non-group) for immediate execution, so there
+        // should be no delays.
+        long timeToStart = controlHistory.getStartTime() - controlHistory.getDateScheduled();
+        assertTrue(timeToStart < SECOND);
+                
+        cleanupResource(api, controllableResource);
     }
 
     public void testControlHistoryNoPermission() throws Exception {
@@ -109,6 +106,6 @@ public class ControlHistory_test extends ControlTestBase {
         hqAssertFailurePermissionDenied(response);
 
         deleteTestUsers(users);
-        cleanupControllableResource(api, controllableResource);
+        cleanupResource(api, controllableResource);
     }
 }

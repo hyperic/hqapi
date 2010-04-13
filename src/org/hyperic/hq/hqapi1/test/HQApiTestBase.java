@@ -7,7 +7,7 @@
  * normal use of the program, and does *not* fall under the heading of
  * "derived work".
  * 
- * Copyright (C) [2008, 2009], Hyperic, Inc.
+ * Copyright (C) [2008-2010], Hyperic, Inc.
  * This file is part of HQ.
  * 
  * HQ is free software; you can redistribute it and/or modify
@@ -27,35 +27,49 @@
 
 package org.hyperic.hq.hqapi1.test;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Random;
+
 import junit.framework.TestCase;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.PropertyConfigurator;
 import org.hyperic.hq.hqapi1.AgentApi;
 import org.hyperic.hq.hqapi1.ErrorCode;
+import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.HQApi;
+import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
+import org.hyperic.hq.hqapi1.RoleApi;
 import org.hyperic.hq.hqapi1.UserApi;
 import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.AgentsResponse;
+import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.GroupResponse;
+import org.hyperic.hq.hqapi1.types.Metric;
+import org.hyperic.hq.hqapi1.types.MetricsResponse;
+import org.hyperic.hq.hqapi1.types.Operation;
 import org.hyperic.hq.hqapi1.types.PingAgentResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourcePrototype;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.Response;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
+import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.RoleResponse;
+import org.hyperic.hq.hqapi1.types.RolesResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.UserResponse;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
-import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
-import org.hyperic.hq.hqapi1.types.ResourceResponse;
-
-import java.io.File;
-import java.util.List;
-import java.util.Properties;
-import java.util.Random;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
 
 public abstract class HQApiTestBase extends TestCase {
 
@@ -74,6 +88,9 @@ public abstract class HQApiTestBase extends TestCase {
     static final String  TESTUSER_LASTNAME    = "Test";
     static final String  TESTUSER_EMAIL       = "apitest@hyperic.com";
     static final boolean TESTUSER_ACTIVE      = true;
+
+    static final String TESTROLE_NAME_PREFIX = "API Test Role ";
+    static final String TESTROLE_DESCRIPTION = "API Test Role Description";
 
     private Log _log = LogFactory.getLog(HQApiTestBase.class);
 
@@ -183,9 +200,12 @@ public abstract class HQApiTestBase extends TestCase {
         hqAssertSuccess(resourceResponse);
 
         Resource localPlatform = null;
+        List<String> invalidPlatforms = new ArrayList<String>();
+        invalidPlatforms.add("Network Device");
+        invalidPlatforms.add("Network Host");
         
         for (Resource r : resourceResponse.getResource()) {
-            if (!r.getResourcePrototype().getName().equals("Network Device")) {
+            if (!invalidPlatforms.contains(r.getResourcePrototype().getName())) {
                 localPlatform = r;
                 break;
             }
@@ -237,7 +257,7 @@ public abstract class HQApiTestBase extends TestCase {
         return resourceCreateResponse.getResource();
     }
 
-    public void cleanupControllableResource(HQApi api, Resource r)
+    public void cleanupResource(HQApi api, Resource r)
         throws Exception
     {
         pauseTest();
@@ -248,6 +268,66 @@ public abstract class HQApiTestBase extends TestCase {
         hqAssertSuccess(response);
     }
 
+    protected Group createGroup(List<Resource> resources)
+        throws Exception {
+        
+        return createGroup(resources, null);
+    }
+
+    protected Group createGroup(List<Resource> resources, List<Role> roles) 
+        throws Exception {
+
+        // determine whether to create a mixed or compatible group
+        ResourcePrototype prototype = null;
+        for (Resource r : resources) {
+            if (prototype == null) {
+                prototype = r.getResourcePrototype();
+            } else {
+                if (!prototype.getName().equals(r.getResourcePrototype().getName())) {
+                    prototype = null;
+                    break;
+                }
+            }
+        }
+        
+        // create group
+        Random r = new Random();
+        Group g = new Group();
+        String name = (prototype == null ? "Mixed" : "Compatible") 
+                        + " Group for Tests" + r.nextInt();
+        g.setName(name);
+        if (prototype != null) {
+            g.setResourcePrototype(prototype);
+        }
+        g.getResource().addAll(resources);
+        GroupResponse groupResponse = getApi().getGroupApi().createGroup(g);
+        hqAssertSuccess(groupResponse);
+        Group createdGroup = groupResponse.getGroup();
+        assertEquals(resources.size(), createdGroup.getResource().size());
+        if (prototype == null) {
+            assertNull("This should be a mixed group",
+                        createdGroup.getResourcePrototype());
+        } else {
+            assertNotNull("This should be a compatible group",
+                           createdGroup.getResourcePrototype());
+            assertEquals(prototype.getName(),
+                         createdGroup.getResourcePrototype().getName());
+        }
+        
+        if (roles != null) {
+            createdGroup.getRole().addAll(roles);
+
+            groupResponse = getApi().getGroupApi().updateGroup(createdGroup);
+            hqAssertSuccess(groupResponse);
+            
+            createdGroup = groupResponse.getGroup();
+            
+            assertEquals(roles.size(), createdGroup.getRole().size());            
+        }
+        
+        return createdGroup;
+    }
+    
     /**
      * Generate a valid User object that's guaranteed to have a unique Name
      * @return A valid User object.
@@ -290,6 +370,110 @@ public abstract class HQApiTestBase extends TestCase {
             StatusResponse response = api.deleteUser(u.getId());
             hqAssertSuccess(response);
         }
+    }
+    
+    /**
+     * Generate a valid Role object that's guaranteed to have a unique Name
+     * @return A valid Role object.
+     */
+    protected Role generateTestRole() {
+
+        Random r = new Random();
+
+        Role role = new Role();
+        role.setName(TESTROLE_NAME_PREFIX + r.nextInt());
+        role.setDescription(TESTROLE_DESCRIPTION);
+
+        return role;
+    }
+    
+    protected Role createRole(List<User> users, List<Operation> operations) 
+        throws Exception {
+        
+        Role r = generateTestRole();
+        
+        r.getOperation().addAll(operations);
+        r.getUser().addAll(users);
+        
+        RoleResponse roleResponse = getApi().getRoleApi().createRole(r);
+        hqAssertSuccess(roleResponse);
+        Role createdRole = roleResponse.getRole();
+
+        assertEquals("The role should have " + users.size() + " users",
+                     users.size(), createdRole.getUser().size());
+
+        for (Operation o : operations) {
+            assertTrue("Created role does not contain operation " + o.value(),
+                       createdRole.getOperation().contains(o));
+        }
+        
+        return createdRole;
+    }
+
+    protected void cleanupRole(Role r) throws Exception {
+        RoleApi api = getApi().getRoleApi();
+        StatusResponse response = api.deleteRole(r.getId());
+        hqAssertSuccess(response);
+    }
+    
+    protected void cleanupRoles() throws Exception {
+        RoleApi api = getApi().getRoleApi();
+        RolesResponse response = api.getRoles();
+
+        for (Role r : response.getRole()) {
+            if (r.getName().startsWith(TESTROLE_NAME_PREFIX)) {
+                api.deleteRole(r.getId());
+            }
+        }
+    }
+    
+    protected void cleanupGroup(Group g) throws Exception {
+        cleanupGroup(g, false);
+    }
+
+    protected void cleanupGroup(Group g, boolean deleteMembers) throws Exception {
+        
+        if (deleteMembers) {
+            ResourceApi api = getApi().getResourceApi();
+            for (Resource r : g.getResource()) {
+                StatusResponse response = api.deleteResource(r.getId());
+                hqAssertSuccess(response);
+            }
+        }
+        
+        GroupApi api = getApi().getGroupApi();
+        StatusResponse response = api.deleteGroup(g.getId());
+        hqAssertSuccess(response);
+    }
+    
+    protected Metric findAvailabilityMetric(Resource resource)
+        throws IOException {
+        
+        return findAvailabilityMetric(resource, true); 
+    }
+    
+    protected Metric findAvailabilityMetric(Resource resource, boolean enabled) 
+        throws IOException {
+
+        MetricApi metricApi = getApi().getMetricApi();
+
+        // Find availability metric for the resource
+        MetricsResponse metricsResponse = metricApi.getMetrics(resource, enabled);
+        hqAssertSuccess(metricsResponse);
+        Metric availMetric = null;
+        for (Metric m : metricsResponse.getMetric()) {
+            if (m.getName().equals("Availability")) {
+                availMetric = m;
+                break;
+            }
+        }
+
+        assertNotNull("Unable to find "
+                        + (enabled ? "an enabled" : "a disabled") 
+                        + " availability metric for " + resource.getName(),
+                      availMetric);
+        
+        return availMetric;
     }
     
     /**
@@ -365,6 +549,13 @@ public abstract class HQApiTestBase extends TestCase {
                      response.getError().getErrorCode());
     }
 
+    void hqAssertFailureOperationDenied(Response response) {
+        assertEquals(ResponseStatus.FAILURE, response.getStatus());
+        assertEquals(response.getError().getReasonText(),
+                     ErrorCode.OPERATION_DENIED.getErrorCode(),
+                     response.getError().getErrorCode());
+    }
+    
     void hqAssertFailureNotImplemented(Response response) {
         assertEquals(ResponseStatus.FAILURE, response.getStatus());
         assertEquals(response.getError().getReasonText(),

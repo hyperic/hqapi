@@ -34,27 +34,32 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Utility class to convert Java objects to XML and vice versa.
  */
 public class XmlUtil {
 
-    private static JAXBContext CTX;
+    private static Map<String,JAXBContext> _ctxMap =
+            new HashMap<String,JAXBContext>();
 
-    static {
-        try {
-            CTX = JAXBContext.newInstance("org.hyperic.hq.hqapi1.types");
-        } catch (JAXBException e) {
-            // Not going to happen
-            System.out.println("Error initializing context: " + e.getMessage());
+    private static synchronized JAXBContext getCachedContext(String pkg) throws JAXBException {
+        JAXBContext ctx = _ctxMap.get(pkg);
+        if (ctx == null) {
+            ctx = JAXBContext.newInstance(pkg);
+            _ctxMap.put(pkg, ctx);
         }
+        return ctx;
     }
 
     public static <T> T deserialize(Class<T> res, InputStream is)
         throws JAXBException
     {
-        Unmarshaller u = CTX.createUnmarshaller();
+        String pkg = res.getPackage().getName();
+        JAXBContext jc = getCachedContext(pkg);
+        Unmarshaller u = jc.createUnmarshaller();
         u.setEventHandler(new DefaultValidationEventHandler());
         return res.cast(u.unmarshal(is));
     }
@@ -62,9 +67,11 @@ public class XmlUtil {
     public static void serialize(Object o, OutputStream os, Boolean format)
         throws JAXBException
     {
-        Marshaller m = CTX.createMarshaller();
+        String pkg = o.getClass().getPackage().getName();
+        JAXBContext jc = getCachedContext(pkg);
+        Marshaller m = jc.createMarshaller();
         m.setEventHandler(new DefaultValidationEventHandler());
-        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, format);
+        m.setProperty("jaxb.formatted.output", format);
         m.marshal(o, os);
     }
 }

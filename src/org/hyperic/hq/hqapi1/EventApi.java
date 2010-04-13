@@ -1,5 +1,6 @@
 package org.hyperic.hq.hqapi1;
 
+import org.hyperic.hq.hqapi1.types.EscalationResponse;
 import org.hyperic.hq.hqapi1.types.EventsResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 
@@ -126,7 +127,8 @@ public class EventApi extends BaseApi {
         params.put("end", new String[] { Long.toString(end)});
         params.put("resourceId", new String[] { Integer.toString(r.getId())});
 
-        return doGet("event/findByResource.hqu", params, EventsResponse.class);
+        return doGet("event/findByResource.hqu", params, 
+                     new XmlResponseHandler<EventsResponse>(EventsResponse.class));
     }
 
     /**
@@ -156,6 +158,7 @@ public class EventApi extends BaseApi {
         params.put("status", new String[] { status != null ? status.getStatus() : null });
         params.put("count", new String[] { Integer.toString(count)});
 
-        return doGet("event/find.hqu", params, EventsResponse.class);   
+        return doGet("event/find.hqu", params, 
+                     new XmlResponseHandler<EventsResponse>(EventsResponse.class));   
     }
 }

@@ -27,14 +27,28 @@
 
 package org.hyperic.hq.hqapi1.test;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.hyperic.hq.hqapi1.GroupApi;
+import org.hyperic.hq.hqapi1.ResourceApi;
+import org.hyperic.hq.hqapi1.RoleApi;
 import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.GroupsResponse;
+import org.hyperic.hq.hqapi1.types.Operation;
 import org.hyperic.hq.hqapi1.types.Resource;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.hyperic.hq.hqapi1.types.ResourcePrototype;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.RoleResponse;
+import org.hyperic.hq.hqapi1.types.RolesResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 public class GroupGet_test extends GroupTestBase {
 
@@ -182,5 +196,269 @@ public class GroupGet_test extends GroupTestBase {
         }
 
         cleanup(syncResponse.getGroup());
+    }
+
+    public void testPlatformGetGroupsContaining() throws Exception {
+        createAndGetGroupsForPlatform(true);
+    }
+    
+    public void testPlatformGetGroupsNotContaining() throws Exception {
+        createAndGetGroupsForPlatform(false);
+    }
+    
+    public void testServerGetGroupsContaining() throws Exception {
+        createAndGetGroupsForServer(true);
+    }
+    
+    public void testServerGetGroupsNotContaining() throws Exception {
+        createAndGetGroupsForServer(false);
+    }
+    
+    public void testServiceGetGroupsContaining() throws Exception {
+        createAndGetGroupsForService(true);
+    }
+    
+    /**
+     * To validate HHQ-3473
+     */
+    public void testServiceGetGroupsNotContaining() throws Exception {
+        createAndGetGroupsForService(false);
+    }
+    
+    public void testServiceGetGroupsNotContainingInvalidResource()
+        throws Exception {
+        
+        GroupApi groupApi = getApi().getGroupApi();
+
+        Resource service = new Resource();
+        service.setId(Integer.MAX_VALUE);
+        service.setName("Invalid Service Resource");
+
+        GroupsResponse getResponse = groupApi.getGroupsNotContaining(service);
+        hqAssertFailureObjectNotFound(getResponse);
+    }
+
+    /**
+     * To validate HQ-1309
+     * 
+     * @throws Exception
+     */
+    public void testGetGroupsByRole() throws Exception {
+        GroupApi groupApi = getApi().getGroupApi();
+        RoleApi roleApi = getApi().getRoleApi();
+        
+        List<Operation> operations = new ArrayList<Operation>();
+        operations.add(Operation.MANAGE_PLATFORM_ALERTS);
+        operations.add(Operation.VIEW_PLATFORM);
+        
+        Role role1 = createRole(Collections.EMPTY_LIST,
+                                operations);
+
+        operations.add(Operation.MODIFY_PLATFORM);
+        Role role2 = createRole(Collections.EMPTY_LIST,
+                                operations);
+
+        List<Role> roles = new ArrayList<Role>();
+        roles.add(role1);
+        roles.add(role2);
+
+        // Create test roles
+        StatusResponse response = roleApi.syncRoles(roles);
+        hqAssertSuccess(response);
+
+        List<Role> createdRoles = new ArrayList<Role>();
+        
+        for (Role r : roles) {
+            RoleResponse getResponse = roleApi.getRole(r.getName());
+            hqAssertSuccess(getResponse);
+            Role role = getResponse.getRole();
+            createdRoles.add(role);
+        }
+        
+        Resource platform = getLocalPlatformResource(false, false);
+
+        // Create test group with the test roles
+        Group groupWithRoles = createGroup(Collections.singletonList(platform),
+                                           createdRoles);
+        
+        for (Role r : createdRoles) {
+            // This is the code being tested to validate HQ-1309.
+            GroupsResponse groupsResponse = groupApi.getGroups(r);
+            hqAssertSuccess(groupsResponse);
+            List<Group> roleGroups = groupsResponse.getGroup();
+            
+            assertEquals("Only 1 group should belong to this role.",
+                         1, roleGroups.size());
+            
+            Group g = roleGroups.get(0);
+            
+            assertEquals(groupWithRoles.getId(), g.getId());                
+            assertEquals("The group should be assigned to " + createdRoles.size() + " roles.",
+                         createdRoles.size(), g.getRole().size());
+        }
+        
+        // Cleanup
+        cleanupRoles();
+        cleanupGroup(groupWithRoles);
+    }
+
+    private void createAndGetGroupsForPlatform(boolean containing) 
+        throws Exception {
+
+        GroupApi groupApi = getApi().getGroupApi();
+
+        Resource platform = getLocalPlatformResource(false, false);
+                
+        // Create test groups
+        List<Group> expectedGroups = createMixedAndCompatibleGroups(platform, containing);
+
+        // Get groups
+        GroupsResponse getResponse = null;
+        if (containing) {
+            getResponse = groupApi.getGroupsContaining(platform);
+        } else {
+            getResponse = groupApi.getGroupsNotContaining(platform);
+        }
+        hqAssertSuccess(getResponse);
+        validateGetGroups(expectedGroups, getResponse.getGroup());
+                
+        // Cleanup
+        cleanup(expectedGroups);
+    }
+    
+    private void createAndGetGroupsForServer(boolean containing) 
+        throws Exception {
+        
+        GroupApi groupApi = getApi().getGroupApi();
+
+        Resource platform = getLocalPlatformResource(false, true);
+        Resource server = null;
+        
+        for (Resource child : platform.getResource()) {
+            String serverPrototype = child.getResourcePrototype().getName();
+            
+            if (serverPrototype.equals("JBoss 4.2")
+                    || serverPrototype.equals("Tomcat 6.0")
+                    || serverPrototype.equals("HQ Agent")) {
+                
+                server = child;
+                break;
+            }
+        }
+        assertNotNull("A server could not be found", server);
+        
+        // Create test groups
+        List<Group> expectedGroups = createMixedAndCompatibleGroups(server, containing);
+
+        // Get groups
+        GroupsResponse getResponse = null;
+        if (containing) {
+            getResponse = groupApi.getGroupsContaining(server);
+        } else {
+            getResponse = groupApi.getGroupsNotContaining(server);
+        }
+        hqAssertSuccess(getResponse);
+        validateGetGroups(expectedGroups, getResponse.getGroup());
+        
+        // Cleanup
+        cleanup(expectedGroups);       
+    }
+    
+    private void createAndGetGroupsForService(boolean containing) throws Exception {
+        
+        GroupApi groupApi = getApi().getGroupApi();
+        ResourceApi resourceApi = getApi().getResourceApi();
+        
+        // Find CPU resources
+        ResourcePrototypeResponse cpuPrototypeResponse =
+                resourceApi.getResourcePrototype("CPU");
+        hqAssertSuccess(cpuPrototypeResponse);
+
+        ResourcePrototype cpuPrototype = cpuPrototypeResponse.getResourcePrototype();
+        ResourcesResponse resourceResponse =
+                resourceApi.getResources(cpuPrototype,
+                                         false, false);
+        hqAssertSuccess(resourceResponse);
+        assertFalse(resourceResponse.getResource().isEmpty());
+        Resource cpu = resourceResponse.getResource().get(0);
+        
+        // Create test groups
+        List<Group> expectedGroups = createMixedAndCompatibleGroups(cpu, containing);
+
+        // Get groups
+        GroupsResponse getResponse = null;
+        if (containing) {
+            getResponse = groupApi.getGroupsContaining(cpu);
+        } else {
+            getResponse = groupApi.getGroupsNotContaining(cpu);
+        }
+        hqAssertSuccess(getResponse);
+        validateGetGroups(expectedGroups, getResponse.getGroup());
+        
+        // Cleanup
+        cleanup(expectedGroups);
+    }
+    
+    private List<Group> createMixedAndCompatibleGroups(Resource r,
+                                                       boolean isGroupMember)
+        throws IOException {
+
+        GroupApi groupApi = getApi().getGroupApi();
+
+        // Create mixed group
+        Group mixedGroup = generateTestGroup();
+        if (isGroupMember) {
+            mixedGroup.getResource().add(r);
+        }
+        
+        // Create compatible group
+        Group compatGroup = generateTestGroup();
+        compatGroup.setResourcePrototype(r.getResourcePrototype());
+        if (isGroupMember) {
+            compatGroup.getResource().add(r);
+        }
+        
+        // Add groups
+        List<Group> groups = new ArrayList<Group>();
+        groups.add(mixedGroup);
+        groups.add(compatGroup);
+        
+        GroupsResponse syncResponse = groupApi.syncGroups(groups);
+        hqAssertSuccess(syncResponse);
+        List<Group> createdGroups = syncResponse.getGroup();
+        assertEquals(2, createdGroups.size());
+        
+        if (isGroupMember) {
+            for (Group g: createdGroups) {
+                assertEquals(1, g.getResource().size());
+            }
+        }
+
+        return createdGroups;
+    }
+    
+    private void validateGetGroups(List<Group> expectedGroups,
+                                   List<Group> actualGroups)
+        throws IOException {
+        
+        assertFalse(expectedGroups.isEmpty());
+        assertFalse(actualGroups.isEmpty());
+        assertTrue(actualGroups.size() >= expectedGroups.size());
+        
+        // Create map for the new groups for easy lookup during validation
+        Set<Integer> expectedGroupIds = new HashSet<Integer>();
+        for (Group g : expectedGroups) {
+            expectedGroupIds.add(g.getId());
+        }
+                               
+        for (Group g : actualGroups) {
+            validateGroup(g);
+            if (expectedGroupIds.contains(g.getId())) {
+                assertTrue(expectedGroupIds.remove(g.getId()));
+            }
+        }
+        
+        assertTrue(expectedGroupIds.size() + " expected groups were not found",
+                   expectedGroupIds.isEmpty());        
     }
 }

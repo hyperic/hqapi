@@ -6,17 +6,32 @@ import org.hyperic.hq.authz.shared.PermissionException
 import org.hyperic.hq.authz.shared.ResourceEdgeCreateException
 import org.hyperic.hq.common.VetoException
 
+
 class ResourceController extends ApiController {
 
     private static final String PROP_FQDN        = "fqdn"
     private static final String PROP_INSTALLPATH = "installPath"
     private static final String PROP_AIIDENIFIER = "autoIdentifier"
 
+    // TODO: move into ResourceCategory
+    private getLocation(r) {
+        if (r.isPlatform()) {
+            return r.toPlatform().location
+        } else if (r.isServer()) {
+            return r.toServer().location
+        } else if (r.isService()) {
+            return r.toService().location
+        }
+        throw new IllegalArgumentException("getLocation() called for invalid resource " +
+                                           r.name + " (id=" + r.id + ")")
+    }
+
     private Closure getResourceXML(user, r, boolean verbose, boolean children) {
         { doc ->
             Resource(id : r.id,
                      name : r.name,
-                     description : r.description) {
+                     description : r.description,
+                     location : getLocation(r)) {
                 if (verbose) {
                     def config = r.getConfig()
                     config.each { k, v ->
@@ -383,13 +398,14 @@ class ResourceController extends ApiController {
     def find(params) {
         def agentId = params.getOne("agentId")?.toInteger()
         def prototype = params.getOne("prototype")
+        def description = params.getOne("description")
         def children = params.getOne("children", "false").toBoolean()
         def verbose = params.getOne("verbose", "false").toBoolean()
 
         def resources = []
         def failureXml
         
-        if (!agentId && !prototype ) {
+        if (!agentId && !prototype && !description) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             if (agentId) {
@@ -404,6 +420,15 @@ class ResourceController extends ApiController {
                 }
             } else if (prototype) {
                 resources = resourceHelper.find('byPrototype': prototype)
+            } else if (description) {
+                // TODO: Move into HQ.
+                def session = org.hyperic.hq.hibernate.SessionManager.currentSession()
+                resources.addAll(session.createQuery(
+                    "select p.resource from Platform p where p.description like '%${description}%'").list())
+                resources.addAll(session.createQuery(
+                    "select s.resource from Server s where s.description like '%${description}%'").list())
+                resources.addAll(session.createQuery(
+                    "select s.resource from Service s where s.description like '%${description}%'").list())
             } else {
                 // Shouldn't happen
                 failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
@@ -546,9 +571,12 @@ class ResourceController extends ApiController {
         def id   = xmlResource.'@id'?.toInteger()
         def name = xmlResource.'@name'
         def description = xmlResource.'@description'
+        def location = xmlResource.'@location'
 
         def config = [name: name,
-                      description: description]
+                      description: description,
+                      location: location]
+        
         xmlResource['ResourceConfig'].each {
             // Do not set configs for empty keys
             if (it.'@value' && it.'@value'.length() > 0) {

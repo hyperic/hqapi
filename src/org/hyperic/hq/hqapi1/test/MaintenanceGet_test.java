@@ -27,11 +27,15 @@
 
 package org.hyperic.hq.hqapi1.test;
 
+import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.MaintenanceApi;
 import org.hyperic.hq.hqapi1.types.MaintenanceResponse;
 import org.hyperic.hq.hqapi1.types.Group;
-import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.MaintenanceEvent;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.User;
+
+import java.util.List;
 
 public class MaintenanceGet_test extends MaintenanceTestBase {
 
@@ -68,20 +72,31 @@ public class MaintenanceGet_test extends MaintenanceTestBase {
         Group g = getFileServerMountCompatibleGroup();
         long start = System.currentTimeMillis() + HOUR;
         long end = start + HOUR;
-        MaintenanceResponse scheduleResponse = mApi.schedule(g.getId(),
-                                                             start, end);
-        hqAssertSuccess(scheduleResponse);
-
-        MaintenanceResponse getResponse = mApi.get(g.getId());
-        hqAssertSuccess(getResponse);
-
-        MaintenanceEvent e = getResponse.getMaintenanceEvent();
-        assertNotNull("MaintenanceEvent not found for valid group " + g.getName());
+        
+        MaintenanceEvent e = schedule(g, start, end);
+        e = get(g);
+        assertNotNull("Maintenance event not found for valid group " + g.getName(), e);
         valididateMaintenanceEvent(e, g, start, end);
 
         StatusResponse unscheduleResponse = mApi.unschedule(g.getId());
         hqAssertSuccess(unscheduleResponse);
 
+        cleanupGroup(g);
+    }
+    
+    public void testGetNoGroupPermission() throws Exception {
+
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+        
+        HQApi apiUnpriv = getApi(user.getName(), TESTUSER_PASSWORD);
+        MaintenanceApi mApi = apiUnpriv.getMaintenanceApi();
+        
+        Group g = getFileServerMountCompatibleGroup();
+        MaintenanceResponse response = mApi.get(g.getId());
+        hqAssertFailurePermissionDenied(response);
+
+        deleteTestUsers(users);
         cleanupGroup(g);
     }
 }

@@ -1,5 +1,6 @@
 import org.hyperic.hq.hqapi1.ErrorCode
 import org.hyperic.hq.authz.shared.PermissionException
+import org.hyperic.hq.common.VetoException
 
 class GroupController extends ApiController {
 
@@ -198,13 +199,18 @@ class GroupController extends ApiController {
             if (!failureXml) {
                 if (existing) {
                     // TODO: This needs to be moved out to the Manager.
-                    existing.setRoles(roles)
-                    existing.setResources(user, resources)
-                    existing.updateGroup(user,
-                                         xmlGroup.'@name',
-                                         xmlGroup.'@description',
-                                         xmlGroup.'@location')
-                    groups << existing
+                    try {
+                    	existing.setResources(user, resources)
+                    	existing.setRoles(roles)
+                    	existing.updateGroup(user,
+                                         	 xmlGroup.'@name',
+                                         	 xmlGroup.'@description',
+                                         	 xmlGroup.'@location')
+                    	groups << existing
+                    } catch (VetoException ve) {
+                    	failureXml = getFailureXML(ErrorCode.OPERATION_DENIED,
+                    							   ve.getMessage())
+                    }
                 } else {
                     // TODO: private groups
                     def group = resourceHelper.createGroup(xmlGroup.'@name',
@@ -240,23 +246,59 @@ class GroupController extends ApiController {
 
     def list(params) {
         def compatible = params.getOne('compatible')?.toBoolean()
+        def containing = params.getOne('containing')?.toBoolean()
+        def roleId = params.getOne('roleId')?.toInteger()
 
-        def groups = resourceHelper.findViewableGroups()
+		def groups = null
+		def failureXml = null
+		
+        if (containing != null) {
+        	def resourceId = params.getOne('resourceId')?.toInteger()
+        	def resource = getResource(resourceId)
+        	
+            if (resource) {
+        		if (containing) {
+        			groups = resource.getGroupsContaining(user)
+        		} else {
+        			groups = resource.getGroupsNotContaining(user)
+        		}            
+            } else {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Resource id=" + resourceId +
+                                           " not found")
+            }
+        } else if (roleId != null) {
+        	def role = getRole(roleId, null)
+        	if (!role) {
+            	failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                       	   "Role id=" + roleId + 
+                                       	   " not found")
+            } else {
+       			groups = role.getGroups(user)        	
+            }
+        } else {
+        	groups = resourceHelper.findViewableGroups()
 
-        if (compatible != null) {
-            if (compatible)
-                groups = groups.grep { it.resourcePrototype != null }
-            else
-                groups = groups.grep { it.resourcePrototype == null }
+        	if (compatible != null) {
+            	if (compatible) {
+                	groups = groups.grep { it.resourcePrototype != null }
+            	} else {
+                	groups = groups.grep { it.resourcePrototype == null }
+            	}
+            }        
         }
 
         renderXml() {
             out << GroupsResponse() {
-                out << getSuccessXML()
-                for (g in  groups.sort {a, b -> a.name <=> b.name}) {
-                    out << getGroupXML(g)
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                	out << getSuccessXML()
+                	for (g in  groups.sort {a, b -> a.name <=> b.name}) {
+                    	out << getGroupXML(g)
+                	}
                 }
             }
         }
     }
-}
+} 

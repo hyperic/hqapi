@@ -1,5 +1,6 @@
 import org.hyperic.hq.hqapi1.ErrorCode;
 import org.hyperic.hq.authz.shared.PermissionException
+import org.hyperic.hq.grouping.shared.GroupNotCompatibleException
 import org.hyperic.util.pager.PageControl
 
 class ControlController extends ApiController {
@@ -100,9 +101,6 @@ class ControlController extends ApiController {
         if (!resource) {
             failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                        "Resource id " + resourceId + " not found")
-        } else if (resource.entityId.isGroup()) {
-        	failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
-        							   "Group control action execution is not supported")
         } else if (!action) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                        "No action given")
@@ -115,6 +113,9 @@ class ControlController extends ApiController {
                                            " does not support action " + action)
             } catch (PermissionException e) {
                 failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+            } catch (GroupNotCompatibleException e) {
+            	failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
+            							   "Control actions not supported for mixed groups")
             } catch (Exception e) {
                 failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
                                            "Unexpected error: " + e.getMessage())

@@ -40,11 +40,12 @@ import org.hyperic.hq.hqapi1.types.MetricsResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.LastMetricData;
 import org.hyperic.hq.hqapi1.types.MetricResponse;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Date;
-
-public class MetricDataCommand extends Command {
+@Component
+public class MetricDataCommand extends AbstractCommand {
 
     private static String CMD_LIST = "list";
 
@@ -57,20 +58,25 @@ public class MetricDataCommand extends Command {
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
     }
+    
+    public String getName() {
+        return "metricData";
+     }
 
-    protected void handleCommand(String[] args) throws Exception {
+    public int handleCommand(String[] args) throws Exception {
         
         if (args.length == 0) {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
 
         if (args[0].equals(CMD_LIST)) {
             list(trim(args));
         } else {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
+        return 0;
     }
 
     private void list(String[] args) throws Exception {

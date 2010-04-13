@@ -7,7 +7,7 @@
  * normal use of the program, and does *not* fall under the heading of
  * "derived work".
  * 
- * Copyright (C) [2008, 2009], Hyperic, Inc.
+ * Copyright (C) [2008-2010], Hyperic, Inc.
  * This file is part of HQ.
  * 
  * HQ is free software; you can redistribute it and/or modify
@@ -29,17 +29,25 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
 import org.hyperic.hq.hqapi1.AlertDefinitionBuilder;
+import org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertPriority;
 import org.hyperic.hq.hqapi1.EscalationApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.types.AlertCondition;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.Escalation;
+import org.hyperic.hq.hqapi1.types.EscalationResponse;
+import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.GroupResponse;
+import org.hyperic.hq.hqapi1.types.Operation;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
-import org.hyperic.hq.hqapi1.types.EscalationResponse;
+import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.RoleResponse;
+import org.hyperic.hq.hqapi1.types.User;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -144,7 +152,93 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         hqAssertFailureInvalidParameters(response);
     }
 
-    public void testSyncCreateDefinition() throws Exception {
+    public void testSyncNoPermission() throws Exception {
+        List<User> users = createTestUsers(1);
+        User unprivUser = users.get(0);
+
+        syncWithInsufficientPermissions(unprivUser);
+
+        // Cleanup
+        deleteTestUsers(users);
+    }
+    
+    public void testSyncAlertingPermission() throws Exception {
+        // create user
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+
+        // operations
+        List<Operation> operations = new ArrayList<Operation>();
+        operations.add(Operation.MANAGE_PLATFORM_ALERTS);
+        
+        // create role with manage platform alerts permissions
+        Role alertRole = createRole(Collections.singletonList(user),
+                                    operations);
+        
+        // create group with role
+        Resource platform = getLocalPlatformResource(false, true);
+        Group groupWithRole = createGroup(Collections.singletonList(platform),
+                                          Collections.singletonList(alertRole));
+        
+        // create alert definition with insufficient permissions.
+        // role needs some resource level permissions
+        // in order to properly sync
+        syncWithInsufficientPermissions(user);
+
+        // cleanup
+        deleteTestUsers(users);
+        cleanupRole(alertRole);
+        cleanupGroup(groupWithRole);
+    }
+
+    public void testSyncAlertingAndViewPermission() throws Exception {
+        // create user
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+
+        // operations
+        List<Operation> operations = new ArrayList<Operation>();
+        operations.add(Operation.MANAGE_PLATFORM_ALERTS);
+        operations.add(Operation.VIEW_PLATFORM);
+        
+        // create role with manage platform alerts permissions
+        Role alertRole = createRole(Collections.singletonList(user),
+                                    operations);
+        
+        // create group with role
+        Resource platform = getLocalPlatformResource(false, true);
+        Group groupWithRole = createGroup(Collections.singletonList(platform),
+                                          Collections.singletonList(alertRole));
+        
+        // create alert definition with insufficient permissions.
+        // roles needs at least modify resource permissions
+        // in order to properly sync
+        syncWithInsufficientPermissions(user);
+
+        // cleanup
+        deleteTestUsers(users);
+        cleanupRole(alertRole);
+        cleanupGroup(groupWithRole);
+    }
+    
+    private void syncWithInsufficientPermissions(User unprivUser) 
+        throws Exception {
+    
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = generateTestDefinition();
+        d.setResource(platform);
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        HQApi apiUnpriv = getApi(unprivUser.getName(), TESTUSER_PASSWORD);
+        AlertDefinitionApi alertDefApi = apiUnpriv.getAlertDefinitionApi();
+        AlertDefinitionsResponse response = alertDefApi.syncAlertDefinitions(definitions);
+        hqAssertFailurePermissionDenied(response);
+    }
+    
+    public void testSyncCreateDefinitionSuperUser() throws Exception {
         AlertDefinitionApi api = getApi().getAlertDefinitionApi();
         Resource platform = getLocalPlatformResource(false, false);
 
@@ -165,6 +259,45 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         cleanup(response.getAlertDefinition());
     }    
 
+    public void testSyncCreateDefinitionNonSuperUser() throws Exception {
+        Resource platform = getLocalPlatformResource(false, false);
+
+        AlertDefinition d = generateTestDefinition();
+        d.setResource(platform);
+        d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(d);
+
+        // Create user/group/role with sufficient permissions
+        List<User> users = createTestUsers(1);
+        User privUser = users.get(0);
+
+        List<Operation> operations = new ArrayList<Operation>();
+        operations.add(Operation.MANAGE_PLATFORM_ALERTS);
+        operations.add(Operation.VIEW_PLATFORM);
+        operations.add(Operation.MODIFY_PLATFORM);
+        
+        Role alertRole = createRole(Collections.singletonList(privUser),
+                                    operations);
+        Group groupWithRole = createGroup(Collections.singletonList(platform),
+                                          Collections.singletonList(alertRole));
+
+        AlertDefinitionApi api = getApi(privUser.getName(), TESTUSER_PASSWORD).getAlertDefinitionApi();
+
+        AlertDefinitionsResponse response = api.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+        assertEquals(response.getAlertDefinition().size(), 1);
+        for (AlertDefinition def : response.getAlertDefinition()) {
+            validateDefinition(def);
+        }
+
+        // Cleanup
+        cleanup(response.getAlertDefinition());
+        deleteTestUsers(users);
+        cleanupRole(alertRole);
+        cleanupGroup(groupWithRole);
+    }
+    
     public void testSyncCreateTypeDefinition() throws Exception {
         AlertDefinitionApi api = getApi().getAlertDefinitionApi();
         Resource platform = getLocalPlatformResource(false, false);
@@ -179,22 +312,24 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         hqAssertSuccess(response);
         assertEquals(response.getAlertDefinition().size(), 1);        
         for (AlertDefinition def : response.getAlertDefinition()) {
-            validateDefinition(def);
+            validateTypeDefinition(def);
         }
 
         // Cleanup
         cleanup(response.getAlertDefinition());
     }
 
-    public void testSyncCountAndRange() throws Exception {
+    public void testSyncCountAndRangeTypeAlert() throws Exception {
         AlertDefinitionApi api = getApi().getAlertDefinitionApi();
+        final int COUNT = 3;
+        final int RANGE = 1800;
         Resource platform = getLocalPlatformResource(false, false);
 
         AlertDefinition d = generateTestDefinition();
         d.setResourcePrototype(platform.getResourcePrototype());
         d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
-        d.setCount(3);
-        d.setRange(1800);
+        d.setCount(COUNT);
+        d.setRange(RANGE);
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(d);
 
@@ -202,7 +337,21 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         hqAssertSuccess(response);
         assertEquals(response.getAlertDefinition().size(), 1);
         for (AlertDefinition def : response.getAlertDefinition()) {
-            validateDefinition(def);
+            validateTypeDefinition(def);
+            assertEquals(COUNT, def.getCount());
+            assertEquals(RANGE, def.getRange());
+            
+            // validate child alert definitions
+            AlertDefinitionsResponse childrenResponse = api.getAlertDefinitions(def);
+            hqAssertSuccess(response);
+            List<AlertDefinition> childrenDefinitions = childrenResponse.getAlertDefinition();
+            assertTrue("No child alert definition exists for " + def.getName(),
+                        childrenDefinitions.size() > 0);
+            for (AlertDefinition child : childrenDefinitions) {
+                validateDefinition(child);
+                assertEquals(COUNT, child.getCount());
+                assertEquals(RANGE, child.getRange());
+            }
         }
 
         // Cleanup
@@ -379,8 +528,8 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
 
         response = api.syncAlertDefinitions(definitions);
         hqAssertSuccess(response);
-        for (AlertDefinition d: definitions) {
-            assertEquals(d.getDescription(), UPDATED_DESCRIPTION);
+        for (AlertDefinition d: response.getAlertDefinition()) {
+            assertEquals(UPDATED_DESCRIPTION, d.getDescription());
             for (AlertCondition c : d.getAlertCondition()) {
                 assertTrue(c.getProperty().equals("otherProp"));
             }
@@ -394,10 +543,14 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         AlertDefinitionApi api = getApi().getAlertDefinitionApi();
         Resource platform = getLocalPlatformResource(false, false);
 
+        final int INITIAL_PRIORITY = AlertPriority.LOW.getPriority();
+        final boolean INITIAL_ACTIVE = true;
         final int NUM_DEFS = 10;
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         for (int i = 0; i < NUM_DEFS; i++) {
             AlertDefinition d = generateTestDefinition();
+            d.setPriority(INITIAL_PRIORITY);
+            d.setActive(INITIAL_ACTIVE);
             d.setResourcePrototype(platform.getResourcePrototype());
             d.getAlertCondition().add(AlertDefinitionBuilder.createPropertyCondition(true, "myProp"));
             definitions.add(d);
@@ -407,17 +560,35 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         hqAssertSuccess(response);
         assertEquals(response.getAlertDefinition().size(), NUM_DEFS);
         for (AlertDefinition def : response.getAlertDefinition()) {
-            validateDefinition(def);
-            assertNotNull("ResourcePrototype was null", def.getResourcePrototype());
-            assertNull("Resource was not null", def.getResource());
+            validateTypeDefinition(def);
+            assertEquals(INITIAL_PRIORITY, def.getPriority());
+            assertEquals(INITIAL_ACTIVE, def.isActive());
+            
+            // validate child alert definitions
+            AlertDefinitionsResponse childrenResponse = api.getAlertDefinitions(def);
+            hqAssertSuccess(response);
+            List<AlertDefinition> childrenDefinitions = childrenResponse.getAlertDefinition();
+            assertTrue("No child alert definition exists for " + def.getName(),
+                        childrenDefinitions.size() > 0);
+            for (AlertDefinition child : childrenDefinitions) {
+                validateDefinition(child);
+                assertEquals(INITIAL_PRIORITY, child.getPriority());
+                assertEquals(INITIAL_ACTIVE, child.isActive());
+            }            
         }
 
         // Re-sync for update
         definitions = response.getAlertDefinition();
-        final String UPDATED_DESCRIPTION = "Updated Alert Description";
+        final int UPDATED_PRIORITY = AlertPriority.HIGH.getPriority();
+        final boolean UPDATED_ACTIVE = false;
+        final String UPDATED_NAME = "Updated Alert Definition Name";
+        final String UPDATED_DESCRIPTION = "Updated Alert Definition Description";
         final AlertCondition newCond =
                 AlertDefinitionBuilder.createPropertyCondition(true, "otherProp");
         for (AlertDefinition d : definitions) {
+            d.setPriority(UPDATED_PRIORITY);
+            d.setActive(UPDATED_ACTIVE);
+            d.setName(UPDATED_NAME);
             d.setDescription(UPDATED_DESCRIPTION);
             d.getAlertCondition().clear();
             d.getAlertCondition().add(newCond);
@@ -425,13 +596,33 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
 
         response = api.syncAlertDefinitions(definitions);
         hqAssertSuccess(response);
-        for (AlertDefinition d: definitions) {
-            assertEquals(d.getDescription(), UPDATED_DESCRIPTION);
+        for (AlertDefinition d: response.getAlertDefinition()) {
+            validateTypeDefinition(d);
+
+            // validate updated properties
+            assertEquals(UPDATED_PRIORITY, d.getPriority());
+            assertEquals(UPDATED_ACTIVE, d.isActive());
+            assertEquals(UPDATED_NAME, d.getName());
+            assertEquals(UPDATED_DESCRIPTION, d.getDescription());
             for (AlertCondition c : d.getAlertCondition()) {
                 assertTrue(c.getProperty().equals("otherProp"));
             }
+            
+            // validate child alert definitions
+            AlertDefinitionsResponse childrenResponse = api.getAlertDefinitions(d);
+            hqAssertSuccess(response);
+            List<AlertDefinition> childrenDefinitions = childrenResponse.getAlertDefinition();
+            assertTrue("No child alert definition exists for " + d.getName(),
+                        childrenDefinitions.size() > 0);
+            for (AlertDefinition child : childrenDefinitions) {
+                validateDefinition(child);                
+                assertEquals(UPDATED_PRIORITY, child.getPriority());
+                assertEquals(UPDATED_ACTIVE, child.isActive());
+                assertEquals(UPDATED_NAME, child.getName());
+                assertEquals(UPDATED_DESCRIPTION, child.getDescription());
+            } 
         }
-
+        
         // Cleanup
         cleanup(response.getAlertDefinition());
     }
@@ -471,7 +662,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         hqAssertFailureObjectNotFound(response);
     }
 
-    public void testSyncEscalation() throws Exception {
+    public void testSyncEscalationTypeAlert() throws Exception {
         HQApi api = getApi();
         AlertDefinitionApi defApi = api.getAlertDefinitionApi();
         EscalationApi escApi = api.getEscalationApi();
@@ -496,7 +687,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         hqAssertSuccess(response);
         assertEquals(response.getAlertDefinition().size(), 1);
         for (AlertDefinition def : response.getAlertDefinition()) {
-            validateDefinition(def);
+            validateTypeDefinition(def);
             assertEquals(def.getEscalation().getId(),
                          escalationResponse.getEscalation().getId());
         }
@@ -574,9 +765,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         hqAssertSuccess(response);
         assertEquals(response.getAlertDefinition().size(), 1);
         for (AlertDefinition def : response.getAlertDefinition()) {
-            validateDefinition(def);
-            assertNotNull("ResourcePrototype was null", def.getResourcePrototype());
-            assertNull("Resource was not null", def.getResource());
+            validateTypeDefinition(def);
             assertNull("Escalation was not null", def.getEscalation());
         }
 
@@ -597,7 +786,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         hqAssertSuccess(response);
         assertEquals(response.getAlertDefinition().size(), 1);
         for (AlertDefinition def : response.getAlertDefinition()) {
-            validateDefinition(def);
+            validateTypeDefinition(def);
             assertNotNull("Escalation was null", def.getEscalation());
             assertEquals(def.getEscalation().getName(), e.getName());
         }
@@ -685,8 +874,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         hqAssertSuccess(response);
         assertEquals(response.getAlertDefinition().size(), 1);
         for (AlertDefinition def : response.getAlertDefinition()) {
-            validateDefinition(def);
-            assertNotNull("ResourcePrototype was null", def.getResourcePrototype());
+            validateTypeDefinition(def);
             assertNotNull("Escalation was null", def.getEscalation());
         }
 
@@ -700,7 +888,7 @@ public class AlertDefinitionSync_test extends AlertDefinitionTestBase {
         hqAssertSuccess(response);
         assertEquals(response.getAlertDefinition().size(), 1);
         for (AlertDefinition def : response.getAlertDefinition()) {
-            validateDefinition(def);
+            validateTypeDefinition(def);
             assertNull("Escalation was not null", def.getEscalation());
         }
 

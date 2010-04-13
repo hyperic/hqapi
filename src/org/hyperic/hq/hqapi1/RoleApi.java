@@ -68,7 +68,7 @@ public class RoleApi extends BaseApi {
         throws IOException
     {
         return doGet("role/list.hqu", new HashMap<String, String[]>(),
-                     RolesResponse.class);
+                     new XmlResponseHandler<RolesResponse>(RolesResponse.class));
     }
 
     /**
@@ -86,7 +86,8 @@ public class RoleApi extends BaseApi {
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("name", new String[] { name });
-        return doGet("role/get.hqu", params, RoleResponse.class);
+        return doGet("role/get.hqu", params, 
+                     new XmlResponseHandler<RoleResponse>(RoleResponse.class));
     }
 
     /**
@@ -105,7 +106,8 @@ public class RoleApi extends BaseApi {
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { String.valueOf(id) });
-        return doGet("role/get.hqu", params, RoleResponse.class);
+        return doGet("role/get.hqu", params, 
+                     new XmlResponseHandler<RoleResponse>(RoleResponse.class));
     }
 
     /**
@@ -125,7 +127,8 @@ public class RoleApi extends BaseApi {
     {
         RoleRequest request = new RoleRequest();
         request.setRole(role);
-        return doPost("role/create.hqu", request, RoleResponse.class);
+        return doPost("role/create.hqu", request, 
+                      new XmlResponseHandler<RoleResponse>(RoleResponse.class));
     }
 
     /**
@@ -143,7 +146,8 @@ public class RoleApi extends BaseApi {
     {
         Map<String, String[]> params = new HashMap<String,String[]>();
         params.put("id", new String[] { String.valueOf(id) });
-        return doGet("role/delete.hqu", params, StatusResponse.class);
+        return doGet("role/delete.hqu", params, 
+                     new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 
     /**
@@ -161,7 +165,8 @@ public class RoleApi extends BaseApi {
     {
         RoleRequest request = new RoleRequest();
         request.setRole(role);
-        return doPost("role/update.hqu", request, StatusResponse.class);
+        return doPost("role/update.hqu", request, 
+                      new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 
     /**
@@ -179,6 +184,7 @@ public class RoleApi extends BaseApi {
     {
         RolesRequest request = new RolesRequest();
         request.getRole().addAll(roles);
-        return doPost("role/sync.hqu", request, StatusResponse.class);
+        return doPost("role/sync.hqu", request,
+                      new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 }

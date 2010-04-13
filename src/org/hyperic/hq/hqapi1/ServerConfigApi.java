@@ -28,7 +28,7 @@ public class ServerConfigApi extends BaseApi {
      */
     public ServerConfigResponse getConfig() throws IOException {
         return doGet("serverconfig/getConfig.hqu", new HashMap<String, String[]>(),
-                     ServerConfigResponse.class);
+                     new XmlResponseHandler<ServerConfigResponse>(ServerConfigResponse.class));
     }
 
     /**
@@ -45,6 +45,7 @@ public class ServerConfigApi extends BaseApi {
     public StatusResponse setConfig(List<ServerConfig> configs) throws IOException {
         ServerConfigRequest request = new ServerConfigRequest();
         request.getServerConfig().addAll(configs);
-        return doPost("serverConfig/setConfig.hqu", request, StatusResponse.class);
+        return doPost("serverConfig/setConfig.hqu", request, 
+                      new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 }

@@ -40,7 +40,7 @@ import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
-import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
+import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -51,8 +51,8 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-
-public class ResourceCommand extends Command {
+@Component
+public class ResourceCommand extends AbstractCommand {
 
     private static String CMD_LIST            = "list";
     private static String CMD_SYNC            = "sync";
@@ -84,11 +84,15 @@ public class ResourceCommand extends Command {
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
     }
+    
+    public String getName() {
+        return "resource";
+     }
 
-    protected void handleCommand(String[] args) throws Exception {
+    public int handleCommand(String[] args) throws Exception {
         if (args.length == 0) {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
 
         if (args[0].equals(CMD_LIST)) {
@@ -107,8 +111,9 @@ public class ResourceCommand extends Command {
             createService(trim(args));
         } else {
             printUsage();
-            System.exit(-1);
+            return 1;
         }
+        return 0;
     }
 
     private void list(String[] args) throws Exception {

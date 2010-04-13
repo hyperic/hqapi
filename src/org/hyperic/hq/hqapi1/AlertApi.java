@@ -27,6 +27,7 @@
 
 package org.hyperic.hq.hqapi1;
 
+import org.hyperic.hq.hqapi1.types.AgentResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.AlertsResponse;
@@ -52,6 +53,27 @@ public class AlertApi extends BaseApi {
         super(conn);
     }
 
+    /**
+     * Get an Alert
+     *
+     * @param alertId The id of the Alert to get.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the Alert requested
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public AlertResponse getAlert(Integer alertId)
+        throws IOException
+    {
+        Map<String, String[]> params = new HashMap<String, String[]>();
+
+        params.put("id", new String[] { alertId.toString() });
+
+        return doGet("alert/get.hqu", params,
+                     new XmlResponseHandler<AlertResponse>(AlertResponse.class));
+    }
+    
     /**
      * Find Alerts in the system.
      *
@@ -86,7 +108,8 @@ public class AlertApi extends BaseApi {
             params.put("notFixed", new String[] { Boolean.toString(notFixed)});
         }
 
-        return doGet("alert/find.hqu", params, AlertsResponse.class);
+        return doGet("alert/find.hqu", params, 
+                     new XmlResponseHandler<AlertsResponse>(AlertsResponse.class));
     }
 
     /**
@@ -126,7 +149,8 @@ public class AlertApi extends BaseApi {
             params.put("notFixed", new String[] { Boolean.toString(notFixed)});
         }
         
-        return doGet("alert/findByResource.hqu", params, AlertsResponse.class);
+        return doGet("alert/findByResource.hqu", params, 
+                     new XmlResponseHandler<AlertsResponse>(AlertsResponse.class));
     }
 
     /**
@@ -142,7 +166,24 @@ public class AlertApi extends BaseApi {
     public AlertResponse fixAlert(Integer alertId)
         throws IOException
     {
-        AlertsResponse response = fixAlerts(new Integer[] { alertId });
+        return fixAlert(alertId, "");
+    }
+    
+    /**
+     * Fix an Alert
+     *
+     * @param alertId The id of the Alert to fix.
+     * @param reason The reason for the fix.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * if the Alert was successfully fixed.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public AlertResponse fixAlert(Integer alertId, String reason)
+        throws IOException
+    {
+        AlertsResponse response = fixAlerts(new Integer[] { alertId }, reason);
 
         AlertResponse res = new AlertResponse();
         res.setStatus(response.getStatus());
@@ -166,6 +207,23 @@ public class AlertApi extends BaseApi {
     public AlertsResponse fixAlerts(Integer[] alertIds)
         throws IOException
     {
+        return fixAlerts(alertIds, "");
+    }
+    
+    /**
+     * Fix multiple Alerts
+     *
+     * @param alertIds An array of Alert id's to fix.
+     * @param reason The reason for the fix.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * if the Alert was successfully fixed.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public AlertsResponse fixAlerts(Integer[] alertIds, String reason)
+        throws IOException
+    {
         Map<String,String[]> params = new HashMap<String,String[]>();
         String[] ids = new String[alertIds.length];
         for (int i = 0; i < alertIds.length; i++) {
@@ -173,8 +231,10 @@ public class AlertApi extends BaseApi {
         }
 
         params.put("id", ids);
+        params.put("reason", new String[] { reason });
 
-        return doGet("alert/fix.hqu", params, AlertsResponse.class);
+        return doGet("alert/fix.hqu", params, 
+                     new XmlResponseHandler<AlertsResponse>(AlertsResponse.class));
     }
 
     /**
@@ -229,7 +289,8 @@ public class AlertApi extends BaseApi {
         params.put("reason", new String[] { reason });
         params.put("pause", new String[] { Long.toString(pause)});
 
-        return doGet("alert/ack.hqu", params, AlertsResponse.class);
+        return doGet("alert/ack.hqu", params, 
+                     new XmlResponseHandler<AlertsResponse>(AlertsResponse.class));
     }
 
     /**
@@ -268,6 +329,7 @@ public class AlertApi extends BaseApi {
         }
         params.put("id", ids);
 
-        return doGet("alert/delete.hqu", params, StatusResponse.class);
+        return doGet("alert/delete.hqu", params, 
+                     new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 }

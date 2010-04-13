@@ -9,7 +9,7 @@ public class WADLResource_test extends WADLTestBase {
         Endpoint.ResourceGetHqu resourceGet = new Endpoint.ResourceGetHqu();
 
         ResourcesResponse response =
-                resourceFind.getAsResourcesResponse(null, "CPU", false, false);
+                resourceFind.getAsResourcesResponse(null, "CPU", null, false, false);
         hqAssertSuccess(response);
         assertTrue("No resources found", response.getResource().size() > 0);
 

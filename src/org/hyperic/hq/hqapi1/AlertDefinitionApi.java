@@ -28,8 +28,11 @@
 package org.hyperic.hq.hqapi1;
 
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourcesRequest;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
+import org.hyperic.hq.hqapi1.types.AlertDefinitionResponse;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsRequest;
 import org.hyperic.hq.hqapi1.types.Escalation;
 
@@ -54,6 +57,28 @@ public class AlertDefinitionApi extends BaseApi {
         super(conn);
     }
 
+    /**
+     * Find the {@link org.hyperic.hq.hqapi1.types.AlertDefinition} based on
+     * the given alert definition id.
+     *
+     * @param id The AlertDefinition id
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the AlertDefinition and all alert actions, including internal alert actions
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public AlertDefinitionResponse getAlertDefinition(Integer id)
+        throws IOException
+    {
+        Map<String, String[]> params = new HashMap<String, String[]>();
+
+        params.put("id", new String[] { id.toString() });
+
+        return doGet("alertdefinition/get.hqu", params,
+                     new XmlResponseHandler<AlertDefinitionResponse>(AlertDefinitionResponse.class));
+    }
+    
     /**
      * Find all {@link org.hyperic.hq.hqapi1.types.AlertDefinition}s in the system.
      *
@@ -97,7 +122,7 @@ public class AlertDefinitionApi extends BaseApi {
         }
 
         return doGet("alertdefinition/listDefinitions.hqu", params,
-                     AlertDefinitionsResponse.class);
+                     new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
     }
 
     /**
@@ -136,7 +161,51 @@ public class AlertDefinitionApi extends BaseApi {
         params.put("parentId", new String[] { Integer.toString(parent.getId()) });
 
         return doGet("alertdefinition/listDefinitions.hqu", params,
-                     AlertDefinitionsResponse.class); 
+                     new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
+    }
+
+    /**
+     * Find all {@link org.hyperic.hq.hqapi1.types.AlertDefinition}s on the
+     * given {@link Resource}.
+     *
+     * @param r The Resource to query for alert definitions
+     * @param children If specified, include alerts on descendant Resources.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * a list of AlertDefinitions are returned.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public AlertDefinitionsResponse getAlertDefinitions(Resource r, boolean children)
+        throws IOException {
+
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("resourceId", new String[] { Integer.toString(r.getId()) });
+        params.put("children", new String[] { Boolean.toString(children)});
+
+        return doGet("alertdefinition/listDefinitions.hqu", params,
+                     new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
+    }
+
+    /**
+     * Find all {@link org.hyperic.hq.hqapi1.types.AlertDefinition}s attached
+     * to the given list of Resources.
+     *
+     * @param resources The list of Resources to query for definitions.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * a list of AlertDefinitions are returned.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public AlertDefinitionsResponse getAlertDefinitions(List<Resource> resources)
+        throws IOException {
+
+        ResourcesRequest request = new ResourcesRequest();
+        request.getResource().addAll(resources);
+
+        return doPost("alertdefinition/listDefinitionsByResources.hqu", request,
+                      new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
     }
 
     /**
@@ -156,7 +225,7 @@ public class AlertDefinitionApi extends BaseApi {
         params.put("excludeIds", new String[] { Boolean.toString(excludeIds)});
 
         return doGet("alertdefinition/listTypeDefinitions.hqu", params,
-                     AlertDefinitionsResponse.class);
+                     new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
     }
 
     /**
@@ -176,7 +245,8 @@ public class AlertDefinitionApi extends BaseApi {
 
         params.put("id", new String[] { Integer.toString(id) });
 
-        return doGet("alertdefinition/delete.hqu", params, StatusResponse.class);
+        return doGet("alertdefinition/delete.hqu", params, 
+                     new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 
     /**
@@ -196,6 +266,6 @@ public class AlertDefinitionApi extends BaseApi {
         request.getAlertDefinition().addAll(definitions);
 
         return doPost("alertdefinition/sync.hqu", request,
-                      AlertDefinitionsResponse.class);
+                      new XmlResponseHandler<AlertDefinitionsResponse>(AlertDefinitionsResponse.class));
     }
 }

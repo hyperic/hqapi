@@ -40,11 +40,13 @@ import org.hyperic.hq.hqapi1.types.MetricsResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.MetricsRescheduleRequest;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 /**
  * The Hyperic HQ Metric API.
@@ -83,7 +85,7 @@ public class MetricApi extends BaseApi {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("resourceId", new String[] { Integer.toString(resource.getId()) });
         return doGet("metric/getMetrics.hqu", params,
-                     MetricsResponse.class);
+                     new XmlResponseHandler<MetricsResponse>(MetricsResponse.class));
     }
 
     /**
@@ -106,7 +108,7 @@ public class MetricApi extends BaseApi {
         params.put("resourceId", new String[] { Integer.toString(resource.getId()) });
         params.put("enabled", new String[] { Boolean.toString(true) });
         return doGet("metric/getMetrics.hqu", params,
-                     MetricsResponse.class);
+                     new XmlResponseHandler<MetricsResponse>(MetricsResponse.class));
     }
 
     /**
@@ -129,7 +131,7 @@ public class MetricApi extends BaseApi {
         params.put("resourceId", new String[] { Integer.toString(resource.getId()) });
         params.put("enabled", new String[] { Boolean.toString(enabled) });
         return doGet("metric/getMetrics.hqu", params,
-                     MetricsResponse.class);
+                     new XmlResponseHandler<MetricsResponse>(MetricsResponse.class));
     }
 
     /**
@@ -150,7 +152,7 @@ public class MetricApi extends BaseApi {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id) });
         return doGet("metric/getMetric.hqu", params,
-                     MetricResponse.class);
+                     new XmlResponseHandler<MetricResponse>(MetricResponse.class));
     }
 
     /**
@@ -169,7 +171,7 @@ public class MetricApi extends BaseApi {
         MetricsRequest syncRequest = new MetricsRequest();
         syncRequest.getMetric().addAll(metrics);
         return doPost("metric/syncMetrics.hqu", syncRequest,
-                      StatusResponse.class);
+                      new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 
     /**
@@ -190,7 +192,7 @@ public class MetricApi extends BaseApi {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id) });
         return doGet("metric/getMetricTemplate.hqu", params,
-                     MetricTemplateResponse.class);
+                     new XmlResponseHandler<MetricTemplateResponse>(MetricTemplateResponse.class));
     }
 
     /**
@@ -211,7 +213,7 @@ public class MetricApi extends BaseApi {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("prototype", new String[] { prototype.getName() });
         return doGet("metric/getTemplates.hqu", params,
-                     MetricTemplatesResponse.class);
+                     new XmlResponseHandler<MetricTemplatesResponse>(MetricTemplatesResponse.class));
     }
 
     /**
@@ -230,7 +232,7 @@ public class MetricApi extends BaseApi {
         MetricTemplatesRequest syncRequest = new MetricTemplatesRequest();
         syncRequest.getMetricTemplate().addAll(templates);
         return doPost("metric/syncTemplates.hqu", syncRequest,
-                      StatusResponse.class);
+                      new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 
     /**
@@ -256,7 +258,8 @@ public class MetricApi extends BaseApi {
         params.put("start", new String[] { Long.toString(start) });
         params.put("end", new String[] { Long.toString(end) });
 
-        return doGet("metric/getData.hqu", params, MetricDataResponse.class);
+        return doGet("metric/getData.hqu", params, 
+                     new XmlResponseHandler<MetricDataResponse>(MetricDataResponse.class));
     }
 
     /**
@@ -289,7 +292,7 @@ public class MetricApi extends BaseApi {
         params.put("end", new String[] { Long.toString(end) });
 
         return doGet("metric/getGroupData.hqu", params,
-                     MetricsDataResponse.class);
+                     new XmlResponseHandler<MetricsDataResponse>(MetricsDataResponse.class));
     }
 
     /**
@@ -328,6 +331,44 @@ public class MetricApi extends BaseApi {
         params.put("end", new String[] { Long.toString(end) });
 
         return doGet("metric/getResourceData.hqu", params,
-                     MetricsDataResponse.class);
+                     new XmlResponseHandler<MetricsDataResponse>(MetricsDataResponse.class));
+    }
+
+    // Helper function to unroll a resource and it's children into a single list.
+    private List<Resource> getFlattenResources(List<Resource> resources) {
+        List<Resource> result = new ArrayList<Resource>();
+
+        for (Resource r : resources) {
+            result.add(r);
+            if (r.getResource().size() > 0) {
+                result.addAll(getFlattenResources(r.getResource()));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Reschedule metrics for the given list of {@link org.hyperic.hq.hqapi1.types.Resource}s.
+     * If the passed in List has child resources, those Resources will also be
+     * rescheduled.
+     *
+     * @param resources A List of {@link org.hyperic.hq.hqapi1.types.Resource}'s
+     * to reschedule.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if the
+     * metrics were successfully retrieved.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public StatusResponse reschedule(List<Resource> resources)
+        throws IOException {
+
+        List<Resource> flattened = getFlattenResources(resources);
+
+        MetricsRescheduleRequest request = new MetricsRescheduleRequest();
+        request.getResource().addAll(flattened);
+
+        return doPost("metric/reschedule.hqu", request,
+                      new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 }

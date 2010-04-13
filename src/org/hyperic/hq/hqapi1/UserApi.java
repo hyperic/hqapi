@@ -71,7 +71,8 @@ public class UserApi extends BaseApi {
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("name", new String[] { name });
-        return doGet("user/get.hqu", params, UserResponse.class);
+        return doGet("user/get.hqu", params, 
+                     new XmlResponseHandler<UserResponse>(UserResponse.class));
     }
 
     /**
@@ -90,7 +91,8 @@ public class UserApi extends BaseApi {
     {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("id", new String[] { Integer.toString(id) });
-        return doGet("user/get.hqu", params, UserResponse.class);
+        return doGet("user/get.hqu", params, 
+                     new XmlResponseHandler<UserResponse>(UserResponse.class));
     }
 
     /**
@@ -105,7 +107,7 @@ public class UserApi extends BaseApi {
         throws IOException
     {
         return doGet("user/list.hqu", new HashMap<String,String[]>(),
-                     UsersResponse.class);
+                     new XmlResponseHandler<UsersResponse>(UsersResponse.class));
     }
 
     /**
@@ -135,7 +137,8 @@ public class UserApi extends BaseApi {
         params.put("htmlEmail", new String[] { Boolean.toString(user.isActive())});
         params.put("SMSAddress", new String[] { user.getSMSAddress() });
 
-        return doGet("user/create.hqu", params, UserResponse.class);
+        return doGet("user/create.hqu", params, 
+                     new XmlResponseHandler<UserResponse>(UserResponse.class));
     }
 
     /**
@@ -154,7 +157,8 @@ public class UserApi extends BaseApi {
 
         params.put("id", new String[] { Integer.toString(id) });
 
-        return doGet("user/delete.hqu", params, StatusResponse.class);
+        return doGet("user/delete.hqu", params,
+                     new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 
     /**
@@ -173,7 +177,8 @@ public class UserApi extends BaseApi {
         UsersRequest req = new UsersRequest();
         req.getUser().add(user);
 
-        return doPost("user/sync.hqu", req, StatusResponse.class);
+        return doPost("user/sync.hqu", req, 
+                      new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 
     /**
@@ -192,7 +197,8 @@ public class UserApi extends BaseApi {
         UsersRequest request = new UsersRequest();
         request.getUser().addAll(users);
 
-        return doPost("user/sync.hqu", request, StatusResponse.class);
+        return doPost("user/sync.hqu", request,
+                      new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 
     /**
@@ -215,6 +221,6 @@ public class UserApi extends BaseApi {
         params.put("password", new String[] { password });
 
         return doGet("user/changePassword.hqu", params,
-                     StatusResponse.class);
+                     new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 }

@@ -1,12 +1,16 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.types.Alert;
-import org.hyperic.hq.hqapi1.types.Resource;
-import org.hyperic.hq.hqapi1.types.Escalation;
-import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.AlertResponse;
+import org.hyperic.hq.hqapi1.types.Escalation;
+import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.Operation;
+import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.AlertApi;
 
+import java.util.Collections;
 import java.util.List;
 
 public class AlertAck_test extends AlertTestBase {
@@ -54,6 +58,36 @@ public class AlertAck_test extends AlertTestBase {
         deleteAlertDefinitionByAlert(a);
         deleteEscalation(e);
         deleteTestUsers(users);
+    }
+    
+    public void testAckAlertAlertingPermission() throws Exception {
+        Resource platform = getLocalPlatformResource(false, false);
+        Escalation e = createEscalation();
+        Alert a = generateAlerts(platform, e);
+        validateAlert(a);
+
+        // Create user/group/role with insufficient permissions
+        List<User> users = createTestUsers(1);
+        User unprivUser = users.get(0);
+        Role alertRole = createRole(Collections.singletonList(unprivUser),
+                                    Collections.singletonList(Operation.MANAGE_PLATFORM_ALERTS));
+        Group groupWithRole = createGroup(Collections.singletonList(platform),
+                                          Collections.singletonList(alertRole));
+
+        AlertApi apiUnpriv = getApi(unprivUser.getName(), TESTUSER_PASSWORD).getAlertApi();
+
+        // Test ack (alert will be in Escalation) with an unprivileged user.
+        // Role needs alerting and at least view resource permissions
+        // in order to ack alerts
+        AlertResponse ackResponse = apiUnpriv.ackAlert(a.getId(), "Test ACK", 60000l);
+        hqAssertFailurePermissionDenied(ackResponse);
+
+        // Cleanup
+        deleteAlertDefinitionByAlert(a);
+        deleteEscalation(e);
+        deleteTestUsers(users);
+        cleanupRole(alertRole);
+        cleanupGroup(groupWithRole);
     }
 
     public void testAckUnacknowledableAlert() throws Exception {

@@ -7,7 +7,7 @@
  * normal use of the program, and does *not* fall under the heading of
  * "derived work".
  *
- * Copyright (C) [2008, 2009], Hyperic, Inc.
+ * Copyright (C) [2008-2010], Hyperic, Inc.
  * This file is part of HQ.
  *
  * HQ is free software; you can redistribute it and/or modify
@@ -62,7 +62,7 @@ public class ControlExecute_test extends ControlTestBase {
                                                             "run", arguments);
         hqAssertSuccess(executeResponse);
 
-        cleanupControllableResource(api, controllableResource);
+        cleanupResource(api, controllableResource);
     }
 
     public void testExecuteNoPermission() throws Exception {
@@ -80,6 +80,6 @@ public class ControlExecute_test extends ControlTestBase {
         hqAssertFailurePermissionDenied(executeResponse);
 
         deleteTestUsers(users);
-        cleanupControllableResource(api, controllableResource);
+        cleanupResource(api, controllableResource);
     }
 }

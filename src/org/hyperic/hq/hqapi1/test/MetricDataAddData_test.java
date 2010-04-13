@@ -126,4 +126,22 @@ public class MetricDataAddData_test extends MetricDataTestBase {
         StatusResponse response = dataApi.addData(m, dps);
         hqAssertFailureObjectNotFound(response);
     }
+    
+    public void testAddDataInvalidAvailability() throws Exception {
+        
+        MetricDataApi dataApi = getApi().getMetricDataApi();
+
+        // Find availability metric for the local platform
+        Resource platform = getLocalPlatformResource(false, false);
+        Metric availMetric = findAvailabilityMetric(platform);
+
+        List<DataPoint> dataPoints = new ArrayList<DataPoint>();
+        DataPoint dp = new DataPoint();
+        dp.setTimestamp(System.currentTimeMillis());
+        // Set invalid availability value
+        dp.setValue(2.0);
+        dataPoints.add(dp);
+        StatusResponse dataResponse = dataApi.addData(availMetric, dataPoints);
+        hqAssertFailureInvalidParameters(dataResponse);        
+    }
 }

@@ -84,7 +84,7 @@ public class AlertDefinitionSyncControlAction_test extends AlertDefinitionTestBa
 
         // Cleanup
         cleanup(response.getAlertDefinition());
-        cleanupControllableResource(api, controllableResource);
+        cleanupResource(api, controllableResource);
     }
 
     public void testAddControlActionWrongAction() throws Exception {
@@ -132,7 +132,7 @@ public class AlertDefinitionSyncControlAction_test extends AlertDefinitionTestBa
 
         // Cleanup
         cleanup(response.getAlertDefinition());
-        cleanupControllableResource(api, controllableResource);
+        cleanupResource(api, controllableResource);
     }
 
     public void testAddControlActionUncontrollableResource() throws Exception {

@@ -263,12 +263,6 @@ public class MetricData_test extends MetricTestBase {
         return groupResponse.getGroup();
     }
 
-    private void cleanupGroup(Group g) throws Exception {
-        GroupApi api = getApi().getGroupApi();
-        StatusResponse response = api.deleteGroup(g.getId());
-        hqAssertSuccess(response);
-    }
-
     public void testGetMetricGroupData() throws Exception {
 
         HQApi api = getApi();

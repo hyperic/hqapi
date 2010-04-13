@@ -27,6 +27,7 @@
 
 package org.hyperic.hq.hqapi1;
 
+import org.hyperic.hq.hqapi1.types.ApplicationsResponse;
 import org.hyperic.hq.hqapi1.types.QueueResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 
@@ -63,7 +64,7 @@ public class AutodiscoveryApi extends BaseApi {
         throws IOException
     {
         return doGet("autodiscovery/getQueue.hqu", new HashMap<String,String[]>(),
-                     QueueResponse.class);
+                     new XmlResponseHandler<QueueResponse>(QueueResponse.class));
     }
 
     /**
@@ -84,6 +85,7 @@ public class AutodiscoveryApi extends BaseApi {
 
         params.put("id", new String[] { String.valueOf(id) });
 
-        return doGet("autodiscovery/approve.hqu", params, StatusResponse.class);
+        return doGet("autodiscovery/approve.hqu", params,
+                     new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 }

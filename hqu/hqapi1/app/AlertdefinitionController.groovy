@@ -16,6 +16,10 @@ import org.hyperic.hq.events.shared.AlertDefinitionValue
 import org.hyperic.hq.measurement.shared.ResourceLogEvent
 import org.hyperic.hq.product.LogTrackPlugin
 import org.hyperic.util.config.ConfigResponse
+import org.hyperic.hq.appdef.server.session.Platform
+import org.hyperic.hq.appdef.server.session.Server
+import org.hyperic.hq.appdef.server.session.Service
+import org.hyperic.hq.authz.server.session.Resource
 import ApiController
 
 public class AlertdefinitionController extends ApiController {
@@ -56,11 +60,16 @@ public class AlertdefinitionController extends ApiController {
     }
 
     private Closure getAlertDefinitionXML(d, excludeIds) {
+    	return getAlertDefinitionXML(d, excludeIds, false)
+    }
+
+    private Closure getAlertDefinitionXML(d, excludeIds, showAllActions) {
         { out ->
             def attrs = [name: d.name,
                          description: d.description,
                          priority: d.priority,
                          active: d.active,
+                         enabled: d.enabled,
                          frequency: d.frequencyType,
                          count: d.count,
                          range: d.range,
@@ -152,6 +161,7 @@ public class AlertdefinitionController extends ApiController {
                                      c.measurementId + " for " + c.name)
                             continue
                         } else {
+                        	conditionAttrs["recoverId"] = alert.id
                             conditionAttrs["recover"] = alert.name
                         }
                     } else if (c.type == EventConstants.TYPE_CFG_CHG) {
@@ -206,6 +216,88 @@ public class AlertdefinitionController extends ApiController {
                                                   value: config.getValue('action'))
                             }
                         }
+                    } else if (showAllActions) {
+                    	AlertAction(id: a.id,
+                    				className: a.className)
+                    }
+                }
+            }
+        }
+    }
+
+    def get(params) {
+        def id = params.getOne("id")?.toInteger()
+
+        def failureXml = null
+
+        if (id == null) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Alert Definition id not given")
+        }
+
+        def definition
+        if (!failureXml) {
+            try {
+                definition = alertHelper.getById(id)
+                
+                if (!definition) {
+                	failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                							   "Alert Definition with id " + id +
+                							   " not found")
+            	}
+            } catch (PermissionException e) {
+                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+            } catch (Exception e) {
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+            }
+        }
+
+        renderXml() {
+            AlertDefinitionResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    out << getAlertDefinitionXML(definition, false, true)
+                }
+            }
+        }
+    }
+
+    def listDefinitionsByResources(params) {
+        def failureXml = null
+        def postRequest = new XmlParser().parseText(getPostData())
+        def resources = []
+        for (xmlDef in postRequest['Resource']) {
+            def resource = getResource(xmlDef.'@id'?.toInteger())
+            if (!resource) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Unable to find resource with id " + xmlDef.'@id')
+                break
+            }
+        }
+
+        def definitions = []
+        if (!failureXml) {
+            def session = org.hyperic.hq.hibernate.SessionManager.currentSession()
+            final int BATCH = 500;
+            for (int x = 0; x < resources.size(); x+=BATCH) {
+                int end = Math.min(x+BATCH, resources.size())
+                definitions.addAll(session.createQuery(
+                        "select d from AlertDefinition d where d.deleted=false " +
+                        "and d.resource in (:resources)").
+                        setParameterList("resources", resources.subList(x, end)).list())
+            }
+        }
+
+        renderXml() {
+            out << AlertDefinitionsResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    for (definition in definitions.sort {a, b -> a.id <=> b.id}) {
+                        out << getAlertDefinitionXML(definition, false)
                     }
                 }
             }
@@ -218,6 +310,8 @@ public class AlertdefinitionController extends ApiController {
         def resourceNameFilter = params.getOne('resourceNameFilter')
         def groupName = params.getOne('groupName')
         def escalationId = params.getOne('escalationId')?.toInteger()
+        def resourceId = params.getOne('resourceId')?.toInteger()
+        def children = params.getOne('children')?.toBoolean()
 
         def excludeTypeBased = params.getOne('excludeTypeBased')?.toBoolean()
         if (excludeTypeBased == null) {
@@ -254,6 +348,20 @@ public class AlertdefinitionController extends ApiController {
                 definitions = aMan.getUsing(escalation)
                 if (excludeTypeBased) {
                     definitions = definitions.findAll { it.parent == null }
+                }
+            }
+        } else if (resourceId != null) {
+            def resource = getResource(resourceId)
+            if (!resource) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Resource with id = " + resourceId +
+                                           " not found")
+            } else {
+                // TODO: Add to alert helper
+                if (children) {
+                    definitions = aMan.findRelatedAlertDefinitions(user, resource)
+                } else {
+                    definitions = aMan.findAlertDefinitions(user, resource.entityId)
                 }
             }
         } else {
@@ -369,6 +477,7 @@ public class AlertdefinitionController extends ApiController {
     def sync(params) {
         def syncRequest = new XmlParser().parseText(getPostData())
         def definitions = []
+        def sess = org.hyperic.hq.hibernate.SessionManager.currentSession()
 
         for (xmlDef in syncRequest['AlertDefinition']) {
             def failureXml = null
@@ -736,6 +845,9 @@ public class AlertdefinitionController extends ApiController {
                         isRecovery = true
 
                         // If a resource alert, look up alert by name
+                        // TODO: This needs to be looked up by alert definition id
+                        // to avoid collisions where the alert definition names
+                        // are the same
                         if (resource) {
                             log.debug("Looking up alerts for resource=" + resource.id)
                             def resourceDefs = resource.getAlertDefinitions(user)
@@ -826,8 +938,20 @@ public class AlertdefinitionController extends ApiController {
                     }
                     adv.id = newDef.id
                 } else {
+                	if (typeBased 
+                			&& (!adv.name.equals(existing.name)
+                				|| !adv.description.equals(existing.description)
+                				|| adv.priority != existing.priority
+                				|| adv.active != existing.active)) {
+                		
+                		eventBoss.updateAlertDefinitionBasic(sessionId, adv.id,
+                										 	 adv.name, adv.description, 
+                										 	 adv.priority, adv.active)
+                	}
                     eventBoss.updateAlertDefinition(sessionId, adv)
                 }
+            } catch (PermissionException e) {
+            	failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)    
             } catch (Exception e) {
                 log.error("Error updating alert definition", e)
                 failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
@@ -859,15 +983,17 @@ public class AlertdefinitionController extends ApiController {
                 pojo.unsetEscalation(user)
             }
 
-            // Keep synced defintions for sync return XML
-            definitions << pojo
+            // Keep synced definitions for sync return XML
+            definitions << pojo.id
+            sess.flush()
+            sess.clear()
         }
 
         renderXml() {
             out << AlertDefinitionsResponse() {
                 out << getSuccessXML()
-                for (alertdef in definitions) {
-                    out << getAlertDefinitionXML(alertdef, false)
+                for (alertdefid in definitions) {
+                    out << getAlertDefinitionXML(alertHelper.getById(alertdefid), false)
                 }
             }
         }

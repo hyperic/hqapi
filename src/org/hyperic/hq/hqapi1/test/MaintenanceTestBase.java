@@ -7,7 +7,7 @@
  * normal use of the program, and does *not* fall under the heading of
  * "derived work".
  *
- * Copyright (C) [2008, 2009], Hyperic, Inc.
+ * Copyright (C) [2008-2010], Hyperic, Inc.
  * This file is part of HQ.
  *
  * HQ is free software; you can redistribute it and/or modify
@@ -28,34 +28,56 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.GroupResponse;
+import org.hyperic.hq.hqapi1.types.MaintenanceEvent;
+import org.hyperic.hq.hqapi1.types.MaintenanceResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
-import org.hyperic.hq.hqapi1.types.GroupResponse;
+import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
-import org.hyperic.hq.hqapi1.types.MaintenanceEvent;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
-import org.hyperic.hq.hqapi1.GroupApi;
 
+import java.util.List;
 import java.util.Random;
 
-public abstract class MaintenanceTestBase extends HQApiTestBase {
+public abstract class MaintenanceTestBase extends AlertTestBase {
 
     public MaintenanceTestBase(String name) {
         super(name);
     }
 
-    void cleanupGroup(Group g) throws Exception {
-        GroupApi api = getApi().getGroupApi();
-        StatusResponse response = api.deleteGroup(g.getId());
+    MaintenanceEvent get(Group g) throws Exception {
+
+        MaintenanceResponse getResponse = 
+            getApi().getMaintenanceApi().get(g.getId());
+        
+        hqAssertSuccess(getResponse);
+
+        return getResponse.getMaintenanceEvent();
+    }
+    
+    MaintenanceEvent schedule(Group g, long start, long end)
+        throws Exception {
+
+        MaintenanceResponse response = 
+            getApi().getMaintenanceApi().schedule(g.getId(), start, end);
+        
         hqAssertSuccess(response);
+        
+        MaintenanceEvent event = response.getMaintenanceEvent();
+        assertNotNull("The scheduled maintenance event should not be null",
+                      event);
+        valididateMaintenanceEvent(event, g, start, end);
+        
+        return event;
     }
 
     Group getFileServerMountCompatibleGroup() throws Exception {
 
-        HQApi api = getApi();
-        ResourceApi resourceApi = api.getResourceApi();
-        GroupApi groupApi = api.getGroupApi();
+        ResourceApi resourceApi = getApi().getResourceApi();
 
         ResourcePrototypeResponse protoResponse =
                 resourceApi.getResourcePrototype("FileServer Mount");
@@ -68,21 +90,14 @@ public abstract class MaintenanceTestBase extends HQApiTestBase {
                    protoResponse.getResourcePrototype().getName(),
                    resources.getResource().size() > 0);
 
-        Random r = new Random();
-        Group g = new Group();
-        g.setName("Compatible Group for Maintenance Tests" + r.nextInt());
-        g.setResourcePrototype(protoResponse.getResourcePrototype());
-        g.getResource().addAll(resources.getResource());
-
-        GroupResponse groupResponse = groupApi.createGroup(g);
-        hqAssertSuccess(groupResponse);
-
-        return groupResponse.getGroup();
+        return createGroup(resources.getResource());
     }
 
     void valididateMaintenanceEvent(MaintenanceEvent e, Group g, long start, long end) {
         assertEquals(e.getGroupId(), g.getId().intValue());
         assertEquals(e.getStartTime(), start);
-        assertEquals(e.getEndTime(), end);        
+        assertEquals(e.getEndTime(), end);
+        assertNotNull(e.getModifiedBy());
+        assertTrue(e.getModifiedBy().trim().length() > 0);
     }
 }

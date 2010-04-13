@@ -28,13 +28,28 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
+import org.hyperic.hq.hqapi1.AlertDefinitionBuilder;
 import org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertPriority;
+import org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertConditionType;
+import org.hyperic.hq.hqapi1.types.AlertAction;
+import org.hyperic.hq.hqapi1.types.AlertCondition;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
+import org.hyperic.hq.hqapi1.types.AlertDefinitionResponse;
+import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
+import org.hyperic.hq.hqapi1.types.Metric;
+import org.hyperic.hq.hqapi1.types.Escalation;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 public abstract class AlertDefinitionTestBase extends HQApiTestBase {
 
@@ -43,18 +58,107 @@ public abstract class AlertDefinitionTestBase extends HQApiTestBase {
     }
 
     protected AlertDefinition generateTestDefinition() {
+        return generateTestDefinition("Test Alert");
+    }
+    
+    protected AlertDefinition generateTestDefinition(String name) {
         AlertDefinition d = new AlertDefinition();
 
         Random r = new Random();
-        d.setName("Test Alert Definition" + r.nextInt());
-        d.setDescription("Test Alert Description");
+        d.setName(name + " Definition" + r.nextInt());
+        d.setDescription(name + " Description");
         d.setPriority(AlertPriority.MEDIUM.getPriority());
         d.setActive(true);
         return d;
     }
+    
+    protected AlertDefinition syncAlertDefinition(AlertDefinition d) 
+        throws IOException {
+                
+        return syncAlertDefinitions(Collections.singletonList(d)).get(0);        
+    }
+    
+    protected List<AlertDefinition> syncAlertDefinitions(List<AlertDefinition> definitions) 
+        throws IOException {
 
+        AlertDefinitionApi defApi = getApi().getAlertDefinitionApi();
+
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+        int expectedSize = definitions.size();
+        assertEquals("Should have found " + expectedSize + " alert definitions from sync",
+                      expectedSize, response.getAlertDefinition().size());
+        
+        for (AlertDefinition d : response.getAlertDefinition()) {
+            validateDefinition(d);
+        }
+        
+        return response.getAlertDefinition();
+    }
+    
+    protected AlertDefinition createAvailabilityAlertDefinition(Resource resource, 
+                                                                Escalation e,
+                                                                boolean isResourceType,
+                                                                boolean willRecover,
+                                                                double availability) 
+        throws IOException {
+
+        // Find availability metric for the passed in resource
+        Metric availMetric = findAvailabilityMetric(resource);
+
+        // Create alert definition
+        String name = "Test" + (isResourceType ? " Resource Type " : " ") 
+                             + "Availability=" + availability + " Alert";
+        AlertDefinition d = generateTestDefinition(name);
+        d.setWillRecover(willRecover);
+        if (isResourceType) {
+            d.setResourcePrototype(resource.getResourcePrototype());
+        } else {
+            d.setResource(resource);
+        }
+        if (e != null) {
+            d.setEscalation(e);
+        }
+        AlertCondition threshold =
+            AlertDefinitionBuilder.createThresholdCondition(
+                                        true, availMetric.getName(),
+                                        AlertDefinitionBuilder.AlertComparator.EQUALS, 
+                                        availability);                                
+        d.getAlertCondition().add(threshold);
+        AlertDefinition newDef = syncAlertDefinition(d);
+        
+        if (isResourceType) {
+            validateTypeDefinition(newDef);
+        }
+        
+        validateAvailabilityAlertDefinition(newDef, willRecover, true);
+        
+        assertTrue("The alert definition should have " 
+                        + ((e == null) ? "no" : "an") + " escalation",
+                    (e == null) ? newDef.getEscalation() == null 
+                                : newDef.getEscalation() != null);
+        
+        return newDef;
+    }
+    
+    protected AlertDefinition getAlertDefinition(Integer id) 
+        throws IOException {
+        
+        AlertDefinitionApi defApi = getApi().getAlertDefinitionApi();
+
+        AlertDefinitionResponse response = defApi.getAlertDefinition(id);
+        hqAssertSuccess(response);
+        AlertDefinition d = response.getAlertDefinition();
+        validateDefinition(d);
+        
+        return d;
+    }
+    
     protected void validateDefinition(AlertDefinition d) {
-        assertNotNull(d.getName());
+        assertNotNull("Alert definition id is null",
+                      d.getId());
+        assertNotNull("Alert definition name is null",
+                      d.getName());
         assertTrue("Invalid frequency " + d.getFrequency(),
                    d.getFrequency() >= 0 && d.getFrequency() <= 4);
         assertTrue("Invalid priority " + d.getPriority(),
@@ -64,7 +168,197 @@ public abstract class AlertDefinitionTestBase extends HQApiTestBase {
         assertTrue("Modify time must be greater than 0",
         		   d.getMtime() > 0);
     }
+    
+    protected void validateTypeDefinition(AlertDefinition d) {
+        validateDefinition(d);
 
+        // Type alerts have parent == 0
+        assertTrue("Invalid parent id " + d.getParent() +
+                   " for type definition " + d.getName(),
+                   d.getParent() == 0);
+        assertNotNull("No ResourcePrototype found for resource type alert definition",
+                       d.getResourcePrototype());
+        assertNull("Resource type alert definition should have no resource",
+                    d.getResource());
+    }
+    
+    protected void validateAvailabilityAlertDefinition(AlertDefinition def,
+                                                       boolean willRecover,
+                                                       boolean enabled) {
+        assertTrue("The problem alert definition should be active",
+                    def.isActive());
+        assertTrue("The problem alert definition's willRecover flag should be " + willRecover,
+                    willRecover == def.isWillRecover());
+        assertTrue("The problem alert definition's internal enabled flag should be " + enabled,
+                    enabled == def.isEnabled());
+    }
+    
+    protected void validateRecoveryAlertDefinition(List<AlertDefinition> alertDefinitions)
+        throws Exception {
+
+        assertEquals("Cannot perform validation. Invalid number of alert definitions.",
+                      2, alertDefinitions.size());
+
+        AlertDefinition recoveryDef = null;
+        
+        // find recovery alert definition
+        for (AlertDefinition d : alertDefinitions) {            
+            for (AlertCondition c : d.getAlertCondition()) {
+                if (c.getType() == AlertConditionType.RECOVERY.getType()) {
+                    assertNotNull("Recovery alert definition does not have a valid recovery condition",
+                                  c.getRecover());
+                    recoveryDef = d;
+                    break;
+                }
+            }
+        }
+        
+        assertNotNull("A recovery alert definition could not be found",
+                      recoveryDef);
+        
+        AlertDefinition problemDef = null;
+        
+        // find problem alert definition
+        for (AlertDefinition d : alertDefinitions) {
+            if (!d.getId().equals(recoveryDef.getId())) {
+                problemDef = d;
+                break;
+            }
+        }        
+
+        assertNotNull("A problem alert definition could not be found",
+                       problemDef);
+        
+        validateRecoveryAlertDefinition(recoveryDef, problemDef);
+    }
+    
+    protected void validateRecoveryAlertDefinition(AlertDefinition recoveryDef,
+                                                   AlertDefinition problemDef) 
+        throws Exception {
+        
+        AlertDefinitionApi defApi = getApi().getAlertDefinitionApi();
+
+        validateDefinition(recoveryDef);
+        validateDefinition(problemDef);        
+
+        // get alert definitions with internal alert actions
+        AlertDefinitionResponse getRecoveryDefResponse = defApi.getAlertDefinition(recoveryDef.getId());
+        hqAssertSuccess(getRecoveryDefResponse);
+        AlertDefinition recovery = getRecoveryDefResponse.getAlertDefinition();
+        
+        AlertDefinitionResponse getProblemDefResponse = defApi.getAlertDefinition(problemDef.getId());
+        hqAssertSuccess(getProblemDefResponse);
+        AlertDefinition problem = getProblemDefResponse.getAlertDefinition();
+        
+        // validate escalation
+        assertNull("Recovery alert definition should not have an escalation",
+                    recovery.getEscalation());
+        
+        // validate conditions
+        assertEquals("Recovery alert definition has an invalid number of alert conditions",
+                     2, recovery.getAlertCondition().size());
+
+        AlertCondition recoveryCondition = null;
+        
+        for (AlertCondition c : recovery.getAlertCondition()) {
+            if (c.getType() == AlertConditionType.RECOVERY.getType()) {
+                assertEquals("Recovery alert definition does not have a valid recovery condition",
+                             problem.getId(), c.getRecoverId());
+                assertEquals("Recovery alert definition does not have a valid recovery condition",
+                             problem.getName(), c.getRecover());
+                recoveryCondition = c;
+            }
+        }
+
+        assertNotNull("No recovery alert condition could be found for the recovery alert definition",
+                      recoveryCondition);
+
+        // validate actions
+        assertTrue("Recovery alert definition has an invalid number of alert actions",
+                    recovery.getAlertAction().size() >= 1);
+
+        Set expectedAlertActions = new HashSet();
+        expectedAlertActions.add("com.hyperic.hq.bizapp.server.action.alert.EnableAlertDefAction"); 
+        
+        for (AlertCondition c : recovery.getAlertCondition()) {
+            if (c.getType() == AlertConditionType.THRESHOLD.getType()
+                    || c.getType() == AlertConditionType.BASELINE.getType()
+                    || c.getType() == AlertConditionType.METRIC_CHANGE.getType()) {
+                
+                expectedAlertActions.add("org.hyperic.hq.measurement.action.MetricAlertAction");                
+            }
+        }
+
+        Set actualAlertActions = new HashSet();
+        
+        for (AlertAction a : recovery.getAlertAction()) {
+            assertTrue("There was a duplicate alert action: " + a.getClassName(),
+                        actualAlertActions.add(a.getClassName()));
+        }
+        
+        assertEquals("Recovery alert definition has missing or unexpected alert actions.",
+                     expectedAlertActions, actualAlertActions);
+        
+        // if it is a resource type alert definition
+        // then validate the child recovery alert definition 
+        if (recoveryDef.getResourcePrototype() != null) {
+            validateChildRecoveryAlertDefinition(recoveryDef, problemDef);
+        }
+    }
+    
+    private void validateChildRecoveryAlertDefinition(AlertDefinition parentRecoveryDef,
+                                                      AlertDefinition parentProblemDef)
+        throws Exception {
+        
+        AlertDefinitionApi defApi = getApi().getAlertDefinitionApi();
+
+        validateTypeDefinition(parentRecoveryDef);
+        validateTypeDefinition(parentProblemDef);
+
+        // get child alert definitions
+        AlertDefinitionsResponse childRecoveryResponse = defApi.getAlertDefinitions(parentRecoveryDef);
+        hqAssertSuccess(childRecoveryResponse);
+        List<AlertDefinition> childRecoveryDefs = childRecoveryResponse.getAlertDefinition();
+        assertTrue("There must be at least one child recovery alert definition",
+                    childRecoveryDefs.size() > 0);
+
+        AlertDefinitionsResponse childProblemResponse = defApi.getAlertDefinitions(parentProblemDef);
+        hqAssertSuccess(childProblemResponse);
+        List<AlertDefinition> childProblemDefs = childProblemResponse.getAlertDefinition();
+        assertTrue("There must be at least one child problem alert definition",
+                    childProblemDefs.size() > 0);
+        assertEquals(childRecoveryDefs.size(), childProblemDefs.size());
+        
+        // now need to match up the child recovery alert definition with the
+        // corresponding child problem alert definition and validate the pair
+        
+        // create map for the child problem alert definitions for easy lookup
+        Map problemDefs = new HashMap();
+        for (AlertDefinition def : childProblemDefs) {
+            problemDefs.put(def.getId(), def);
+        }
+
+        // validate the proper pair of recovery and problem alert definitions
+        for (AlertDefinition recoveryDef : childRecoveryDefs) {
+            for (AlertCondition c : recoveryDef.getAlertCondition()) {
+                if (c.getType() == AlertConditionType.RECOVERY.getType()) {
+                    // validate child recovery alert definition
+                    validateRecoveryAlertDefinition(
+                            recoveryDef, (AlertDefinition) problemDefs.get(c.getRecoverId()));
+                    // remove so that we can verify at the end that all
+                    // child problem alert definitions were validated with
+                    // the corresponding child recovery alert definition
+                    assertNotNull(problemDefs.remove(c.getRecoverId()));
+                    break;
+                }
+            }
+        }
+        
+        assertTrue("Could not validate " + problemDefs.size() 
+                        + " child recovery alert definitions",
+                    problemDefs.isEmpty());
+    }
+    
     protected void cleanup(List<AlertDefinition> definitions) throws IOException {
 
         AlertDefinitionApi api = getApi().getAlertDefinitionApi();

@@ -30,17 +30,15 @@ package org.hyperic.hq.hqapi1.test;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
 import org.hyperic.hq.hqapi1.AlertDefinitionBuilder;
-import org.hyperic.hq.hqapi1.MetricApi;
 import org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertComparator;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.AlertCondition;
-import org.hyperic.hq.hqapi1.types.MetricsResponse;
 import org.hyperic.hq.hqapi1.types.Metric;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTestBase {
 
@@ -50,30 +48,23 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
 
     public void testValidRecoveryCondition() throws Exception {
 
-        HQApi api = getApi();
-        AlertDefinitionApi defApi = api.getAlertDefinitionApi();
-        MetricApi metricApi = api.getMetricApi();
-
         Resource platform = getLocalPlatformResource(false, false);
+        
+        // Find availability metric for the passed in resource
+        Metric m = findAvailabilityMetric(platform);
 
-        MetricsResponse metricsResponse = metricApi.getMetrics(platform, true);
-        hqAssertSuccess(metricsResponse);
-        assertTrue("No metrics found for " + platform.getName(),
-                metricsResponse.getMetric().size() > 0);
-        Metric m = metricsResponse.getMetric().get(0);
-
-        AlertDefinition def = generateTestDefinition();
+        AlertDefinition def = generateTestDefinition("Test Problem Alert");
         def.setResource(platform);
         final double THRESHOLD = 0;
         def.getAlertCondition().add(
                 AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
-                                                                AlertComparator.GREATER_THAN,
+                                                                AlertComparator.EQUALS,
                                                                 THRESHOLD));
-        AlertDefinition recoveryDef = generateTestDefinition();
+        AlertDefinition recoveryDef = generateTestDefinition("Test Recovery Alert");
         recoveryDef.setResource(platform);
         AlertCondition threshold =
                 AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
-                                                                AlertComparator.LESS_THAN,
+                                                                AlertComparator.NOT_EQUALS,
                                                                 THRESHOLD);
         AlertCondition recovery =
                 AlertDefinitionBuilder.createRecoveryCondition(true, def);
@@ -83,45 +74,35 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(def);
         definitions.add(recoveryDef);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
-        hqAssertSuccess(response);
-
-        for (AlertDefinition d : response.getAlertDefinition()) {
-            validateDefinition(d);
-
-            // TODO: Validate defs & condition ordering
-        }
-
+        
+        List<AlertDefinition> createdDefinitions = syncAlertDefinitions(definitions);
+        
+        // validate recovery alert definition
+        validateRecoveryAlertDefinition(createdDefinitions);
+        
         // cleanup
-        cleanup(response.getAlertDefinition());
+        cleanup(createdDefinitions);
     }
 
     public void testValidRecoveryConditionTypeAlert() throws Exception {
 
-        HQApi api = getApi();
-        AlertDefinitionApi defApi = api.getAlertDefinitionApi();
-        MetricApi metricApi = api.getMetricApi();
-
         Resource platform = getLocalPlatformResource(false, false);
 
-        MetricsResponse metricsResponse = metricApi.getMetrics(platform, true);
-        hqAssertSuccess(metricsResponse);
-        assertTrue("No metrics found for " + platform.getName(),
-                metricsResponse.getMetric().size() > 0);
-        Metric m = metricsResponse.getMetric().get(0);
+        // Find availability metric for the passed in resource
+        Metric m = findAvailabilityMetric(platform);
 
-        AlertDefinition def = generateTestDefinition();
+        AlertDefinition def = generateTestDefinition("Test Resource Type Problem Alert");
         def.setResourcePrototype(platform.getResourcePrototype());
         final double THRESHOLD = 0;
         def.getAlertCondition().add(
                 AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
-                                                                AlertComparator.GREATER_THAN,
+                                                                AlertComparator.EQUALS,
                                                                 THRESHOLD));
-        AlertDefinition recoveryDef = generateTestDefinition();
+        AlertDefinition recoveryDef = generateTestDefinition("Test Resource Type Recovery Alert");
         recoveryDef.setResourcePrototype(platform.getResourcePrototype());
         AlertCondition threshold =
                 AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
-                                                                AlertComparator.LESS_THAN,
+                                                                AlertComparator.NOT_EQUALS,
                                                                 THRESHOLD);
         AlertCondition recovery =
                 AlertDefinitionBuilder.createRecoveryCondition(true, def);
@@ -131,137 +112,110 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
         definitions.add(def);
         definitions.add(recoveryDef);
-        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
-        hqAssertSuccess(response);
 
-        for (AlertDefinition d : response.getAlertDefinition()) {
-            validateDefinition(d);
-
-            // TODO: Validate defs & condition ordering
-        }
-
+        List<AlertDefinition> createdDefinitions = syncAlertDefinitions(definitions);
+        
+        // validate recovery alert definition
+        validateRecoveryAlertDefinition(createdDefinitions);
+                
         // cleanup
-        cleanup(response.getAlertDefinition());
+        cleanup(createdDefinitions);
     }
 
     public void testSyncRecoveryWithoutProblemDef() throws Exception {
 
-        HQApi api = getApi();
-        AlertDefinitionApi defApi = api.getAlertDefinitionApi();
-        MetricApi metricApi = api.getMetricApi();
-
         Resource platform = getLocalPlatformResource(false, false);
 
-        MetricsResponse metricsResponse = metricApi.getMetrics(platform, true);
-        hqAssertSuccess(metricsResponse);
-        assertTrue("No metrics found for " + platform.getName(),
-                metricsResponse.getMetric().size() > 0);
-        Metric m = metricsResponse.getMetric().get(0);
-
+        // Find availability metric for the passed in resource
+        Metric m = findAvailabilityMetric(platform);
 
         // First sync the problem definition
-        AlertDefinition def = generateTestDefinition();
+        AlertDefinition def = generateTestDefinition("Test Problem Alert");
         def.setResource(platform);
         final double THRESHOLD = 0;
         def.getAlertCondition().add(
                 AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
-                                                                AlertComparator.GREATER_THAN,
+                                                                AlertComparator.EQUALS,
                                                                 THRESHOLD));
-
-        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
-        definitions.add(def);
-        AlertDefinitionsResponse downResponse = defApi.syncAlertDefinitions(definitions);
-        hqAssertSuccess(downResponse);
+        AlertDefinition problemDef = syncAlertDefinition(def);
+        validateDefinition(problemDef);
 
         // Next, sync the recovery
-        AlertDefinition recoveryDef = generateTestDefinition();
-        recoveryDef.setResource(platform);
+        AlertDefinition def2 = generateTestDefinition("Test Recovery Alert");
+        def2.setResource(platform);
         AlertCondition threshold =
                 AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
-                                                                AlertComparator.LESS_THAN,
+                                                                AlertComparator.NOT_EQUALS,
                                                                 THRESHOLD);
         AlertCondition recovery =
-                AlertDefinitionBuilder.createRecoveryCondition(true, def);
-        recoveryDef.getAlertCondition().add(threshold);
-        recoveryDef.getAlertCondition().add(recovery);
+                AlertDefinitionBuilder.createRecoveryCondition(true, problemDef);
+        def2.getAlertCondition().add(threshold);
+        def2.getAlertCondition().add(recovery);
 
-        definitions.clear();
-        definitions.add(recoveryDef);
-        AlertDefinitionsResponse recoveryResponse = defApi.syncAlertDefinitions(definitions);
-        hqAssertSuccess(recoveryResponse);
+        AlertDefinition recoveryDef = syncAlertDefinition(def2);
+        validateDefinition(recoveryDef);
+
+        // validate recovery alert definition
+        validateRecoveryAlertDefinition(recoveryDef, problemDef);
 
         // cleanup
-        cleanup(downResponse.getAlertDefinition());
-        cleanup(recoveryResponse.getAlertDefinition());
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(recoveryDef);
+        definitions.add(problemDef);
+        cleanup(definitions);
     }
 
     public void testSyncRecoveryWithoutProblemDefTypeAlert() throws Exception {
 
-        HQApi api = getApi();
-        AlertDefinitionApi defApi = api.getAlertDefinitionApi();
-        MetricApi metricApi = api.getMetricApi();
-
         Resource platform = getLocalPlatformResource(false, false);
 
-        MetricsResponse metricsResponse = metricApi.getMetrics(platform, true);
-        hqAssertSuccess(metricsResponse);
-        assertTrue("No metrics found for " + platform.getName(),
-                metricsResponse.getMetric().size() > 0);
-        Metric m = metricsResponse.getMetric().get(0);
-
+        // Find availability metric for the passed in resource
+        Metric m = findAvailabilityMetric(platform);
 
         // First sync the problem definition
-        AlertDefinition def = generateTestDefinition();
+        AlertDefinition def = generateTestDefinition("Test Resource Type Problem Alert");
         def.setResourcePrototype(platform.getResourcePrototype());
         final double THRESHOLD = 0;
         def.getAlertCondition().add(
                 AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
-                                                                AlertComparator.GREATER_THAN,
+                                                                AlertComparator.EQUALS,
                                                                 THRESHOLD));
-
-        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
-        definitions.add(def);
-        AlertDefinitionsResponse downResponse = defApi.syncAlertDefinitions(definitions);
-        hqAssertSuccess(downResponse);
+        AlertDefinition parentDown = syncAlertDefinition(def);
+        validateTypeDefinition(parentDown);
 
         // Next, sync the recovery
-        AlertDefinition recoveryDef = generateTestDefinition();
+        AlertDefinition recoveryDef = generateTestDefinition("Test Resource Type Recovery Alert");
         recoveryDef.setResourcePrototype(platform.getResourcePrototype());
         AlertCondition threshold =
                 AlertDefinitionBuilder.createThresholdCondition(true, m.getName(),
-                                                                AlertComparator.LESS_THAN,
+                                                                AlertComparator.NOT_EQUALS,
                                                                 THRESHOLD);
         AlertCondition recovery =
                 AlertDefinitionBuilder.createRecoveryCondition(true, def);
         recoveryDef.getAlertCondition().add(threshold);
         recoveryDef.getAlertCondition().add(recovery);
 
-        definitions.clear();
-        definitions.add(recoveryDef);
-        AlertDefinitionsResponse recoveryResponse = defApi.syncAlertDefinitions(definitions);
-        hqAssertSuccess(recoveryResponse);
+        AlertDefinition parentRecovery = syncAlertDefinition(recoveryDef);
+        validateTypeDefinition(parentRecovery);
 
+        // validate recovery alert definition
+        validateRecoveryAlertDefinition(parentRecovery, parentDown);
+        
         // cleanup
-        cleanup(downResponse.getAlertDefinition());
-        cleanup(recoveryResponse.getAlertDefinition());
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+        definitions.add(parentRecovery);
+        definitions.add(parentDown);
+        cleanup(definitions);
     }
-
-    // TODO: Missing attributes
-
-    // TODO: Missing condition (recovery requrires 2..)
 
     public void testInvalidRecoveryAlert() throws Exception {
 
         HQApi api = getApi();
         AlertDefinitionApi defApi = api.getAlertDefinitionApi();
-        MetricApi metricApi = api.getMetricApi();
         Resource platform = getLocalPlatformResource(false, false);
 
-        MetricsResponse metricsResponse = metricApi.getMetrics(platform, true);
-        hqAssertSuccess(metricsResponse);
-        assertTrue("No metrics found for " + platform.getName(),
-                metricsResponse.getMetric().size() > 0);
-        Metric m = metricsResponse.getMetric().get(0);
+        // Find availability metric for the passed in resource
+        Metric m = findAvailabilityMetric(platform);
 
         AlertDefinition problemDef = generateTestDefinition();
         AlertDefinition recoveryDef = generateTestDefinition();
@@ -282,6 +236,7 @@ public class AlertDefinitionSyncRecoveryCondition_test extends AlertDefinitionTe
         AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
         hqAssertFailureObjectNotFound(response);
     }
-
+    
+    // TODO: Missing attributes
     // TODO: Invalid recovery alert (wrong resource type)
 }

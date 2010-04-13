@@ -7,7 +7,7 @@
  * normal use of the program, and does *not* fall under the heading of
  * "derived work".
  *
- * Copyright (C) [2008, 2009], Hyperic, Inc.
+ * Copyright (C) [2008-2010], Hyperic, Inc.
  * This file is part of HQ.
  *
  * HQ is free software; you can redistribute it and/or modify
@@ -30,9 +30,11 @@ package org.hyperic.hq.hqapi1.test;
 import org.hyperic.hq.hqapi1.ControlApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GroupControlExecute_test extends ControlTestBase {
@@ -51,21 +53,41 @@ public class GroupControlExecute_test extends ControlTestBase {
         hqAssertFailureObjectNotFound(response);
     }
 
-    public void testExecuteValidGroup() throws Exception {
+    public void testExecuteCompatibleGroup() throws Exception {
         HQApi api = getApi();
 
-        Group controlGroup = createControllableGroup(api);
+        Group controlGroup = createControllableGroup(api, 5);
         String[] arguments = new String[0];
 
         ControlApi cApi = api.getControlApi();
         StatusResponse executeResponse = cApi.executeAction(controlGroup,
                                                             "run", arguments);
         
-        // TODO Update this when group control action execution is supported
-        //hqAssertSuccess(executeResponse);
-        hqAssertFailureNotSupported(executeResponse);
+        hqAssertSuccess(executeResponse);
 
         cleanupControllableGroup(api, controlGroup);
+    }
+
+    public void testExecuteMixedGroup() throws Exception {
+        HQApi api = getApi();
+
+        Resource platform = getLocalPlatformResource(false, false);
+        Resource service = createControllableResource(api);
+        List<Resource> resources = new ArrayList<Resource>();
+        resources.add(platform);
+        resources.add(service);
+        
+        Group mixedGroup = createGroup(resources);
+        String[] arguments = new String[0];
+
+        ControlApi cApi = api.getControlApi();
+        StatusResponse executeResponse = cApi.executeAction(mixedGroup,
+                                                            "run", arguments);
+        
+        hqAssertFailureNotSupported(executeResponse);
+
+        cleanupResource(api, service);
+        cleanupGroup(mixedGroup);
     }
 
     public void testExecuteNoPermission() throws Exception {
@@ -81,9 +103,7 @@ public class GroupControlExecute_test extends ControlTestBase {
         StatusResponse executeResponse = cApiUnpriv.executeAction(controlGroup,
                                                                   "run", new String[0]);
        
-        // TODO Update this when group control action execution is supported
-        //hqAssertFailurePermissionDenied(executeResponse);
-        hqAssertFailureNotSupported(executeResponse);
+        hqAssertFailurePermissionDenied(executeResponse);
 
         deleteTestUsers(users);
         cleanupControllableGroup(api, controlGroup);

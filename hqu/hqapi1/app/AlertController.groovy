@@ -41,8 +41,8 @@ public class AlertController extends ApiController {
                                     nextActionTime: e.nextActionTime)
                 }
                 for (l in a.actionLog) {
-                    if (l.subject) {
-                        // Ignore 'internal' logs.
+                    if (l.subject || (l.action && !l.action.alertDefinition)) {
+                        // Ignore 'internal' logs, but include escalation logs
                         AlertActionLog(timestamp: l.timeStamp,
                                        detail: l.detail,
                                        user: l.subject?.name)
@@ -52,6 +52,39 @@ public class AlertController extends ApiController {
         }
     }
 
+    def get(params) {
+        def id = params.getOne("id")?.toInteger()
+
+        def failureXml = null
+
+        if (id == null) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Alert id not given")
+        }
+
+        def alert
+        if (!failureXml) {
+            alert = getAlertById(id)
+            
+            if (!alert) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Alert with id " + id +
+                                           " not found")
+            }
+        }
+
+        renderXml() {
+            AlertResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    out << getAlertXML(alert)
+                }
+            }
+        }
+    }
+    
     def find(params) {
         Long    begin    = params.getOne("begin")?.toLong()
         Long    end      = params.getOne("end")?.toLong()
@@ -271,6 +304,7 @@ public class AlertController extends ApiController {
 
     def fix(params) {
         def ids = params.get("id")*.toInteger()
+        def reason = params.getOne("reason")
         def failureXml = null
         def alerts = []
 
@@ -285,8 +319,6 @@ public class AlertController extends ApiController {
                 if (!alert) {
                     failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                                "Unable to find alert with id = " + id)
-                } else if (!canManageAlerts(alert.definition.resource)) {
-                    failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
                 } else {
                     alertsToFix << alert
                 }
@@ -294,11 +326,13 @@ public class AlertController extends ApiController {
 
             if (!failureXml) {
                 try {
-                    // TODO: Add to AlertCategory
                     for (alert in alertsToFix) {
-                        aMan.setAlertFixed(alert)
+                    	alert.fix(user, reason)
+                        
                         alerts << getAlertById(alert.id)
                     }
+                } catch (PermissionException p) {
+                	failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
                 } catch (Exception e) {
                     failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
                                                e.getMessage())
