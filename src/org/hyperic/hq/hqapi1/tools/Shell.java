@@ -109,7 +109,9 @@ public class Shell {
                     || arg.trim().startsWith(
                             "--" + OptionParserFactory.OPT_USER)
                     || arg.trim().startsWith(
-                            "--" + OptionParserFactory.OPT_SECURE)) {
+                            "--" + OptionParserFactory.OPT_SECURE)
+                    || arg.trim().startsWith(
+                            "--" + OptionParserFactory.OPT_PROPERTIES)) {
                 connectionArgs.add(arg);
                 if( i != args.length-1 && !(args[i+1].startsWith("--"))) {
                     connectionArgs.add(args[i+1]);
