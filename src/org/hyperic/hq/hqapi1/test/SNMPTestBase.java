@@ -1,11 +1,13 @@
 package org.hyperic.hq.hqapi1.test;
 
+import org.hyperic.hq.hqapi1.AlertDefinitionBuilder;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.EscalationActionBuilder;
 import org.hyperic.hq.hqapi1.EscalationActionBuilder.EscalationActionType;
 import org.hyperic.hq.hqapi1.EscalationApi;
 import org.hyperic.hq.hqapi1.ServerConfigApi;
 import org.hyperic.hq.hqapi1.types.Alert;
+import org.hyperic.hq.hqapi1.types.AlertAction;
 import org.hyperic.hq.hqapi1.types.AlertActionLog;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertsResponse;
@@ -46,10 +48,10 @@ public abstract class SNMPTestBase extends AlertTestBase {
     }
     
     /**
-     *  Validate escalation action logs
+     *  Validate alert action logs
      */
-    public abstract void validateEscalationActionLogs(String user, 
-                                                      List<AlertActionLog> actionLogs);
+    public abstract void validateAlertActionLogs(String user, 
+                                                 List<AlertActionLog> actionLogs);
 
     public abstract String getProtocolVersion();
 
@@ -109,7 +111,7 @@ public abstract class SNMPTestBase extends AlertTestBase {
     }
 
     /**
-     * Send notications using SNMPv3
+     * Send notifications using SNMPv3
      */
     protected void testSendNotification(String protocolVersion,
                                         String notificationMechanism,
@@ -128,14 +130,106 @@ public abstract class SNMPTestBase extends AlertTestBase {
                 priv,
                 varbinds);
     }
-    
+
     private void testSendNotification(String protocolVersion,
                                       String notificationMechanism,
                                       String community,
                                       String user,
                                       boolean auth,
                                       boolean priv,
-                                      String varbinds) 
+                                      String varbinds)
+        throws Exception {
+    
+        testSendNotificationAsEscalation(
+                protocolVersion,
+                notificationMechanism,
+                community,
+                user,
+                auth,
+                priv,
+                varbinds);
+
+        testSendNotificationAsAction(
+                protocolVersion,
+                notificationMechanism,
+                community,
+                user,
+                auth,
+                priv,
+                null);        
+    }
+
+    private void testSendNotificationAsAction(String protocolVersion,
+                                              String notificationMechanism,
+                                              String community,
+                                              String user,
+                                              boolean auth,
+                                              boolean priv,
+                                              String varbinds) 
+        throws Exception {
+                
+        // Skip test if no SNMP IP address exists
+        if (getIPAddress() == null) {
+            System.out.println("SNMP IP address is null, skipping test");
+            return;
+        }
+        
+        // Update HQ SNMP server settings
+        Map<String, String> oldConfig = 
+            updateServerConfig(getSnmpConfig(protocolVersion,
+                                             notificationMechanism,
+                                             community,
+                                             user, 
+                                             auth, 
+                                             priv));
+
+        // Create alert definition
+        boolean willRecover = true;
+        double availability = 1;
+        Resource platform = getLocalPlatformResource(false, false);
+        AlertDefinition alertDef = 
+            createAvailabilityAlertDefinition(platform, null, false, willRecover, availability);
+
+        AlertAction action = 
+            AlertDefinitionBuilder.createSnmpAction(getIPAddress(),
+                                                    notificationMechanism,
+                                                    getOID(),
+                                                    varbinds);
+        alertDef.getAlertAction().add(action);
+
+        AlertDefinition updatedDef = syncAlertDefinition(alertDef);
+        
+        // Verify SNMP action
+        validateDefinition(updatedDef);
+        assertEquals("Wrong number of actions found", 
+                     1, updatedDef.getAlertAction().size());
+        AlertAction syncedAction = updatedDef.getAlertAction().get(0);
+        assertEquals("Wrong action class", 
+                     "com.hyperic.hq.bizapp.server.action.alert.SnmpAction",
+                     syncedAction.getClassName());
+        assertEquals("Wrong number of configuration options",
+                     4, syncedAction.getAlertActionConfig().size());        
+        
+        // Fire alert
+        Alert alert = fireAvailabilityAlert(updatedDef, true, willRecover, availability);        
+
+        // Validate alert action logs
+        validateAlertActionLogs(user, alert.getAlertActionLog());
+        
+        // Reset HQ server settings
+        updateServerConfig(oldConfig);
+        
+        // Cleanup
+        cleanup(Collections.singletonList(updatedDef));
+    }
+    
+    private void testSendNotificationAsEscalation(String protocolVersion,
+                                                  String notificationMechanism,
+                                                  String community,
+                                                  String user,
+                                                  boolean auth,
+                                                  boolean priv,
+                                                  String varbinds) 
         throws Exception {
         
         // Skip test if no SNMP IP address exists
@@ -195,8 +289,8 @@ public abstract class SNMPTestBase extends AlertTestBase {
             // Fire alert
             Alert alert = fireAvailabilityAlert(alertDef, true, willRecover, availability);
             
-            // Validate escalation action logs
-            validateEscalationActionLogs(user, alert.getAlertActionLog());
+            // Validate alert action logs
+            validateAlertActionLogs(user, alert.getAlertActionLog());
             
             // Reset HQ server settings
             updateServerConfig(oldConfig);

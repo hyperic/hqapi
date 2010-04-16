@@ -1,6 +1,10 @@
 
 Changes in HQApi 3.2
 
+ *) Add support to sync alert definitions with SNMP actions.
+    Functionality added primarily to do integration testing
+    for HQ-2047.
+    
  *) Add support to execute control actions for compatible groups.
  	Functionality added primarily to do integration testing
  	for HQ-2080.

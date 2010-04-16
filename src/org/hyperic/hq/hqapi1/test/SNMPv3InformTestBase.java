@@ -32,12 +32,12 @@ public class SNMPv3InformTestBase extends SNMPTestBase {
     }
 
     /**
-     *  Validate escalation action logs
+     *  Validate alert action logs
      */
-    public void validateEscalationActionLogs(String user, 
-                                             List<AlertActionLog> actionLogs) {
+    public void validateAlertActionLogs(String user, 
+                                        List<AlertActionLog> actionLogs) {
         
-        assertTrue("At least one alert escalation log is needed",
+        assertTrue("At least one alert action log is needed",
                     !actionLogs.isEmpty());
 
         String logDetail = actionLogs.get(0).getDetail();
@@ -62,6 +62,9 @@ public class SNMPv3InformTestBase extends SNMPTestBase {
             
             assertTrue("snmpTrapOID is missing",
                        logDetail.indexOf("1.3.6.1.6.3.1.1.4.1") > 0);
+            
+            // TODO: Need to validate user defined variable bindings
+            
         }
     }
 }

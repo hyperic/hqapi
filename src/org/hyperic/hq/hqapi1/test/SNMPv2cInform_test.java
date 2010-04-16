@@ -74,10 +74,10 @@ public class SNMPv2cInform_test extends SNMPTestBase {
     }
     
     /**
-     *  Validate escalation action logs
+     *  Validate alert action logs
      */
-    public void validateEscalationActionLogs(String user, 
-                                             List<AlertActionLog> actionLogs) {
+    public void validateAlertActionLogs(String user, 
+                                        List<AlertActionLog> actionLogs) {
         
         assertTrue("At least one alert escalation log is needed",
                    !actionLogs.isEmpty());
@@ -88,7 +88,14 @@ public class SNMPv2cInform_test extends SNMPTestBase {
         assertTrue("INFORM notification was not sent",
                    logDetail.indexOf("INFORM sent") > -1);
     
-        // TODO: Need to validate variable bindings
+        // validate variable bindings
+        assertTrue("sysUpTime is missing",
+                   logDetail.indexOf("1.3.6.1.2.1.1.3") > 0);
+        
+        assertTrue("snmpTrapOID is missing",
+                   logDetail.indexOf("1.3.6.1.6.3.1.1.4.1") > 0);
+
+        // TODO: Need to validate user defined variable bindings
 
     }
 }
