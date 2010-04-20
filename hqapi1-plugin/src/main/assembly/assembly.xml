@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+	<formats>
+		<format>zip</format>
+	</formats>
+
+	<fileSets>
+		<fileSet>
+			<directory>src/main/resources</directory>
+			<outputDirectory>/</outputDirectory>
+			<fileMode>0644</fileMode>
+			<directoryMode>0755</directoryMode>
+		</fileSet>
+	</fileSets>
+
+	<dependencySets>
+		<dependencySet>
+			<useProjectArtifact>false</useProjectArtifact>
+			<outputDirectory>/lib</outputDirectory>
+			<useTransitiveDependencies>false</useTransitiveDependencies>
+			<includes>
+				<include>org.hyperic.hq.hqapi:hqapi1</include>
+			</includes>
+			<fileMode>0644</fileMode>
+			<directoryMode>0755</directoryMode>
+		</dependencySet>
+		<dependencySet>
+			<useProjectArtifact>false</useProjectArtifact>
+			<outputDirectory>/public</outputDirectory>
+			<useTransitiveDependencies>false</useTransitiveDependencies>
+			<includes>
+				<include>org.hyperic.hq.hqapi:hqapi1-client</include>
+			</includes>
+			<fileMode>0644</fileMode>
+			<directoryMode>0755</directoryMode>
+		</dependencySet>
+	</dependencySets>
+</assembly>
