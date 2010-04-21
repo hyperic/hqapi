@@ -2,3 +2,8 @@
 **/.DS_Store
 .DS_Store
 logs
+**/.classpath
+**/.project
+**/.settings
+.project
+.settings
