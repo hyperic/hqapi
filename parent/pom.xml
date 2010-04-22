@@ -133,6 +133,11 @@
 			<name>Spring Release Repository</name>
 			<url>http://maven.springframework.org/release</url>
 		</repository>
+		<repository>
+			<id>java-net</id>
+			<name>java.net Repository</name>
+			<url>http://download.java.net/maven/2</url>
+		</repository>
 	</repositories>
 
 	<pluginRepositories>
@@ -140,6 +145,11 @@
 			<id>hyperic-external</id>
 			<name>Hyperic External Dependencies Repository</name>
 			<url>http://maven.hyperic.org/external</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spring-release</id>
+			<name>Spring Release Repository</name>
+			<url>http://maven.springframework.org/release</url>
 		</pluginRepository>
 	</pluginRepositories>
 
