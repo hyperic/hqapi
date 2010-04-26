@@ -1,9 +1,6 @@
-**/target
-**/.DS_Store
 .DS_Store
-logs
-**/.classpath
-**/.project
-**/.settings
+target
+.classpath
 .project
 .settings
+logs
