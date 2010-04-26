@@ -1,6 +1,11 @@
 
 Changes in HQApi 3.2
 
+ *) Updated MetricDataApi to get metrics data summary for a resource
+    or group within a specified time range. Functionality added primarily
+    to do integration testing for HHQ-3803 and HHQ-3748. No
+    corresponding CLI command was added.
+    
  *) Add support to sync alert definitions with SNMP actions.
     Functionality added primarily to do integration testing
     for HQ-2047.
