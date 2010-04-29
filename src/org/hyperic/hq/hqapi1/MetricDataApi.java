@@ -139,16 +139,16 @@ public class MetricDataApi extends BaseApi {
     }
 
     /**
-     * Get the {@link org.hyperic.hq.hqapi1.types.MetricsDataSummary} for the
+     * Get the {@link org.hyperic.hq.hqapi1.types.MetricDataSummary} for the
      * given {@link org.hyperic.hq.hqapi1.types.Resource}.
      *
      * @param resource The {@link org.hyperic.hq.hqapi1.types.Resource}.
      * @param start The start time to query, in epoch-millis.
      * @param end The end time to query, in epoch-millis.
      *
-     * @return {@link org.hyperic.hq.hqapi1.types.MetricDataSummaryResponse#SUCCESS}
+     * @return {@link org.hyperic.hq.hqapi1.types.MetricsDataSummaryResponse#SUCCESS}
      * if the data was succesfully queried.  The returned data can be retrieved
-     * via {@link org.hyperic.hq.hqapi1.types.MetricDataSummaryResponse#getMetricDataSummary()}.
+     * via {@link org.hyperic.hq.hqapi1.types.MetricsDataSummaryResponse#getMetricDataSummary()}.
      *
      * @throws IOException If a network error occurs while making the request.
      */
@@ -159,16 +159,16 @@ public class MetricDataApi extends BaseApi {
     }
 
     /**
-     * Get the {@link org.hyperic.hq.hqapi1.types.MetricsDataSummary} for the
+     * Get the {@link org.hyperic.hq.hqapi1.types.MetricDataSummary} for the
      * given {@link org.hyperic.hq.hqapi1.types.Group}.
      *
      * @param group The {@link org.hyperic.hq.hqapi1.types.Group}.
      * @param start The start time to query, in epoch-millis.
      * @param end The end time to query, in epoch-millis.
      *
-     * @return {@link org.hyperic.hq.hqapi1.types.MetricDataSummaryResponse#SUCCESS}
+     * @return {@link org.hyperic.hq.hqapi1.types.MetricsDataSummaryResponse#SUCCESS}
      * if the data was succesfully queried.  The returned data can be retrieved
-     * via {@link org.hyperic.hq.hqapi1.types.MetricDataSummaryResponse#getMetricDataSummary()}.
+     * via {@link org.hyperic.hq.hqapi1.types.MetricsDataSummaryResponse#getMetricDataSummary()}.
      *
      * @throws IOException If a network error occurs while making the request.
      */
