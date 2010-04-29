@@ -661,8 +661,19 @@ class ResourceController extends ApiController {
                 }
             }
 
+            def existingConfig = resource.getConfig()
+            // 2nd pass over configuration to unset any variables that
+            // may already exist in the existing config, but are empty in
+            // the configuration being set.
+            xmlResource['ResourceConfig'].each {
+                if ((it.'@value' && it.'@value'.length() > 0) ||
+                    (it.'@value' != null && !it.'@value'.equals(existingConfig[it.'@key']?.value))) {
+                    config[it.'@key'] = it.'@value'
+                }
+            }
+
             // Update
-            if (!configsEqual(resource.getConfig(), config)) {
+            if (!configsEqual(existingConfig, config)) {
                 try {
                     resource.setConfig(config, user)
                 } catch (Throwable t) {
