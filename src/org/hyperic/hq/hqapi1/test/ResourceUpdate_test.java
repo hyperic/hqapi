@@ -123,6 +123,71 @@ public class ResourceUpdate_test extends ResourceTestBase {
         hqAssertSuccess(deleteResponse);
     }
 
+    public void testUpdateResetConfig() throws Exception {
+        ResourceApi api = getApi().getResourceApi();
+        Resource createdResource = createTestHTTPService();
+
+        // Add pattern attribute
+        ResourceConfig patternConfig = new ResourceConfig();
+        patternConfig.setKey("pattern");
+        patternConfig.setValue("html");
+        createdResource.getResourceConfig().add(patternConfig);
+
+        StatusResponse updateResponse = api.updateResource(createdResource);
+        hqAssertSuccess(updateResponse);
+
+        ResourceResponse getResponse = api.getResource(createdResource.getId(),
+                                                       true, false);
+        hqAssertSuccess(getResponse);
+
+        Resource updatedResource = getResponse.getResource();
+        assertTrue("No configuration found for " + updatedResource.getName(),
+                   updatedResource.getResourceConfig().size() > 0);
+        boolean foundPattern = false;
+        for (ResourceConfig c : updatedResource.getResourceConfig()) {
+            if (c.getKey().equals("pattern")) {
+                assertEquals(c.getValue(), "html");
+                // Reset to ""
+                c.setValue("");
+                foundPattern = true;
+            }
+        }
+
+        assertTrue("Unable to find pattern configuration for " + updatedResource.getName(),
+                   foundPattern);
+
+        updateResponse = api.updateResource(updatedResource);
+        hqAssertSuccess(updateResponse);
+
+        getResponse = api.getResource(createdResource.getId(), true, false);
+        hqAssertSuccess(getResponse);
+
+        updatedResource = getResponse.getResource();
+        assertTrue("No configuration found for " + updatedResource.getName(),
+                   updatedResource.getResourceConfig().size() > 0);
+        foundPattern = false;
+        for (ResourceConfig c : updatedResource.getResourceConfig()) {
+            if (c.getKey().equals("pattern")) {
+                assertEquals("pattern is not empty", c.getValue(), "");
+                foundPattern = true;
+            }
+        }
+
+        assertTrue("Unable to find pattern configuration for " + updatedResource.getName(),
+                   foundPattern);
+
+        // Cannot delete resources soon after modifying them..
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            // Ignore
+        }
+
+        // Cleanup
+        StatusResponse deleteResponse = api.deleteResource(updatedResource.getId());
+        hqAssertSuccess(deleteResponse);
+    }
+
     public void testUpdateProperties() throws Exception {
 
         ResourceApi api = getApi().getResourceApi();
