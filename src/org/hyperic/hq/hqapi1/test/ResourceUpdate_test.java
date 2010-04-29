@@ -95,15 +95,21 @@ public class ResourceUpdate_test extends ResourceTestBase {
         hqAssertSuccess(updateResponse);
 
         ResourceResponse getResponse = api.getResource(createdResource.getId(),
-                                                       false, false);
+                                                       true, false);
         hqAssertSuccess(getResponse);
 
         Resource updatedResource = getResponse.getResource();
+        assertTrue("No configuration found for " + updatedResource.getName(),
+                   updatedResource.getResourceConfig().size() > 0);
+        boolean foundHostname = false;
         for (ResourceConfig c : updatedResource.getResourceConfig()) {
             if (c.getKey().equals("hostname")) {
                 assertEquals(c.getValue(), UPDATED_HOSTNAME);
+                foundHostname = true;
             }
         }
+        assertTrue("Unable to find hostname configuration for " + updatedResource.getName(),
+                   foundHostname);
 
         // Cannot delete resources soon after modifying them..
         try {
