@@ -79,6 +79,8 @@ Changes in HQApi 3.0
 
 Changes in HQApi 2.4
 
+ *) [HHQ-3925] Add agent transferPlugin() AgentAPI and associated CLI command
+
  *) [HHQ-3924] Add agent ping CLI command.
 
  *) [HHQ-3786] Allow for listing of alerts from the CLI based on resource 
