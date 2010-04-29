@@ -146,7 +146,7 @@ public class MetricDataApi extends BaseApi {
      * @param start The start time to query, in epoch-millis.
      * @param end The end time to query, in epoch-millis.
      *
-     * @return {@link org.hyperic.hq.hqapi1.types.MetricsDataSummaryResponse#SUCCESS}
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
      * if the data was succesfully queried.  The returned data can be retrieved
      * via {@link org.hyperic.hq.hqapi1.types.MetricsDataSummaryResponse#getMetricDataSummary()}.
      *
@@ -166,7 +166,7 @@ public class MetricDataApi extends BaseApi {
      * @param start The start time to query, in epoch-millis.
      * @param end The end time to query, in epoch-millis.
      *
-     * @return {@link org.hyperic.hq.hqapi1.types.MetricsDataSummaryResponse#SUCCESS}
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
      * if the data was succesfully queried.  The returned data can be retrieved
      * via {@link org.hyperic.hq.hqapi1.types.MetricsDataSummaryResponse#getMetricDataSummary()}.
      *
