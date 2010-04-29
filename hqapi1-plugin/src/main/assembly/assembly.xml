@@ -4,6 +4,8 @@
 		<format>zip</format>
 	</formats>
 
+	<baseDirectory>hqapi1</baseDirectory>
+
 	<fileSets>
 		<fileSet>
 			<directory>src/main/resources</directory>
