@@ -287,7 +287,7 @@ public class AlertDefinitionCommand extends AbstractCommand {
         p.accepts(OPT_ASSIGN_ESC, "If specified, assign the given Escalation " +
                                    "to all alert definitions in this sync").
                 withRequiredArg().ofType(String.class);
-        p.accepts(OPT_ASSIGN_SCRIPTACTION, "If specified, assign the given Escalation " +
+        p.accepts(OPT_ASSIGN_SCRIPTACTION, "If specified, assign the given script action " +
                                            "to all alert definitions in this sync").
                 withRequiredArg().ofType(String.class);
         p.accepts(OPT_ASSIGN_CONTROLACTION, "If specified, assign the given Escalation " +
