@@ -67,6 +67,7 @@ public class AlertDefinitionCommand extends AbstractCommand {
     private static String OPT_RESOURCE_NAME = "resourceName";
     private static String OPT_RESOURCE_DESC = "resourceDescription";
     private static String OPT_ALERT_NAME = "alertName";
+    private static String OPT_ALERT_PRIORITY = "alertPriority";
     private static String OPT_ID   = "id";
     private static String OPT_BATCH_SIZE = "batchSize";
     private static String OPT_ESCLATION = "escalation";
@@ -151,6 +152,10 @@ public class AlertDefinitionCommand extends AbstractCommand {
         p.accepts(OPT_COND_EXCLUDE, "If specified, exclude alert definitions " +
                                     "which have at least one condition of the " +
                                     "given type")
+                .withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_ALERT_PRIORITY, "If specified, only include alerts with " +
+                                      "the given priority.  3 = high, 2 = medium, " +
+                                      "1 = low")
                 .withRequiredArg().ofType(Integer.class);
 
         OptionSet options = getOptions(p, args);
@@ -250,6 +255,17 @@ public class AlertDefinitionCommand extends AbstractCommand {
                         i.remove();
                         break;
                     }
+                }
+            }
+        }
+
+        if (options.has(OPT_ALERT_PRIORITY)) {
+            Integer priority = (Integer)getRequired(options, OPT_ALERT_PRIORITY);
+            for (Iterator<AlertDefinition> i =
+                    alertDefs.getAlertDefinition().iterator(); i.hasNext(); ) {
+                AlertDefinition d = i.next();
+                if (d.getPriority() != priority) {
+                    i.remove();
                 }
             }
         }

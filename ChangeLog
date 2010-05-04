@@ -79,6 +79,8 @@ Changes in HQApi 3.0
 
 Changes in HQApi 2.4
 
+ *) [HHQ-3960] Allow filtering of alert definitions by priority.
+
  *) [HHQ-3925] Add agent transferPlugin() AgentAPI and associated CLI command
 
  *) [HHQ-3924] Add agent ping CLI command.
