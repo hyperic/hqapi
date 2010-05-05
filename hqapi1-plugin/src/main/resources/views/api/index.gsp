@@ -4,7 +4,7 @@
 <html>
     <%
         def version = plugin.descriptor.get('plugin.version')
-        def clientPackage = "hqapi1-" + version + ".tar.gz"
+        def clientPackage = "hqapi1-client-" + version + ".tar.gz"
         def apijarUrl = "/" + urlFor(asset:clientPackage)
     %>
 
