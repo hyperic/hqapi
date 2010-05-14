@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.hyperic.hq.hqapi</groupId>
+		<artifactId>parent</artifactId>
+		<version>3.2.BUILD-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>hqapi1-integration-tests</artifactId>
+	<packaging>pom</packaging>
+	<name>Hyperic HQAPI Integration Tests</name>
+	
+	<dependencies>
+		<dependency>
+			<groupId>org.hyperic.hq.hqapi</groupId>
+			<artifactId>hqapi1</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<testSourceDirectory>src/test/java</testSourceDirectory>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<includes>
+						<include>**/*_test.java</include>
+					</includes>
+					<excludes>
+						<exclude>**/SSL_test.java</exclude>
+						<exclude>**/SNMP*_test.java</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>snmp</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<includes>
+								<include>**/SNMP*_test.java</include>
+							</includes>
+
+							<!-- Needed to negate standard exclusion of SNMP -->
+							<excludes></excludes>
+							<!-- -->
+
+							<systemPropertyVariables>
+								<log>${log}</log>
+								<snmp-address>${address}</snmp-address>
+								<snmp-oid>${oid}</snmp-oid>
+								<snmp-variable-bindings>${variable-bindings}</snmp-variable-bindings>
+								<snmp-community>${community}</snmp-community>
+								<snmp-security-name>${security-name}</snmp-security-name>
+								<snmp-auth-protocol>${auth-protocol}</snmp-auth-protocol>
+								<snmp-auth-passphrase>${auth-passphrase}</snmp-auth-passphrase>
+								<snmp-priv-protocol>${priv-protocol}</snmp-priv-protocol>
+								<snmp-priv-passphrase>${priv-passphrase}</snmp-priv-passphrase>
+							</systemPropertyVariables>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+</project>

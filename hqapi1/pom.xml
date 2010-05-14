@@ -48,19 +48,6 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<includes>
-						<include>**/*_test.java</include>
-					</includes>
-					<excludes>
-						<exclude>**/SSL_test.java</exclude>
-						<exclude>**/SNMP*_test.java</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
 					<show>public</show>
@@ -97,11 +84,6 @@
 			<artifactId>commons-logging</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 		</dependency>
@@ -126,41 +108,5 @@
 			<artifactId>jaxb-impl</artifactId>
 		</dependency>
 	</dependencies>
-
-	<profiles>
-		<profile>
-			<id>snmp</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<includes>
-								<include>**/SNMP*_test.java</include>
-							</includes>
-
-							<!-- Needed to negate standard exclusion of SNMP -->
-							<excludes></excludes>
-							<!-- -->
-
-							<systemPropertyVariables>
-								<log>${log}</log>
-								<snmp-address>${address}</snmp-address>
-								<snmp-oid>${oid}</snmp-oid>
-								<snmp-variable-bindings>${variable-bindings}</snmp-variable-bindings>
-								<snmp-community>${community}</snmp-community>
-								<snmp-security-name>${security-name}</snmp-security-name>
-								<snmp-auth-protocol>${auth-protocol}</snmp-auth-protocol>
-								<snmp-auth-passphrase>${auth-passphrase}</snmp-auth-passphrase>
-								<snmp-priv-protocol>${priv-protocol}</snmp-priv-protocol>
-								<snmp-priv-passphrase>${priv-passphrase}</snmp-priv-passphrase>
-							</systemPropertyVariables>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 
 </project>
