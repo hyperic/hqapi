@@ -36,6 +36,7 @@ public class Shell {
 
     static {
         _commands.put("agent", new AgentCommand());
+        _commands.put("alert", new AlertCommand());
         _commands.put("alertdefinition", new AlertDefinitionCommand());
         _commands.put("application", new ApplicationCommand());
         _commands.put("autodiscovery", new AutoDiscoveryCommand());

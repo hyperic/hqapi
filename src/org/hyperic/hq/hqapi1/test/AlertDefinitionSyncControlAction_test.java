@@ -27,34 +27,6 @@ public class AlertDefinitionSyncControlAction_test extends AlertDefinitionTestBa
         super(name);
     }
 
-    // TODO: Copied from ControlTestBase in master branch.
-    private Resource createControllableResource(HQApi api)
-        throws Exception
-    {
-        ResourceApi rApi = api.getResourceApi();
-
-        ResourcePrototypeResponse protoResponse =
-                rApi.getResourcePrototype("FileServer File");
-        hqAssertSuccess(protoResponse);
-
-        Resource localPlatform = getLocalPlatformResource(false, false);
-
-        Map<String,String> config = new HashMap<String,String>();
-        // TODO: Fix for windows
-        config.put("path", "/usr/bin/true");
-
-        Random r = new Random();
-        String name = "Controllable-Resource-" + r.nextInt();
-
-        ResourceResponse resourceCreateResponse =
-                rApi.createService(protoResponse.getResourcePrototype(),
-                                   localPlatform, name, config);
-
-        hqAssertSuccess(resourceCreateResponse);
-
-        return resourceCreateResponse.getResource();
-    }
-
     public void testAddRemoveControlAction() throws Exception {
         HQApi api = getApi();
         AlertDefinitionApi defApi = api.getAlertDefinitionApi();

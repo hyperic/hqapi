@@ -45,12 +45,6 @@ public class MaintenanceTestBase extends HQApiTestBase {
         super(name);
     }
 
-    void cleanupGroup(Group g) throws Exception {
-        GroupApi api = getApi().getGroupApi();
-        StatusResponse response = api.deleteGroup(g.getId());
-        hqAssertSuccess(response);
-    }
-
     Group getFileServerMountCompatibleGroup() throws Exception {
 
         HQApi api = getApi();

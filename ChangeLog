@@ -1,6 +1,9 @@
 
 Changes in HQApi 2.5
 
+ *) Back port AlertApi to 2.x branch.  As a part of this change portions of
+    the new MetricDataApi were also backported to aid in testing.
+
 Changes in HQApi 2.4
 
  *) [HHQ-3960] Allow filtering of alert definitions by priority.

@@ -504,6 +504,17 @@
         </xs:complexType>
     </xs:element>
 
+    <!-- MetricData Requests -->
+
+    <xs:element name="DataPointsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="DataPoint" type="DataPoint" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="metricId" type="xs:int" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    
     <!-- Reschedule request -->
 
     <xs:element name="MetricsRescheduleRequest">
@@ -887,6 +898,71 @@
                     </xs:sequence>
                 </xs:extension>
             </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Alert objects -->
+
+    <xs:complexType name="EscalationState">
+        <xs:attribute name="ackedBy"        type="xs:string" use="required"/>
+        <xs:attribute name="escalationId"   type="xs:int"    use="required"/>
+        <xs:attribute name="nextActionTime" type="xs:long"   use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="AlertActionLog">
+        <xs:attribute name="detail"    type="xs:string" use="required"/>
+        <xs:attribute name="user"      type="xs:string" use="required"/>
+        <xs:attribute name="timestamp" type="xs:long"   use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="Alert">
+        <xs:sequence>
+            <xs:element name="EscalationState" type="EscalationState" minOccurs="1" maxOccurs="1" />
+            <xs:element name="AlertActionLog" type="AlertActionLog" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+
+        <xs:attribute name="reason"            type="xs:string"      use="required"/>
+        <xs:attribute name="fixed"             type="xs:boolean"     use="required"/>
+        <xs:attribute name="ctime"             type="xs:long"        use="required"/>
+        <xs:attribute name="resourceId"        type="xs:int"         use="required"/>
+        <xs:attribute name="alertDefinitionId" type="xs:int"         use="required"/>
+        <xs:attribute name="name"              type="xs:string"      use="required"/>
+        <xs:attribute name="id"                type="xs:int"         use="required"/>
+    </xs:complexType>
+
+    <!-- Alert Response objects -->
+
+    <xs:element name="AlertResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="Alert" type="Alert" minOccurs="0" maxOccurs="1"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="AlertsResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="Alert" type="Alert" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Alert Request objects -->
+
+    <xs:element name="AlertRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Alert" maxOccurs="1" type="Alert"/>
+            </xs:sequence>
         </xs:complexType>
     </xs:element>
 

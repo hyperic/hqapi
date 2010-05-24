@@ -30,9 +30,11 @@ package org.hyperic.hq.hqapi1.test;
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
 import org.hyperic.hq.hqapi1.AlertDefinitionBuilder.AlertPriority;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
+import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -51,6 +53,30 @@ public class AlertDefinitionTestBase extends HQApiTestBase {
         d.setPriority(AlertPriority.MEDIUM.getPriority());
         d.setActive(true);
         return d;
+    }
+
+    protected AlertDefinition syncAlertDefinition(AlertDefinition d)
+        throws IOException {
+
+        return syncAlertDefinitions(Collections.singletonList(d)).get(0);
+    }
+
+    protected List<AlertDefinition> syncAlertDefinitions(List<AlertDefinition> definitions)
+        throws IOException {
+
+        AlertDefinitionApi defApi = getApi().getAlertDefinitionApi();
+
+        AlertDefinitionsResponse response = defApi.syncAlertDefinitions(definitions);
+        hqAssertSuccess(response);
+        int expectedSize = definitions.size();
+        assertEquals("Should have found " + expectedSize + " alert definitions from sync",
+                      expectedSize, response.getAlertDefinition().size());
+
+        for (AlertDefinition d : response.getAlertDefinition()) {
+            validateDefinition(d);
+        }
+
+        return response.getAlertDefinition();
     }
 
     protected void validateDefinition(AlertDefinition d) {

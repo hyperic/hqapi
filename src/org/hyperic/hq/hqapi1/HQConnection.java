@@ -153,7 +153,7 @@ class HQConnection {
 
             for (String val : vals) {
                 if (val != null) {
-                    if (append) {
+                    if (idx > 0 || append) {
                         uri.append("&");
                     }
                     uri.append(key).append("=").append(urlEncode(val));

@@ -45,6 +45,8 @@ public class HQApi {
     private final AlertDefinitionApi _alertDefinitionApi;
     private final MaintenanceApi     _maintenanceApi;
     private final ResourceEdgeApi    _resourceEdgeApi;
+    private final AlertApi           _alertApi;
+    private final MetricDataApi      _metricDataApi;
     private final ApplicationApi     _applApi;
 
     /**
@@ -69,6 +71,8 @@ public class HQApi {
         _alertDefinitionApi = new AlertDefinitionApi(connection);
         _maintenanceApi   = new MaintenanceApi(connection);
         _resourceEdgeApi  = new ResourceEdgeApi(connection);
+        _alertApi         = new AlertApi(connection);
+        _metricDataApi    = new MetricDataApi(connection);
         _applApi          = new ApplicationApi(connection);
     }
 
@@ -115,6 +119,15 @@ public class HQApi {
      */
     public MetricApi getMetricApi() {
         return _metricApi;
+    }
+
+    /**
+     * Import Metric data
+     *
+     * @return The API for querying or reporting Metric information.
+     */
+    public MetricDataApi getMetricDataApi() {
+        return _metricDataApi;
     }
 
     /**
@@ -169,6 +182,15 @@ public class HQApi {
      */
     public ResourceEdgeApi getResourceEdgeApi() {
         return _resourceEdgeApi;
+    }
+
+    /**
+     * Manage Alerts
+     *
+     * @return The API for finding and managing Alerts.
+     */
+    public AlertApi getAlertApi() {
+        return _alertApi;
     }
 
     /**
