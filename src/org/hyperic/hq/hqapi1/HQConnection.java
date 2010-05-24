@@ -149,12 +149,15 @@ class HQConnection {
         for (Iterator i = params.keySet().iterator(); i.hasNext(); idx++) {
             String key = (String)i.next();
             String[] vals = params.get(key);
+            boolean append = false;
+
             for (String val : vals) {
                 if (val != null) {
-                    if (idx > 0) {
+                    if (append) {
                         uri.append("&");
                     }
                     uri.append(key).append("=").append(urlEncode(val));
+                    append = true;
                 }
             }
         }
