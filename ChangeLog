@@ -1,4 +1,6 @@
 
+Changes in HQApi 2.5
+
 Changes in HQApi 2.4
 
  *) [HHQ-3960] Allow filtering of alert definitions by priority.
