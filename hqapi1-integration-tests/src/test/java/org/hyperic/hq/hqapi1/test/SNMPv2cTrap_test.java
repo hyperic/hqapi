@@ -98,10 +98,10 @@ public class SNMPv2cTrap_test extends SNMPTestBase {
     }
     
     /**
-     *  Validate escalation action logs
+     *  Validate alert action logs
      */
-    public void validateEscalationActionLogs(String user, 
-                                             List<AlertActionLog> actionLogs) {
+    public void validateAlertActionLogs(String user, 
+                                        List<AlertActionLog> actionLogs) {
         
         assertTrue("At least one alert escalation log is needed",
                    !actionLogs.isEmpty());
@@ -111,8 +111,5 @@ public class SNMPv2cTrap_test extends SNMPTestBase {
         
         assertTrue("TRAP notification was not sent",
                     logDetail.indexOf("TRAP sent successfully") > -1);
-    
-        // TODO: Need to validate variable bindings
-
     }
 }

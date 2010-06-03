@@ -1,6 +1,7 @@
 
 import org.hyperic.hq.authz.shared.PermissionException
 import org.hyperic.hq.hqapi1.ErrorCode
+import org.hyperic.hq.appdef.server.session.AgentManagerEJBImpl as AgentMan
 
 class AgentController extends ApiController {
 
@@ -89,6 +90,49 @@ class AgentController extends ApiController {
                 } else {
                     out << getSuccessXML()
                     out << getUpXML(up)
+                }
+            }
+        }
+    }
+
+    def transferPlugin(params) {
+        def id = params.getOne('id')?.toInteger()
+        def plugin = params.getOne('plugin')
+
+        def failureXml
+        if (!id) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS, "Agent id not given")
+        } else if (!plugin) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS, "No plugin given")
+        } else {
+            try {
+                def agent = getAgent(id, null, null)
+                if (!agent) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Agent with id=" + id + " not found")
+                } else {
+                    // TODO: No api that simply takes an agent
+                    def platform = agent.platforms[0]
+                    // TODO: EJB reference..
+                    AgentMan.one.transferAgentPluginAsync(user, platform.entityId, plugin)
+                }
+            } catch (FileNotFoundException e) {
+                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                           "Plugin " + plugin + " not found")
+            } catch (PermissionException e) {
+                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+            } catch (Exception e) {
+                log.error("UnexpectedError: " + e.getMessage(), e);
+                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+            }
+        }
+
+        renderXml() {
+            out << StatusResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
                 }
             }
         }

@@ -65,6 +65,13 @@ public class ControlTestBase extends GroupTestBase {
         hqAssertSuccess(response);
     }
     
+    /**
+     * 
+     * @param resource The resource
+     * @param timeout Time in seconds to wait for a completed control history
+     * @return ControlHistory A control history within the specified timeout
+     * @throws Exception
+     */
     protected ControlHistory findControlHistory(Object resource, int timeout)
         throws Exception {
 
@@ -86,10 +93,9 @@ public class ControlTestBase extends GroupTestBase {
                 assertEquals("Wrong number of items in control history",
                              1, historyResponse.getControlHistory().size());
 
-                ControlHistory log = historyResponse.getControlHistory().get(0);
+                controlHistory = historyResponse.getControlHistory().get(0);
                 
-                if (STATUS_COMPLETED.equals(log.getStatus())) {
-                    controlHistory = log;
+                if (STATUS_COMPLETED.equals(controlHistory.getStatus())) {
                     break;
                 }
 
@@ -99,7 +105,7 @@ public class ControlTestBase extends GroupTestBase {
 
         if (controlHistory == null) {
             throw new Exception (
-                    "Unable to find a completed control history in timeout of "
+                    "Unable to find a control history in timeout of "
                             + timeout + " seconds");
         }
         

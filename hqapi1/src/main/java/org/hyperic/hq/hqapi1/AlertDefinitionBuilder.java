@@ -426,4 +426,47 @@ public class AlertDefinitionBuilder {
 
         return a;
     }
+
+    /**
+     * Create a SNMP AlertAction
+     *
+     * @param address The IP address (xxx.xxx.xxx.xxx/port) of the target engine.
+     * @param notificationMechanism The notification mechanisim.
+     * @param oid The first SNMP variable binding OID.
+     *            This OID is required and the value is the output from snmp_trap.gsp.
+     * @param variableBindings Optional SNMP variable bindings in JSONArray format. 
+     *
+     * @return An {@link org.hyperic.hq.hqapi1.types.AlertAction} that can be
+     * included in {@link org.hyperic.hq.hqapi1.types.AlertDefinition#getAlertAction()}.
+     */
+    public static AlertAction createSnmpAction(String address,
+                                               String notificationMechanism,
+                                               String oid,
+                                               String variableBindings) {
+        AlertAction a = new AlertAction();
+        a.setClassName("com.hyperic.hq.bizapp.server.action.alert.SnmpAction");
+
+        AlertActionConfig addressCfg = new AlertActionConfig();
+        addressCfg.setKey("address");
+        addressCfg.setValue(address);
+
+        AlertActionConfig notificationMechanismCfg = new AlertActionConfig();
+        notificationMechanismCfg.setKey("snmpNotificationMechanism");
+        notificationMechanismCfg.setValue(notificationMechanism);
+        
+        AlertActionConfig oidCfg = new AlertActionConfig();
+        oidCfg.setKey("oid");
+        oidCfg.setValue(oid);
+
+        AlertActionConfig varbindsCfg = new AlertActionConfig();
+        varbindsCfg.setKey("variableBindings");
+        varbindsCfg.setValue(variableBindings);
+
+        a.getAlertActionConfig().add(addressCfg);
+        a.getAlertActionConfig().add(notificationMechanismCfg);
+        a.getAlertActionConfig().add(oidCfg);
+        a.getAlertActionConfig().add(varbindsCfg);
+
+        return a;        
+    }
 }

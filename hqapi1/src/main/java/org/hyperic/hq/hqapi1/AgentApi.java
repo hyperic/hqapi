@@ -35,6 +35,7 @@ import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.AgentResponse;
 import org.hyperic.hq.hqapi1.types.AgentsResponse;
 import org.hyperic.hq.hqapi1.types.PingAgentResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 /**
  * The Hyperic HQ Agent API.
@@ -129,5 +130,27 @@ public class AgentApi extends BaseApi {
         params.put("id", new String[] { String.valueOf(agent.getId()) });
         return doGet("agent/ping.hqu", params,
                      new XmlResponseHandler<PingAgentResponse>(PingAgentResponse.class));
+    }
+
+    /**
+     * Transfer a plugin to the given {@link Agent}.  This operation is asynchronous
+     * and will result in an agent restart.
+     *
+     * @param agent The agent to ping.
+     * @param plugin The full plugin name including the -plugin.jar or -plugin.xml suffix.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} indicates
+     * the request was successful.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public StatusResponse transferPlugin(Agent agent, String plugin)
+        throws IOException
+    {
+        Map <String,String[]> params = new HashMap<String,String[]>();
+        params.put("id", new String[] { String.valueOf(agent.getId()) });
+        params.put("plugin", new String[] { plugin });
+        return doGet("agent/transferPlugin.hqu", params,
+                     new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
 }

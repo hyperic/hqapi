@@ -455,6 +455,21 @@
         <xs:attribute name="metricName"   type="xs:string" use="required"/>
     </xs:complexType>
 
+    <xs:complexType name="MetricDataSummary">
+        <xs:attribute name="lastMetric"   type="xs:double" use="optional"/>
+        <xs:attribute name="avgMetric"    type="xs:double" use="optional"/>
+        <xs:attribute name="maxMetric"    type="xs:double" use="optional"/>
+        <xs:attribute name="minMetric"    type="xs:double" use="optional"/>
+        <xs:attribute name="endTime"      type="xs:long"   use="required"/>
+        <xs:attribute name="startTime"    type="xs:long"   use="required"/>
+        <xs:attribute name="category"     type="xs:string" use="required"/>
+        <xs:attribute name="units"   	  type="xs:string" use="required"/>
+        <xs:attribute name="resourceId"   type="xs:int" use="required"/>
+        <xs:attribute name="resourceName" type="xs:string" use="required"/>        
+        <xs:attribute name="metricName"   type="xs:string" use="required"/>
+        <xs:attribute name="metricTemplateId" type="xs:int" use="required"/>
+    </xs:complexType>
+    
     <!-- Metric Responses -->
 
     <xs:element name="MetricResponse">
@@ -533,6 +548,19 @@
                 <xs:extension base="Response">
                     <xs:sequence>
                         <xs:element name="LastMetricData" type="LastMetricData" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+
+    <xs:element name="MetricsDataSummaryResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="MetricDataSummary" type="MetricDataSummary" minOccurs="0" maxOccurs="unbounded"/>
                     </xs:sequence>
                 </xs:extension>
             </xs:complexContent>

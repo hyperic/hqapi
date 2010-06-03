@@ -8,7 +8,10 @@ import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.LastMetricsDataResponse;
 import org.hyperic.hq.hqapi1.types.LastMetricDataResponse;
 import org.hyperic.hq.hqapi1.types.MetricsDataResponse;
+import org.hyperic.hq.hqapi1.types.MetricsDataSummaryResponse;
+import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.Metric;
+import org.hyperic.hq.hqapi1.types.Resource;
 
 import java.io.IOException;
 import java.util.List;
@@ -133,6 +136,57 @@ public class MetricDataApi extends BaseApi {
         params.put("id", ids);
         return doGet("metricData/getMultiLast.hqu", params, 
                      new XmlResponseHandler<LastMetricsDataResponse>(LastMetricsDataResponse.class));
+    }
+
+    /**
+     * Get the {@link org.hyperic.hq.hqapi1.types.MetricDataSummary} for the
+     * given {@link org.hyperic.hq.hqapi1.types.Resource}.
+     *
+     * @param resource The {@link org.hyperic.hq.hqapi1.types.Resource}.
+     * @param start The start time to query, in epoch-millis.
+     * @param end The end time to query, in epoch-millis.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
+     * if the data was succesfully queried.  The returned data can be retrieved
+     * via {@link org.hyperic.hq.hqapi1.types.MetricsDataSummaryResponse#getMetricDataSummary()}.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public MetricsDataSummaryResponse getSummary(Resource resource, long start, long end)
+        throws IOException
+    {
+        return getSummary(resource.getId(), start, end);
+    }
+
+    /**
+     * Get the {@link org.hyperic.hq.hqapi1.types.MetricDataSummary} for the
+     * given {@link org.hyperic.hq.hqapi1.types.Group}.
+     *
+     * @param group The {@link org.hyperic.hq.hqapi1.types.Group}.
+     * @param start The start time to query, in epoch-millis.
+     * @param end The end time to query, in epoch-millis.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS}
+     * if the data was succesfully queried.  The returned data can be retrieved
+     * via {@link org.hyperic.hq.hqapi1.types.MetricsDataSummaryResponse#getMetricDataSummary()}.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public MetricsDataSummaryResponse getSummary(Group group, long start, long end)
+        throws IOException
+    {
+        return getSummary(group.getResourceId(), start, end);
+    }
+    
+    private MetricsDataSummaryResponse getSummary(Integer resourceId, long start, long end)
+        throws IOException
+    {
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("resourceId", new String[] { resourceId.toString() });
+        params.put("start", new String[] { Long.toString(start)});
+        params.put("end", new String[] { Long.toString(end)});
+        return doGet("metricData/getSummary.hqu", params,
+                     new XmlResponseHandler<MetricsDataSummaryResponse>(MetricsDataSummaryResponse.class));    
     }
 
     /**

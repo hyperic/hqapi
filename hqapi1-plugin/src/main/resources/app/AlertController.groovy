@@ -41,8 +41,10 @@ public class AlertController extends ApiController {
                                     nextActionTime: e.nextActionTime)
                 }
                 for (l in a.actionLog) {
-                    if (l.subject || (l.action && !l.action.alertDefinition)) {
-                        // Ignore 'internal' logs, but include escalation logs
+                    if (l.subject 
+                    		|| (l.action && !l.action.alertDefinition)
+                    		|| (l.action && l.action.className == "com.hyperic.hq.bizapp.server.action.alert.SnmpAction")) {
+                        // Ignore 'internal' logs, but include escalation and snmp logs
                         AlertActionLog(timestamp: l.timeStamp,
                                        detail: l.detail,
                                        user: l.subject?.name)

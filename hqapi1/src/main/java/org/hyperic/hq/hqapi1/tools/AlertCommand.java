@@ -30,11 +30,14 @@ package org.hyperic.hq.hqapi1.tools;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
+import java.io.InputStream;
 import java.util.Arrays;
+import java.util.List;
 
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.AlertApi;
+import org.hyperic.hq.hqapi1.types.Alert;
 import org.hyperic.hq.hqapi1.types.AlertsResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
@@ -221,11 +224,26 @@ public class AlertCommand extends AbstractCommand {
         HQApi api = getApi(options);
         AlertApi alertApi = api.getAlertApi();
 
-        Integer id = (Integer)getRequired(options, OPT_ID);
+        if (options.has(OPT_ID)) {
+            Integer id = (Integer)getRequired(options, OPT_ID);
+            StatusResponse response = alertApi.delete(id);
+            checkSuccess(response);
+            System.out.println("Successfully deleted alert id " + id);
+        } else {
+            // Delete via stdin
+            InputStream is = getInputStream(options);
 
-        StatusResponse response = alertApi.delete(id);
-        checkSuccess(response);
+            AlertsResponse resp = XmlUtil.deserialize(AlertsResponse.class, is);
+            List<Alert> alerts = resp.getAlert();
 
-        System.out.println("Successfully deleted alert id " + id);
+            Integer[] alertIds = new Integer[alerts.size()];
+            for (int i = 0; i < alerts.size(); i++) {
+                alertIds[i] = alerts.get(i).getId();
+            }
+
+            StatusResponse response = alertApi.delete(alertIds);
+            checkSuccess(response);
+            System.out.println("Successfully deleted " + alertIds.length + " alerts"); 
+        }
     }
 }

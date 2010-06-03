@@ -38,6 +38,23 @@ class MetricdataController extends ApiController {
         }
     }
 
+	private Closure getMetricDataSummaryXML(resource, metricCategory, summary) {
+		{ doc ->
+			MetricDataSummary(resourceId: resource.id,
+							  resourceName: resource.name,
+							  metricTemplateId: summary.templateId,
+							  metricName: summary.label,
+							  units: summary.units,
+							  category: metricCategory,
+							  startTime: summary.beginTimeFrame,
+							  endTime: summary.endTimeFrame,
+							  minMetric: summary.minMetric.value,
+							  maxMetric: summary.maxMetric.value,
+							  avgMetric: summary.avgMetric.value,
+							  lastMetric: summary.lastMetric.value)
+		}
+	}
+	
     /**
      * Validate metric parameters, returning a Closure representing the error
      * or null if the parameters are valid
@@ -214,6 +231,49 @@ class MetricdataController extends ApiController {
                     out << getSuccessXML()
                     for (result in results) {
                         out << getLastMetricDataXML(result)
+                    }
+                }
+            }
+        }
+    }
+
+    def getSummary(params) {
+        def failureXml
+        def summary
+        def resource
+        def resourceId = params.getOne("resourceId")?.toInteger()
+        def start = params.getOne("start")?.toLong()
+        def end = params.getOne("end")?.toLong()
+
+        if (!resourceId) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Resource id not given")
+        } else {
+            resource = getResource(resourceId)
+            if (!resource) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Unable to find resource id=" + resourceId)
+            } else {
+                try {
+                    summary = resource.getMetricsSummary(user, start, end)                    
+                } catch (Exception e) {
+                    log.error("UnexpectedError: " + e.getMessage(), e)
+                    failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+                }
+            }
+        }
+
+        renderXml() {
+            MetricsDataSummaryResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    
+                    summary.each {category, results ->
+                    	results.each {item ->
+                    		out << getMetricDataSummaryXML(resource, category, item)                    	
+                    	}
                     }
                 }
             }

@@ -180,7 +180,8 @@ public class AlertdefinitionController extends ApiController {
                 for (a in d.actions) {
                     // TODO: User and Role notifications only handled through Escalation
                     if (a.className == "com.hyperic.hq.bizapp.server.action.control.ScriptAction" ||
-                        a.className == "org.hyperic.hq.bizapp.server.action.integrate.OpenNMSAction") {
+                        a.className == "org.hyperic.hq.bizapp.server.action.integrate.OpenNMSAction" ||
+                        a.className == "com.hyperic.hq.bizapp.server.action.alert.SnmpAction") {
                         AlertAction(id: a.id,
                                     className: a.className) {
                             def config = ConfigResponse.decode(a.config)

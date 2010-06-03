@@ -1,6 +1,17 @@
 
 Changes in HQApi 3.2
 
+ *) [HHQ-3962] Allow deletion of alerts in bulk via stdin.
+
+ *) Updated MetricDataApi to get metrics data summary for a resource
+    or group within a specified time range. Functionality added primarily
+    to do integration testing for HHQ-3803 and HHQ-3748. No
+    corresponding CLI command was added.
+    
+ *) Add support to sync alert definitions with SNMP actions.
+    Functionality added primarily to do integration testing
+    for HQ-2047.
+    
  *) Add support to execute control actions for compatible groups.
  	Functionality added primarily to do integration testing
  	for HQ-2080.
@@ -69,6 +80,12 @@ Changes in HQApi 3.0
     settings.
 
 Changes in HQApi 2.4
+
+ *) [HHQ-3960] Allow filtering of alert definitions by priority.
+
+ *) [HHQ-3925] Add agent transferPlugin() AgentAPI and associated CLI command
+
+ *) [HHQ-3924] Add agent ping CLI command.
 
  *) [HHQ-3786] Allow for listing of alerts from the CLI based on resource 
     description.

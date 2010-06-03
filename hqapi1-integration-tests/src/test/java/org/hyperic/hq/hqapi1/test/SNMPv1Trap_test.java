@@ -74,12 +74,12 @@ public class SNMPv1Trap_test extends SNMPTestBase {
     }
     
     /**
-     *  Validate escalation action logs
+     *  Validate alert action logs
      */
-    public void validateEscalationActionLogs(String user, 
-                                             List<AlertActionLog> actionLogs) {
+    public void validateAlertActionLogs(String user, 
+                                        List<AlertActionLog> actionLogs) {
         
-        assertTrue("At least one alert escalation log is needed",
+        assertTrue("At least one alert action log is needed",
                    !actionLogs.isEmpty());
         
         String logDetail = actionLogs.get(0).getDetail();
@@ -87,8 +87,5 @@ public class SNMPv1Trap_test extends SNMPTestBase {
         
         assertTrue("TRAP notification was not sent",
                     logDetail.indexOf("V1TRAP sent successfully") > -1);
-    
-        // TODO: Need to validate variable bindings
-
     }
 }

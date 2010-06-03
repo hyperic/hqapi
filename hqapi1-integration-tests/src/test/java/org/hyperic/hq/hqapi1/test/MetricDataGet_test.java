@@ -62,7 +62,7 @@ public class MetricDataGet_test extends MetricDataTestBase {
 
         long end = System.currentTimeMillis();
         long start = end - (8 * 60 * 60 * 1000);
-        MetricDataResponse dataResponse = dataApi.getData(m, start, end);
-        hqAssertSuccess(dataResponse);
+        MetricDataResponse dataResponse = dataApi.getData(m, end, start);
+        hqAssertFailureInvalidParameters(dataResponse);
     }   
 }

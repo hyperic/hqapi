@@ -115,12 +115,12 @@ public class SNMPv3TrapAuthPriv_test extends SNMPTestBase {
     }
 
     /**
-     *  Validate escalation action logs
+     *  Validate alert action logs
      */
-    public void validateEscalationActionLogs(String user, 
-                                             List<AlertActionLog> actionLogs) {
+    public void validateAlertActionLogs(String user, 
+                                        List<AlertActionLog> actionLogs) {
         
-        assertTrue("At least one alert escalation log is needed",
+        assertTrue("At least one alert action log is needed",
                    !actionLogs.isEmpty());
         
         String logDetail = actionLogs.get(0).getDetail();
