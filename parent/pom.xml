@@ -15,6 +15,8 @@
 
 		<clover.version>3.0.1</clover.version>
 		<commons-logging.version>1.0.4</commons-logging.version>
+		<groovy.version>1.6.7</groovy.version>
+		<hq.rendit.version>4.5.0.BUILD-SNAPSHOT</hq.rendit.version>
 		<httpclient.version>3.1</httpclient.version>
 		<jopt-simple.version>3.2</jopt-simple.version>
 		<junit.version>4.4</junit.version>

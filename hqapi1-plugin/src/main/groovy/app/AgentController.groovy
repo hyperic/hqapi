@@ -1,7 +1,9 @@
 
+import org.hyperic.hq.appdef.shared.AgentManager;
 import org.hyperic.hq.authz.shared.PermissionException
+import org.hyperic.hq.context.Bootstrap;
 import org.hyperic.hq.hqapi1.ErrorCode
-import org.hyperic.hq.appdef.server.session.AgentManagerEJBImpl as AgentMan
+
 
 class AgentController extends ApiController {
 
@@ -113,8 +115,7 @@ class AgentController extends ApiController {
                 } else {
                     // TODO: No api that simply takes an agent
                     def platform = agent.platforms[0]
-                    // TODO: EJB reference..
-                    AgentMan.one.transferAgentPluginAsync(user, platform.entityId, plugin)
+                    Bootstrap.getBean(AgentManager.class).transferAgentPluginAsync(user, platform.entityId, plugin)
                 }
             } catch (FileNotFoundException e) {
                 failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
