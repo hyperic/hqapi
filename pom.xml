@@ -139,6 +139,10 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>maven-scm-plugin</groupId>
+				<version>2.0-beta-9</version>
+			</plugin>
 		</plugins>
 		<extensions>
 			<extension>
@@ -208,8 +212,7 @@
 	</organization>
 
 	<scm>
-		<connection>scm:git:git://github.com/hyperic/hqapi.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/~/hyperic/hqapi.git</developerConnection>
+		<developerConnection>scm:git:git@github.com:hyperic/hqapi.git</developerConnection>
 		<url>http://github.com/hyperic/hqapi</url>
 	</scm>
 
