@@ -19,7 +19,7 @@
 		<jopt-simple.version>3.2</jopt-simple.version>
 		<junit.version>4.4</junit.version>
 		<log4j.version>1.2.14</log4j.version>
-		<wadl.version>1.0-SNAPSHOT</wadl.version>
+		<wadl.version>1.1.20100120</wadl.version>
 		<spring.version>3.0.1.RELEASE</spring.version>
 		<jaxb.version>2.1</jaxb.version>
 	</properties>
