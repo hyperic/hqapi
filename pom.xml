@@ -140,7 +140,7 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>maven-scm-plugin</groupId>
+				<artifactId>maven-release-plugin</artifactId>
 				<version>2.0-beta-9</version>
 			</plugin>
 		</plugins>
