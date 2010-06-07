@@ -25,31 +25,6 @@
 					</descriptors>
 				</configuration>
 			</plugin>
-				<plugin>
-					<groupId>org.codehaus.groovy.maven</groupId>
-					<artifactId>gmaven-plugin</artifactId>
-					<version>1.0</version>
-					<dependencies>
-						<dependency>
-							<groupId>org.codehaus.groovy.maven.runtime</groupId>
-							<artifactId>gmaven-runtime-1.6</artifactId>
-							<version>1.0</version>
-						</dependency>
-						<dependency>
-							<groupId>org.codehaus.groovy</groupId>
-							<artifactId>groovy-all</artifactId>
-							<version>${groovy.version}</version>
-						</dependency>
-					</dependencies>
-					<executions>
-						<execution>
-							<goals>
-								<goal>compile</goal>
-								<goal>testCompile</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
 		</plugins>
 	</build>
 
@@ -64,17 +39,6 @@
 			<artifactId>hqapi1-client</artifactId>
 			<version>${project.version}</version>
 			<type>tar.gz</type>
-		</dependency>
-		<dependency>
-			<groupId>org.hyperic.hq</groupId>
-			<artifactId>hq-rendit</artifactId>
-			<version>${hq.rendit.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.groovy</groupId>
-			<artifactId>groovy-all</artifactId>
-			<version>${groovy.version}</version>
 		</dependency>
 	</dependencies>
 
