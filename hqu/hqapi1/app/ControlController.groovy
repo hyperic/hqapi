@@ -105,20 +105,29 @@ class ControlController extends ApiController {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                        "No action given")
         } else {
-            try {
-                resource.runAction(user, action, arguments)
-            } catch (org.hyperic.hq.product.PluginException e) {
-                failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
-                                           "Resource id " + resourceId +
-                                           " does not support action " + action)
-            } catch (PermissionException e) {
-                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
-            } catch (GroupNotCompatibleException e) {
-            	failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
-            							   "Control actions not supported for mixed groups")
-            } catch (Exception e) {
-                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
-                                           "Unexpected error: " + e.getMessage())
+
+            def actions = resource.getControlActions(user)
+            if (!actions.contains(action)) {
+                failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                           "Resource type " + resource.prototype.name +
+                                           " does not support action " + action +
+                                           ". Possible values: " + actions)
+            } else {
+                try {
+                    resource.runAction(user, action, arguments)
+                } catch (org.hyperic.hq.product.PluginException e) {
+                    failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
+                                               "Resource id " + resourceId +
+                                               " does not support action " + action)
+                } catch (PermissionException e) {
+                    failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+                } catch (GroupNotCompatibleException e) {
+                    failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
+                                               "Control actions not supported for mixed groups")
+                } catch (Exception e) {
+                    failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
+                                               "Unexpected error: " + e.getMessage())
+                }
             }
         }
 
