@@ -158,6 +158,28 @@
 				<module>hqapi1-integration-tests</module>
 			</modules>
 		</profile>
+		<profile>
+			<id>release</id>
+			<modules>
+				<module>hqapi1</module>
+				<module>hqapi1-client</module>
+				<module>hqapi1-plugin</module>
+				<module>hqapi1-integration-tests</module>
+			</modules>
+			<build>
+			<pluginManagement>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+				 		<configuration>
+          					<skipTests>true</skipTests>
+        				</configuration>
+					</plugin>
+				</plugins>
+			</pluginManagement>
+			</build>
+		</profile>
 	</profiles>
 
 	<repositories>
