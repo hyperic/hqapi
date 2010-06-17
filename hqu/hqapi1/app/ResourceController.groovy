@@ -11,6 +11,7 @@ class ResourceController extends ApiController {
     private static final String PROP_FQDN        = "fqdn"
     private static final String PROP_INSTALLPATH = "installPath"
     private static final String PROP_AIIDENIFIER = "autoIdentifier"
+    private static final String PROP_AGENT_ID    = "agentId"
 
     // TODO: move into ResourceCategory
     private getLocation(r) {
@@ -637,6 +638,19 @@ class ResourceController extends ApiController {
                                          "No FQDN given for " + name)
                 } else {
                     config.put(PROP_FQDN, fqdn.'@value')
+                }
+                
+                // Add agent info
+        		def xmlAgent = xmlResource['Agent']        		
+        		if (xmlAgent) {
+        			def agentId = xmlAgent[0].'@id'?.toInteger()
+                	def agent = getAgent(agentId, null, null)
+                	if (!agent) {
+                    	return getFailureXML(ErrorCode.OBJECT_NOT_FOUND ,
+                                         "Unable to find agent id=" + agentId)
+                	} else {
+                		config.put(PROP_AGENT_ID, agentId)
+                	}
                 }
             } else if (prototype.isServerPrototype()) {
                 def aiid = xmlResource['ResourceInfo'].find {
