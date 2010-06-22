@@ -201,6 +201,8 @@ public abstract class HQApiTestBase extends TestCase {
         List<String> invalidPlatforms = new ArrayList<String>();
         invalidPlatforms.add("Network Device");
         invalidPlatforms.add("Network Host");
+        invalidPlatforms.add("VMware vSphere Host");
+        invalidPlatforms.add("VMware vSphere VM");
         
         for (Resource r : resourceResponse.getResource()) {
             if (!invalidPlatforms.contains(r.getResourcePrototype().getName())) {
