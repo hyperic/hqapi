@@ -577,6 +577,10 @@ class ResourceController extends ApiController {
         }
         return config.size() == 0;
     }
+    
+    private generateVSpherePlatformName(name, fqdn) {
+    	return name + " (" + fqdn + ")"
+    }
 
     private syncResource(xmlResource, parent) {
 
@@ -605,6 +609,20 @@ class ResourceController extends ApiController {
                                  "Resource name not given")
         }
 
+        def xmlPrototype = xmlResource['ResourcePrototype']
+        if (!xmlPrototype) {
+            return getFailureXML(ErrorCode.INVALID_PARAMETERS ,
+                                 "Resource prototype not given for " + name)
+        }
+
+        def prototype = resourceHelper.find(prototype: xmlPrototype.'@name')
+
+        if (!prototype) {
+            return getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                 "No ResourcePrototype found for " +
+                                 name)
+        }
+        
         def resource = null
         if (id) {
             resource = getResource(id)
@@ -626,24 +644,23 @@ class ResourceController extends ApiController {
                 def fqdn = xmlResource['ResourceInfo'].find { it.'@key' == PROP_FQDN }
                 if (fqdn) {
                 	resource = resourceHelper.find('byFqdn':fqdn.'@value')
+                	
+                	// Automatically rename vSphere platforms to ensure uniqueness
+                	if (!resource && prototype.isVSpherePlatformPrototype()) {
+                		// check to see if the platform name is already used
+                		def anotherPlatformWithSameName = resourceHelper.find('platform':name)
+                		
+                		if (anotherPlatformWithSameName) {
+                			// rename platform using this convention: name (fqdn)
+                			def uniqueName = generateVSpherePlatformName(name, fqdn.'@value')
+                			name = uniqueName
+                			config.name = uniqueName
+                		}
+                	}
                 } else {
                 	resource = resourceHelper.find('platform':name)
                 }
             }
-        }
-
-        def xmlPrototype = xmlResource['ResourcePrototype']
-        if (!xmlPrototype) {
-            return getFailureXML(ErrorCode.INVALID_PARAMETERS ,
-                                 "Resource prototype not given for " + name)
-        }
-
-        def prototype = resourceHelper.find(prototype: xmlPrototype.'@name')
-
-        if (!prototype) {
-            return getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                 "No ResourcePrototype found for " +
-                                 name)
         }
 
         if (resource) {
@@ -655,6 +672,17 @@ class ResourceController extends ApiController {
                                          "No FQDN given for " + name)
                 } else {
                     config.put(PROP_FQDN, fqdn.'@value')
+                }
+                
+                // Automatically rename vSphere platforms to ensure uniqueness
+                if (prototype.isVSpherePlatformPrototype()) {
+                	def uniqueName = generateVSpherePlatformName(name, fqdn.'@value')
+                	if (resource.name.equals(uniqueName)) {
+                		// platform was previously automatically renamed,
+                		// so keep using that name
+                		name = uniqueName
+                		config.name = uniqueName
+                	}
                 }
                 
                 // Add agent info
