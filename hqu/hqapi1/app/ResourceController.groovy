@@ -358,12 +358,13 @@ class ResourceController extends ApiController {
     def get(params) {
         def id = params.getOne("id")?.toInteger()
         def platformName = params.getOne("platformName")
+        def fqdn = params.getOne("fqdn")
         boolean children = params.getOne("children", "false").toBoolean()
         boolean verbose = params.getOne("verbose", "false").toBoolean()
 
         def resource = null
         def failureXml
-        if (!id && !platformName) {
+        if (!id && !platformName && !fqdn) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             if (id) {
@@ -379,6 +380,17 @@ class ResourceController extends ApiController {
                     failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                                "Platform '" + platformName +
                                                "' not found")
+                }
+            } else if (fqdn) {
+                try {
+                	resource = resourceHelper.find('byFqdn':fqdn)
+                    if (!resource) {
+                        failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Platform fqdn='" + fqdn +
+                                               "' not found")
+                    }
+                } catch (PermissionException pe) {
+                	failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
                 }
             }
         }
@@ -611,7 +623,12 @@ class ResourceController extends ApiController {
                 }
             } else {
                 // Assume platform
-                resource = resourceHelper.find('platform':name)
+                def fqdn = xmlResource['ResourceInfo'].find { it.'@key' == PROP_FQDN }
+                if (fqdn) {
+                	resource = resourceHelper.find('byFqdn':fqdn.'@value')
+                } else {
+                	resource = resourceHelper.find('platform':name)
+                }
             }
         }
 
