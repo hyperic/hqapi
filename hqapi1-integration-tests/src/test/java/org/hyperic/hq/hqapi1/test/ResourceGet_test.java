@@ -7,7 +7,7 @@
  * normal use of the program, and does *not* fall under the heading of
  * "derived work".
  * 
- * Copyright (C) [2008, 2009], Hyperic, Inc.
+ * Copyright (C) [2008-2010], Hyperic, Inc.
  * This file is part of HQ.
  * 
  * HQ is free software; you can redistribute it and/or modify
@@ -27,9 +27,14 @@
 
 package org.hyperic.hq.hqapi1.test;
 
+import java.util.List;
+
+import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourceInfo;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
+import org.hyperic.hq.hqapi1.types.User;
 
 public class ResourceGet_test extends ResourceTestBase {
 
@@ -149,5 +154,59 @@ public class ResourceGet_test extends ResourceTestBase {
         ResourceResponse getResponse = api.getPlatformResource("Invalid platform",
                                                                false, false);
         hqAssertFailureObjectNotFound(getResponse);
+    }
+    
+    public void testGetPlatformResourceByFqdn() throws Exception {
+
+        Resource r = getLocalPlatformResource(false, false);
+        
+        String fqdn = getFqdn(r);
+        assertNotNull("Platform has no fqdn", fqdn);
+        
+        ResourceResponse getResponse = 
+            getApi().getResourceApi().getPlatformResourceByFqdn(fqdn, false, false);
+        
+        hqAssertSuccess(getResponse);
+        Resource resource = getResponse.getResource();
+        validateResource(resource);
+    }
+
+    public void testGetPlatformResourceByFqdnNoPermission() throws Exception {
+
+        Resource r = getLocalPlatformResource(false, false);
+        
+        String fqdn = getFqdn(r);
+        assertNotNull("Platform has no fqdn", fqdn);
+
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+        HQApi apiUnpriv = getApi(user.getName(), TESTUSER_PASSWORD);
+
+        ResourceResponse getResponse = 
+            apiUnpriv.getResourceApi().getPlatformResourceByFqdn(fqdn, false, false);
+        
+        hqAssertFailurePermissionDenied(getResponse);
+
+        deleteTestUsers(users);
+    }
+    
+    public void testGetInvalidPlatformResourceByFqdn() throws Exception {
+
+        ResourceApi api = getApi().getResourceApi();
+
+        ResourceResponse getResponse = api.getPlatformResourceByFqdn("Invalid platform fqdn",
+                                                                     false, false);
+        hqAssertFailureObjectNotFound(getResponse);
+    }
+    
+    private String getFqdn(Resource r) {
+        String fqdn = null;
+        for (ResourceInfo ri : r.getResourceInfo()) {
+            if ("fqdn".equals(ri.getKey())) {
+                fqdn = ri.getValue();
+                break;
+            }
+        }
+        return fqdn;
     }
 }

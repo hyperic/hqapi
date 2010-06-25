@@ -106,7 +106,15 @@ class ControlController extends ApiController {
                                        "No action given")
         } else {
             try {
-                resource.runAction(user, action, arguments)
+            	def actions = resource.getControlActions(user)
+            	if (!actions.contains(action)) {
+                	failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                           "Resource type " + resource.prototype.name +
+                                           " does not support action " + action +
+                                           ". Possible values: " + actions)
+            	} else {
+                    resource.runAction(user, action, arguments)
+                }
             } catch (org.hyperic.hq.product.PluginException e) {
                 failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
                                            "Resource id " + resourceId +
@@ -114,8 +122,8 @@ class ControlController extends ApiController {
             } catch (PermissionException e) {
                 failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
             } catch (GroupNotCompatibleException e) {
-            	failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
-            							   "Control actions not supported for mixed groups")
+                failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
+                                           "Control actions not supported for mixed groups")
             } catch (Exception e) {
                 failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
                                            "Unexpected error: " + e.getMessage())

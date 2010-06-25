@@ -29,6 +29,7 @@ package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ControlActionResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.ControlApi;
 import org.hyperic.hq.hqapi1.HQApi;
@@ -78,6 +79,27 @@ public class ControlAction_test extends ControlTestBase {
         assertEquals("run", response.getAction().get(0));
 
         cleanupResource(api, controllableResource);   
+    }
+
+    public void testControlActionInvalidAction() throws Exception {
+        HQApi api = getApi();
+        ControlApi cApi = getApi().getControlApi();
+
+        Resource controllableResource = createControllableResource(api);
+
+        ControlActionResponse response = cApi.getActions(controllableResource);
+        hqAssertSuccess(response);
+
+        assertTrue("Should have found 1 action for " +
+                   controllableResource.getName(), response.getAction().size() == 1);
+
+        assertEquals("run", response.getAction().get(0));
+
+        StatusResponse executeResponse = cApi.executeAction(controllableResource,
+                                                            "badAction", new String[] {});
+        hqAssertFailureInvalidParameters(executeResponse);
+
+        cleanupResource(api, controllableResource);
     }
 
     public void testControlActionNoPermission() throws Exception {

@@ -130,28 +130,36 @@ public class Shell {
         if (host == null) {
             host = clientProps.getProperty(OptionParserFactory.OPT_HOST);
         }
-        System.setProperty(OptionParserFactory.SYSTEM_PROP_PREFIX + OptionParserFactory.OPT_HOST, host);
-        
+        if (host != null) {
+            System.setProperty(OptionParserFactory.SYSTEM_PROP_PREFIX + OptionParserFactory.OPT_HOST, host);
+        }
+
         Integer port;
         if (options.hasArgument(OptionParserFactory.OPT_PORT)) {
             port = (Integer)options.valueOf(OptionParserFactory.OPT_PORT);
         } else {
             port = Integer.parseInt(clientProps.getProperty(OptionParserFactory.OPT_PORT, "7080"));
         }
-        System.setProperty(OptionParserFactory.SYSTEM_PROP_PREFIX + OptionParserFactory.OPT_PORT, port.toString());
+        if (port != null) {
+            System.setProperty(OptionParserFactory.SYSTEM_PROP_PREFIX + OptionParserFactory.OPT_PORT, port.toString());
+        }
 
         String user = (String)options.valueOf(OptionParserFactory.OPT_USER);
         if (user == null) {
             user = clientProps.getProperty(OptionParserFactory.OPT_USER);
         }
-        System.setProperty(OptionParserFactory.SYSTEM_PROP_PREFIX + OptionParserFactory.OPT_USER, user);
+        if (user != null) {
+            System.setProperty(OptionParserFactory.SYSTEM_PROP_PREFIX + OptionParserFactory.OPT_USER, user);
+        }
+
         String password = (String)options.valueOf(OptionParserFactory.OPT_PASS);
         if (password == null) {
             password = clientProps.getProperty(OptionParserFactory.OPT_PASS);
         }
 
-        if (password == null) {
-            // Prompt for password
+        if (host != null && port != null && user != null && password == null) {
+            // Prompt for password, but only if other connection properties
+            // have been specified.
             try {
                 char[] passwordArray = PasswordField.getPassword(System.in,
                                                                  "Enter password: ");
@@ -161,7 +169,11 @@ public class Shell {
                 System.exit(-1);
             }
         }
-        System.setProperty(OptionParserFactory.SYSTEM_PROP_PREFIX + OptionParserFactory.OPT_PASS,password);
+        if (password != null) {
+            System.setProperty(OptionParserFactory.SYSTEM_PROP_PREFIX + OptionParserFactory.OPT_PASS,password);
+        }
+
+
         Boolean secure = options.hasArgument(OptionParserFactory.OPT_SECURE[0]) ||
                          Boolean.valueOf(clientProps.getProperty(OptionParserFactory.OPT_SECURE[1],
                                                                  "false"));
@@ -196,6 +208,7 @@ public class Shell {
         } catch (Exception e) {
            System.err.println("Error parsing command line connection properties.  Cause: "
                             + e.getMessage());
+           e.printStackTrace(System.err);
            System.exit(1);
         }
         final ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(
