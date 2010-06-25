@@ -140,9 +140,7 @@ class ApplicationController extends ApiController {
         def newApp
         try {
             applicationValue.applicationType = appMan.findApplicationType(1)
-            newApp = appMan.createApplication(user, applicationValue, new ArrayList())
-            // Initialize appServices to avoid NPE
-            newApp.appServices = new ArrayList()
+            newApp = appMan.createApplication(user, applicationValue)
         } catch (AppdefDuplicateNameException e) {
             failureXml =  getFailureXML(ErrorCode.OBJECT_EXISTS,
                                         "Existing application with name " + appName +
