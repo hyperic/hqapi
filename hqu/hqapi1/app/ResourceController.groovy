@@ -651,7 +651,6 @@ class ResourceController extends ApiController {
                 		def anotherPlatformWithSameName = resourceHelper.find('platform':name)
                 		
                 		if (anotherPlatformWithSameName) {
-                			// rename platform using this convention: name (fqdn)
                 			def uniqueName = generateVSpherePlatformName(name, fqdn.'@value')
                 			name = uniqueName
                 			config.name = uniqueName
@@ -682,6 +681,15 @@ class ResourceController extends ApiController {
                 		// so keep using that name
                 		name = uniqueName
                 		config.name = uniqueName
+                	} else {
+                		// check to see if the new platform name is already used
+                		def platformWithSameName = resourceHelper.find('platform':name)
+                		
+                		if (platformWithSameName != null
+                				&& platformWithSameName.id != resource.id) {
+                			name = uniqueName
+                			config.name = uniqueName
+                		}
                 	}
                 }
                 
