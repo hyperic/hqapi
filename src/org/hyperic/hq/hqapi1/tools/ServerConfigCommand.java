@@ -133,24 +133,12 @@ public class ServerConfigCommand extends AbstractCommand {
         String key = (String)getRequired(options, OPT_KEY);
         String value = (String)getRequired(options, OPT_VALUE);
 
-        ServerConfigResponse response = configApi.getConfig();
-        checkSuccess(response);
+        ServerConfig config = new ServerConfig();
+        config.setKey(key);
+        config.setValue(value);
 
-        List<ServerConfig> config = response.getServerConfig();
-        boolean found = false;
-        for (ServerConfig c : config) {
-            if (c.getKey().equals(key)) {
-                c.setValue(value);
-                found = true;
-            }
-        }
-
-        if (!found) {
-            System.err.print("Unknown configuration parameter " + key);
-        } else {
-            StatusResponse setResponse = configApi.setConfig(config);
-            checkSuccess(setResponse);
-            System.out.println("Successfully updated HQ configuration.");
-        }
+        StatusResponse setResponse = configApi.setConfig(config);
+        checkSuccess(setResponse);
+        System.out.println("Successfully updated HQ configuration.");
     }
 }
