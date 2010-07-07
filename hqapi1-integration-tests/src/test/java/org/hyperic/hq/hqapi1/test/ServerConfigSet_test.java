@@ -36,21 +36,18 @@ public class ServerConfigSet_test extends HQApiTestBase {
         ServerConfigResponse configResponse = sApi.getConfig();
         hqAssertSuccess(configResponse);
 
-        List<ServerConfig> configs = configResponse.getServerConfig();
-        for (ServerConfig config : configs) {
-            if (config.getKey().equals("HQ_ALERTS_ENABLED")) {
-                config.setValue("false");
-            }
-        }
+        ServerConfig c = new ServerConfig();
+        c.setKey("HQ_ALERTS_ENABLED");
+        c.setValue("false");
 
-        StatusResponse response = sApi.setConfig(configs);
+        StatusResponse response = sApi.setConfig(c);
         hqAssertSuccess(response);
 
         // Validate update of HQ_ALERTS_ENABLED
         configResponse = sApi.getConfig();
         hqAssertSuccess(configResponse);
 
-        configs = configResponse.getServerConfig();
+        List<ServerConfig> configs = configResponse.getServerConfig();
         for (ServerConfig config : configs) {
             if (config.getKey().equals("HQ_ALERTS_ENABLED")) {
                 assertTrue("HQ_ALERTS_ENABLED was not false",
@@ -63,6 +60,36 @@ public class ServerConfigSet_test extends HQApiTestBase {
         hqAssertSuccess(response);
     }
 
+    public void testSetUnknownConfig() throws Exception {
+
+        ServerConfigApi sApi = getApi().getServerConfigApi();
+
+        ServerConfigResponse configResponse = sApi.getConfig();
+        hqAssertSuccess(configResponse);
+
+        ServerConfig c = new ServerConfig();
+        c.setKey("HQ_UNKNOWN_CONFIG");
+        c.setValue("false");
+
+        StatusResponse response = sApi.setConfig(c);
+        hqAssertFailureInvalidParameters(response);
+    }
+
+    public void testSetRestrictedConfig() throws Exception {
+
+        ServerConfigApi sApi = getApi().getServerConfigApi();
+
+        ServerConfigResponse configResponse = sApi.getConfig();
+        hqAssertSuccess(configResponse);
+
+        ServerConfig c = new ServerConfig();
+        c.setKey("CAM_GUIDE_ENABLED");
+        c.setValue("false");
+
+        StatusResponse response = sApi.setConfig(c);
+        hqAssertFailureOperationDenied(response);
+    }
+    
     public void testSetConfigEmpty() throws Exception {
 
         ServerConfigApi sApi = getApi().getServerConfigApi();
@@ -70,7 +97,7 @@ public class ServerConfigSet_test extends HQApiTestBase {
         List<ServerConfig> configs = new ArrayList<ServerConfig>();
 
         StatusResponse response = sApi.setConfig(configs);
-        // All configs required
+        // At least one config parameter required
         hqAssertFailureInvalidParameters(response);
     }
 

@@ -6,6 +6,7 @@ import org.hyperic.hq.hqapi1.types.ServerConfigRequest;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,8 +33,21 @@ public class ServerConfigApi extends BaseApi {
     }
 
     /**
-     * Set the HQ server configuration.  The List of ServerConfig's must include
-     * all configurations returned from #getConfig.
+     * Set the HQ server configuration.
+     *
+     * @param config A ServerConfig object.
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS} if
+     * the server configuration was updated sucessfully.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public StatusResponse setConfig(ServerConfig config) throws IOException {
+        return setConfig(Collections.singletonList(config));
+    }
+    
+    /**
+     * Set the HQ server configuration.
      *
      * @param configs An array of ServerConfig objects.
      *
