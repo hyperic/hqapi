@@ -1,6 +1,9 @@
 
 Changes in HQApi 3.2
 
+ *) Add support to get and sync platform resources by FQDN.
+    No corresponding CLI command was explicitly implemented.
+ 
  *) [HHQ-4058] Also update the agent when syncing platforms
  
  *) [HHQ-4060] Add --groupId option to metricData list CLI command.
