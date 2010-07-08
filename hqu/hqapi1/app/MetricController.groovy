@@ -3,6 +3,7 @@ import org.hyperic.hq.hqu.rendit.BaseController
 import org.hyperic.hq.hqapi1.ErrorCode;
 import org.hyperic.hq.zevents.ZeventManager;
 import org.hyperic.hq.appdef.server.session.ResourceRefreshZevent;
+import org.hyperic.hq.authz.shared.PermissionException
 
 class MetricController extends ApiController {
 
@@ -137,21 +138,25 @@ class MetricController extends ApiController {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                        "Resource id not given")
         } else {
-            def res = getResource(resourceId)
-            if (!res) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                           "Unable to find resource id=" + resourceId)
-            } else {
-                try {
-                    if (enabled != null && enabled) {
-                        metrics = res.enabledMetrics
-                    } else {
-                        metrics = res.metrics
-                    }                    
-                } catch (Exception e) {
-                    log.error("UnexpectedError: " + e.getMessage(), e)
-                    failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+            try {
+                def res = getResource(resourceId)
+                if (!res) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Unable to find resource id=" + resourceId)
+                } else {
+                    try {
+                        if (enabled != null && enabled) {
+                            metrics = res.enabledMetrics
+                        } else {
+                            metrics = res.metrics
+                        }
+                    } catch (Exception e) {
+                        log.error("UnexpectedError: " + e.getMessage(), e)
+                        failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
+                    }
                 }
+            } catch (PermissionException e) {
+                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
             }
         }
 
@@ -506,7 +511,18 @@ class MetricController extends ApiController {
         // Validate the resources exist.
         def results = []
         for (String id : ids) {
-            def resource = getResource(id.toInteger())
+            def resource = null
+            try {
+                resource = getResource(id.toInteger())
+            } catch (PermissionException e) {
+                renderXml() {
+                    MetricsDataResponse() {
+                        out << getFailureXML(ErrorCode.PERMISSION_DENIED)
+                    }
+                }
+                return
+            }
+
             if (!resource) {
                 renderXml() {
                     MetricsDataResponse() {
@@ -560,7 +576,18 @@ class MetricController extends ApiController {
 
         def zevents = []
         for (res in xmlResources) {
-            def resource = getResource(res.'@id'.toInteger())
+            def resource = null
+            try {
+                resource = getResource(res.'@id'.toInteger())
+            } catch (PermissionException e) {
+                renderXml() {
+                    StatusResponse() {
+                        out << getFailureXML(ErrorCode.PERMISSION_DENIED)
+                    }
+                }
+                return
+            }
+
             if (!resource) {
                 renderXml() {
                     StatusResponse() {

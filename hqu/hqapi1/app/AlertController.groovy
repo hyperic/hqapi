@@ -8,6 +8,7 @@ import org.hyperic.hq.events.server.session.AlertManagerEJBImpl as AlertMan
 import org.hyperic.hq.escalation.server.session.EscalationManagerEJBImpl as EscMan
 import org.hyperic.hq.events.server.session.ClassicEscalationAlertType
 import org.hyperic.hq.authz.shared.PermissionException
+import org.hyperic.hq.authz.shared.PermissionException
 
 public class AlertController extends ApiController {
 
@@ -189,6 +190,8 @@ public class AlertController extends ApiController {
                 failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                            "Invalid severity " + sev)
 
+            } catch (PermissionException e) {
+                // User cannot see this resource, continue with empty list
             } catch (Throwable t) {
                 failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
                                            t.getMessage())

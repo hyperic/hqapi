@@ -32,7 +32,11 @@ import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.User;
+
+import java.util.List;
 
 public class ResourceFind_test extends ResourceTestBase {
 
@@ -131,5 +135,57 @@ public class ResourceFind_test extends ResourceTestBase {
         hqAssertSuccess(response);
 
         assertTrue("Found matches for '" + DESC + "'", response.getResource().size() == 0);
+    }
+
+    public void testFindResourceByAgentUnauthorized() throws Exception {
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+        ResourceApi api = getApi(user.getName(), TESTUSER_PASSWORD).getResourceApi();
+
+        // Use admin user to get local agent..
+        Agent agent = getRunningAgent();
+
+        // Test find by agent
+        ResourcesResponse response = api.getResources(agent, false, false);
+        hqAssertSuccess(response);
+
+        assertTrue("Found resources with unauthorized user", response.getResource().size() == 0);
+
+        deleteTestUsers(users);
+    }
+
+    public void testFindResourceByPrototypeUnauthorized() throws Exception {
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+        ResourceApi api = getApi(user.getName(), TESTUSER_PASSWORD).getResourceApi();
+
+        // Use admin user to get local platform..
+        Resource localPlatform = getLocalPlatformResource(false, false);
+
+        // Test find by prototype
+        ResourcesResponse response = api.getResources(localPlatform.getResourcePrototype(), false, false);
+        hqAssertSuccess(response);
+
+        assertTrue("Found resources with unauthorized user", response.getResource().size() == 0);
+
+        deleteTestUsers(users);
+    }
+
+    public void testFindResourceByDescriptionUnauthorized() throws Exception {
+        final String DESC = "Hyperic HQ monitor Agent";
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+        ResourceApi api = getApi(user.getName(), TESTUSER_PASSWORD).getResourceApi();
+
+        // Use admin user to get local platform..
+        Resource localPlatform = getLocalPlatformResource(false, false);
+
+        // Test find by prototype
+        ResourcesResponse response = api.getResources(DESC, false, false);
+        hqAssertSuccess(response);
+
+        assertTrue("Found resources with unauthorized user", response.getResource().size() == 0);
+
+        deleteTestUsers(users);
     }
 }

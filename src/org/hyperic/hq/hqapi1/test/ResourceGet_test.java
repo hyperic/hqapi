@@ -209,4 +209,34 @@ public class ResourceGet_test extends ResourceTestBase {
         }
         return fqdn;
     }
+
+    public void testGetResourceByIdUnauthorized() throws Exception {
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+        ResourceApi api = getApi(user.getName(), TESTUSER_PASSWORD).getResourceApi();
+
+        // Use admin user to get local platform..
+        Resource localPlatform = getLocalPlatformResource(false, false);
+
+        // Test find by ID
+        ResourceResponse response = api.getResource(localPlatform.getId(), false, false);
+        hqAssertFailurePermissionDenied(response);
+
+        deleteTestUsers(users);
+    }
+
+    public void testGetResourceByNameUnauthorized() throws Exception {
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+        ResourceApi api = getApi(user.getName(), TESTUSER_PASSWORD).getResourceApi();
+
+        // Use admin user to get local platform..
+        Resource localPlatform = getLocalPlatformResource(false, false);
+
+        // Test find by name
+        ResourceResponse response = api.getPlatformResource(localPlatform.getName(), false, false);
+        hqAssertFailurePermissionDenied(response);
+
+        deleteTestUsers(users);
+    }
 }
