@@ -189,6 +189,8 @@ public class AlertController extends ApiController {
                 failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                            "Invalid severity " + sev)
 
+            } catch (PermissionException e) {
+                // User cannot see this resource, continue with emtpy list
             } catch (Throwable t) {
                 failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
                                            t.getMessage())
