@@ -114,12 +114,15 @@ class ServerconfigController extends ApiController {
     			minVal = 24*oneHourInMillis
     			maxVal = 7*24*oneHourInMillis
     			multiple = 24*oneHourInMillis    			
-    		} else if (key.equals(HQConstants.DataMaintenance)
-    					|| key.equals(HQConstants.AlertPurge)
-    					|| key.equals(HQConstants.EventLogPurge)) {
+    		} else if (key.equals(HQConstants.DataMaintenance)) {
     			minVal = oneHourInMillis
     			maxVal = 9999*oneHourInMillis
     			multiple = oneHourInMillis
+    		} else if (key.equals(HQConstants.AlertPurge)
+    					|| key.equals(HQConstants.EventLogPurge)) {
+    			minVal = 24*oneHourInMillis
+    			maxVal = 9999*24*oneHourInMillis
+    			multiple = 24*oneHourInMillis    					
     		}
     		
     		if (minVal && maxVal && multiple) {

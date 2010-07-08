@@ -132,7 +132,7 @@ public class ServerConfigSet_test extends HQApiTestBase {
         String configName = "ALERT_PURGE";
         String serverValue = getConfigValue(configName);
         
-        long maxValue = 9999 * 60 * 60 * 1000L;
+        long maxValue = 9999 * 24 * 60 * 60 * 1000L;
         ServerConfig c = new ServerConfig();
         c.setKey(configName);
         c.setValue(Long.toString(maxValue));
@@ -171,7 +171,7 @@ public class ServerConfigSet_test extends HQApiTestBase {
         String configName = "EVENT_LOG_PURGE";
         String serverValue = getConfigValue(configName);
         
-        long multipleValue = 50 * 60 * 60 * 1000L;
+        long multipleValue = 50 * 24 * 60 * 60 * 1000L;
         ServerConfig c = new ServerConfig();
         c.setKey(configName);
         c.setValue(Long.toString(multipleValue));
