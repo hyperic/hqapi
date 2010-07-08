@@ -51,6 +51,24 @@ class ApiController extends BaseController {
     }
 
     /**
+     * Checks view permission for the passed in resource.
+     * @throws PermissionException if permission is not granted, otherwise
+     * the passed in Resource is returned.
+     */
+    protected checkViewPermission(resource) {
+        if (resource.isPlatform()) {
+            return resource.toPlatform().checkPerms(operation: 'view', user:user)
+        } else if (resource.isServer()) {
+            return resource.toServer().checkPerms(operation: 'view', user:user)
+        } else if (resource.isService()) {
+            return resource.toService().checkPerms(operation: 'view', user:user)
+        } else {
+            log.error("Unhandled resource type " + resource.prototype)
+            return null
+        }
+    }
+
+    /**
      * Get the resource based on the given id.  If the resource is not found,
      * null is returned.
      */
@@ -69,10 +87,12 @@ class ApiController extends BaseController {
             try {
                 resource.name // Check the object really exists
                 resource.entityId // Check the object is an appdef object
-                return resource
             } catch (Throwable t) {
                 return null
             }
+
+            // ResourceHelper does not check permissions
+            return checkViewPermission(resource)
         }
     }
 

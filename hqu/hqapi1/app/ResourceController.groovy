@@ -365,20 +365,24 @@ class ResourceController extends ApiController {
         if (!id && !platformName) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
-            if (id) {
-                resource = getResource(id)
-                if (!resource) {
-                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                               "Resource id=" + id +
-                                               " not found")
+            try {
+                if (id) {
+                    resource = getResource(id)
+                    if (!resource) {
+                        failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                "Resource id=" + id +
+                                        " not found")
+                    }
+                } else if (platformName) {
+                    resource = resourceHelper.find('platform': platformName)
+                    if (!resource) {
+                        failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                "Platform '" + platformName +
+                                        "' not found")
+                    }
                 }
-            } else if (platformName) {
-                resource = resourceHelper.find('platform':platformName)
-                if (!resource) {
-                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                               "Platform '" + platformName +
-                                               "' not found")
-                }
+            } catch (PermissionException e) {
+                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
             }
         }
 
@@ -415,19 +419,42 @@ class ResourceController extends ApiController {
                                                " not found")
                 } else {
                     def platforms = agent.platforms
-                    resources = platforms*.resource
+                    for (platform in platforms) {
+                        try {
+                            resources.add(platform.checkPerms(operation: 'view', user:user))
+                        } catch (PermissionException e) {
+                            log.debug("Ignoring platform " + platform.name + " due to permissions.")
+                        }
+                    }
                 }
             } else if (prototype) {
-                resources = resourceHelper.find('byPrototype': prototype)
+                def matching = resourceHelper.find('byPrototype': prototype)
+
+                for (resource in matching) {
+                    try {
+                        resources.add(checkViewPermission(resource))
+                    } catch (PermissionException e) {
+                        log.debug("Ignoring resource " + resource.name + " due to permissions")
+                    }
+                }
             } else if (description) {
                 // TODO: Move into HQ.
+                def matching = []
                 def session = DAOFactory.getDAOFactory().currentSession
-                resources.addAll(session.createQuery(
+                matching.addAll(session.createQuery(
                     "select p.resource from Platform p where p.description like '%${description}%'").list())
-                resources.addAll(session.createQuery(
+                matching.addAll(session.createQuery(
                     "select s.resource from Server s where s.description like '%${description}%'").list())
-                resources.addAll(session.createQuery(
+                matching.addAll(session.createQuery(
                     "select s.resource from Service s where s.description like '%${description}%'").list())
+
+                for (resource in matching) {
+                    try {
+                        resources.add(checkViewPermission(resource))
+                    } catch (PermissionException e) {
+                        log.debug("Ignoring resource " + resource.name + " due to permissions")
+                    }
+                }
             } else {
                 // Shouldn't happen
                 failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)

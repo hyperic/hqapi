@@ -32,6 +32,11 @@ import org.hyperic.hq.hqapi1.types.Agent;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.User;
+
+import java.util.Collections;
+import java.util.List;
 
 public class ResourceGet_test extends ResourceTestBase {
 
@@ -199,5 +204,35 @@ public class ResourceGet_test extends ResourceTestBase {
         ResourceResponse getResponse = api.getPlatformResource("Invalid platform",
                                                                false, false);
         hqAssertFailureObjectNotFound(getResponse);
+    }
+
+    public void testGetResourceByIdUnauthorized() throws Exception {
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+        ResourceApi api = getApi(user.getName(), TESTUSER_PASSWORD).getResourceApi();
+
+        // Use admin user to get local platform..
+        Resource localPlatform = getLocalPlatformResource(false, false);
+
+        // Test find by ID
+        ResourceResponse response = api.getResource(localPlatform.getId(), false, false);
+        hqAssertFailurePermissionDenied(response);
+
+        deleteTestUsers(users);
+    }
+
+    public void testGetResourceByNameUnauthorized() throws Exception {
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+        ResourceApi api = getApi(user.getName(), TESTUSER_PASSWORD).getResourceApi();
+
+        // Use admin user to get local platform..
+        Resource localPlatform = getLocalPlatformResource(false, false);
+
+        // Test find by name
+        ResourceResponse response = api.getPlatformResource(localPlatform.getName(), false, false);
+        hqAssertFailurePermissionDenied(response);
+
+        deleteTestUsers(users);
     }
 }

@@ -1,6 +1,8 @@
 
 Changes in HQApi 2.5
 
+ *) [HHQ-4133] Perform permission checking on ResourceApi.
+
  *) Back port AlertApi to 2.x branch.  As a part of this change portions of
     the new MetricDataApi were also backported to aid in testing.
 
