@@ -37,6 +37,7 @@
 		<dependencySet>
 			<useProjectArtifact>false</useProjectArtifact>
 			<outputDirectory>/public</outputDirectory>
+			<outputFileNameMapping>${artifact.artifactId}-${project.version}.${artifact.extension}</outputFileNameMapping>
 			<useTransitiveDependencies>false</useTransitiveDependencies>
 			<includes>
 				<include>org.hyperic.hq.hqapi:hqapi1-client</include>
