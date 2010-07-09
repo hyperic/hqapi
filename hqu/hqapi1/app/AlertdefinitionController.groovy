@@ -518,14 +518,13 @@ public class AlertdefinitionController extends ApiController {
                     def rid = xmlDef['Resource'][0].'@id'?.toInteger()
                     try {
                         resource = getResource(rid)
+                        if (!resource) {
+                            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                                       "Cannot find resource with " +
+                                                       "id " + id)
+                        }
                     } catch (PermissionException e) {
-                        // Ignore
-                    }
-
-                    if (!resource) {
-                        failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                                   "Cannot find resource with " +
-                                                   "id " + id)
+                        failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
                     }
                 } else if (xmlDef['ResourcePrototype'].size() == 1) {
                     typeBased = true
