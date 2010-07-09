@@ -63,8 +63,8 @@ class ApiController extends BaseController {
         } else if (resource.isService()) {
             return resource.toService().checkPerms(operation: 'view', user:user)
         } else {
-            log.error("Unhandled resource type " + resource.prototype)
-            return null
+            log.warn("Unhandled resource type " + resource.prototype)
+            return resource // Group permission checking..
         }
     }
 
