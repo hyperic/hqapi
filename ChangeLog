@@ -1,4 +1,6 @@
 
+Changes in HQApi 2.6
+
 Changes in HQApi 2.5
 
  *) [HHQ-4133] Perform permission checking on ResourceApi.
