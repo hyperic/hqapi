@@ -34,6 +34,8 @@ import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.GroupsResponse;
+import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
@@ -75,6 +77,9 @@ public class GroupCommand extends Command {
     private static String OPT_DESC          = "description";
     private static String OPT_CHILDREN      = "children";
     private static String OPT_DELETE        = "delete";
+    private static String OPT_ADDROLE       = "addRole";
+    private static String OPT_REMOVEROLE    = "removeRole";
+    private static String OPT_CLEARROLES    = "clearRoles";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -169,8 +174,16 @@ public class GroupCommand extends Command {
                 withRequiredArg().ofType(String.class);
         p.accepts(OPT_CHILDREN, "If specified, include child resources of the " +
                   "specified prototype and regex");
-        p.accepts(OPT_DELETE, "If specifed, remove the specified resources from " +
+        p.accepts(OPT_DELETE, "If specified, remove the specified resources from " +
                   "the given group");
+        p.accepts(OPT_ADDROLE, "If specified, add the given role to this group.  " +
+                               "This option can only be used with --" + OPT_NAME).
+                withRequiredArg().ofType(String.class);
+        p.accepts(OPT_REMOVEROLE, "If specified, remove the given role from this group.  " +
+                               "This option can only be used with --" + OPT_NAME).
+                withRequiredArg().ofType(String.class);
+        p.accepts(OPT_CLEARROLES, "If specified, remove all roles from this group.  " +
+                                  "This option can only be used with --" + OPT_NAME);
 
         OptionSet options = getOptions(p, args);
 
@@ -208,6 +221,48 @@ public class GroupCommand extends Command {
         return result;
     }
 
+    private void syncRoles(HQApi api, OptionSet s) throws Exception
+    {
+        // Required arguments
+        String name = (String)getRequired(s, OPT_NAME);
+
+        // Check for existing group
+        GroupResponse groupResponse = api.getGroupApi().getGroup(name);
+        checkSuccess(groupResponse);
+        Group group = groupResponse.getGroup();
+        String msg;
+
+        if (s.has(OPT_CLEARROLES)) {
+            System.out.println(name + ": Clearing " + group.getRole().size() + " roles");
+            group.getRole().clear();
+        } else if (s.has(OPT_ADDROLE)) {
+            String roleName = (String)s.valueOf(OPT_ADDROLE);
+            RoleResponse roleResponse = api.getRoleApi().getRole(roleName);
+            checkSuccess(roleResponse);
+            group.getRole().add(roleResponse.getRole());
+            System.out.println(name + ": Adding role " + roleResponse.getRole().getName());
+        } else if (s.has(OPT_REMOVEROLE)) {
+            String roleName = (String)s.valueOf(OPT_REMOVEROLE);
+            RoleResponse roleResponse = api.getRoleApi().getRole(roleName);
+            checkSuccess(roleResponse);
+            for (Iterator it = group.getRole().iterator(); it.hasNext();) {
+                Role r = (Role)it.next();
+                if (r.getName().equals(roleResponse.getRole().getName())) {
+                    it.remove();
+                }
+            }
+            System.out.println(name + ": Removing role " + roleResponse.getRole().getName());
+        } else {
+            throw new IllegalArgumentException("Invalid role options");
+        }
+
+        GroupResponse response = api.getGroupApi().updateGroup(group);
+        checkSuccess(response);
+        String roleText = response.getGroup().getRole().size() == 1 ? "role" : "roles";
+        System.out.println(name + ": Success (now contains " + response.getGroup().getRole().size() +
+                           " " + roleText + ")");
+    }
+
     private void syncViaCommandLineArgs(OptionSet s) throws Exception
     {
         // Required args
@@ -225,8 +280,13 @@ public class GroupCommand extends Command {
 
         HQApi api = getApi(s);
 
-        Map<Integer,Resource> resources = new HashMap<Integer,Resource>();
+        // Command line role syncing is handled separately
+        if (s.has(OPT_CLEARROLES) || s.has(OPT_ADDROLE) || s.has(OPT_REMOVEROLE)) {
+            syncRoles(api, s);
+            return;
+        }
 
+        Map<Integer,Resource> resources = new HashMap<Integer,Resource>();
         if (prototype != null && platform != null) {
             System.err.println("Only one of " + OPT_PROTOTYPE + " or " +
                                OPT_PLATFORM + " is allowed.");
@@ -330,7 +390,7 @@ public class GroupCommand extends Command {
                 }
             }
         } else {
-            // TODO: could be more efficent here, server side will prune dups
+            // TODO: could be more efficient here, server side will prune dups
             group.getResource().addAll(flattenedResources.values());
         }
 

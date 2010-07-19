@@ -1,6 +1,9 @@
 
 Changes in HQApi 2.6
 
+ *) [HHQ-4145] Add --addRole, --removeRole, and --clearRoles options to
+    command line group syncing.  These can only be used with --name.
+
 Changes in HQApi 2.5
 
  *) [HHQ-4133] Perform permission checking on ResourceApi.
