@@ -104,7 +104,7 @@ public class AlertCommand extends Command {
                 withRequiredArg().ofType(Long.class);
         p.accepts(OPT_END, "If specified, the end time in epoch-millis.").
                 withRequiredArg().ofType(Long.class);
-        p.accepts(OPT_COUNT, "The maximum number of alerts to return.")
+        p.accepts(OPT_COUNT, "If specified, the maximum number of alerts to return.")
                 .withRequiredArg().ofType(Integer.class);
         p.acceptsAll(Arrays.asList(OPT_INESC),
                     "If specified, only return alerts which are in " +
@@ -132,8 +132,12 @@ public class AlertCommand extends Command {
             end = System.currentTimeMillis();
         }
 
-        // --count is required
-        Integer count = (Integer)getRequired(options, OPT_COUNT);
+        Integer count;
+        if (options.has(OPT_COUNT)) {
+            count = (Integer)getRequired(options, OPT_COUNT);
+        } else {
+            count = Integer.MAX_VALUE;
+        }
 
         Boolean inEsc = options.has(OPT_INESC[0]);
         Boolean notFixed = options.has(OPT_NOTFIXED[0]);

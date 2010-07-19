@@ -1,6 +1,8 @@
 
 Changes in HQApi 2.6
 
+ *) [HHQ-4150] Make --count optional when listing alerts via the CLI.
+
  *) [HHQ-4145] Add --addRole, --removeRole, and --clearRoles options to
     command line group syncing.  These can only be used with --name.
 
