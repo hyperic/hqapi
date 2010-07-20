@@ -1,4 +1,6 @@
 
+Changes in HQApi 3.3
+
 Changes in HQApi 3.2
 
  *) Add support to get and sync platform resources by FQDN.
