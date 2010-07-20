@@ -90,6 +90,17 @@ Changes in HQApi 3.0
  *) [HHQ-3144] Add ServerConfigApi to allow manipulation of HQ server config
     settings.
  
+Changes in HQApi 2.6
+
+ *) [HHQ-4151] Add new API to ResourceApi to find a platform Resource
+    based on the passed resource id.  Extended support for this into the
+    CLI using the --parentPlatform flag to resource list.
+
+ *) [HHQ-4150] Make --count optional when listing alerts via the CLI.
+
+ *) [HHQ-4145] Add --addRole, --removeRole, and --clearRoles options to
+    command line group syncing.  These can only be used with --name.
+
 Changes in HQApi 2.5
 
  *) [HHQ-4133] Perform permission checking on ResourceApi.
