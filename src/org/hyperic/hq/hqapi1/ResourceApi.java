@@ -298,6 +298,33 @@ public class ResourceApi extends BaseApi {
     }
 
     /**
+     * Get the platform {@link Resource} for the given resource id.
+     *
+     * @param id The resource id to query.
+     * @param verbose Flag to indicate whether {@link org.hyperic.hq.hqapi1.types.ResourceConfig}
+     * and {@link org.hyperic.hq.hqapi1.types.ResourceProperty} information will
+     * be included.
+     * @param children Flag to control whether child resources of this resource
+     * will be included.
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the Resource is returned via
+     * {@link org.hyperic.hq.hqapi1.types.ResourceResponse#getResource()}.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public ResourceResponse getPlatformResource(int id, boolean verbose,
+                                                boolean children)
+        throws IOException
+    {
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("platformId", new String[] { Integer.toString(id) });
+        params.put("verbose", new String[] { Boolean.toString(verbose) });
+        params.put("children", new String[] { Boolean.toString(children)});
+        return doGet("resource/get.hqu", params,
+                     ResourceResponse.class);
+    }
+
+    /**
      * Find the platform {@link Resource}s serviced by the given
      * {@link org.hyperic.hq.hqapi1.types.Agent}.
      *

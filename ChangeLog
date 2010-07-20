@@ -1,6 +1,10 @@
 
 Changes in HQApi 2.6
 
+ *) [HHQ-4151] Add new API to ResourceApi to find a platform Resource
+    based on the passed resource id.  Extended support for this into the
+    CLI using the --parentPlatform flag to resource list.
+
  *) [HHQ-4150] Make --count optional when listing alerts via the CLI.
 
  *) [HHQ-4145] Add --addRole, --removeRole, and --clearRoles options to
