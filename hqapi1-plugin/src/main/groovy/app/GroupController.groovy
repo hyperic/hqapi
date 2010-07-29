@@ -1,6 +1,19 @@
+import org.hyperic.hq.grouping.CritterList;
+import org.hyperic.hq.grouping.CritterType;
+import org.hyperic.hq.grouping.CritterRegistry;
+import org.hyperic.hq.grouping.prop.CritterPropType 
+import org.hyperic.hq.grouping.prop.EnumCritterProp 
+import org.hyperic.hq.grouping.prop.EnumCritterPropDescription 
+import org.hyperic.hq.grouping.prop.GroupCritterProp 
+import org.hyperic.hq.grouping.prop.ProtoCritterProp 
+import org.hyperic.hq.grouping.prop.ResourceCritterProp 
+import org.hyperic.hq.grouping.prop.StringCritterProp 
 import org.hyperic.hq.hqapi1.ErrorCode
-import org.hyperic.hq.authz.shared.PermissionException
+import org.hyperic.hq.authz.shared.PermissionException;
+import org.hyperic.hq.authz.shared.ResourceGroupManager 
 import org.hyperic.hq.common.VetoException
+import org.hyperic.hq.context.Bootstrap 
+import org.hyperic.util.HypericEnum 
 
 class GroupController extends ApiController {
 
@@ -100,6 +113,96 @@ class GroupController extends ApiController {
             }
         }
     }
+	
+	def setCriteria(params) {
+		def xmlIn = new XmlParser().parseText(getPostData())
+		def group = resourceHelper.findGroupByName(xmlIn.'@groupName')
+		//TODO figure out weirdness with isAny being a NodeList?
+		//def isAny = xmlIn.'GroupCriteriaList'.'@isAny'
+ 	 	def critters
+ 		def failureXml = null
+ 	 	try {
+ 	 		critters = parseCritters(xmlIn.'GroupCriteriaList')
+			CritterList clist = new CritterList(critters, true)
+ 	 		Bootstrap.getBean(ResourceGroupManager.class).setCriteria(user, group, clist)
+ 	 	} catch(Exception e) {
+			//TODO use proper error code
+ 	 	    failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED,e.getMessage())
+ 	 	 	log.error("Unable to parse critters", e)	
+ 	 	}
+		renderXml() {
+            GroupResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    out << getGroupXML(group)
+                }
+            }
+        }
+	}
+	
+	 private CritterType findCritterType(String name) {
+ 		CritterRegistry.getRegistry().critterTypes.find { t ->
+ 	 	 	t.class.name == name
+ 		}
+ 	 }
+	
+	private List parseCritters(xmlIn) {
+		xmlIn.'GroupCriteria'.collect { critterDef ->
+		CritterType critterType = findCritterType(critterDef.'@class')
+
+		if (critterType == null) {
+			throw new Exception("Unable to find critter class [${critterDef.'@class'}]")
+		}
+
+		def props = [:]
+		for (propDef in critterDef.children()) {
+			String propId   = propDef.'@name'
+			String propType = propDef.'@type'
+			//TODO maybe not so case sensitive?
+			if (propType == 'string') {
+				props[propId] = new StringCritterProp(propId, propDef.'@value')
+			} else if (propType == 'resource') {
+				def rsrcId   = propDef.'@value'.toInteger()
+				def resource = resourceHelper.findResource(rsrcId)
+				props[propId] = new ResourceCritterProp(propId, resource)
+			} else if (propType == 'group') {
+				def group = resourceHelper.findGroupByName(propDef.'@value')
+				props[propId] = new GroupCritterProp(propId, group)
+			} else if (propType == 'proto') { 
+				def proto  = resourceHelper.findResourcePrototype(propDef.'@value')
+				props[propId] = new ProtoCritterProp(propId, proto)
+			} else if (propType == 'enum') {
+				def desc = critterType.propDescriptions.find { it.id == propId }
+				if (!desc) {
+					throw new Exception("Unknown prop [${propId}] for " + 
+                                "critter [${critterDef.class}]")
+				}
+				if (desc.type != CritterPropType.ENUM) {
+					throw new Exception("Property [${propId}] of critter ["+ 
+                                "[${critterDef.class}] should be " + 
+                                "of type <enum>")
+				}
+        
+				EnumCritterPropDescription eDesc = desc
+				def propDesc = propDef.'@value'
+				HypericEnum match = eDesc.possibleValues.find { it.description == propDesc }
+        		if (match == null) {
+            		throw new Exception("[${propDesc}] is not a valid " + 
+                                "value for prop [${propId}] for " +
+                                "critter [${critterDef.@class}]")
+        		}
+        		props[propId] = new EnumCritterProp(propId, match)
+    		} else {
+    			throw new Exception("Unknown prop type [${propDef.@type}] for " + 
+                            "critter [${critterDef.@class}]")
+    		}
+		}
+		critterType.newInstance(props)
+		}
+    }
+
 
     def sync(params) {
         def syncRequest = new XmlParser().parseText(getPostData())

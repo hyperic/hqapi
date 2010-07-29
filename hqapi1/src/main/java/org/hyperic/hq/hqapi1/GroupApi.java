@@ -29,6 +29,8 @@ package org.hyperic.hq.hqapi1;
 
 import org.hyperic.hq.hqapi1.types.EscalationResponse;
 import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.GroupCriteriaList;
+import org.hyperic.hq.hqapi1.types.GroupCriteriaRequest;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.GroupsRequest;
 import org.hyperic.hq.hqapi1.types.GroupsResponse;
@@ -287,4 +289,13 @@ public class GroupApi extends BaseApi {
         return doPost("group/sync.hqu", groupRequest, 
                       new XmlResponseHandler<GroupsResponse>(GroupsResponse.class));
     }
+    
+    public GroupResponse setCriteria(String groupName, GroupCriteriaList criteria) throws IOException {
+    	GroupCriteriaRequest criteriaRequest = new GroupCriteriaRequest();
+    	criteriaRequest.setGroupName(groupName);
+    	criteriaRequest.setGroupCriteriaList(criteria);
+    	return doPost("group/setCriteria.hqu",criteriaRequest, 
+    			new XmlResponseHandler<GroupResponse>(GroupResponse.class));
+    }
+    
 }

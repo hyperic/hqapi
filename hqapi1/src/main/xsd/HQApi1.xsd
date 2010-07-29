@@ -379,6 +379,37 @@
         <xs:attribute name="resourceId"  type="xs:int"    use="optional" />
     </xs:complexType>
 
+   <xs:element name="GroupCriteriaRequest">
+		<xs:complexType>
+            <xs:sequence>
+                <xs:element name="GroupCriteriaList" type="GroupCriteriaList" minOccurs="1" maxOccurs="1" />
+            </xs:sequence>
+			<xs:attribute name="groupName"   type="xs:string" use="required"/>
+        </xs:complexType>
+   </xs:element>
+
+   <xs:complexType name="GroupCriteriaList">
+      	<xs:sequence>
+          <xs:element name="GroupCriteria" type="GroupCriteria" minOccurs="1" maxOccurs="unbounded" />
+     	</xs:sequence>
+		<xs:attribute name="isAny" type="xs:boolean" use="required"/>
+    </xs:complexType>
+
+
+    <xs:complexType name="GroupCriteria">
+      	<xs:sequence>
+        	<xs:element name="CriteriaProp" type="CriteriaProp" minOccurs="1" maxOccurs="unbounded" />
+     	</xs:sequence>
+      	<xs:attribute name="class" type="xs:string" use="required"/>	
+    </xs:complexType>
+
+   <xs:complexType name="CriteriaProp">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="type"   type="xs:string" use="required"/>
+		<xs:attribute name="value"   type="xs:string" use="required"/>
+    </xs:complexType>
+
+
     <!-- Group Responses -->
 
     <xs:element name="GroupsRequest">
