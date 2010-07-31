@@ -101,7 +101,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/hqapi1"/>
 	<classpathentry exported="true" kind="con" path="GROOVY_SUPPORT"/>
 	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-rendit/4.5.0.BUILD-SNAPSHOT/hq-rendit-4.5.0.BUILD-SNAPSHOT.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-server/4.5.0.BUILD-SNAPSHOT/hq-server-4.5.0.BUILD-SNAPSHOT.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-server/4.5.0.BUILD-SNAPSHOT/hq-server-4.5.0.BUILD-SNAPSHOT.jar" sourcepath="/M2_REPO/org/hyperic/hq/hq-server/4.5.0.BUILD-SNAPSHOT/hq-server-4.5.0.BUILD-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-util/4.5.0.BUILD-SNAPSHOT/hq-util-4.5.0.BUILD-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-common/4.5.0.BUILD-SNAPSHOT/hq-common-4.5.0.BUILD-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-pdk-shared/4.5.0.BUILD-SNAPSHOT/hq-pdk-shared-4.5.0.BUILD-SNAPSHOT.jar"/>

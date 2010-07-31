@@ -359,15 +359,15 @@
     <!-- Group objects -->
 
     <xs:complexType name="Criteria">
-        <xs:all>
-            <xs:element name="name" type="xs:string"/>
-            <xs:element name="id"   type="xs:int"/>
-        </xs:all>
+        <xs:sequence>
+        	<xs:element name="CriteriaProp" type="CriteriaProp" minOccurs="1" maxOccurs="unbounded" />
+     	</xs:sequence>
+      	<xs:attribute name="class" type="xs:string" use="required"/>
     </xs:complexType>
 
     <xs:complexType name="Group">
         <xs:sequence>
-            <!-- xs:element name="Criteria"    type="Criteria" minOccurs="0"/ -->
+            <xs:element name="CriteriaList"    type="CriteriaList" minOccurs="0" maxOccurs="1"/>
             <xs:element name="ResourcePrototype" type="ResourcePrototype" maxOccurs="1"/>
             <xs:element name="Resource" type="Resource" maxOccurs="unbounded"/>
             <xs:element name="Role" type="Role" maxOccurs="unbounded"/>
@@ -379,29 +379,13 @@
         <xs:attribute name="resourceId"  type="xs:int"    use="optional" />
     </xs:complexType>
 
-   <xs:element name="GroupCriteriaRequest">
-		<xs:complexType>
-            <xs:sequence>
-                <xs:element name="GroupCriteriaList" type="GroupCriteriaList" minOccurs="1" maxOccurs="1" />
-            </xs:sequence>
-			<xs:attribute name="groupName"   type="xs:string" use="required"/>
-        </xs:complexType>
-   </xs:element>
-
-   <xs:complexType name="GroupCriteriaList">
+   <xs:complexType name="CriteriaList">
       	<xs:sequence>
-          <xs:element name="GroupCriteria" type="GroupCriteria" minOccurs="1" maxOccurs="unbounded" />
+          <xs:element name="Criteria" type="Criteria" minOccurs="0" maxOccurs="unbounded" />
      	</xs:sequence>
-		<xs:attribute name="isAny" type="xs:boolean" use="required"/>
+		<xs:attribute name="any" type="xs:boolean" use="required"/>
     </xs:complexType>
 
-
-    <xs:complexType name="GroupCriteria">
-      	<xs:sequence>
-        	<xs:element name="CriteriaProp" type="CriteriaProp" minOccurs="1" maxOccurs="unbounded" />
-     	</xs:sequence>
-      	<xs:attribute name="class" type="xs:string" use="required"/>	
-    </xs:complexType>
 
    <xs:complexType name="CriteriaProp">
         <xs:attribute name="name" type="xs:string" use="required"/>

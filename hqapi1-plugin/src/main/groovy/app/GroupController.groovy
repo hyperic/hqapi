@@ -114,32 +114,12 @@ class GroupController extends ApiController {
         }
     }
 	
-	def setCriteria(params) {
-		def xmlIn = new XmlParser().parseText(getPostData())
-		def group = resourceHelper.findGroupByName(xmlIn.'@groupName')
-		//TODO figure out weirdness with isAny being a NodeList?
-		//def isAny = xmlIn.'GroupCriteriaList'.'@isAny'
- 	 	def critters
+	private setCriteria(group,xmlIn) {
+		def isAny = xmlIn[0].'@any'?.toBoolean();
  		def failureXml = null
- 	 	try {
- 	 		critters = parseCritters(xmlIn.'GroupCriteriaList')
-			CritterList clist = new CritterList(critters, true)
- 	 		Bootstrap.getBean(ResourceGroupManager.class).setCriteria(user, group, clist)
- 	 	} catch(Exception e) {
-			//TODO use proper error code
- 	 	    failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED,e.getMessage())
- 	 	 	log.error("Unable to parse critters", e)	
- 	 	}
-		renderXml() {
-            GroupResponse() {
-                if (failureXml) {
-                    out << failureXml
-                } else {
-                    out << getSuccessXML()
-                    out << getGroupXML(group)
-                }
-            }
-        }
+ 	 	def critters = parseCritters(xmlIn)
+		CritterList clist = new CritterList(critters, isAny)
+ 	 	Bootstrap.getBean(ResourceGroupManager.class).setCriteria(user, group, clist)
 	}
 	
 	 private CritterType findCritterType(String name) {
@@ -149,7 +129,7 @@ class GroupController extends ApiController {
  	 }
 	
 	private List parseCritters(xmlIn) {
-		xmlIn.'GroupCriteria'.collect { critterDef ->
+		xmlIn.'Criteria'.collect { critterDef ->
 		CritterType critterType = findCritterType(critterDef.'@class')
 
 		if (critterType == null) {
@@ -160,7 +140,7 @@ class GroupController extends ApiController {
 		for (propDef in critterDef.children()) {
 			String propId   = propDef.'@name'
 			String propType = propDef.'@type'
-			//TODO maybe not so case sensitive?
+			//TODO maybe not so specific on prop type?
 			if (propType == 'string') {
 				props[propId] = new StringCritterProp(propId, propDef.'@value')
 			} else if (propType == 'resource') {
@@ -309,22 +289,59 @@ class GroupController extends ApiController {
                                          	 xmlGroup.'@name',
                                          	 xmlGroup.'@description',
                                          	 xmlGroup.'@location')
-                    	groups << existing
+						def criteriaList = xmlGroup.'CriteriaList'
+						if(criteriaList) {
+							try {
+								setCriteria(existing,criteriaList)
+							} catch(Exception e) {
+								failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,e.getMessage())
+								log.error("Unable to set group criteria", e)	
+							} 
+						}
+						if(!failureXml) {
+							groups << existing
+						}
                     } catch (VetoException ve) {
                     	failureXml = getFailureXML(ErrorCode.OPERATION_DENIED,
                     							   ve.getMessage())
-                    }
+                    } 
                 } else {
                     // TODO: private groups
-                    def group = resourceHelper.createGroup(xmlGroup.'@name',
+					def criteriaList = xmlGroup.'CriteriaList'
+					
+					if(criteriaList) {
+						def clist
+						def isAny = criteriaList[0].'@any'?.toBoolean();
+						try {
+							def critters = parseCritters(criteriaList)
+							clist = new CritterList(critters, isAny)
+						}catch(Exception e) {
+							failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,e.getMessage())
+							log.error("Unable to set group criteria", e)	
+						}
+						if(!failureXml) {
+							def group = resourceHelper.createGroup(xmlGroup.'@name',
+                                                           xmlGroup.'@description',
+                                                           xmlGroup.'@location',
+                                                           prototype, roles,
+                                                           resources,
+                                                           false, clist)
+                           groups << group
+						}
+					} else {
+							def group = resourceHelper.createGroup(xmlGroup.'@name',
                                                            xmlGroup.'@description',
                                                            xmlGroup.'@location',
                                                            prototype, roles,
                                                            resources,
                                                            false)
-                    groups << group
+                           groups << group
+					}
+					
                 }
             }
+			
+			
 
             // If any group is unable to be synced exit with an error.
             if (failureXml) {

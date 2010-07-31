@@ -27,10 +27,13 @@
 
 package org.hyperic.hq.hqapi1;
 
-import org.hyperic.hq.hqapi1.types.EscalationResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.hyperic.hq.hqapi1.types.Group;
-import org.hyperic.hq.hqapi1.types.GroupCriteriaList;
-import org.hyperic.hq.hqapi1.types.GroupCriteriaRequest;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.GroupsRequest;
 import org.hyperic.hq.hqapi1.types.GroupsResponse;
@@ -38,12 +41,6 @@ import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * The Hyperic HQ Group API.
@@ -288,14 +285,6 @@ public class GroupApi extends BaseApi {
         groupRequest.getGroup().addAll(groups);
         return doPost("group/sync.hqu", groupRequest, 
                       new XmlResponseHandler<GroupsResponse>(GroupsResponse.class));
-    }
-    
-    public GroupResponse setCriteria(String groupName, GroupCriteriaList criteria) throws IOException {
-    	GroupCriteriaRequest criteriaRequest = new GroupCriteriaRequest();
-    	criteriaRequest.setGroupName(groupName);
-    	criteriaRequest.setGroupCriteriaList(criteria);
-    	return doPost("group/setCriteria.hqu",criteriaRequest, 
-    			new XmlResponseHandler<GroupResponse>(GroupResponse.class));
     }
     
 }
