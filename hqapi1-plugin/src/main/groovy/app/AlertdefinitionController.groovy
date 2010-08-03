@@ -270,11 +270,17 @@ public class AlertdefinitionController extends ApiController {
         def postRequest = new XmlParser().parseText(getPostData())
         def resources = []
         for (xmlDef in postRequest['Resource']) {
-            def resource = getResource(xmlDef.'@id'?.toInteger())
-            if (!resource) {
-                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                           "Unable to find resource with id " + xmlDef.'@id')
-                break
+            try {
+                def resource = getResource(xmlDef.'@id'?.toInteger())
+                if (!resource) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Unable to find resource with id " + xmlDef.'@id')
+                    break
+                }
+
+                resources.add(resource)
+            } catch (PermissionException e) {
+                // Ignore resources the user cannot see
             }
         }
 
@@ -352,7 +358,13 @@ public class AlertdefinitionController extends ApiController {
                 }
             }
         } else if (resourceId != null) {
-            def resource = getResource(resourceId)
+            def resource = null
+            try {
+                resource = getResource(resourceId)
+            } catch (PermissionException e) {
+                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+            }
+
             if (!resource) {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                            "Resource with id = " + resourceId +
@@ -506,11 +518,15 @@ public class AlertdefinitionController extends ApiController {
                 } else if (xmlDef['Resource'].size() == 1) {
                     typeBased = false
                     def rid = xmlDef['Resource'][0].'@id'?.toInteger()
-                    resource = getResource(rid)
-                    if (!resource) {
-                        failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                                   "Cannot find resource with " +
-                                                   "id " + id)
+                    try {
+                        resource = getResource(rid)
+                        if (!resource) {
+                            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                                       "Cannot find resource with " +
+                                                       "id " + id)
+                        }
+                    } catch (PermissionException e) {
+                        failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
                     }
                 } else if (xmlDef['ResourcePrototype'].size() == 1) {
                     typeBased = true
@@ -680,7 +696,12 @@ public class AlertdefinitionController extends ApiController {
                         it.'@key' == 'action'
                     }?.'@value'
 
-                    def cResource = getResource(rId)
+                    def cResource = null
+                    try {
+                        cResource = getResource(rId)
+                    } catch (PermissionException e) {
+                        // Ignore
+                    }
                     if (cResource != null && action != null) {
                         def actions = cResource.getControlActions(user)
                         if (!actions.find { it == action }) {

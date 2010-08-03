@@ -209,4 +209,97 @@ public class ResourceGet_test extends ResourceTestBase {
         }
         return fqdn;
     }
+
+    public void testGetResourceByIdUnauthorized() throws Exception {
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+        ResourceApi api = getApi(user.getName(), TESTUSER_PASSWORD).getResourceApi();
+
+        // Use admin user to get local platform..
+        Resource localPlatform = getLocalPlatformResource(false, false);
+
+        // Test find by ID
+        ResourceResponse response = api.getResource(localPlatform.getId(), false, false);
+        hqAssertFailurePermissionDenied(response);
+
+        deleteTestUsers(users);
+    }
+
+    public void testGetResourceByNameUnauthorized() throws Exception {
+        List<User> users = createTestUsers(1);
+        User user = users.get(0);
+        ResourceApi api = getApi(user.getName(), TESTUSER_PASSWORD).getResourceApi();
+
+        // Use admin user to get local platform..
+        Resource localPlatform = getLocalPlatformResource(false, false);
+
+        // Test find by name
+        ResourceResponse response = api.getPlatformResource(localPlatform.getName(), false, false);
+        hqAssertFailurePermissionDenied(response);
+
+        deleteTestUsers(users);
+    }
+
+    public void testGetPlatformResourceByPlatform() throws Exception {
+
+        ResourceApi api = getApi().getResourceApi();
+        Resource localPlatform = getLocalPlatformResource(false, false);
+
+        ResourceResponse response = api.getPlatformResource(localPlatform.getId(), false, false);
+        hqAssertSuccess(response);
+
+        assertEquals("Platform ids not equal", localPlatform.getId(),
+                     response.getResource().getId());
+    }
+
+    public void testGetPlatformResourceByServer() throws Exception {
+
+        ResourceApi api = getApi().getResourceApi();
+        Resource localPlatform = getLocalPlatformResource(false, true);
+
+        List<Resource> servers = localPlatform.getResource();
+        assertTrue("No servers found for " + localPlatform.getName(),
+                   servers.size() > 0);
+
+        Resource server = servers.get(0);
+
+        ResourceResponse response = api.getPlatformResource(server.getId(), false, false);
+        hqAssertSuccess(response);
+
+        assertEquals("Platform ids not equal", localPlatform.getId(),
+                     response.getResource().getId());
+    }
+
+    public void testGetPlatformResourceByService() throws Exception {
+
+        ResourceApi api = getApi().getResourceApi();
+        Resource localPlatform = getLocalPlatformResource(false, true);
+
+        List<Resource> servers = localPlatform.getResource();
+        assertTrue("No servers found for " + localPlatform.getName(),
+                   servers.size() > 0);
+        Resource service = null;
+        for (Resource server : servers) {
+            if (server.getResource().size() > 0) {
+                service = server.getResource().get(0);
+                break;
+            }
+        }
+
+        assertNotNull("Unable to find a service for platform " + localPlatform.getName(),
+                      service);
+
+        ResourceResponse response = api.getPlatformResource(service.getId(), false, false);
+        hqAssertSuccess(response);
+
+        assertEquals("Platform ids not equal", localPlatform.getId(),
+                     response.getResource().getId());
+    }
+
+    public void testGetPlatformResourceInvalidId() throws Exception {
+        ResourceApi api = getApi().getResourceApi();
+
+        ResourceResponse response = api.getPlatformResource(Integer.MAX_VALUE, false, false);
+        hqAssertFailureObjectNotFound(response);
+    }
 }

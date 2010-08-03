@@ -2,6 +2,7 @@
 import org.hyperic.hq.appdef.shared.ServiceManager;
 import org.hyperic.hq.common.shared.ServerConfigManager;
 import org.hyperic.hq.context.Bootstrap;
+import org.hyperic.hq.common.shared.HQConstants
 import org.hyperic.hq.hqapi1.ErrorCode
 
 class ServerconfigController extends ApiController {
@@ -80,6 +81,7 @@ class ServerconfigController extends ApiController {
             try {
                 if (!failureXml) {
                 	if (update) {
+                		validateConfig(props)
                 		_serverMan.setConfig(user, props)
                 	} else {
                 		failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
@@ -101,5 +103,57 @@ class ServerconfigController extends ApiController {
                 }
             }
         }
+    }
+    
+    private validateConfig(props) {
+    	// TODO: Need to consolidate data validation logic.
+    	// Currently, the HQ server validates it at the Struts layer.
+    	
+    	def oneHourInMillis = 60 * 60 * 1000L
+    	 
+    	for (key in props.keySet()) {
+    		def minVal = null
+    		def maxVal = null
+    		def multiple = null
+    		
+    		if (key.equals(HQConstants.DataPurgeRaw)) {
+    			minVal = 24*oneHourInMillis
+    			maxVal = 7*24*oneHourInMillis
+    			multiple = 24*oneHourInMillis    			
+    		} else if (key.equals(HQConstants.DataMaintenance)) {
+    			minVal = oneHourInMillis
+    			maxVal = 9999*oneHourInMillis
+    			multiple = oneHourInMillis
+    		} else if (key.equals(HQConstants.AlertPurge)
+    					|| key.equals(HQConstants.EventLogPurge)) {
+    			minVal = 24*oneHourInMillis
+    			maxVal = 9999*24*oneHourInMillis
+    			multiple = 24*oneHourInMillis    					
+    		}
+    		
+    		if (minVal && maxVal && multiple) {
+    			def newVal = props.getProperty(key)
+    			def longVal
+    			
+    			try {
+    				longVal = Long.parseLong(newVal)
+    			} catch (NumberFormatException nfe) {
+    				throw new IllegalArgumentException(
+    							key + " is an invalid number")
+    			}
+    			
+    			if (longVal < minVal || longVal > maxVal) {
+    				throw new IllegalArgumentException(
+    							key + " must be between " + minVal
+    							+ " and " + maxVal + " milliseconds")
+    			}
+    			
+    			if (longVal % multiple != 0) {
+    				throw new IllegalArgumentException(
+    				            key + " must be a multiple of "
+    				            + multiple + " milliseconds")
+    			}
+    		}
+    	}
     }
 }

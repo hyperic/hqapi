@@ -80,6 +80,7 @@ public class ResourceCommand extends AbstractCommand {
     private static String OPT_AGENT_ID    = "agentId";
     private static String OPT_BATCH_SIZE  = "batchSize";
     private static String OPT_TO          = "to";
+    private static String OPT_PARENT_PLATFORM = "parentPlatform";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -133,6 +134,8 @@ public class ResourceCommand extends AbstractCommand {
 
         p.accepts(OPT_VERBOSE, "Include resource configuration and properties");
         p.accepts(OPT_CHILDREN, "Include child resources");
+        p.accepts(OPT_PARENT_PLATFORM, "Return the parent platform Resource.  " +
+                                       "Can only be used with --" + OPT_ID);
 
         OptionSet options = getOptions(p, args);
 
@@ -181,7 +184,13 @@ public class ResourceCommand extends AbstractCommand {
             resources.getResource().add(resource.getResource());
         } else if (options.has(OPT_ID)) {
             Integer id = (Integer)options.valueOf(OPT_ID);
-            ResourceResponse resource = resourceApi.getResource(id, verbose, children);
+            ResourceResponse resource;
+            if (options.has(OPT_PARENT_PLATFORM)) {
+                resource = resourceApi.getPlatformResource(id, verbose, children);
+            } else {
+                resource = resourceApi.getResource(id, verbose, children);
+            }
+
             checkSuccess(resource);
 
             resources = new ResourcesResponse();

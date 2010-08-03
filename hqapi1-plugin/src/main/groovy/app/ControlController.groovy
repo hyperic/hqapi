@@ -29,18 +29,18 @@ class ControlController extends ApiController {
         def failureXml = null
         def resourceId = params.getOne('resourceId')?.toInteger()
 
-        def resource = getResource(resourceId)
-
         def actions = []
-        if (!resource) {
-            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                       "Resource id " + resourceId + " not found")
-        } else {
-            try {
+        try {
+            def resource = getResource(resourceId)
+
+            if (!resource) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                          "Resource id " + resourceId + " not found")
+            } else {
             	actions = resource.getControlActions(user)
-            } catch (PermissionException e) {
-                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
             }
+        } catch (PermissionException e) {
+            failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
         }
 
         renderXml() {
@@ -62,17 +62,17 @@ class ControlController extends ApiController {
         def failureXml = null
         def resourceId = params.getOne('resourceId')?.toInteger()
 
-        def resource = getResource(resourceId)
         def history = []
-        if (!resource) {
-            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                       "Resource id " + resourceId + " not found")
-        } else {
-            try {
-            	history = resource.getControlHistory(user)
-            } catch (PermissionException e) {
-                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
+        try {
+            def resource = getResource(resourceId)
+            if (!resource) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Resource id " + resourceId + " not found")
+            } else {
+                history = resource.getControlHistory(user)
             }
+        } catch (PermissionException e) {
+            failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
         }
 
         renderXml() {
@@ -97,23 +97,27 @@ class ControlController extends ApiController {
         if (arguments == null) {
             arguments = ""
         }
-        def resource = getResource(resourceId)
-        if (!resource) {
-            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                       "Resource id " + resourceId + " not found")
-        } else if (!action) {
+
+        if (!action) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                        "No action given")
         } else {
             try {
-            	def actions = resource.getControlActions(user)
-            	if (!actions.contains(action)) {
-                	failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
-                                           "Resource type " + resource.prototype.name +
-                                           " does not support action " + action +
-                                           ". Possible values: " + actions)
-            	} else {
-                    resource.runAction(user, action, arguments)
+                def resource = getResource(resourceId)
+                if (!resource) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Resource id " + resourceId + " not found")
+                } else {
+
+                    def actions = resource.getControlActions(user)
+                    if (!actions.contains(action)) {
+                        failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                                   "Resource type " + resource.prototype.name +
+                                                   " does not support action " + action +
+                                                   ". Possible values: " + actions)
+                    } else {
+                        resource.runAction(user, action, arguments)
+                    }
                 }
             } catch (org.hyperic.hq.product.PluginException e) {
                 failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,

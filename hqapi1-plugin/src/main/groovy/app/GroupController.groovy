@@ -255,7 +255,12 @@ class GroupController extends ApiController {
             for (xmlResource in xmlGroup['Resource']) {
                 log.debug("Found resource " + xmlResource.'@name')
 
-                def resource = getResource(xmlResource.'@id'?.toInteger());
+                def resource = null
+                try {
+                    resource = getResource(xmlResource.'@id'?.toInteger());
+                } catch (PermissionException e) {
+                    // Ignore resources the user cannot see.
+                }
 
                 if (!resource) {
                     failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,

@@ -1,6 +1,11 @@
 
+Changes in HQApi 3.3
+
 Changes in HQApi 3.2
 
+ *) Add support to get and sync platform resources by FQDN.
+    No corresponding CLI command was explicitly implemented.
+ 
  *) [HHQ-4058] Also update the agent when syncing platforms
  
  *) [HHQ-4060] Add --groupId option to metricData list CLI command.
@@ -84,6 +89,24 @@ Changes in HQApi 3.0
 
  *) [HHQ-3144] Add ServerConfigApi to allow manipulation of HQ server config
     settings.
+ 
+Changes in HQApi 2.6
+
+ *) [HHQ-4151] Add new API to ResourceApi to find a platform Resource
+    based on the passed resource id.  Extended support for this into the
+    CLI using the --parentPlatform flag to resource list.
+
+ *) [HHQ-4150] Make --count optional when listing alerts via the CLI.
+
+ *) [HHQ-4145] Add --addRole, --removeRole, and --clearRoles options to
+    command line group syncing.  These can only be used with --name.
+
+Changes in HQApi 2.5
+
+ *) [HHQ-4133] Perform permission checking on ResourceApi.
+
+ *) Back port AlertApi to 2.x branch.  As a part of this change portions of
+    the new MetricDataApi were also backported to aid in testing.
 
 Changes in HQApi 2.4
 
