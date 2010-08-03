@@ -1,6 +1,8 @@
 
 Changes in HQApi 2.6
 
+ *) [HHQ-4175] Add EmailAction support for alert definitions.
+
  *) [HHQ-4151] Add new API to ResourceApi to find a platform Resource
     based on the passed resource id.  Extended support for this into the
     CLI using the --parentPlatform flag to resource list.

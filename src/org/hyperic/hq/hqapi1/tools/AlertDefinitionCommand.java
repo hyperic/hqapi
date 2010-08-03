@@ -38,15 +38,19 @@ import org.hyperic.hq.hqapi1.EscalationApi;
 import org.hyperic.hq.hqapi1.types.AlertAction;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
-import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
+import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.EscalationResponse;
 import org.hyperic.hq.hqapi1.types.Escalation;
 import org.hyperic.hq.hqapi1.types.AlertCondition;
+import org.hyperic.hq.hqapi1.types.User;
+import org.hyperic.hq.hqapi1.types.UserResponse;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Iterator;
@@ -81,6 +85,9 @@ public class AlertDefinitionCommand extends Command {
     private static String OPT_ASSIGN_CONTROLACTION = "assignControlAction";
     private static String OPT_CLEAR_ESC = "clearEscalation";
     private static String OPT_CLEAR_ACTIONS = "clearActions";
+    private static String OPT_ASSIGN_USER_NOTIFICATION = "assignUserNotification";
+    private static String OPT_ASSIGN_ROLE_NOTIFICATION = "assignRoleNotification";
+    private static String OPT_ASSIGN_OTHER_NOTIFICATION = "assignOtherNotification";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -307,6 +314,15 @@ public class AlertDefinitionCommand extends Command {
                                  "all alert definitions in this sync");
         p.accepts(OPT_CLEAR_ACTIONS, "If specified, clear alert actions from " +
                                      "all alert definitions in this sync");
+        p.accepts(OPT_ASSIGN_USER_NOTIFICATION, "If specified, assign notification to the given " +
+                                                "comma separated list of users").
+                withRequiredArg().ofType(String.class);
+        p.accepts(OPT_ASSIGN_ROLE_NOTIFICATION, "If specified, assign notification to the given " +
+                                                "comma separated list of roles").
+                withRequiredArg().ofType(String.class);
+        p.accepts(OPT_ASSIGN_OTHER_NOTIFICATION, "If specified, assign notification to the given " +
+                                                "comma separated list of email addresses").
+                withRequiredArg().ofType(String.class);
 
         OptionSet options = getOptions(p, args);
 
@@ -365,6 +381,42 @@ public class AlertDefinitionCommand extends Command {
 
             for (AlertDefinition def : definitions) {
                 def.getAlertAction().clear();
+            }
+        }
+
+        if (options.has(OPT_ASSIGN_USER_NOTIFICATION)) {
+            String[] users = ((String)getRequired(options, OPT_ASSIGN_USER_NOTIFICATION)).split(",");
+            List<User> checkedUsers = new ArrayList<User>();
+            for (String u : users) {
+                UserResponse uResponse = api.getUserApi().getUser(u);
+                checkSuccess(uResponse);
+                checkedUsers.add(uResponse.getUser());
+            }
+
+            for (AlertDefinition def : definitions) {
+                AlertDefinitionBuilder.addEmailAction(def, checkedUsers.toArray(new User[checkedUsers.size()]));
+            }
+        }
+
+        if (options.has(OPT_ASSIGN_ROLE_NOTIFICATION)) {
+            String[] roles = ((String)getRequired(options, OPT_ASSIGN_ROLE_NOTIFICATION)).split(",");
+            ArrayList<Role> checkedRoles = new ArrayList<Role>();
+            for (String r : roles) {
+                RoleResponse rResponse = api.getRoleApi().getRole(r);
+                checkSuccess(rResponse);
+                checkedRoles.add(rResponse.getRole());
+            }
+
+            for (AlertDefinition def : definitions) {
+                AlertDefinitionBuilder.addEmailAction(def, checkedRoles.toArray(new Role[checkedRoles.size()]));
+            }
+        }
+
+        if (options.has(OPT_ASSIGN_OTHER_NOTIFICATION)) {
+            String[] emails = ((String)getRequired(options, OPT_ASSIGN_OTHER_NOTIFICATION)).split(",");
+
+            for (AlertDefinition def : definitions) {
+                AlertDefinitionBuilder.addEmailAction(def, emails);
             }
         }
 

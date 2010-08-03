@@ -26,6 +26,34 @@ public class AlertdefinitionController extends ApiController {
     private eventBoss   = EventsBoss.one
     private aMan        = AMan.one
 
+    private EMAIL_NOTIFY_TYPE = [1:"email", 2:"users", 3:"roles"]
+
+    private String getNotificationNames(type, id) {
+        if (type == 1) {
+            return id
+        } else if (type == 2) {
+            def ids = id.split(",")
+            return ids.collect { getUser(it.toInteger(), null)?.name }.join(",")
+        } else if (type == 3) {
+            def ids = id.split(",")
+            return ids.collect { getRole(it.toInteger(), null)?.name }.join(",")
+        }
+        return null
+    }
+
+    private String getNotificationIds(type, name) {
+        if (type == 1) {
+            return name
+        } else if (type == 2) {
+            def names = name.split(",")
+            return names.collect {getUser(null, it)?.id}.findAll {it != null}.join(",")
+        } else if (type == 3) {
+            def names = name.split(",")
+            return names.collect {getRole(null, it)?.id}.findAll {it != null}.join(",")
+        }
+        return null
+    }
+
     private EVENT_LEVEL_TO_NUM = [
         ANY: -1,
         ERR : LogTrackPlugin.LOGLEVEL_ERROR,
@@ -170,7 +198,6 @@ public class AlertdefinitionController extends ApiController {
                 }
 
                 for (a in d.actions) {
-                    // TODO: User and Role notifications only handled through Escalation
                     if (a.className == "com.hyperic.hq.bizapp.server.action.control.ScriptAction" ||
                         a.className == "org.hyperic.hq.bizapp.server.action.integrate.OpenNMSAction") {
                         AlertAction(id: a.id,
@@ -208,6 +235,18 @@ public class AlertdefinitionController extends ApiController {
                                                   value: config.getValue('action'))
                             }
                         }
+                    } else if (a.className == "com.hyperic.hq.bizapp.server.action.email.EmailAction") {
+                         def config = ConfigResponse.decode(a.config)
+                         def names = config.getValue("names")
+                         def listType = config.getValue("listType")?.toInteger()
+
+                         AlertAction(id: a.id,
+                                     className: a.className) {
+                             AlertActionConfig(key: 'notifyType',
+                                               value: EMAIL_NOTIFY_TYPE[listType])
+                             AlertActionConfig(key: 'names',
+                                               value: getNotificationNames(listType,names))
+                         }
                     }
                 }
             }
@@ -668,6 +707,31 @@ public class AlertdefinitionController extends ApiController {
                                  xmlAction['AlertActionConfig'])
                         continue
                     }
+                } else if (className == "com.hyperic.hq.bizapp.server.action.email.EmailAction") {
+                    def typeName = xmlAction['AlertActionConfig'].find {
+                        it.'@key' == 'notifyType'
+                    }?.'@value'
+
+                    def names = xmlAction['AlertActionConfig'].find {
+                        it.'@key' == 'names'
+                    }?.'@value'
+
+                    def type = EMAIL_NOTIFY_TYPE.find { it.value == typeName }?.key
+
+                    if (!type) {
+                        log.warn("Ignoring invalid EmailAction type " + typeName)
+                        continue
+                    }
+
+                    def notificationIds = getNotificationIds(type, names)
+                    if (notificationIds == null || notificationIds.length() == 0) {
+                        log.warn("Ignoring invalid EmailAction notification=" + names)
+                        continue
+                    }
+
+                    cfg['listType'] = type.toString()
+                    cfg['names'] = notificationIds
+                    cfg['sms'] = 'false' // XXX: Legacy a presume..
                 } else {
                     for (xmlConfig in xmlAction['AlertActionConfig']) {
                         cfg[xmlConfig.'@key'] = xmlConfig.'@value'
