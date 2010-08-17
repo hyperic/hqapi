@@ -16,6 +16,7 @@
 		<httpclient.version>3.1</httpclient.version>
 		<jopt-simple.version>3.2</jopt-simple.version>
 		<junit.version>4.4</junit.version>
+		<localizer.version>1.0</localizer.version>
 		<log4j.version>1.2.14</log4j.version>
 		<wadl.version>1.1.20100120</wadl.version>
 		<spring.version>3.0.1.RELEASE</spring.version>
@@ -53,6 +54,23 @@
 				<groupId>org.jvnet.ws.wadl</groupId>
 				<artifactId>wadl-core</artifactId>
 				<version>${wadl.version}</version>
+				<!-- These require an SSL cert to download -->
+		  		<exclusions>
+                	<exclusion>
+                		<groupId>com.sun.localizer</groupId>
+                   		<artifactId>localizer</artifactId>
+                	</exclusion>
+					<exclusion>
+						<groupId>com.sun.localizer</groupId>
+						<artifactId>comresrcgen</artifactId>
+                	</exclusion>
+        		</exclusions>
+			</dependency>
+			<!-- This is a transitive dependency of WADL, pulled from a maven repo not requiring SSL-->
+			<dependency>
+				<groupId>com.sun.localizer</groupId>
+				<artifactId>localizer</artifactId>
+				<version>${localizer.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>

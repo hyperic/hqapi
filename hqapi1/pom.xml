@@ -29,6 +29,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- TODO this is broken.  Reenable when working.  Also make sure com.sun.localizer jars are excluded from this download due to SSL cert issues 
 			<plugin>
 				<groupId>org.jvnet.ws.wadl</groupId>
 				<artifactId>wadl-maven-plugin</artifactId>
@@ -43,7 +44,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -92,6 +93,11 @@
 		<dependency>
 			<groupId>org.jvnet.ws.wadl</groupId>
 			<artifactId>wadl-core</artifactId>
+		</dependency>
+		<!-- This is a transitive dependency of WADL, pulled from a maven repo not requiring SSL-->
+		<dependency>
+			<groupId>com.sun.localizer</groupId>
+			<artifactId>localizer</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
