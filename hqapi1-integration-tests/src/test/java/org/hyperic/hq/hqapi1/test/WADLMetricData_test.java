@@ -8,7 +8,7 @@ import java.util.List;
 public class WADLMetricData_test extends WADLTestBase {
 
     public void testGet() throws Exception {
-        Endpoint.MetricDataGetHqu get = new Endpoint.MetricDataGetHqu();
+        HttpLocalhost8080HquHqapi1.MetricDataGetHqu get = new HttpLocalhost8080HquHqapi1.MetricDataGetHqu();
 
         MetricDataResponse response =
                 get.getAsMetricDataResponse(Integer.MAX_VALUE,
@@ -17,7 +17,7 @@ public class WADLMetricData_test extends WADLTestBase {
     }
 
     public void testGetLast() throws Exception {
-        Endpoint.MetricDataGetLastHqu last = new Endpoint.MetricDataGetLastHqu();
+        HttpLocalhost8080HquHqapi1.MetricDataGetLastHqu last = new HttpLocalhost8080HquHqapi1.MetricDataGetLastHqu();
 
         LastMetricDataResponse response =
                 last.getAsLastMetricDataResponse(Integer.MAX_VALUE);
@@ -25,7 +25,7 @@ public class WADLMetricData_test extends WADLTestBase {
     }
 
     public void testGetMulti() throws Exception {
-        Endpoint.MetricDataGetMultiHqu multi = new Endpoint.MetricDataGetMultiHqu();
+        HttpLocalhost8080HquHqapi1.MetricDataGetMultiHqu multi = new HttpLocalhost8080HquHqapi1.MetricDataGetMultiHqu();
 
         List<Integer> ids = new ArrayList<Integer>();
         ids.add(0);
@@ -38,8 +38,8 @@ public class WADLMetricData_test extends WADLTestBase {
     }
 
     public void testGetMultiLast() throws Exception {
-        Endpoint.MetricDataGetMultiLastHqu multiLast =
-                new Endpoint.MetricDataGetMultiLastHqu();
+        HttpLocalhost8080HquHqapi1.MetricDataGetMultiLastHqu multiLast =
+                new HttpLocalhost8080HquHqapi1.MetricDataGetMultiLastHqu();
 
         List<Integer> ids = new ArrayList<Integer>();
         ids.add(0);
@@ -51,7 +51,7 @@ public class WADLMetricData_test extends WADLTestBase {
     }
 
     public void testPut() throws Exception {
-        Endpoint.MetricDataPutHqu put = new Endpoint.MetricDataPutHqu();
+        HttpLocalhost8080HquHqapi1.MetricDataPutHqu put = new HttpLocalhost8080HquHqapi1.MetricDataPutHqu();
 
         List<DataPoint> dps = new ArrayList<DataPoint>();
         DataPoint dp = new DataPoint();
@@ -63,7 +63,7 @@ public class WADLMetricData_test extends WADLTestBase {
         request.setMetricId(Integer.MAX_VALUE);
         request.getDataPoint().addAll(dps);
 
-        StatusResponse response = put.postAsStatusResponse(request);
+        StatusResponse response = put.postApplicationXmlAsStatusResponse(request);
         hqAssertFailure(response);
     }
 }

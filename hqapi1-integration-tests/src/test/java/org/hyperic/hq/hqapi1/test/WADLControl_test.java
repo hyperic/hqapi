@@ -32,8 +32,8 @@ import org.hyperic.hq.hqapi1.wadl.*;
 public class WADLControl_test extends WADLTestBase {
 
     public void testActions() throws Exception {
-        Endpoint.ControlActionsHqu actions =
-                new Endpoint.ControlActionsHqu();
+        HttpLocalhost8080HquHqapi1.ControlActionsHqu actions =
+                new HttpLocalhost8080HquHqapi1.ControlActionsHqu();
 
         ControlActionResponse response =
                 actions.getAsControlActionResponse(Integer.MAX_VALUE);
@@ -41,8 +41,8 @@ public class WADLControl_test extends WADLTestBase {
     }
 
     public void testHistory() throws Exception {
-        Endpoint.ControlHistoryHqu history =
-                new Endpoint.ControlHistoryHqu();
+        HttpLocalhost8080HquHqapi1.ControlHistoryHqu history =
+                new HttpLocalhost8080HquHqapi1.ControlHistoryHqu();
 
         ControlHistoryResponse response =
                 history.getAsControlHistoryResponse(Integer.MAX_VALUE);
@@ -50,8 +50,8 @@ public class WADLControl_test extends WADLTestBase {
     }
 
     public void testExecute() throws Exception {
-        Endpoint.ControlExecuteHqu execute =
-                new Endpoint.ControlExecuteHqu();
+        HttpLocalhost8080HquHqapi1.ControlExecuteHqu execute =
+                new HttpLocalhost8080HquHqapi1.ControlExecuteHqu();
 
         StatusResponse response =
                 execute.getAsStatusResponse(Integer.MAX_VALUE, "none",

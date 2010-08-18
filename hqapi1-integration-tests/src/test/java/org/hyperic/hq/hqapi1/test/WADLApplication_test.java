@@ -1,6 +1,6 @@
 package org.hyperic.hq.hqapi1.test;
 
-import org.hyperic.hq.hqapi1.wadl.Endpoint;
+import org.hyperic.hq.hqapi1.wadl.HttpLocalhost8080HquHqapi1;
 import org.hyperic.hq.hqapi1.wadl.*;
 
 import java.util.Random;
@@ -32,57 +32,57 @@ public class WADLApplication_test extends WADLTestBase {
     }
 
     public void testList() throws Exception {
-        Endpoint.ApplicationListHqu list =
-                new Endpoint.ApplicationListHqu();
+        HttpLocalhost8080HquHqapi1.ApplicationListHqu list =
+                new HttpLocalhost8080HquHqapi1.ApplicationListHqu();
 
         ApplicationsResponse response = list.getAsApplicationsResponse();
         hqAssertSuccess(response);
     }
 
     public void testCreate() throws Exception {
-        Endpoint.ApplicationCreateHqu create =
-                new Endpoint.ApplicationCreateHqu();
+        HttpLocalhost8080HquHqapi1.ApplicationCreateHqu create =
+                new HttpLocalhost8080HquHqapi1.ApplicationCreateHqu();
 
         Application a = generateTestApplication();
         ApplicationRequest req = new ApplicationRequest();
         req.setApplication(a);
 
         ApplicationResponse response =
-                create.postAsApplicationResponse(req);
+                create.postApplicationXmlAsApplicationResponse(req);
         hqAssertSuccess(response);
 
-        Endpoint.ApplicationDeleteHqu delete =
-                new Endpoint.ApplicationDeleteHqu();
+        HttpLocalhost8080HquHqapi1.ApplicationDeleteHqu delete =
+                new HttpLocalhost8080HquHqapi1.ApplicationDeleteHqu();
         StatusResponse deleteResponse =
                 delete.getAsStatusResponse(response.getApplication().getId());
         hqAssertSuccess(deleteResponse);
     }
 
     public void testUpdate() throws Exception {
-        Endpoint.ApplicationUpdateHqu update =
-                new Endpoint.ApplicationUpdateHqu();
+        HttpLocalhost8080HquHqapi1.ApplicationUpdateHqu update =
+                new HttpLocalhost8080HquHqapi1.ApplicationUpdateHqu();
 
         Application a = generateTestApplication();
         ApplicationRequest req = new ApplicationRequest();
         req.setApplication(a);
 
-        ApplicationResponse resp = update.postAsApplicationResponse(req);
+        ApplicationResponse resp = update.postApplicationXmlAsApplicationResponse(req);
         hqAssertFailure(resp);
     }
 
     public void testSync() throws Exception {
-        Endpoint.ApplicationSyncHqu sync =
-                new Endpoint.ApplicationSyncHqu();
+        HttpLocalhost8080HquHqapi1.ApplicationSyncHqu sync =
+                new HttpLocalhost8080HquHqapi1.ApplicationSyncHqu();
 
         Application a = generateTestApplication();
         ApplicationsRequest req = new ApplicationsRequest();
         req.getApplication().add(a);
 
-        ApplicationsResponse response = sync.postAsApplicationsResponse(req);
+        ApplicationsResponse response = sync.postApplicationXmlAsApplicationsResponse(req);
         hqAssertSuccess(response);
 
-        Endpoint.ApplicationDeleteHqu delete =
-                new Endpoint.ApplicationDeleteHqu();
+        HttpLocalhost8080HquHqapi1.ApplicationDeleteHqu delete =
+                new HttpLocalhost8080HquHqapi1.ApplicationDeleteHqu();
         for (Application app : response.getApplication()) {
             StatusResponse deleteResponse = delete.getAsStatusResponse(app.getId());
             hqAssertSuccess(deleteResponse);
@@ -90,8 +90,8 @@ public class WADLApplication_test extends WADLTestBase {
     }
 
     public void testDelete() throws Exception {
-        Endpoint.ApplicationDeleteHqu delete =
-                new Endpoint.ApplicationDeleteHqu();
+        HttpLocalhost8080HquHqapi1.ApplicationDeleteHqu delete =
+                new HttpLocalhost8080HquHqapi1.ApplicationDeleteHqu();
 
         StatusResponse deleteResponse = delete.getAsStatusResponse(Integer.MAX_VALUE);
         hqAssertFailure(deleteResponse);

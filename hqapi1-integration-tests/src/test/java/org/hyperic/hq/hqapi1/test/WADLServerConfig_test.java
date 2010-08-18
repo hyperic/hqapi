@@ -5,18 +5,18 @@ import org.hyperic.hq.hqapi1.wadl.*;
 public class WADLServerConfig_test extends WADLTestBase {
 
     public void testGet() throws Exception {
-        Endpoint.ServerConfigGetConfigHqu get =
-                new Endpoint.ServerConfigGetConfigHqu();
+        HttpLocalhost8080HquHqapi1.ServerConfigGetConfigHqu get =
+                new HttpLocalhost8080HquHqapi1.ServerConfigGetConfigHqu();
 
         ServerConfigResponse response = get.getAsServerConfigResponse();
         hqAssertSuccess(response);
     }
 
     public void testSet() throws Exception {
-        Endpoint.ServerConfigGetConfigHqu get =
-                new Endpoint.ServerConfigGetConfigHqu();
-        Endpoint.ServerConfigSetConfigHqu set =
-                new Endpoint.ServerConfigSetConfigHqu();
+        HttpLocalhost8080HquHqapi1.ServerConfigGetConfigHqu get =
+                new HttpLocalhost8080HquHqapi1.ServerConfigGetConfigHqu();
+        HttpLocalhost8080HquHqapi1.ServerConfigSetConfigHqu set =
+                new HttpLocalhost8080HquHqapi1.ServerConfigSetConfigHqu();
 
         ServerConfigResponse response = get.getAsServerConfigResponse();
         hqAssertSuccess(response);
@@ -24,7 +24,7 @@ public class WADLServerConfig_test extends WADLTestBase {
         ServerConfigRequest request = new ServerConfigRequest();
         request.getServerConfig().addAll(response.getServerConfig());
 
-        StatusResponse setResponse = set.postAsStatusResponse(request);
+        StatusResponse setResponse = set.postApplicationXmlAsStatusResponse(request);
         hqAssertSuccess(setResponse);  
     }
 }

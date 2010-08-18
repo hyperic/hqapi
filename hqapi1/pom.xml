@@ -29,14 +29,37 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- TODO this is broken.  Reenable when working.  Also make sure com.sun.localizer jars are excluded from this download due to SSL cert issues 
-			<plugin>
-				<groupId>org.jvnet.ws.wadl</groupId>
-				<artifactId>wadl-maven-plugin</artifactId>
-				<configuration>
-					<packageName>org.hyperic.hq.hqapi1.wadl</packageName>
-					<autoPackaging>false</autoPackaging>
-				</configuration>
+            <plugin>
+                <groupId>org.jvnet.ws.wadl</groupId>
+                <artifactId>wadl-maven-plugin</artifactId>
+                <configuration>
+                    <packageName>org.hyperic.hq.hqapi1.wadl</packageName>
+                    <autoPackaging>false</autoPackaging>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jvnet.ws.wadl</groupId>
+                        <artifactId>wadl-core</artifactId>
+                        <version>${wadl.version}</version>
+                        <!-- These require an SSL cert to download FIXME
+                   		<exclusions>
+                         	<exclusion>
+                         		<groupId>com.sun.localizer</groupId>
+                            		<artifactId>localizer</artifactId>
+                         	</exclusion>
+                             <exclusion>
+                                 <groupId>com.sun.localizer</groupId>
+                                 <artifactId>comresrcgen</artifactId>
+                         	</exclusion>
+                 		</exclusions -->
+                    </dependency>
+                    <!-- This is a transitive dependency of WADL, pulled from a maven repo not requiring SSL-->
+                    <dependency>
+                        <groupId>com.sun.localizer</groupId>
+                        <artifactId>localizer</artifactId>
+                        <version>${localizer.version}</version>
+                    </dependency>
+                </dependencies>
 				<executions>
 					<execution>
 						<goals>
@@ -44,7 +67,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin> -->
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>

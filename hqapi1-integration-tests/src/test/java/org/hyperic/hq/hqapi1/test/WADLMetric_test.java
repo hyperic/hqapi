@@ -20,10 +20,10 @@ public class WADLMetric_test extends WADLTestBase {
 
     public void testGetMetricTemplates() throws Exception {
 
-        Endpoint.MetricGetTemplatesHqu getTemplates =
-                new Endpoint.MetricGetTemplatesHqu();
-        Endpoint.MetricGetMetricTemplateHqu getTemplate =
-                new Endpoint.MetricGetMetricTemplateHqu();
+        HttpLocalhost8080HquHqapi1.MetricGetTemplatesHqu getTemplates =
+                new HttpLocalhost8080HquHqapi1.MetricGetTemplatesHqu();
+        HttpLocalhost8080HquHqapi1.MetricGetMetricTemplateHqu getTemplate =
+                new HttpLocalhost8080HquHqapi1.MetricGetMetricTemplateHqu();
 
         MetricTemplatesResponse response = getTemplates.getAsMetricTemplatesResponse("CPU");
         hqAssertSuccess(response);
@@ -37,16 +37,16 @@ public class WADLMetric_test extends WADLTestBase {
 
     public void testGetMetrics() throws Exception {
 
-        Endpoint.MetricGetMetricHqu getMetric =
-                new Endpoint.MetricGetMetricHqu();
-        Endpoint.MetricGetMetricsHqu getMetrics =
-                new Endpoint.MetricGetMetricsHqu();
-        Endpoint.ResourceFindHqu resourceFind =
-                new Endpoint.ResourceFindHqu();
-        Endpoint.MetricGetResourceDataHqu getResourceData =
-                new Endpoint.MetricGetResourceDataHqu();
-        Endpoint.MetricGetDataHqu getMetricData =
-                new Endpoint.MetricGetDataHqu();
+        HttpLocalhost8080HquHqapi1.MetricGetMetricHqu getMetric =
+                new HttpLocalhost8080HquHqapi1.MetricGetMetricHqu();
+        HttpLocalhost8080HquHqapi1.MetricGetMetricsHqu getMetrics =
+                new HttpLocalhost8080HquHqapi1.MetricGetMetricsHqu();
+        HttpLocalhost8080HquHqapi1.ResourceFindHqu resourceFind =
+                new HttpLocalhost8080HquHqapi1.ResourceFindHqu();
+        HttpLocalhost8080HquHqapi1.MetricGetResourceDataHqu getResourceData =
+                new HttpLocalhost8080HquHqapi1.MetricGetResourceDataHqu();
+        HttpLocalhost8080HquHqapi1.MetricGetDataHqu getMetricData =
+                new HttpLocalhost8080HquHqapi1.MetricGetDataHqu();
 
         ResourcesResponse resources =
                 resourceFind.getAsResourcesResponse(null, "CPU", null, false, false);

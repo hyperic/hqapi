@@ -8,45 +8,45 @@ import java.util.List;
 public class WADLAlertDefinition_test extends WADLTestBase {
 
     public void testListDefinitions() throws Exception {
-        Endpoint.AlertdefinitionListDefinitionsHqu adList =
-                new Endpoint.AlertdefinitionListDefinitionsHqu();
+        HttpLocalhost8080HquHqapi1.AlertdefinitionListDefinitionsHqu adList =
+                new HttpLocalhost8080HquHqapi1.AlertdefinitionListDefinitionsHqu();
 
         AlertDefinitionsResponse response = adList.getAsAlertDefinitionsResponse();
         hqAssertSuccess(response);
     }
 
     public void testListDefinitionsByResources() throws Exception {
-        Endpoint.AlertdefinitionListDefinitionsByResourcesHqu adList =
-                new Endpoint.AlertdefinitionListDefinitionsByResourcesHqu();
+        HttpLocalhost8080HquHqapi1.AlertdefinitionListDefinitionsByResourcesHqu adList =
+                new HttpLocalhost8080HquHqapi1.AlertdefinitionListDefinitionsByResourcesHqu();
         List<Resource> resources = new ArrayList<Resource>();
         ResourcesRequest request = new ResourcesRequest();
         request.getResource().addAll(resources);
-        AlertDefinitionsResponse response = adList.postAsAlertDefinitionsResponse(request);
+        AlertDefinitionsResponse response = adList.postApplicationXmlAsAlertDefinitionsResponse(request);
         hqAssertSuccess(response);
     }
 
     public void testListTypeDefinitions() throws Exception {
-        Endpoint.AlertdefinitionListTypeDefinitionsHqu adTypeList =
-                new Endpoint.AlertdefinitionListTypeDefinitionsHqu();
+        HttpLocalhost8080HquHqapi1.AlertdefinitionListTypeDefinitionsHqu adTypeList =
+                new HttpLocalhost8080HquHqapi1.AlertdefinitionListTypeDefinitionsHqu();
 
         AlertDefinitionsResponse response = adTypeList.getAsAlertDefinitionsResponse();
         hqAssertSuccess(response);
     }
 
     public void testDelete() throws Exception {
-        Endpoint.AlertdefinitionDeleteHqu adDelete =
-                new Endpoint.AlertdefinitionDeleteHqu();
+        HttpLocalhost8080HquHqapi1.AlertdefinitionDeleteHqu adDelete =
+                new HttpLocalhost8080HquHqapi1.AlertdefinitionDeleteHqu();
 
         StatusResponse response = adDelete.getAsStatusResponse(Integer.MAX_VALUE);
         hqAssertFailure(response); // Won't exist.
     }
 
     public void testSync() throws Exception {
-        Endpoint.AlertdefinitionSyncHqu adSync =
-                new Endpoint.AlertdefinitionSyncHqu();
+        HttpLocalhost8080HquHqapi1.AlertdefinitionSyncHqu adSync =
+                new HttpLocalhost8080HquHqapi1.AlertdefinitionSyncHqu();
         AlertDefinitionsRequest request = new AlertDefinitionsRequest();
 
-        AlertDefinitionsResponse response = adSync.postAsAlertDefinitionsResponse(request);
+        AlertDefinitionsResponse response = adSync.postApplicationXmlAsAlertDefinitionsResponse(request);
         hqAssertSuccess(response);
     }
 }

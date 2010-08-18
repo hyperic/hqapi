@@ -6,8 +6,8 @@ public class WADLAutodiscovery_test extends WADLTestBase {
 
     public void testGetQueue() throws Exception {
 
-        Endpoint.AutodiscoveryGetQueueHqu adGetQueue =
-                new Endpoint.AutodiscoveryGetQueueHqu();
+        HttpLocalhost8080HquHqapi1.AutodiscoveryGetQueueHqu adGetQueue =
+                new HttpLocalhost8080HquHqapi1.AutodiscoveryGetQueueHqu();
 
         QueueResponse queue = adGetQueue.getAsQueueResponse();
         hqAssertSuccess(queue);
@@ -15,8 +15,8 @@ public class WADLAutodiscovery_test extends WADLTestBase {
 
     public void testApprove() throws Exception {
 
-        Endpoint.AutodiscoveryApproveHqu adApprove =
-                new Endpoint.AutodiscoveryApproveHqu();
+        HttpLocalhost8080HquHqapi1.AutodiscoveryApproveHqu adApprove =
+                new HttpLocalhost8080HquHqapi1.AutodiscoveryApproveHqu();
 
         StatusResponse approve = adApprove.getAsStatusResponse(Integer.MAX_VALUE);
         hqAssertFailure(approve); // That id won't exist, just testing endpoints.

@@ -6,7 +6,7 @@ public class WADLUser_test extends WADLTestBase {
 
     public void testUserList() throws Exception {
 
-        Endpoint.UserListHqu userList = new Endpoint.UserListHqu();
+        HttpLocalhost8080HquHqapi1.UserListHqu userList = new HttpLocalhost8080HquHqapi1.UserListHqu();
 
         UsersResponse users = userList.getAsUsersResponse();
         hqAssertSuccess(users);
@@ -14,7 +14,7 @@ public class WADLUser_test extends WADLTestBase {
 
     public void testUserGet() throws Exception {
 
-        Endpoint.UserGetHqu userGet = new Endpoint.UserGetHqu();
+        HttpLocalhost8080HquHqapi1.UserGetHqu userGet = new HttpLocalhost8080HquHqapi1.UserGetHqu();
 
         UserResponse user = userGet.getAsUserResponse("guest");
         hqAssertSuccess(user);
@@ -22,11 +22,11 @@ public class WADLUser_test extends WADLTestBase {
 
     public void testUserCreateDeleteSyncChangePassword() throws Exception {
 
-        Endpoint.UserCreateHqu userCreate = new Endpoint.UserCreateHqu();
-        Endpoint.UserDeleteHqu userDelete = new Endpoint.UserDeleteHqu();
-        Endpoint.UserChangePasswordHqu userChangePassword =
-                new Endpoint.UserChangePasswordHqu();
-        Endpoint.UserSyncHqu userSync = new Endpoint.UserSyncHqu();
+        HttpLocalhost8080HquHqapi1.UserCreateHqu userCreate = new HttpLocalhost8080HquHqapi1.UserCreateHqu();
+        HttpLocalhost8080HquHqapi1.UserDeleteHqu userDelete = new HttpLocalhost8080HquHqapi1.UserDeleteHqu();
+        HttpLocalhost8080HquHqapi1.UserChangePasswordHqu userChangePassword =
+                new HttpLocalhost8080HquHqapi1.UserChangePasswordHqu();
+        HttpLocalhost8080HquHqapi1.UserSyncHqu userSync = new HttpLocalhost8080HquHqapi1.UserSyncHqu();
 
         // Test User Sync - Required Atts
         UserResponse responseReq = userCreate.getAsUserResponse("testWadl",
@@ -64,7 +64,7 @@ public class WADLUser_test extends WADLTestBase {
         u.setFirstName("New First Name");
         UsersRequest r = new UsersRequest();
         r.getUser().add(u);
-        StatusResponse syncResponse = userSync.postAsStatusResponse(r);
+        StatusResponse syncResponse = userSync.postApplicationXmlAsStatusResponse(r);
         hqAssertSuccess(syncResponse);
 
         StatusResponse deleteOpt = userDelete.getAsStatusResponse(responseOpt.getUser().getName());

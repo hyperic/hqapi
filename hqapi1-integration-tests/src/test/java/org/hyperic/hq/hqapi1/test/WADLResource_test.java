@@ -5,8 +5,8 @@ import org.hyperic.hq.hqapi1.wadl.*;
 public class WADLResource_test extends WADLTestBase {
 
     public void testResourceFindGet() throws Exception {
-        Endpoint.ResourceFindHqu resourceFind = new Endpoint.ResourceFindHqu();
-        Endpoint.ResourceGetHqu resourceGet = new Endpoint.ResourceGetHqu();
+        HttpLocalhost8080HquHqapi1.ResourceFindHqu resourceFind = new HttpLocalhost8080HquHqapi1.ResourceFindHqu();
+        HttpLocalhost8080HquHqapi1.ResourceGetHqu resourceGet = new HttpLocalhost8080HquHqapi1.ResourceGetHqu();
 
         ResourcesResponse response =
                 resourceFind.getAsResourcesResponse(null, "CPU", null, false, false);
@@ -24,23 +24,23 @@ public class WADLResource_test extends WADLTestBase {
     }
 
     public void testCreatePlatform() throws Exception {
-        Endpoint.ResourceCreatePlatformHqu createPlatform =
-                new Endpoint.ResourceCreatePlatformHqu();
-        Endpoint.ResourceDeleteHqu deleteResource =
-                new Endpoint.ResourceDeleteHqu();
+        HttpLocalhost8080HquHqapi1.ResourceCreatePlatformHqu createPlatform =
+                new HttpLocalhost8080HquHqapi1.ResourceCreatePlatformHqu();
+        HttpLocalhost8080HquHqapi1.ResourceDeleteHqu deleteResource =
+                new HttpLocalhost8080HquHqapi1.ResourceDeleteHqu();
     }
 
     public void testCreateResource() throws Exception {
-        Endpoint.ResourceCreateResourceHqu createResource =
-                new Endpoint.ResourceCreateResourceHqu();
-        Endpoint.ResourceDeleteHqu deleteResource =
-                new Endpoint.ResourceDeleteHqu();
-        Endpoint.ResourceSyncHqu syncResource = new Endpoint.ResourceSyncHqu();
+        HttpLocalhost8080HquHqapi1.ResourceCreateResourceHqu createResource =
+                new HttpLocalhost8080HquHqapi1.ResourceCreateResourceHqu();
+        HttpLocalhost8080HquHqapi1.ResourceDeleteHqu deleteResource =
+                new HttpLocalhost8080HquHqapi1.ResourceDeleteHqu();
+        HttpLocalhost8080HquHqapi1.ResourceSyncHqu syncResource = new HttpLocalhost8080HquHqapi1.ResourceSyncHqu();
     }
 
     public void testGetResourcePrototypes() throws Exception {
-        Endpoint.ResourceGetResourcePrototypesHqu resourceGetPrototypes =
-                new Endpoint.ResourceGetResourcePrototypesHqu();
+        HttpLocalhost8080HquHqapi1.ResourceGetResourcePrototypesHqu resourceGetPrototypes =
+                new HttpLocalhost8080HquHqapi1.ResourceGetResourcePrototypesHqu();
 
         ResourcePrototypesResponse response =
                 resourceGetPrototypes.getAsResourcePrototypesResponse();
@@ -55,8 +55,8 @@ public class WADLResource_test extends WADLTestBase {
     }
 
     public void testGetResourcePrototype() throws Exception {
-        Endpoint.ResourceGetResourcePrototypeHqu resourceGetPrototype =
-                new Endpoint.ResourceGetResourcePrototypeHqu();
+        HttpLocalhost8080HquHqapi1.ResourceGetResourcePrototypeHqu resourceGetPrototype =
+                new HttpLocalhost8080HquHqapi1.ResourceGetResourcePrototypeHqu();
 
         ResourcePrototypeResponse response =
                 resourceGetPrototype.getAsResourcePrototypeResponse("CPU");

@@ -6,9 +6,9 @@ public class WADLAgent_test extends WADLTestBase {
 
     public void testAgent() throws Exception {
 
-        Endpoint.AgentGetHqu agentGet = new Endpoint.AgentGetHqu();
-        Endpoint.AgentListHqu agentList = new Endpoint.AgentListHqu();
-        Endpoint.AgentPingHqu agentPing = new Endpoint.AgentPingHqu();
+        HttpLocalhost8080HquHqapi1.AgentGetHqu agentGet = new HttpLocalhost8080HquHqapi1.AgentGetHqu();
+        HttpLocalhost8080HquHqapi1.AgentListHqu agentList = new HttpLocalhost8080HquHqapi1.AgentListHqu();
+        HttpLocalhost8080HquHqapi1.AgentPingHqu agentPing = new HttpLocalhost8080HquHqapi1.AgentPingHqu();
 
         AgentsResponse agents = agentList.getAsAgentsResponse();
         hqAssertSuccess(agents);
