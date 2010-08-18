@@ -233,14 +233,14 @@
 
 	<distributionManagement>
 		<repository>
-			<id>hyperic-milestone</id>
-			<name>Hyperic Milestone Repository</name>
-			<url>s3://maven.hyperic.org/milestone</url>
+			<id>hqapi-milestone</id>
+			<name>HQApi Milestone Repository</name>
+			<url>s3://maven.hyperic.org/hqapi/milestone</url>
 		</repository>
 		<snapshotRepository>
-			<id>hyperic-snapshot</id>
-			<name>Hyperic Snapshot Repository</name>
-			<url>s3://maven.hyperic.org/snapshot</url>
+			<id>hqapi-snapshot</id>
+			<name>HQApi Snapshot Repository</name>
+			<url>s3://maven.hyperic.org/hqapi/snapshot</url>
 		</snapshotRepository>
 	</distributionManagement>
 
