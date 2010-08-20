@@ -3,3 +3,7 @@ target
 .project
 .settings
 logs
+*.iml
+*.iws
+*.ipr
+*.iws
