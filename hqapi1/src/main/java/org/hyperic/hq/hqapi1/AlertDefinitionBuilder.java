@@ -32,6 +32,8 @@ import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertAction;
 import org.hyperic.hq.hqapi1.types.AlertActionConfig;
 import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.Role;
+import org.hyperic.hq.hqapi1.types.User;
 
 /**
  * This class is used to create {@link org.hyperic.hq.hqapi1.types.AlertCondition}s.
@@ -468,5 +470,190 @@ public class AlertDefinitionBuilder {
         a.getAlertActionConfig().add(varbindsCfg);
 
         return a;        
+    }
+
+    /**
+     * Add the list of {@link User}s to the list of notifications for this alert definition.
+     *
+     * @param d The {@link org.hyperic.hq.hqapi1.types.AlertDefinition} to modify.
+     * @param users The list of Users to notify.
+     */
+    public static void addEmailAction(AlertDefinition d, User[] users) {
+
+        for (AlertAction a : d.getAlertAction()) {
+            if (a.getClassName().equals("com.hyperic.hq.bizapp.server.action.email.EmailAction")) {
+                boolean actionExists = false;
+                AlertActionConfig names = null;
+                for (AlertActionConfig cfg : a.getAlertActionConfig()) {
+                    if (cfg.getKey().equals("notifyType") &&
+                        cfg.getValue().equals("users")) {
+                        actionExists = true;
+                    }
+                    if (cfg.getKey().equals("names")) {
+                        names = cfg;
+                    }
+                }
+
+                if (actionExists && names != null) {
+                    // Set to the new value
+                    StringBuffer nameList = new StringBuffer();
+                    for (int i = 0; i < users.length; i++) {
+                        nameList.append(users[i].getName());
+                        if (i + 1 < users.length) {
+                            nameList.append(",");
+                        }
+                    }
+                    names.setValue(nameList.toString());
+                    return;
+                }
+            }
+        }
+
+        // Action does not exist, create it.
+        AlertAction a = new AlertAction();
+        a.setClassName("com.hyperic.hq.bizapp.server.action.email.EmailAction");
+
+        AlertActionConfig type = new AlertActionConfig();
+        type.setKey("notifyType");
+        type.setValue("users");
+
+        StringBuffer nameList = new StringBuffer();
+        for (int i = 0; i < users.length; i++) {
+            nameList.append(users[i].getName());
+            if (i + 1 < users.length) {
+                nameList.append(",");
+            }
+        }
+        AlertActionConfig names = new AlertActionConfig();
+        names.setKey("names");
+        names.setValue(nameList.toString());
+
+        a.getAlertActionConfig().add(type);
+        a.getAlertActionConfig().add(names);
+
+        d.getAlertAction().add(a);
+    }
+
+    /**
+     * Add the list of {@link Role}s to the list of notifications for this alert definition.
+     *
+     * @param d The {@link org.hyperic.hq.hqapi1.types.AlertDefinition} to modify.
+     * @param roles The list of Roles to notify.
+     */
+    public static void addEmailAction(AlertDefinition d, Role[] roles) {
+        for (AlertAction a : d.getAlertAction()) {
+            if (a.getClassName().equals("com.hyperic.hq.bizapp.server.action.email.EmailAction")) {
+                boolean actionExists = false;
+                AlertActionConfig names = null;
+                for (AlertActionConfig cfg : a.getAlertActionConfig()) {
+                    if (cfg.getKey().equals("notifyType") &&
+                        cfg.getValue().equals("roles")) {
+                        actionExists = true;
+                    }
+                    if (cfg.getKey().equals("names")) {
+                        names = cfg;
+                    }
+                }
+
+                if (actionExists && names != null) {
+                    // Set to the new value
+                    StringBuffer nameList = new StringBuffer();
+                    for (int i = 0; i < roles.length; i++) {
+                        nameList.append(roles[i].getName());
+                        if (i + 1 < roles.length) {
+                            nameList.append(",");
+                        }
+                    }
+                    names.setValue(nameList.toString());
+                    return;
+                }
+            }
+        }
+
+        // Action does not exist, create it.
+        AlertAction a = new AlertAction();
+        a.setClassName("com.hyperic.hq.bizapp.server.action.email.EmailAction");
+
+        AlertActionConfig type = new AlertActionConfig();
+        type.setKey("notifyType");
+        type.setValue("roles");
+
+        StringBuffer nameList = new StringBuffer();
+        for (int i = 0; i < roles.length; i++) {
+            nameList.append(roles[i].getName());
+            if (i+1 < roles.length) {
+                nameList.append(",");
+            }
+        }
+        AlertActionConfig names = new AlertActionConfig();
+        names.setKey("names");
+        names.setValue(nameList.toString());
+
+        a.getAlertActionConfig().add(type);
+        a.getAlertActionConfig().add(names);
+
+        d.getAlertAction().add(a);
+    }
+
+    /**
+     * Add the list of email addresses to the list of notifications for this alert definition.
+     *
+     * @param d The {@link org.hyperic.hq.hqapi1.types.AlertDefinition} to modify.
+     * @param otherRecipients The list of email addresses to notify.
+     */
+    public static void addEmailAction(AlertDefinition d, String[] otherRecipients) {
+
+        for (AlertAction a : d.getAlertAction()) {
+            if (a.getClassName().equals("com.hyperic.hq.bizapp.server.action.email.EmailAction")) {
+                boolean actionExists = false;
+                AlertActionConfig names = null;
+                for (AlertActionConfig cfg : a.getAlertActionConfig()) {
+                    if (cfg.getKey().equals("notifyType") &&
+                        cfg.getValue().equals("email")) {
+                        actionExists = true;
+                    }
+                    if (cfg.getKey().equals("names")) {
+                        names = cfg;
+                    }
+                }
+
+                if (actionExists && names != null) {
+                    // Set to the new value
+                    StringBuffer nameList = new StringBuffer();
+                    for (int i = 0; i < otherRecipients.length; i++) {
+                        nameList.append(otherRecipients[i]);
+                        if (i + 1 < otherRecipients.length) {
+                            nameList.append(",");
+                        }
+                    }
+                    names.setValue(nameList.toString());
+                    return;
+                }
+            }
+        }
+
+        // Action does not exist, create it.
+        AlertAction a = new AlertAction();
+        a.setClassName("com.hyperic.hq.bizapp.server.action.email.EmailAction");
+
+        AlertActionConfig type = new AlertActionConfig();
+        type.setKey("notifyType");
+        type.setValue("email");
+
+        StringBuffer nameList = new StringBuffer();
+        for (int i = 0; i < otherRecipients.length; i++) {
+            nameList.append(otherRecipients[i]);
+            if (i+1 < otherRecipients.length) {
+                nameList.append(",");
+            }
+        }
+        AlertActionConfig names = new AlertActionConfig();
+        names.setKey("names");
+        names.setValue(nameList.toString());
+
+        a.getAlertActionConfig().add(type);
+        a.getAlertActionConfig().add(names);
+
+        d.getAlertAction().add(a);
     }
 }
