@@ -9,7 +9,8 @@ http://hudson.hyperic.com/
 
 Version compatiblity guide:
 
-HQApi 3.x -> HQ 4.3
+HQApi 4.x -> HQ 4.5
+HQApi 3.x -> HQ 4.3/4.4
 HQApi 2.x -> HQ 4.2
 HQApi 1.x -> HQ 4.1/HQ 4.2
 
