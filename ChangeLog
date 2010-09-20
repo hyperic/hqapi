@@ -1,6 +1,8 @@
 
 Changes in HQApi 3.3
 
+ *) Allow for resource delete CLI command to read resources from stdin.
+
 Changes in HQApi 3.2
 
  *) Add support to get and sync platform resources by FQDN.

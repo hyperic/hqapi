@@ -271,19 +271,25 @@ public class ResourceCommand extends AbstractCommand {
 
         OptionSet options = getOptions(p, args);
 
-        if (!options.has(OPT_ID)) {
-            System.err.println("Required argument " + OPT_ID + " not given");
-            System.exit(-1);
-        }
-
         ResourceApi resourceapi = getApi(options).getResourceApi();
 
-        Integer id = (Integer)options.valueOf(OPT_ID);
+        if (options.has(OPT_ID)) {
+            Integer id = (Integer)options.valueOf(OPT_ID);
 
-        StatusResponse response = resourceapi.deleteResource(id);
-        checkSuccess(response);
+            StatusResponse response = resourceapi.deleteResource(id);
+            checkSuccess(response);
+            System.out.println("Successfully deleted resource id " + id);
+        } else {
+            // Delete via stdin
+            InputStream is = getInputStream(options);
 
-        System.out.println("Successfully deleted resource id " + id);
+            ResourcesResponse resp = XmlUtil.deserialize(ResourcesResponse.class, is);
+            for (Resource r : resp.getResource()) {
+                StatusResponse response = resourceapi.deleteResource(r.getId());
+                checkSuccess(response);
+                System.out.println("Successfully deleted resource id " + r.getId());
+            }
+        }
     }
 
     private void move(String[] args) throws Exception {
