@@ -39,6 +39,7 @@ import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.AlertApi;
 import org.hyperic.hq.hqapi1.types.Alert;
 import org.hyperic.hq.hqapi1.types.AlertsResponse;
+import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.AlertResponse;
@@ -55,6 +56,7 @@ public class AlertCommand extends AbstractCommand {
 
     private static String OPT_ID          = "id";
     private static String OPT_RESOURCE_ID = "resourceId";
+    private static String OPT_GROUP_ID    = "groupId";
     private static String OPT_COUNT       = "count";
     private static String OPT_BEGIN       = "begin";
     private static String OPT_END         = "end";
@@ -98,6 +100,9 @@ public class AlertCommand extends AbstractCommand {
 
         p.accepts(OPT_RESOURCE_ID, "If specified, only return alerts for the " +
                                    "given resource.").
+                withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_GROUP_ID, "If specified, only return alerts for resources " +
+                                "within the given group").
                 withRequiredArg().ofType(Integer.class);
         p.accepts(OPT_SEVERITY, "If specified, the minimum severity of alerts " +
                                 "to include. (LOW=1, HIGH=3) Default = 1.").
@@ -152,6 +157,12 @@ public class AlertCommand extends AbstractCommand {
             checkSuccess(resource);
             alerts = alertApi.findAlerts(resource.getResource(), begin,
                                          end, count, severity, inEsc, notFixed);
+        } else if (options.has(OPT_GROUP_ID)) {
+            Integer groupId = (Integer)options.valueOf(OPT_GROUP_ID);
+            GroupResponse response = api.getGroupApi().getGroup(groupId);
+            checkSuccess(response);
+            alerts = alertApi.findAlerts(begin, end, count,
+                                         severity, inEsc, notFixed, groupId);
         } else {
             alerts = alertApi.findAlerts(begin, end, count,
                                          severity, inEsc, notFixed);
