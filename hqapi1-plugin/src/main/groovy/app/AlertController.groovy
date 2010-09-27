@@ -95,6 +95,7 @@ public class AlertController extends ApiController {
         Integer sev      = params.getOne("severity")?.toInteger()
         Boolean inEsc    = params.getOne("inEscalation", "false").toBoolean()
         Boolean notFixed = params.getOne("notFixed", "false").toBoolean()
+        Integer groupId  = params.getOne("groupId")?.toInteger()
 
         def failureXml = null
         def alerts = []
@@ -109,7 +110,6 @@ public class AlertController extends ApiController {
                                        "Count must ben > 0")
         } else {
             try {
-                Integer groupId = null
                 AlertSeverity severity = AlertSeverity.findByCode(sev)
                 PageInfo pInfo = PageInfo.create(0, count, AlertSortField.DATE,
                                                  false);

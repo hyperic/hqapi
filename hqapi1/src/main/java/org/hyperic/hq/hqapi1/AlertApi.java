@@ -95,6 +95,32 @@ public class AlertApi extends BaseApi {
                                      Boolean notFixed)
             throws IOException
     {
+        return findAlerts(begin, end, count, severity, inEscalation, notFixed, null);
+    }
+
+    /**
+     * Find Alerts in the system.
+     *
+     * @param begin The beginning of the time window in epoch-millis.
+     * @param end The end of the time window in epoch-millis.
+     * @param count The maximum number of Alert instances to return.
+     * @param severity The minimum severity to query.  1 = LOW, 2 = MEDIUM, 3 = HIGH
+     * @param inEscalation If true, only return Alerts which are in Escalation
+     * @param notFixed If true, only return Alerts which are not fixed.
+     * @param groupId Only return Alerts for resources within the given Group.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * a list of Alerts are returned via
+     * {@link org.hyperic.hq.hqapi1.types.AlertsResponse#getAlert()}.
+     *
+     * @throws IOException If a network error occurs while making the request.
+     */
+    public AlertsResponse findAlerts(long begin, long end, int count,
+                                     int severity, Boolean inEscalation,
+                                     Boolean notFixed,
+                                     Integer groupId)
+            throws IOException
+    {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("begin", new String[] { Long.toString(begin)});
         params.put("end", new String[] { Long.toString(end)});
@@ -106,6 +132,9 @@ public class AlertApi extends BaseApi {
         }
         if (notFixed != null) {
             params.put("notFixed", new String[] { Boolean.toString(notFixed)});
+        }
+        if (groupId != null) {
+            params.put("groupId", new String[] { Integer.toString(groupId)});
         }
 
         return doGet("alert/find.hqu", params, 

@@ -1,6 +1,8 @@
 
 Changes in HQApi 3.3
 
+ *) [HHQ-4331] Add API to AlertApi for finding resource alerts by Group.
+
  *) Allow for resource delete CLI command to read resources from stdin.
 
 Changes in HQApi 3.2
