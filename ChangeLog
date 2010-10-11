@@ -1,4 +1,11 @@
 
+Changes in HQApi 4.0
+
+ *) Build system migrated to maven.
+
+ *) All internal APIs migrated for use with HQ 4.5.  HQApi 4.x is required
+    when using HQ 4.5.
+
 Changes in HQApi 3.3
 
  *) [HHQ-4374] Add create CLI command for creating alert definitions given
