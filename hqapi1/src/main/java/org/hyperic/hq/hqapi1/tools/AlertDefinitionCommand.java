@@ -31,13 +31,19 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import org.hyperic.hq.hqapi1.AlertDefinitionApi;
 import org.hyperic.hq.hqapi1.AlertDefinitionBuilder;
+import org.hyperic.hq.hqapi1.GroupApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.EscalationApi;
 import org.hyperic.hq.hqapi1.types.AlertAction;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
+import org.hyperic.hq.hqapi1.types.AlertDefinitionResponse;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
+import org.hyperic.hq.hqapi1.types.Group;
+import org.hyperic.hq.hqapi1.types.GroupResponse;
+import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.Role;
@@ -55,14 +61,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Component
 public class AlertDefinitionCommand extends AbstractCommand {
 
     private static String CMD_LIST   = "list";
     private static String CMD_SYNC   = "sync";
     private static String CMD_DELETE = "delete";
+    private static String CMD_CREATE = "create";
 
-    private static String[] COMMANDS = { CMD_LIST, CMD_DELETE, CMD_SYNC };
+    private static String[] COMMANDS = { CMD_LIST, CMD_DELETE, CMD_SYNC, CMD_CREATE };
 
     private static String OPT_TYPEALERTS = "typeAlerts";
     private static String OPT_EXCLUDE_TYPEALERTS = "excludeTypeAlerts";
@@ -89,6 +99,9 @@ public class AlertDefinitionCommand extends AbstractCommand {
     private static String OPT_ASSIGN_USER_NOTIFICATION = "assignUserNotification";
     private static String OPT_ASSIGN_ROLE_NOTIFICATION = "assignRoleNotification";
     private static String OPT_ASSIGN_OTHER_NOTIFICATION = "assignOtherNotification";
+    private static String OPT_REGEX = "regex";
+    private static String OPT_PROTOTYPE = "prototype";
+    private static String OPT_TEMPLATEDEFINITIONID = "templateDefinition";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -110,6 +123,8 @@ public class AlertDefinitionCommand extends AbstractCommand {
             delete(trim(args));
         } else if (args[0].equals(CMD_SYNC)) {
             sync(trim(args));
+        } else if (args[0].equals(CMD_CREATE)) {
+            create(trim(args));
         } else {
             printUsage();
             return 1;
@@ -454,5 +469,203 @@ public class AlertDefinitionCommand extends AbstractCommand {
         }
 
         System.out.println("Successfully synced " + numSynced + " alert definitions.");
+    }
+
+    private void create(String[] args) throws Exception {
+        OptionParser p = getOptionParser();
+
+        p.accepts(OPT_BATCH_SIZE, "Process the create in batches of the given size").
+                withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_ASSIGN_ESC, "If specified, assign the given Escalation " +
+                "to all alert definitions in this create").
+                withRequiredArg().ofType(String.class);
+        p.accepts(OPT_ASSIGN_SCRIPTACTION, "If specified, assign the given script action " +
+                "to all alert definitions in this create").
+                withRequiredArg().ofType(String.class);
+        p.accepts(OPT_ASSIGN_CONTROLACTION, "If specified, assign the given Escalation " +
+                "to all alert definitions in this create").
+                withRequiredArg().ofType(String.class);
+        p.accepts(OPT_REGEX, "Use pattern to find matching resources").
+                withRequiredArg().ofType(String.class);
+        p.accepts(OPT_GROUP, "Create only for resources in the specified group").
+                withRequiredArg().ofType(String.class);
+        p.accepts(OPT_PROTOTYPE, "Specifies the prototype to find").
+                withRequiredArg().ofType(String.class);
+        p.accepts(OPT_TEMPLATEDEFINITIONID, "The id of the alert definition to use as a template").
+                withRequiredArg().ofType(Integer.class);
+
+        OptionSet options = getOptions(p, args);
+
+        HQApi api = getApi(options);
+        AlertDefinitionApi adApi = api.getAlertDefinitionApi();
+        EscalationApi escApi = api.getEscalationApi();
+        ResourceApi resourceApi = api.getResourceApi();
+        GroupApi groupApi = api.getGroupApi();
+        ResourcesResponse resources = new ResourcesResponse();
+        AlertDefinition tmpl;
+        boolean verbose = false;
+        boolean children = false;
+        List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
+
+        if (!options.has(OPT_TEMPLATEDEFINITIONID) && !options.has(OPT_PROTOTYPE)) {
+            System.err.println(OPT_TEMPLATEDEFINITIONID + " and " + OPT_PROTOTYPE + " required");
+            System.exit(-1);
+        }
+
+        if (options.has(OPT_REGEX)) {
+            // Clone Alert Definition Template
+            AlertDefinitionResponse alertTemplateResponse = adApi.getAlertDefinition((Integer) options.valueOf(OPT_TEMPLATEDEFINITIONID));
+            checkSuccess(alertTemplateResponse);
+            tmpl = alertTemplateResponse.getAlertDefinition();
+
+            String prototype = (String) options.valueOf(OPT_PROTOTYPE);
+            ResourcePrototypeResponse protoResponse =
+                    resourceApi.getResourcePrototype(prototype);
+            checkSuccess(protoResponse);
+            resources = resourceApi.getResources(protoResponse.getResourcePrototype(),
+                    verbose, children);
+            checkSuccess(resources);
+
+            Pattern pattern = Pattern.compile((String) options.valueOf(OPT_REGEX));
+
+            for (Iterator<Resource> i = resources.getResource().iterator(); i.hasNext();) {
+                Resource r = i.next();
+                System.out.println("ResourcePrototype=" + r.getResourcePrototype());
+                Matcher m = pattern.matcher(r.getName());
+                System.out.println("Found " + r.getName());
+                if (!m.matches()) {
+                    System.out.println("Discarding " + r.getName());
+                    i.remove();
+                }
+            }
+            for (Iterator<Resource> it = resources.getResource().iterator(); it.hasNext();) {
+                Resource res = it.next();
+                System.out.println("Adding alert definition for " + res.getName());
+                definitions.add(cloneAlertDefinition(tmpl, res));
+            }
+
+        } else if (options.has(OPT_GROUP)) {
+            // Clone Alert Definition Template
+            AlertDefinitionResponse alertTemplateResponse = adApi.getAlertDefinition((Integer) options.valueOf(OPT_TEMPLATEDEFINITIONID));
+            checkSuccess(alertTemplateResponse);
+            tmpl = alertTemplateResponse.getAlertDefinition();
+
+            String prototype = (String) options.valueOf(OPT_PROTOTYPE);
+            ResourcePrototypeResponse protoResponse =
+                    resourceApi.getResourcePrototype(prototype);
+            checkSuccess(protoResponse);
+
+            // We don't care here if it's Mixed or Comp Groups.
+            // We're going to match up by prototype here in a sec
+            String name = (String) getRequired(options, OPT_GROUP);
+            GroupResponse groupResponse = groupApi.getGroup(name);
+            checkSuccess(groupResponse);
+            Group group = groupResponse.getGroup();
+            for (Iterator<Resource> i = group.getResource().iterator(); i.hasNext();) {
+                Resource r = i.next();
+                // The Resource object retrieved from above doesn't include the
+                // ResourcePrototype so here we're getting the full resource
+                // so we can compare the Prototype.
+                Resource resource = resourceApi.getResource(r.getId(), true, false).getResource();
+                if (resource.getResourcePrototype().getName().equals(protoResponse.getResourcePrototype().getName())) {
+                    System.out.println("Adding " + tmpl.getName() + " to " + resource.getName());
+                    definitions.add(cloneAlertDefinition(tmpl, resource));
+                }
+            }
+
+        } else {
+            // Print usage and exit
+            System.err.println("One of " + OPT_GROUP + " or " + OPT_REGEX + " required");
+            System.exit(-1);
+        }
+
+        if (options.has(OPT_ASSIGN_ESC)) {
+            String esc = (String) getRequired(options, OPT_ASSIGN_ESC);
+            EscalationResponse escResponse = escApi.getEscalation(esc);
+            checkSuccess(escResponse);
+            System.out.println("Assigning escalation '" + esc + "' to all alert definitions");
+
+            for (AlertDefinition a : definitions) {
+                a.setEscalation(escResponse.getEscalation());
+            }
+        }
+
+        if (options.has(OPT_ASSIGN_SCRIPTACTION)) {
+            String script = (String) getRequired(options, OPT_ASSIGN_SCRIPTACTION);
+            AlertAction a = AlertDefinitionBuilder.createScriptAction(script);
+            System.out.println("Assigning script action '" + script + "' to all alert definitions");
+
+            for (AlertDefinition def : definitions) {
+                def.getAlertAction().add(a);
+            }
+        }
+
+        if (options.has(OPT_ASSIGN_CONTROLACTION)) {
+            String action = (String) getRequired(options, OPT_ASSIGN_CONTROLACTION);
+            System.out.println("Assigning control action '" + action + "' to all alert definitions");
+
+            for (AlertDefinition def : definitions) {
+                AlertAction a = AlertDefinitionBuilder.createControlAction(def.getResource(), action);
+                def.getAlertAction().add(a);
+            }
+        }
+
+        int numSynced = 0;
+        if (options.has(OPT_BATCH_SIZE)) {
+            int batchSize = (Integer) options.valueOf(OPT_BATCH_SIZE);
+            int numBatches = (int) Math.ceil(definitions.size() / ((double) batchSize));
+
+            for (int i = 0; i < numBatches; i++) {
+                long start = System.currentTimeMillis();
+                int fromIndex = i * batchSize;
+                int toIndex = (fromIndex + batchSize) > definitions.size() ?
+                        definitions.size() : (fromIndex + batchSize);
+                AlertDefinitionsResponse syncResponse =
+                        adApi.syncAlertDefinitions(definitions.subList(fromIndex,
+                                toIndex));
+                checkSuccess(syncResponse);
+                numSynced += (toIndex - fromIndex);
+                System.out.println("Synced batch " + (i + 1) + " of " + numBatches + " in " +
+                        (System.currentTimeMillis() - start) + " ms");
+
+            }
+        } else {
+            AlertDefinitionsResponse syncResponse = adApi.syncAlertDefinitions(definitions);
+            checkSuccess(syncResponse);
+            numSynced = definitions.size();
+        }
+
+        System.out.println("Successfully synced " + numSynced + " alert definitions.");
+    }
+
+    private AlertDefinition cloneAlertDefinition(AlertDefinition alertTemplate, Resource resource) {
+        AlertDefinition alertClone = new AlertDefinition();
+        alertClone.setName(alertTemplate.getName());
+        alertClone.setCount(alertTemplate.getCount());
+        alertClone.setDescription(alertTemplate.getDescription());
+        alertClone.setEscalation(alertTemplate.getEscalation());
+        alertClone.setFrequency(alertTemplate.getFrequency());
+        alertClone.setName(alertTemplate.getName());
+        alertClone.setPriority(alertTemplate.getPriority());
+        alertClone.setRange(alertTemplate.getRange());
+        alertClone.setActive(alertTemplate.isActive());
+        alertClone.setControlFiltered(alertTemplate.isControlFiltered());
+        alertClone.setEnabled(alertTemplate.isEnabled());
+        alertClone.setNotifyFiltered(alertTemplate.isNotifyFiltered());
+        alertClone.setWillRecover(alertTemplate.isWillRecover());
+        alertClone.setId(null); // Set to null to create new alert def
+        alertClone.setResource(resource);
+        // Special handling for AlertCondition and AlertAction
+        List<AlertCondition> alertTemplateCondition = alertTemplate.getAlertCondition();
+        List<AlertCondition> alertCloneCondition = alertClone.getAlertCondition();
+        for (Iterator<AlertCondition> condition = alertTemplateCondition.iterator(); condition.hasNext();) {
+            alertCloneCondition.add(condition.next());
+        }
+        List<AlertAction> alertTemplateAction = alertTemplate.getAlertAction();
+        List<AlertAction> alertCloneAction = alertClone.getAlertAction();
+        for (Iterator<AlertAction> action = alertTemplateAction.iterator(); action.hasNext();) {
+            alertCloneAction.add(action.next());
+        }
+        return alertClone;
     }
 }
