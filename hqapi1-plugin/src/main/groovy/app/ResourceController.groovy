@@ -255,7 +255,7 @@ class ResourceController extends ApiController {
         def resource
         try {
             resource = prototype.createInstance(parent, resourceXml.'@name',
-                                                user, cfg, agent, ips)
+                                                user, cfg, agent, ips, false)
         } catch (Throwable t) {
             String cause = getCause(t)
             renderXml() {
@@ -332,7 +332,7 @@ class ResourceController extends ApiController {
         def resource
         try {
             resource = prototype.createInstance(parent, resourceXml.'@name',
-                                                user, cfg)
+                                                user, cfg, false)
         } catch (Throwable t) {
             String cause = getCause(t)
             renderXml() {
@@ -619,10 +619,11 @@ class ResourceController extends ApiController {
         def description = xmlResource.'@description'
         def location = xmlResource.'@location'
 
-        def config = [name: name,
+        def fields = [name: name,
                       description: description,
                       location: location]
-        
+        def config = [:]
+		def cprops = [:]
         xmlResource['ResourceConfig'].each {
             // Do not set configs for empty keys
             if (it.'@value' && it.'@value'.length() > 0) {
@@ -631,7 +632,7 @@ class ResourceController extends ApiController {
         }
         
         xmlResource['ResourceProperty'].each {
-            config[it.'@key'] = it.'@value'
+            cprops[it.'@key'] = it.'@value'
         }
 
         if (!name) {
@@ -688,7 +689,7 @@ class ResourceController extends ApiController {
                     return getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                          "No FQDN given for " + name)
                 } else {
-                    config.put(PROP_FQDN, fqdn.'@value')
+                    fields.put(PROP_FQDN, fqdn.'@value')
                 }
                 
                 // Add agent info
@@ -700,7 +701,7 @@ class ResourceController extends ApiController {
                     	return getFailureXML(ErrorCode.OBJECT_NOT_FOUND ,
                                          "Unable to find agent id=" + agentId)
                 	} else {
-                		config.put(PROP_AGENT_ID, agentId)
+                		fields.put(PROP_AGENT_ID, agentId)
                 	}
                 }
             } else if (prototype.isServerPrototype()) {
@@ -708,25 +709,25 @@ class ResourceController extends ApiController {
                     it.'@key' == PROP_AIIDENIFIER
                 }
                 if (aiid) {
-                    config.put(PROP_AIIDENIFIER, aiid.'@value')
+                    fields.put(PROP_AIIDENIFIER, aiid.'@value')
                 }
 
                 def installpath = xmlResource['ResourceInfo'].find {
                     it.'@key' == PROP_INSTALLPATH
                 }
                 if (installpath) {
-                    config.put(PROP_INSTALLPATH, installpath.'@value')
+                    fields.put(PROP_INSTALLPATH, installpath.'@value')
                 }
             } else if (prototype.isServicePrototype()) {
                 def aiid = xmlResource['ResourceInfo'].find {
                     it.'@key' == PROP_AIIDENIFIER
                 }
                 if (aiid) {
-                    config.put(PROP_AIIDENIFIER, aiid.'@value')
+                    fields.put(PROP_AIIDENIFIER, aiid.'@value')
                 }
             }
 
-            def existingConfig = resource.getConfig()
+            def existingConfig = resource.getConfig(false)
             // 2nd pass over configuration to unset any variables that
             // may already exist in the existing config, but are empty in
             // the configuration being set.
@@ -737,10 +738,10 @@ class ResourceController extends ApiController {
                 }
             }
 
-            // Update
+            // Update Config
             if (!configsEqual(existingConfig, config)) {
                 try {
-                    resource.setConfig(config, user)
+                    resource.setConfig(config, user, false)
                 } catch (Throwable t) {
                     String cause = getCause(t)
                     return getFailureXML(ErrorCode.INVALID_PARAMETERS,
@@ -748,6 +749,26 @@ class ResourceController extends ApiController {
                                          cause)
                 }
             }
+			//TODO only update cprops and POJO fields if changed
+			//Update CProps
+			try {
+				resource.setProperties(cprops, user)
+            } catch (Throwable t) {
+                String cause = getCause(t)
+                return getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         "Error updating '" + name + "': " +
+                                         cause)
+            }
+			//Update POJO fields
+			try {
+				resource.setFields(fields, user)
+            } catch (Throwable t) {
+                String cause = getCause(t)
+                return getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                         "Error updating '" + name + "': " +
+                                         cause)
+            }
+			
         } else {
             // Create
             if (prototype.isPlatformPrototype()) {
@@ -768,7 +789,7 @@ class ResourceController extends ApiController {
                     return getFailureXML(ErrorCode.INVALID_PARAMETERS,
                                          "No FQDN given for " + name)
                 } else {
-                    config.put(PROP_FQDN, fqdn.'@value')
+                    fields.put(PROP_FQDN, fqdn.'@value')
                 }
 
                 def xmlIps = xmlResource['Ip']
@@ -780,7 +801,7 @@ class ResourceController extends ApiController {
 
                 try {
                     resource = prototype.createInstance(parent, name,
-                                                        user, config, agent, ips)
+                                                        user, config, agent, ips, cprops, fields)
                 } catch (Throwable t) {
                     String cause = getCause(t)
                     log.warn("Error creating resource", t)
@@ -796,18 +817,18 @@ class ResourceController extends ApiController {
                         it.'@key' == PROP_AIIDENIFIER
                     }
                     if (aiid) {
-                        config.put(PROP_AIIDENIFIER, aiid.'@value')
+                        fields.put(PROP_AIIDENIFIER, aiid.'@value')
                     }
 
                     def installpath = xmlResource['ResourceInfo'].find {
                         it.'@key' == PROP_INSTALLPATH
                     }
                     if (installpath) {
-                        config.put(PROP_INSTALLPATH, installpath.'@value')
+                        fields.put(PROP_INSTALLPATH, installpath.'@value')
                     }
 
                     resource = prototype.createInstance(parent, name,
-                                                        user, config)
+                                                        user, config, cprops, fields)
                 } catch (Throwable t) {
                     String cause = getCause(t)
                     log.warn("Error creating resource", t)
@@ -822,10 +843,10 @@ class ResourceController extends ApiController {
                         it.'@key' == PROP_AIIDENIFIER
                     }
                     if (aiid) {
-                        config.put(PROP_AIIDENIFIER, aiid.'@value')
+                        fields.put(PROP_AIIDENIFIER, aiid.'@value')
                     }
                     resource = prototype.createInstance(parent, name,
-                                                        user, config)  
+                                                        user, config, cprops, fields)  
                 } catch (Throwable t) {
                     String cause = getCause(t)
                     log.warn("Error creating resource", t)
