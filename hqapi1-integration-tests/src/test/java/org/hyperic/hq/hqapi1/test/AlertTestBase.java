@@ -44,13 +44,13 @@ public abstract class AlertTestBase extends AlertDefinitionTestBase {
     }
     
     protected void validateAlert(Alert a) {
-        assertNotNull("fixed was NULL", a.isFixed());
-        assertTrue("ctime is incorrect", a.getCtime() > 0);
-        assertTrue("resourceId is invalid", a.getResourceId() > 0);
-        assertTrue("alertDefinitionId is invalid", a.getAlertDefinitionId() > 0);
-        assertNotNull("Alert name was null", a.getName());
-        assertTrue("Alert id is incorrect", a.getId() > 0);
-        assertTrue("Empty long reason", a.getReason().length() > 0);
+        assertNotNull("fixed was NULL for alert id " + a.getId(), a.isFixed());
+        assertTrue("ctime is incorrect for alert id " + a.getId(), a.getCtime() > 0);
+        assertTrue("resourceId is invalid for alert id " + a.getId(), a.getResourceId() > 0);
+        assertTrue("alertDefinitionId is invalid for alert id " + a.getId(), a.getAlertDefinitionId() > 0);
+        assertNotNull("Alert name was null for alert id " + a.getId(), a.getName());
+        assertTrue("Alert id is incorrect for alert id " + a.getId(), a.getId() > 0);
+        assertTrue("Empty long reason for alert id " + a.getId(), a.getReason().length() > 0);
     }
     
     protected boolean validateAlertAttributes(Alert a) throws Exception {
