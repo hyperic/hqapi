@@ -53,8 +53,8 @@ public class ResourcePrototypeCommand extends AbstractCommand {
 
     private static String[] COMMANDS = { CMD_LIST };
 
-    private static String OPT_ID          = "id";
-
+    private static String OPT_EXISTING    = "existing";
+    
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
     }
@@ -80,13 +80,21 @@ public class ResourcePrototypeCommand extends AbstractCommand {
 
     private void list(String[] args) throws Exception {
         OptionParser p = getOptionParser();
+        
+        p.accepts(OPT_EXISTING, "indicates whether to return only prototypes" +
+        		                "with resources existing in inventory.");
+        
         OptionSet options = getOptions(p, args);
 
         HQApi api = getApi(options);
         ResourceApi resourceApi = api.getResourceApi();
 
         ResourcePrototypesResponse prototypes;
-        prototypes = resourceApi.getAllResourcePrototypes();
+        if( options.has(OPT_EXISTING)) {
+        	prototypes = resourceApi.getResourcePrototypes();
+        } else {
+        	prototypes = resourceApi.getAllResourcePrototypes();
+        }
         XmlUtil.serialize(prototypes, System.out, Boolean.TRUE);
     }
 
