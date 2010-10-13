@@ -81,7 +81,7 @@ public class ResourcePrototypeCommand extends AbstractCommand {
     private void list(String[] args) throws Exception {
         OptionParser p = getOptionParser();
         
-        p.accepts(OPT_EXISTING, "indicates whether to return only prototypes" +
+        p.accepts(OPT_EXISTING, "Indicates whether to return only prototypes" +
         		                "with resources existing in inventory.");
         
         OptionSet options = getOptions(p, args);
@@ -97,5 +97,4 @@ public class ResourcePrototypeCommand extends AbstractCommand {
         }
         XmlUtil.serialize(prototypes, System.out, Boolean.TRUE);
     }
-
 }
