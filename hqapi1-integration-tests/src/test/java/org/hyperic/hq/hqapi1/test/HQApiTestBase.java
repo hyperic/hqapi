@@ -28,6 +28,7 @@
 package org.hyperic.hq.hqapi1.test;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,7 +95,14 @@ public abstract class HQApiTestBase extends TestCase {
 
     private Log _log = LogFactory.getLog(HQApiTestBase.class);
 
-    private static Agent    _localAgent = null;
+    private static Agent      _localAgent = null;
+    private static ConnectionProps _connectionProps = null;
+
+    private class ConnectionProps {
+        public String  host   = HOST;
+        public int     port   = PORT;
+        public boolean secure = IS_SECURE;
+    }
 
     public HQApiTestBase(String name) {
         super(name);
@@ -126,9 +134,36 @@ public abstract class HQApiTestBase extends TestCase {
         return _log;
     }
 
+    static private Properties getClientProperties() {
+        Properties props = new Properties();
+
+        String home = System.getProperty("user.home");
+        File hq = new File(home, ".hq");
+        File clientProperties = new File(hq, "client.properties");
+
+        if (clientProperties.exists()) {
+            FileInputStream fis = null;
+            props = new Properties();
+            try {
+                fis = new FileInputStream(clientProperties);
+                props.load(fis);
+            } catch (IOException e) {
+                return props;
+            } finally {
+                try {
+                    if (fis != null) {
+                        fis.close();
+                    }
+                } catch (IOException ioe) {
+                    // Ignore
+                }
+            }
+        }
+        return props;
+    }
+
     public void setUp() throws Exception {
         super.setUp();
-
         if (!_logConfigured) {
             String level = System.getProperty("log");
             if (level != null) {
@@ -138,18 +173,48 @@ public abstract class HQApiTestBase extends TestCase {
             }
             _logConfigured = true;
         }
+
+        if (_connectionProps == null) {
+            _connectionProps = new ConnectionProps();
+
+            Properties props = getClientProperties();
+            String host = props.getProperty("host");
+            if (host != null) {
+                _connectionProps.host = host;
+            }
+            String port = props.getProperty("port");
+            if (port != null) {
+                _connectionProps.port = Integer.valueOf(port);
+            }
+            String secure = props.getProperty("secure");
+            if (secure != null) {
+                _connectionProps.secure = Boolean.valueOf(secure);
+            }
+        }
     }
 
     HQApi getApi() {
-        return new HQApi(HOST, PORT, IS_SECURE, USER, PASSWORD);
+        return new HQApi(_connectionProps.host, _connectionProps.port,
+                         _connectionProps.secure, USER, PASSWORD);
     }
 
     HQApi getApi(boolean secure) {
-        return new HQApi(HOST, SSL_PORT, secure, USER, PASSWORD);
+        // Must fudge a bit here since our client properties only allows the
+        // specification of 1 port.
+        if (_connectionProps.secure) {
+            // Already secure
+            return getApi();
+        } else {
+            // Assume 80 and 443, so SSL port is always + 363 from standard port
+            int port = _connectionProps.port + 363;
+
+            return new HQApi(_connectionProps.host, port, secure, USER, PASSWORD);
+        }
     }
 
     HQApi getApi(String user, String password) {
-        return new HQApi(HOST, PORT, IS_SECURE, user, password);
+        return new HQApi(_connectionProps.host, _connectionProps.port,
+                         _connectionProps.secure, user, password);
     }
 
     /**
