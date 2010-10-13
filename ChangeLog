@@ -1,6 +1,8 @@
 
 Changes in HQApi 4.0
 
+ *) Add resourceprototype CLI command.
+
  *) Build system migrated to maven.
 
  *) All internal APIs migrated for use with HQ 4.5.  HQApi 4.x is required
