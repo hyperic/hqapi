@@ -233,9 +233,9 @@
 
 	<distributionManagement>
 		<repository>
-			<id>hqapi-milestone</id>
-			<name>HQApi Milestone Repository</name>
-			<url>s3://maven.hyperic.org/hqapi/milestone</url>
+			<id>hqapi-release</id>
+			<name>HQApi Release Repository</name>
+			<url>s3://maven.hyperic.org/hqapi/release</url>
 		</repository>
 		<snapshotRepository>
 			<id>hqapi-snapshot</id>
