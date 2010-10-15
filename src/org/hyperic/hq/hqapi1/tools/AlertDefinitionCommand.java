@@ -118,6 +118,8 @@ public class AlertDefinitionCommand extends AbstractCommand {
     private static String OPT_RECOVERYNAME = "recoveryname";
     private static String OPT_NAME = "name";
     private static String OPT_PRIORITY = "priority";
+    private static String OPT_WILLRECOVER = "willrecover";
+
     private static Integer DEFAULT_PRIORITY = 2; // Assume medium if not specified
     
     private void printUsage() {
@@ -544,8 +546,10 @@ public class AlertDefinitionCommand extends AbstractCommand {
 				withRequiredArg().ofType(Double.class);
         p.accepts(OPT_PRIORITY, "Sets priority. 1 = low, 2 = medium(default), 3 = high").
         		withRequiredArg().ofType(Integer.class);
-        p.accepts(OPT_TYPEALERTS, "If specified, only resource type " +
+        p.accepts(OPT_TYPEALERTS, "If specified only resource type " +
         		"alerts will be created.");
+        p.accepts(OPT_WILLRECOVER, "If specified sets the willRecover flag." +
+        		"Equivilent to \'Generate one alert and then disable alert definition until fixed\"");
         
         OptionSet options = getOptions(p, args);
 
@@ -574,6 +578,11 @@ public class AlertDefinitionCommand extends AbstractCommand {
         	Double recoverythreshold = 0.0d;
         	AlertDefinitionBuilder.AlertComparator recoverycomparator = null;
             String recoveryname = new String();
+            boolean willrecover = false;
+            
+            if (options.has(OPT_WILLRECOVER)) {
+            	willrecover = true;
+            }
             
         	if (options.has(OPT_EQUALS)) {
         		threshold = (Double)options.valueOf(OPT_EQUALS);
@@ -599,7 +608,7 @@ public class AlertDefinitionCommand extends AbstractCommand {
         	}
         	
         	tmpl = buildThresholdAlertDefinition(options.valueOf(OPT_NAME).toString(), 
-        			options.valueOf(OPT_METRIC).toString(), comparator, threshold, priority);
+        			options.valueOf(OPT_METRIC).toString(), comparator, threshold, priority, willrecover);
         	
         	if (options.has(OPT_RECOVERYEQUALS)) {
         		recoverythreshold = (Double)options.valueOf(OPT_RECOVERYEQUALS);
@@ -623,7 +632,7 @@ public class AlertDefinitionCommand extends AbstractCommand {
 
         	if (recoverycomparator != null) {
         		recoverytmpl = buildThresholdAlertDefinition(recoveryname, 
-        			options.valueOf(OPT_METRIC).toString(), recoverycomparator, recoverythreshold, priority);
+        			options.valueOf(OPT_METRIC).toString(), recoverycomparator, recoverythreshold, priority, false);
 
         		recoverytmpl.getAlertCondition().add(AlertDefinitionBuilder.createRecoveryCondition(true, tmpl));
         	}
@@ -812,11 +821,12 @@ public class AlertDefinitionCommand extends AbstractCommand {
         return alertClone;
     }
         
-    private AlertDefinition buildThresholdAlertDefinition(String name, String metric, AlertDefinitionBuilder.AlertComparator comparator, Double threshold, Integer priority){
+    private AlertDefinition buildThresholdAlertDefinition(String name, String metric, AlertDefinitionBuilder.AlertComparator comparator, Double threshold, Integer priority, boolean willrecover){
     	AlertDefinition def = new AlertDefinition();
     	def.setName(name);
     	def.setPriority(priority);
     	def.setActive(true);
+    	def.setWillRecover(willrecover);
     	def.getAlertCondition().add(AlertDefinitionBuilder.
     			createThresholdCondition(true, 
     					metric, 
