@@ -134,7 +134,7 @@ public class UserApi extends BaseApi {
         params.put("emailAddress", new String[] { user.getEmailAddress() });
         params.put("active", new String[] { Boolean.toString(user.isActive()) });
         params.put("department", new String[] { user.getDepartment() });
-        params.put("htmlEmail", new String[] { Boolean.toString(user.isActive())});
+        params.put("htmlEmail", new String[] { Boolean.toString(user.isHtmlEmail())});
         params.put("SMSAddress", new String[] { user.getSMSAddress() });
 
         return doGet("user/create.hqu", params, 
