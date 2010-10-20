@@ -44,6 +44,7 @@ import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
+import org.hyperic.hq.hqapi1.types.ResourcePrototype;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.Role;
@@ -101,8 +102,26 @@ public class AlertDefinitionCommand extends AbstractCommand {
     private static String OPT_ASSIGN_OTHER_NOTIFICATION = "assignOtherNotification";
     private static String OPT_REGEX = "regex";
     private static String OPT_PROTOTYPE = "prototype";
+    
+    // Options for create command
     private static String OPT_TEMPLATEDEFINITIONID = "templateDefinition";
+    private static String OPT_RESOURCEID = "resourceid";
+    private static String OPT_METRIC = "metric";
+    private static String OPT_EQUALS = "equals";
+    private static String OPT_NOTEQUALTO = "notequalto";
+    private static String OPT_LESSTHAN = "lessthan";
+    private static String OPT_GREATERTHAN = "greaterthan";
+    private static String OPT_RECOVERYEQUALS = "recoveryequals";
+    private static String OPT_RECOVERYNOTEQUALTO = "recoverynotequalto";
+    private static String OPT_RECOVERYLESSTHAN = "recoverylessthan";
+    private static String OPT_RECOVERYGREATERTHAN = "recoverygreaterthan";
+    private static String OPT_RECOVERYNAME = "recoveryname";
+    private static String OPT_NAME = "name";
+    private static String OPT_PRIORITY = "priority";
+    private static String OPT_WILLRECOVER = "willrecover";
 
+    private static Integer DEFAULT_PRIORITY = 2; // Assume medium if not specified
+    
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
     }
@@ -472,6 +491,13 @@ public class AlertDefinitionCommand extends AbstractCommand {
     }
 
     private void create(String[] args) throws Exception {
+        String[] ONE_CMD_REQUIRED = { OPT_GROUP, OPT_NAME, OPT_TYPEALERTS };
+        String[] TEMPLATE_REQUIRED = { OPT_TEMPLATEDEFINITIONID };
+        String[] ONE_COMP_REQUIRED = { OPT_EQUALS, OPT_LESSTHAN, OPT_GREATERTHAN, OPT_NOTEQUALTO };
+        String[] ONE_COMP_RECOVERYREQUIRED = { OPT_RECOVERYEQUALS, OPT_RECOVERYLESSTHAN, 
+        		OPT_RECOVERYGREATERTHAN, OPT_RECOVERYNOTEQUALTO };
+        String[] NEW_REQUIRED = { OPT_NAME, OPT_METRIC }; 
+        
         OptionParser p = getOptionParser();
 
         p.accepts(OPT_BATCH_SIZE, "Process the create in batches of the given size").
@@ -489,11 +515,42 @@ public class AlertDefinitionCommand extends AbstractCommand {
                 withRequiredArg().ofType(String.class);
         p.accepts(OPT_GROUP, "Create only for resources in the specified group").
                 withRequiredArg().ofType(String.class);
-        p.accepts(OPT_PROTOTYPE, "Specifies the prototype to find").
+        p.accepts(OPT_PROTOTYPE, "Specifies the prototype to find. ").
                 withRequiredArg().ofType(String.class);
         p.accepts(OPT_TEMPLATEDEFINITIONID, "The id of the alert definition to use as a template").
                 withRequiredArg().ofType(Integer.class);
-
+        p.accepts(OPT_NAME, "The name of the alert definition to create." + 
+        		"Not valid with --" + OPT_TEMPLATEDEFINITIONID ).
+        		withRequiredArg().ofType(String.class);
+        p.accepts(OPT_METRIC, "The metric name to use. " +
+        		"Not valid with --" + OPT_TEMPLATEDEFINITIONID ).
+        		withRequiredArg().ofType(String.class);
+        p.accepts(OPT_RECOVERYNAME, "Optionally specify name of recovery alert. If not specified" + 
+        		" then \"fixed\" is added to  alert definition name").
+        		withRequiredArg().ofType(String.class);
+        p.accepts(OPT_RECOVERYEQUALS, "Sets the recovery alert to if metric value = threshold").
+        		withRequiredArg().ofType(Double.class);
+        p.accepts(OPT_EQUALS, "Sets condition to if metric value = threshold").
+        		withRequiredArg().ofType(Double.class);
+        p.accepts(OPT_RECOVERYLESSTHAN, "Sets the recovery alert to if metric value < threshold").
+        		withRequiredArg().ofType(Double.class);
+        p.accepts(OPT_LESSTHAN, "Sets condition to if metric value < threshold").
+        		withRequiredArg().ofType(Double.class);
+        p.accepts(OPT_RECOVERYGREATERTHAN, "Sets the recovery alert to if metric value > threshold").
+        		withRequiredArg().ofType(Double.class);
+        p.accepts(OPT_GREATERTHAN, "Sets condition to if metric value > threshold").
+				withRequiredArg().ofType(Double.class);
+        p.accepts(OPT_RECOVERYNOTEQUALTO, "Sets the recovery alert to if metric value != threshold").
+				withRequiredArg().ofType(Double.class);
+        p.accepts(OPT_NOTEQUALTO, "Sets condition to if metric value != threshold").
+				withRequiredArg().ofType(Double.class);
+        p.accepts(OPT_PRIORITY, "Sets priority. 1 = low, 2 = medium(default), 3 = high").
+        		withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_TYPEALERTS, "If specified only resource type " +
+        		"alerts will be created.");
+        p.accepts(OPT_WILLRECOVER, "If specified sets the willRecover flag." +
+        		"Equivilent to \'Generate one alert and then disable alert definition until fixed\"");
+        
         OptionSet options = getOptions(p, args);
 
         HQApi api = getApi(options);
@@ -502,22 +559,91 @@ public class AlertDefinitionCommand extends AbstractCommand {
         ResourceApi resourceApi = api.getResourceApi();
         GroupApi groupApi = api.getGroupApi();
         ResourcesResponse resources = new ResourcesResponse();
-        AlertDefinition tmpl;
+        AlertDefinition tmpl = null;
+        AlertDefinition recoverytmpl = null;
         boolean verbose = false;
         boolean children = false;
         List<AlertDefinition> definitions = new ArrayList<AlertDefinition>();
 
-        if (!options.has(OPT_TEMPLATEDEFINITIONID) && !options.has(OPT_PROTOTYPE)) {
-            System.err.println(OPT_TEMPLATEDEFINITIONID + " and " + OPT_PROTOTYPE + " required");
-            System.exit(-1);
-        }
-
-        if (options.has(OPT_REGEX)) {
-            // Clone Alert Definition Template
+        // Build the template to use. If we're not basing it off an existing definition
+        // we need to build it from scratch
+        if (options.has(OPT_TEMPLATEDEFINITIONID)) {
             AlertDefinitionResponse alertTemplateResponse = adApi.getAlertDefinition((Integer) options.valueOf(OPT_TEMPLATEDEFINITIONID));
             checkSuccess(alertTemplateResponse);
-            tmpl = alertTemplateResponse.getAlertDefinition();
+            tmpl = alertTemplateResponse.getAlertDefinition();       	
+        } else if (options.has(OPT_NAME) && options.has(OPT_METRIC)) {
+        	Double threshold = 0.0d;
+        	Integer priority; 
+        	AlertDefinitionBuilder.AlertComparator comparator = null;
+        	Double recoverythreshold = 0.0d;
+        	AlertDefinitionBuilder.AlertComparator recoverycomparator = null;
+            String recoveryname = new String();
+            boolean willrecover = false;
+            
+            if (options.has(OPT_WILLRECOVER)) {
+            	willrecover = true;
+            }
+            
+        	if (options.has(OPT_EQUALS)) {
+        		threshold = (Double)options.valueOf(OPT_EQUALS);
+        		comparator = AlertDefinitionBuilder.AlertComparator.valueOf("EQUALS");
+        	} else if (options.has(OPT_LESSTHAN)) {
+        		threshold = (Double)options.valueOf(OPT_LESSTHAN);
+        		comparator = AlertDefinitionBuilder.AlertComparator.valueOf("LESS_THAN");
+        	} else if (options.has(OPT_GREATERTHAN)) {
+        		threshold = (Double)options.valueOf(OPT_GREATERTHAN);
+        		comparator = AlertDefinitionBuilder.AlertComparator.valueOf("GREATER_THAN");
+        	} else if (options.has(OPT_NOTEQUALTO)) {
+        		threshold = (Double)options.valueOf(OPT_NOTEQUALTO);
+        		comparator = AlertDefinitionBuilder.AlertComparator.valueOf("NOT_EQUALS");
+        	} else {
+        		System.err.println("Only one of " + Arrays.toString(ONE_COMP_REQUIRED) + " may be specified");
+        		System.exit(-1);
+        	}
+        	
+        	if (options.has(OPT_PRIORITY)) {
+        		priority = (Integer) options.valueOf(OPT_PRIORITY);
+        	} else {
+        		priority = DEFAULT_PRIORITY; 	
+        	}
+        	
+        	tmpl = buildThresholdAlertDefinition(options.valueOf(OPT_NAME).toString(), 
+        			options.valueOf(OPT_METRIC).toString(), comparator, threshold, priority, willrecover);
+        	
+        	if (options.has(OPT_RECOVERYEQUALS)) {
+        		recoverythreshold = (Double)options.valueOf(OPT_RECOVERYEQUALS);
+        		recoverycomparator = AlertDefinitionBuilder.AlertComparator.valueOf("EQUALS");
+        	} else if (options.has(OPT_RECOVERYLESSTHAN)) {
+        		recoverythreshold = (Double)options.valueOf(OPT_RECOVERYLESSTHAN);
+        		recoverycomparator = AlertDefinitionBuilder.AlertComparator.valueOf("LESS_THAN");
+        	} else if (options.has(OPT_RECOVERYGREATERTHAN)) {
+        		recoverythreshold = (Double)options.valueOf(OPT_RECOVERYGREATERTHAN);
+        		recoverycomparator = AlertDefinitionBuilder.AlertComparator.valueOf("LESS_THAN");
+        	} else if (options.has(OPT_RECOVERYNOTEQUALTO)) {
+        		threshold = (Double)options.valueOf(OPT_RECOVERYNOTEQUALTO);
+        		recoverycomparator = AlertDefinitionBuilder.AlertComparator.valueOf("LESS_THAN");
+        	} 
+        	
+        	if (options.has(OPT_RECOVERYNAME)) {
+        		recoveryname = options.valueOf(OPT_RECOVERYNAME).toString();
+        	} else { // we probably should only do this if we are creating a recovery alert
+        		recoveryname = options.valueOf(OPT_NAME).toString() + " fixed";
+        	} 
 
+        	if (recoverycomparator != null) {
+        		recoverytmpl = buildThresholdAlertDefinition(recoveryname, 
+        			options.valueOf(OPT_METRIC).toString(), recoverycomparator, recoverythreshold, priority, false);
+
+        		recoverytmpl.getAlertCondition().add(AlertDefinitionBuilder.createRecoveryCondition(true, tmpl));
+        	}
+
+        } else {
+            System.err.println("required option missing");
+            System.exit(-1);        	
+        	
+        }
+        
+        if (options.has(OPT_REGEX)) {
             String prototype = (String) options.valueOf(OPT_PROTOTYPE);
             ResourcePrototypeResponse protoResponse =
                     resourceApi.getResourcePrototype(prototype);
@@ -530,26 +656,22 @@ public class AlertDefinitionCommand extends AbstractCommand {
 
             for (Iterator<Resource> i = resources.getResource().iterator(); i.hasNext();) {
                 Resource r = i.next();
-                System.out.println("ResourcePrototype=" + r.getResourcePrototype());
                 Matcher m = pattern.matcher(r.getName());
                 System.out.println("Found " + r.getName());
                 if (!m.matches()) {
-                    System.out.println("Discarding " + r.getName());
                     i.remove();
                 }
             }
             for (Iterator<Resource> it = resources.getResource().iterator(); it.hasNext();) {
                 Resource res = it.next();
                 System.out.println("Adding alert definition for " + res.getName());
-                definitions.add(cloneAlertDefinition(tmpl, res));
+                definitions.add(cloneAlertDefinitionForResource(tmpl, res));
+                if (recoverytmpl != null) {
+                	definitions.add(cloneAlertDefinitionForResource(recoverytmpl, res));
+                }
             }
 
         } else if (options.has(OPT_GROUP)) {
-            // Clone Alert Definition Template
-            AlertDefinitionResponse alertTemplateResponse = adApi.getAlertDefinition((Integer) options.valueOf(OPT_TEMPLATEDEFINITIONID));
-            checkSuccess(alertTemplateResponse);
-            tmpl = alertTemplateResponse.getAlertDefinition();
-
             String prototype = (String) options.valueOf(OPT_PROTOTYPE);
             ResourcePrototypeResponse protoResponse =
                     resourceApi.getResourcePrototype(prototype);
@@ -569,15 +691,33 @@ public class AlertDefinitionCommand extends AbstractCommand {
                 Resource resource = resourceApi.getResource(r.getId(), true, false).getResource();
                 if (resource.getResourcePrototype().getName().equals(protoResponse.getResourcePrototype().getName())) {
                     System.out.println("Adding " + tmpl.getName() + " to " + resource.getName());
-                    definitions.add(cloneAlertDefinition(tmpl, resource));
+                    definitions.add(cloneAlertDefinitionForResource(tmpl, resource));
+                    if (recoverytmpl != null) {
+                    	definitions.add(cloneAlertDefinitionForResource(recoverytmpl, resource));
+                    }
                 }
             }
 
+        } else if (options.has(OPT_TYPEALERTS) && options.has(OPT_PROTOTYPE)) {
+        	ResourcePrototype prototype = new ResourcePrototype();
+ 
+        	ResourcePrototypeResponse protoResponse =
+                resourceApi.getResourcePrototype(options.valueOf(OPT_PROTOTYPE).toString());
+            checkSuccess(protoResponse);
+            prototype = protoResponse.getResourcePrototype();
+
+            definitions.add(cloneAlertDefinitionForPrototype(tmpl, prototype));
+ 
+            if (recoverytmpl != null) {
+            	definitions.add(cloneAlertDefinitionForPrototype(recoverytmpl, prototype));
+            }
+            
         } else {
             // Print usage and exit
-            System.err.println("One of " + OPT_GROUP + " or " + OPT_REGEX + " required");
+        	// TODO: Create Resource Type Alert	
+        	System.err.println("Only one of " + Arrays.toString(ONE_CMD_REQUIRED) + " may be specified");
             System.exit(-1);
-        }
+        } 
 
         if (options.has(OPT_ASSIGN_ESC)) {
             String esc = (String) getRequired(options, OPT_ASSIGN_ESC);
@@ -638,7 +778,19 @@ public class AlertDefinitionCommand extends AbstractCommand {
         System.out.println("Successfully synced " + numSynced + " alert definitions.");
     }
 
-    private AlertDefinition cloneAlertDefinition(AlertDefinition alertTemplate, Resource resource) {
+    private AlertDefinition cloneAlertDefinitionForResource(AlertDefinition alertTemplate, Resource resource) {
+    	AlertDefinition clone = cloneAlertDefinition(alertTemplate);
+    	clone.setResource(resource);
+    	return clone;
+    }
+    
+    private AlertDefinition cloneAlertDefinitionForPrototype(AlertDefinition alertTemplate, ResourcePrototype prototype) {
+    	AlertDefinition clone = cloneAlertDefinition(alertTemplate);
+    	clone.setResourcePrototype(prototype);
+    	return clone;
+    }
+    
+    private AlertDefinition cloneAlertDefinition(AlertDefinition alertTemplate) {
         AlertDefinition alertClone = new AlertDefinition();
         alertClone.setName(alertTemplate.getName());
         alertClone.setCount(alertTemplate.getCount());
@@ -654,7 +806,7 @@ public class AlertDefinitionCommand extends AbstractCommand {
         alertClone.setNotifyFiltered(alertTemplate.isNotifyFiltered());
         alertClone.setWillRecover(alertTemplate.isWillRecover());
         alertClone.setId(null); // Set to null to create new alert def
-        alertClone.setResource(resource);
+      
         // Special handling for AlertCondition and AlertAction
         List<AlertCondition> alertTemplateCondition = alertTemplate.getAlertCondition();
         List<AlertCondition> alertCloneCondition = alertClone.getAlertCondition();
@@ -667,5 +819,19 @@ public class AlertDefinitionCommand extends AbstractCommand {
             alertCloneAction.add(action.next());
         }
         return alertClone;
+    }
+        
+    private AlertDefinition buildThresholdAlertDefinition(String name, String metric, AlertDefinitionBuilder.AlertComparator comparator, Double threshold, Integer priority, boolean willrecover){
+    	AlertDefinition def = new AlertDefinition();
+    	def.setName(name);
+    	def.setPriority(priority);
+    	def.setActive(true);
+    	def.setWillRecover(willrecover);
+    	def.getAlertCondition().add(AlertDefinitionBuilder.
+    			createThresholdCondition(true, 
+    					metric, 
+    					comparator, 
+    					threshold));
+    	return def;
     }
 }

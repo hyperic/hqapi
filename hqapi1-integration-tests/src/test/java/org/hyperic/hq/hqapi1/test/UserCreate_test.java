@@ -53,6 +53,31 @@ public class UserCreate_test extends UserTestBase {
         assertEquals(user.getLastName(), createdUser.getLastName());
     }
 
+    public void testCreateWithHtmlEmail() throws Exception {
+        UserApi api = getUserApi();
+
+        User user = generateTestUser();
+        user.setHtmlEmail(true);  // test for setting to true
+        
+        UserResponse response = api.createUser(user, TESTUSER_PASSWORD);
+
+        hqAssertSuccess(response);
+
+        User createdUser = response.getUser();
+        assertEquals(user.isHtmlEmail(), createdUser.isHtmlEmail());
+        
+        user = generateTestUser();
+        user.setHtmlEmail(false);  // test for setting to false
+        
+        response = api.createUser(user, TESTUSER_PASSWORD);
+
+        hqAssertSuccess(response);
+
+        createdUser = response.getUser();
+        assertEquals(user.isHtmlEmail(), createdUser.isHtmlEmail());
+        
+    }
+    
     public void testCreateDuplicate() throws Exception {
         UserApi api = getUserApi();
 

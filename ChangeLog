@@ -8,6 +8,8 @@ Changes in HQApi 4.0
 
 Changes in HQApi 3.3
 
+ *) Add user create CLI command.
+
  *) Add resourceprototype CLI command.
 
  *) [HHQ-4374] Add create CLI command for creating alert definitions given
