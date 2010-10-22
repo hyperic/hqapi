@@ -28,15 +28,26 @@ public class AlertdefinitionController extends ApiController {
 
     private EMAIL_NOTIFY_TYPE = [1:"email", 2:"users", 3:"roles"]
 
-    private String getNotificationNames(type, id) {
+    private String getNotificationNames(type, ids) {
+        def names = []
         if (type == 1) {
-            return id
+            return ids // emails have no id's.
         } else if (type == 2) {
-            def ids = id.split(",")
-            return ids.collect { getUser(it.toInteger(), null)?.name }.join(",")
+            for (id in ids.split(",")) {
+                def user = getUser(id.toInteger(), null)
+                if (user != null) {
+                    names << user.name
+                }
+            }
+            return names.join(",")
         } else if (type == 3) {
-            def ids = id.split(",")
-            return ids.collect { getRole(it.toInteger(), null)?.name }.join(",")
+            for (id in ids.split(",")) {
+                def role = getRole(id.toInteger(), null)
+                if (role != null) {
+                    names << role.name
+                }
+            }
+            return names.join(",")
         }
         return null
     }
@@ -244,15 +255,18 @@ public class AlertdefinitionController extends ApiController {
                         }
                     } else if (a.className == "com.hyperic.hq.bizapp.server.action.email.EmailAction") {
                          def config = ConfigResponse.decode(a.config)
-                         def names = config.getValue("names")
+                         def ids = config.getValue("names")
                          def listType = config.getValue("listType")?.toInteger()
 
-                         AlertAction(id: a.id,
-                                     className: a.className) {
-                             AlertActionConfig(key: 'notifyType',
-                                               value: EMAIL_NOTIFY_TYPE[listType])
-                             AlertActionConfig(key: 'names',
-                                               value: getNotificationNames(listType,names))
+                         def names = getNotificationNames(listType,ids)
+                         if (names != null && names.length() > 0) {
+                            AlertAction(id: a.id,
+                                         className: a.className) {
+                                AlertActionConfig(key: 'notifyType',
+                                                  value: EMAIL_NOTIFY_TYPE[listType])
+                                AlertActionConfig(key: 'names',
+                                                  value: names)
+                            }
                          }
                     } else if (showAllActions) {
                     	AlertAction(id: a.id,
