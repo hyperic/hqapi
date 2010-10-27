@@ -29,6 +29,9 @@ public class AlertdefinitionController extends ApiController {
     private EMAIL_NOTIFY_TYPE = [1:"email", 2:"users", 3:"roles"]
 
     private String getNotificationNames(type, ids) {
+        if (!ids || ids.length() == 0) {
+            return null
+        }
         def names = []
         if (type == 1) {
             return ids // emails have no id's.
