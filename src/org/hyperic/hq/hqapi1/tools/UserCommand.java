@@ -244,10 +244,8 @@ public class UserCommand extends AbstractCommand {
         	user.setEmailAddress(options.valueOf(OPT_EMAILADDRESS).toString());
         }      
         if (options.has(OPT_HTMLEMAIL)) {
-        	System.out.println("Setting htmlEmail to true");
         	user.setHtmlEmail(true);
         } else {
-        	System.out.println("Setting htmlEmail to false");
         	user.setHtmlEmail(false);
         }
         user.setActive(ACTIVE);
