@@ -1,5 +1,7 @@
 Changes in HQApi 3.3
 
+ *) Added --agentId option to resource list to find platforms belonging to an agent
+
  *) Add user create CLI command.
 
  *) Add resourceprototype CLI command.
