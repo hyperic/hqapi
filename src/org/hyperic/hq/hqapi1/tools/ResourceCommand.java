@@ -118,7 +118,7 @@ public class ResourceCommand extends AbstractCommand {
     }
 
     private void list(String[] args) throws Exception {
-        String[] ONE_REQUIRED = { OPT_PROTOTYPE, OPT_PLATFORM, OPT_ID };
+        String[] ONE_REQUIRED = { OPT_PROTOTYPE, OPT_PLATFORM, OPT_ID, OPT_AGENT_ID };
 
         OptionParser p = getOptionParser();
 
@@ -129,6 +129,8 @@ public class ResourceCommand extends AbstractCommand {
                   "specified platform name").withRequiredArg().ofType(String.class);
         p.accepts(OPT_ID, "If specified, return the resource with the given id.").
                 withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_AGENT_ID, "If specified, return only resources belonging to " +
+        		  "specified agent id").withRequiredArg().ofType(Integer.class);
         p.accepts(OPT_NAME, "If specified, return resources that match the " +
                             "given regex.").withRequiredArg().ofType(String.class);
 
@@ -196,6 +198,15 @@ public class ResourceCommand extends AbstractCommand {
             resources = new ResourcesResponse();
             resources.setStatus(resource.getStatus());
             resources.getResource().add(resource.getResource());
+        } else if (options.has(OPT_AGENT_ID)){
+        	AgentApi agentApi = api.getAgentApi();
+            Integer agentId = (Integer)options.valueOf(OPT_AGENT_ID);
+            AgentResponse agentResponse = agentApi.getAgent(agentId);
+            checkSuccess(agentResponse);
+            resources =
+                resourceApi.getResources(agentResponse.getAgent(), verbose, children);
+            checkSuccess(resources);
+        
         } else {
             System.err.println("One of " + Arrays.toString(ONE_REQUIRED) + " required");
             return;
