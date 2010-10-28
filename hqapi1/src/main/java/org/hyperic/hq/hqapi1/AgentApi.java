@@ -74,6 +74,26 @@ public class AgentApi extends BaseApi {
     }
 
     /**
+     * Get an {@link Agent} by agent token.
+     *
+     * @param agentToken The agent token of the requested agent.
+     *
+     * @return  On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * a the requested agent is returned via
+     * {@link org.hyperic.hq.hqapi1.types.AgentResponse#getAgent()}.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public AgentResponse getAgent(String agentToken)
+        throws IOException
+    {
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("agentToken", new String[] { agentToken });
+        return doGet("agent/get.hqu", params, 
+                     new XmlResponseHandler<AgentResponse>(AgentResponse.class));
+    }
+    
+    /**
      * Get an {@link Agent} by address and port.
      *
      * @param address The address of the requested agent.  This can be a hostname

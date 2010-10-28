@@ -1,3 +1,7 @@
+Changes in HQApi 4.1
+
+ *) Add support to get an agent by agent token. Functionality added
+    for HHQ-4084. No corresponding CLI command was added.
 
 Changes in HQApi 4.0
 

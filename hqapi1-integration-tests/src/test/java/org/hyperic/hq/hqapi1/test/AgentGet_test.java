@@ -86,4 +86,12 @@ public class AgentGet_test extends HQApiTestBase {
         AgentResponse response = api.getAgent(Integer.MAX_VALUE);
         hqAssertFailureObjectNotFound(response);        
     }
+
+    public void testGetAgentByInvalidToken() throws Exception {
+
+        AgentApi api = getApi().getAgentApi();
+
+        AgentResponse response = api.getAgent("someInvalidAgentToken");
+        hqAssertFailureObjectNotFound(response);        
+    }
 }
