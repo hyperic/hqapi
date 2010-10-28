@@ -244,10 +244,8 @@ public class UserCommand extends AbstractCommand {
         	user.setEmailAddress(options.valueOf(OPT_EMAILADDRESS).toString());
         }      
         if (options.has(OPT_HTMLEMAIL)) {
-        	System.out.println("Setting htmlEmail to true");
         	user.setHtmlEmail(true);
         } else {
-        	System.out.println("Setting htmlEmail to false");
         	user.setHtmlEmail(false);
         }
         user.setActive(ACTIVE);
@@ -257,7 +255,7 @@ public class UserCommand extends AbstractCommand {
         checkSuccess(response);
         System.out.println("Successfully created: " + user.getName() + " with id " + response.getUser().getId());
         
-        if (role != null) {
+        if (role.getId() != null) {
         	role.getUser().add(user);
         	checkSuccess(roleApi.updateRole(role));
         	System.out.println("Successfully assigned " + user.getName() + " to role " + role.getName());
