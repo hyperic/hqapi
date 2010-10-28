@@ -102,6 +102,8 @@ public abstract class HQApiTestBase extends TestCase {
         public String  host   = HOST;
         public int     port   = PORT;
         public boolean secure = IS_SECURE;
+        public String user = USER;
+        public String password = PASSWORD;
     }
 
     public HQApiTestBase(String name) {
@@ -190,12 +192,21 @@ public abstract class HQApiTestBase extends TestCase {
             if (secure != null) {
                 _connectionProps.secure = Boolean.valueOf(secure);
             }
+            String user = props.getProperty("user");
+            if (user != null) {
+            	_connectionProps.user = user;
+            }
+            String password = props.getProperty("password");
+            if (password != null) {
+            	_connectionProps.password = password;
+            }
         }
     }
 
     HQApi getApi() {
         return new HQApi(_connectionProps.host, _connectionProps.port,
-                         _connectionProps.secure, USER, PASSWORD);
+                         _connectionProps.secure, _connectionProps.user,
+                         _connectionProps.password);
     }
 
     HQApi getApi(boolean secure) {
@@ -208,7 +219,8 @@ public abstract class HQApiTestBase extends TestCase {
             // Assume 80 and 443, so SSL port is always + 363 from standard port
             int port = _connectionProps.port + 363;
 
-            return new HQApi(_connectionProps.host, port, secure, USER, PASSWORD);
+            return new HQApi(_connectionProps.host, port, secure,
+            				 _connectionProps.user, _connectionProps.password);
         }
     }
 
