@@ -27,6 +27,8 @@
 
 package org.hyperic.hq.hqapi1;
 
+import java.net.URI;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -67,6 +69,14 @@ public class HQApi {
         this(new HQConnection(host,port, isSecure,user,password));
     }
 
+    /**
+     * @param uri The URI of the HQ Server to connect to.
+     * @param user The user to connect as.
+     * @param password The password for the given user.
+     */
+    public HQApi(URI uri, String user, String password) {
+        this(new HQConnection(uri, user, password));
+    }
    
     @Autowired
     public HQApi(HQConnection connection) {

@@ -58,6 +58,14 @@ class HQConnection implements Connection {
     private String _user;
     private String _password;
 
+    HQConnection(java.net.URI uri, String user, String password) {
+    	this(uri.getHost(),
+    		 uri.getPort(),
+    		 uri.getScheme().equalsIgnoreCase("https") ? true : false,
+    		 user,
+    		 password);
+    }
+    
     HQConnection(String host,
                  int port,
                  boolean isSecure,
