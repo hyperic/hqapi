@@ -331,6 +331,11 @@ public class ResourceCommand extends AbstractCommand {
         
         StatusResponse response = resourceApi.moveResource(targetResource.getResource(),
                                                            destResource.getResource());
+        checkSuccess(response);
+
+        System.out.println("Sucessfully moved " + targetResource.getResource().getName() +
+                           " to " + destResource.getResource().getName());
+
         if (options.has(OPT_NEWNAME)) {
         	Resource renamedResource = targetResource.getResource();
         	renamedResource.setName(options.valueOf(OPT_NEWNAME).toString());
@@ -339,10 +344,7 @@ public class ResourceCommand extends AbstractCommand {
         	checkSuccess(resourceApi.syncResources(resources));
         	System.out.println("Successfully renamed resource to " + renamedResource.getName());
         }
-        checkSuccess(response);
-
-        System.out.println("Sucessfully moved " + targetResource.getResource().getName() +
-                           " to " + destResource.getResource().getName());
+        
     }
 
     private void createPlatform(String[] args) throws Exception {
