@@ -333,7 +333,7 @@ public class ResourceCommand extends AbstractCommand {
                                                            destResource.getResource());
         checkSuccess(response);
 
-        System.out.println("Sucessfully moved " + targetResource.getResource().getName() +
+        System.out.println("Successfully moved " + targetResource.getResource().getName() +
                            " to " + destResource.getResource().getName());
 
         if (options.has(OPT_NEWNAME)) {
