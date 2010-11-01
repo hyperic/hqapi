@@ -37,6 +37,7 @@ import org.hyperic.hq.hqapi1.types.AgentResponse;
 import org.hyperic.hq.hqapi1.types.Ip;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourceConfig;
+import org.hyperic.hq.hqapi1.types.ResourceProperty;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
@@ -84,7 +85,6 @@ public class ResourceCommand extends AbstractCommand {
     private static String OPT_PARENT_PLATFORM = "parentPlatform";
     private static String OPT_SETNAME     = "setName";
     private static String OPT_SETCONFIG   = "setConfig";
-    private static String OPT_SETPROPERTY = "setProperty";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -239,7 +239,7 @@ public class ResourceCommand extends AbstractCommand {
         p.accepts(OPT_BATCH_SIZE, "Process the sync in batches of the given size").
                 withRequiredArg().ofType(Integer.class);
         p.accepts(OPT_SETCONFIG, "Set/change the specified ResourceConfig" +
-	               "key/value pair").withRequiredArg().ofType(String.class);
+	               "Use -- prior to list of key/value pairs").withRequiredArg().ofType(String.class);
         
         OptionSet options = getOptions(p, args);
 
@@ -266,9 +266,7 @@ public class ResourceCommand extends AbstractCommand {
         	for (Iterator<Resource> i = resources.iterator(); i.hasNext();) {
         		i.next().getResourceConfig().addAll(configs);
         	}
-        } else if (options.has(OPT_SETPROPERTY)) {
-        	
-        }
+        } 
 
         System.out.println("Syncing " + resources.size() + " resources");
 
