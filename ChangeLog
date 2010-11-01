@@ -1,6 +1,6 @@
 Changes in HQApi 3.3
 
- *) Added --newname option to rename a resource once moved
+ *) Added --setName option to rename a resource once moved
 
  *) Added --agentId option to resource list to find platforms belonging to an agent
 

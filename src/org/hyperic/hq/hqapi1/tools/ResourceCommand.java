@@ -81,7 +81,7 @@ public class ResourceCommand extends AbstractCommand {
     private static String OPT_BATCH_SIZE  = "batchSize";
     private static String OPT_TO          = "to";
     private static String OPT_PARENT_PLATFORM = "parentPlatform";
-    private static String OPT_NEWNAME      = "newname";
+    private static String OPT_SETNAME      = "setName";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -312,7 +312,7 @@ public class ResourceCommand extends AbstractCommand {
                 withRequiredArg().ofType(Integer.class);
         p.accepts(OPT_TO, "The destination resource id").
                 withRequiredArg().ofType(Integer.class);
-        p.accepts(OPT_NEWNAME, "If specified, renames the resource " +
+        p.accepts(OPT_SETNAME, "If specified, renames the resource " +
                   "to the name specified").withRequiredArg().ofType(String.class);
 
         OptionSet options = getOptions(p, args);
@@ -336,9 +336,9 @@ public class ResourceCommand extends AbstractCommand {
         System.out.println("Successfully moved " + targetResource.getResource().getName() +
                            " to " + destResource.getResource().getName());
 
-        if (options.has(OPT_NEWNAME)) {
+        if (options.has(OPT_SETNAME)) {
         	Resource renamedResource = targetResource.getResource();
-        	renamedResource.setName(options.valueOf(OPT_NEWNAME).toString());
+        	renamedResource.setName(options.valueOf(OPT_SETNAME).toString());
         	ArrayList<Resource> resources = new ArrayList<Resource>();
         	resources.add(renamedResource);
         	checkSuccess(resourceApi.syncResources(resources));
