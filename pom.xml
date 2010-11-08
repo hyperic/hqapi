@@ -92,6 +92,7 @@
 
 	<modules>
 		<module>hqapi1</module>
+		<module>hqapi1-tools</module>
 		<module>hqapi1-client</module>
 		<module>hqapi1-plugin</module>
 	</modules>

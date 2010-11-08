@@ -29,15 +29,11 @@ package org.hyperic.hq.hqapi1;
 
 import java.net.URI;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 /**
  * The Hyperic HQ API.
  *
  * This is the main entry point into the HQ Api.
  */
-@Component
 public class HQApi {
 
     private final UserApi            _userApi;
@@ -78,7 +74,6 @@ public class HQApi {
         this(new HQConnection(uri, user, password));
     }
    
-    @Autowired
     public HQApi(HQConnection connection) {
         _userApi          = new UserApi(connection);
         _roleApi          = new RoleApi(connection);

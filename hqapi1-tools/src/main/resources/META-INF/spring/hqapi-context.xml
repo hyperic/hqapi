@@ -23,6 +23,10 @@
 		<constructor-arg index="4" value="#{ systemProperties['scripting.client.password'] }" />
 	</bean>
 	
+	<bean class="org.hyperic.hq.hqapi1.HQApi">
+		<constructor-arg ref="connection" />
+	</bean>
+	
 	<context:annotation-config />
 		
 	<context:component-scan base-package="org.hyperic.hq.hqapi1"/>

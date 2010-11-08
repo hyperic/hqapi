@@ -2,8 +2,11 @@
 
 RUNDIR=`dirname $0`/..
 
-HQAPI_JAR=`ls $RUNDIR/*.jar`
-CLASSPATH=$CLASSPATH:$RUNDIR/conf:$HQAPI_JAR
+CLASSPATH=$CLASSPATH:$RUNDIR/conf
+
+for h in `ls $RUNDIR/*.jar`; do
+   CLASSPATH=$CLASSPATH:$h
+done
 
 for i in `ls $RUNDIR/lib/*.jar`; do 
    CLASSPATH=$CLASSPATH:$i 

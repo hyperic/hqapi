@@ -9,19 +9,15 @@
 		<version>4.1.0.BUILD-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>hqapi1-client</artifactId>
-	<packaging>pom</packaging>
-	<name>Hyperic HQAPI Client</name>
+	<artifactId>hqapi1-tools</artifactId>
+	<packaging>jar</packaging>
+	<name>Hyperic HQAPI Tools</name>
 
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptors>
-						<descriptor>src/main/assembly/assembly.xml</descriptor>
-					</descriptors>
-				</configuration>
+				<groupId>com.atlassian.maven.plugins</groupId>
+				<artifactId>maven-clover2-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
@@ -30,17 +26,6 @@
 		<dependency>
 			<groupId>org.hyperic.hq.hqapi</groupId>
 			<artifactId>hqapi1</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hyperic.hq.hqapi</groupId>
-			<artifactId>hqapi1</artifactId>
-			<version>${project.version}</version>
-			<classifier>javadoc</classifier>
-		</dependency>
-		<dependency>
-			<groupId>org.hyperic.hq.hqapi</groupId>
-			<artifactId>hqapi1-tools</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

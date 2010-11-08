@@ -1,5 +1,9 @@
 Changes in HQApi 4.1
 
+ *) Package the tools classes into a separate hqapi1-tools.jar so that
+    the core HQApi classes can be used without Spring dependencies
+    in HQ integration tests 
+ 
  *) Add support to get an agent by agent token. Functionality added
     for HHQ-4084. No corresponding CLI command was added.
 
