@@ -347,7 +347,7 @@ public class AlertDefinitionCommand extends AbstractCommand {
         p.accepts(OPT_ASSIGN_SCRIPTACTION, "If specified, assign the given script action " +
                                            "to all alert definitions in this sync").
                 withRequiredArg().ofType(String.class);
-        p.accepts(OPT_ASSIGN_CONTROLACTION, "If specified, assign the given Escalation " +
+        p.accepts(OPT_ASSIGN_CONTROLACTION, "If specified, assign the given Control Action " +
                                             "to all alert definitions in this sync").
                 withRequiredArg().ofType(String.class);
         p.accepts(OPT_CLEAR_ESC, "If specified, clear the assigned escalation from " +
@@ -508,7 +508,7 @@ public class AlertDefinitionCommand extends AbstractCommand {
         p.accepts(OPT_ASSIGN_SCRIPTACTION, "If specified, assign the given script action " +
                 "to all alert definitions in this create").
                 withRequiredArg().ofType(String.class);
-        p.accepts(OPT_ASSIGN_CONTROLACTION, "If specified, assign the given Escalation " +
+        p.accepts(OPT_ASSIGN_CONTROLACTION, "If specified, assign the given Control Action " +
                 "to all alert definitions in this create").
                 withRequiredArg().ofType(String.class);
         p.accepts(OPT_REGEX, "Use pattern to find matching resources").

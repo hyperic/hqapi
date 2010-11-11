@@ -16,6 +16,10 @@ Changes in HQApi 4.0
 
 Changes in HQApi 3.3
 
+ *) Added --setConfig option to resource sync
+
+ *) Added --setName option to rename a resource once moved
+
  *) Added --agentId option to resource list to find platforms belonging to an agent
 
  *) Add user create CLI command.

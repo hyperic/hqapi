@@ -36,6 +36,8 @@ import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.types.AgentResponse;
 import org.hyperic.hq.hqapi1.types.Ip;
 import org.hyperic.hq.hqapi1.types.Resource;
+import org.hyperic.hq.hqapi1.types.ResourceConfig;
+import org.hyperic.hq.hqapi1.types.ResourceProperty;
 import org.hyperic.hq.hqapi1.types.ResourcePrototypeResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.ResourcesResponse;
@@ -81,6 +83,8 @@ public class ResourceCommand extends AbstractCommand {
     private static String OPT_BATCH_SIZE  = "batchSize";
     private static String OPT_TO          = "to";
     private static String OPT_PARENT_PLATFORM = "parentPlatform";
+    private static String OPT_SETNAME     = "setName";
+    private static String OPT_SETCONFIG   = "setConfig";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -234,7 +238,9 @@ public class ResourceCommand extends AbstractCommand {
 
         p.accepts(OPT_BATCH_SIZE, "Process the sync in batches of the given size").
                 withRequiredArg().ofType(Integer.class);
-
+        p.accepts(OPT_SETCONFIG, "Set/change the specified ResourceConfig" +
+	               "Use -- prior to list of key/value pairs").withRequiredArg().ofType(String.class);
+        
         OptionSet options = getOptions(p, args);
 
         HQApi api = getApi(options);
@@ -245,6 +251,22 @@ public class ResourceCommand extends AbstractCommand {
         ResourcesResponse resp = XmlUtil.deserialize(ResourcesResponse.class, is);
         List<Resource> resources = resp.getResource();
 
+        if (options.has(OPT_SETCONFIG)) {        	
+            List<ResourceConfig> configs = new ArrayList<ResourceConfig>();
+            for (String opt : options.nonOptionArguments()) {
+                int idx;
+                if ((idx = opt.indexOf("=")) != -1) {
+                	ResourceConfig config = new ResourceConfig();
+                    config.setKey(opt.substring(0, idx));
+                    config.setValue(opt.substring(idx+1));
+                    configs.add(config);
+                }
+            }
+
+        	for (Iterator<Resource> i = resources.iterator(); i.hasNext();) {
+        		i.next().getResourceConfig().addAll(configs);
+        	}
+        } 
 
         System.out.println("Syncing " + resources.size() + " resources");
 
@@ -311,6 +333,8 @@ public class ResourceCommand extends AbstractCommand {
                 withRequiredArg().ofType(Integer.class);
         p.accepts(OPT_TO, "The destination resource id").
                 withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_SETNAME, "If specified, renames the resource " +
+                  "to the name specified").withRequiredArg().ofType(String.class);
 
         OptionSet options = getOptions(p, args);
 
@@ -330,8 +354,18 @@ public class ResourceCommand extends AbstractCommand {
                                                            destResource.getResource());
         checkSuccess(response);
 
-        System.out.println("Sucessfully moved " + targetResource.getResource().getName() +
+        System.out.println("Successfully moved " + targetResource.getResource().getName() +
                            " to " + destResource.getResource().getName());
+
+        if (options.has(OPT_SETNAME)) {
+        	Resource renamedResource = targetResource.getResource();
+        	renamedResource.setName(options.valueOf(OPT_SETNAME).toString());
+        	ArrayList<Resource> resources = new ArrayList<Resource>();
+        	resources.add(renamedResource);
+        	checkSuccess(resourceApi.syncResources(resources));
+        	System.out.println("Successfully renamed resource to " + renamedResource.getName());
+        }
+        
     }
 
     private void createPlatform(String[] args) throws Exception {
