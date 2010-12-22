@@ -201,7 +201,9 @@ public class AlertdefinitionController extends ApiController {
                                      c.measurementId + " for " + c.name)
                             continue
                         } else {
-                        	conditionAttrs["recoverId"] = alert.id
+                            if (!excludeIds) {
+                        	   conditionAttrs["recoverId"] = alert.id
+                        	}
                             conditionAttrs["recover"] = alert.name
                         }
                     } else if (c.type == EventConstants.TYPE_CFG_CHG) {
