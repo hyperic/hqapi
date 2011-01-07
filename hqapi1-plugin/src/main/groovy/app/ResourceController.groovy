@@ -360,13 +360,14 @@ class ResourceController extends ApiController {
         def id = params.getOne("id")?.toInteger()
         def platformName = params.getOne("platformName")
         def fqdn = params.getOne("fqdn")
+        def parentOf = params.getOne("parentOf")?.toInteger()
         def platformId = params.getOne("platformId")?.toInteger()
         boolean children = params.getOne("children", "false").toBoolean()
         boolean verbose = params.getOne("verbose", "false").toBoolean()
 
         def resource = null
         def failureXml
-        if (!id && !platformName && !fqdn && !platformId) {
+        if (!id && !platformName && !fqdn && !platformId && !parentOf) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             try {
@@ -400,7 +401,22 @@ class ResourceController extends ApiController {
                                                "Platform fqdn='" + fqdn +
                                                "' not found")
                     }
-                }
+                } else if (parentOf) {
+                    def child = getResource(parentOf)
+                    if (!child) {
+                        failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Resource id ='" + parentOf +
+                                               "' not found")
+                    } else {
+                        if (child.isPlatform()) {
+                            failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                                       "No parent for platform ='" + parentOf + "'")
+                        } else if (child.isServer()) {
+                            resource = child.toServer().platform.resource
+                        } else if (child.isService()) {
+                            resource = child.toService().server.resource
+                        }
+                    }                }
             } catch (PermissionException e) {
                 failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
             }

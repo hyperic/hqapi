@@ -302,4 +302,63 @@ public class ResourceGet_test extends ResourceTestBase {
         ResourceResponse response = api.getPlatformResource(Integer.MAX_VALUE, false, false);
         hqAssertFailureObjectNotFound(response);
     }
+
+    public void testGetParentForPlatform() throws Exception {
+        ResourceApi api = getApi().getResourceApi();
+
+        Resource platform = getLocalPlatformResource(false, false);
+        ResourceResponse response = api.getParent(platform);
+
+        hqAssertFailureObjectNotFound(response);
+    }
+
+    public void testGetParentForServer() throws Exception {
+        ResourceApi api = getApi().getResourceApi();
+
+        Resource platform = getLocalPlatformResource(false, true);
+        List<Resource> servers = platform.getResource();
+
+        assertTrue("No servers found for platform " + platform.getName(), servers.size() > 0);
+        Resource server = servers.get(0);
+
+        ResourceResponse response = api.getParent(server);
+        hqAssertSuccess(response);
+
+        assertEquals("Id mismatch for parent resource", platform.getId(), response.getResource().getId());
+    }
+
+    public void testGetParentForService() throws Exception {
+        ResourceApi api = getApi().getResourceApi();
+
+        Resource platform = getLocalPlatformResource(false, true);
+        List<Resource> servers = platform.getResource();
+
+        assertTrue("No servers found for platform " + platform.getName(), servers.size() > 0);
+
+        Resource server = null;
+        Resource service = null;
+        for (Resource r : servers) {
+            if (r.getResource().size() > 0) {
+                server = r;
+                service = r.getResource().get(0);
+            }
+        }
+
+        assertNotNull("No services found for platform " + platform.getName(), service);
+
+        ResourceResponse response = api.getParent(service);
+        hqAssertSuccess(response);
+
+        assertEquals("Id mismatch for parent resource", server.getId(), response.getResource().getId());
+    }
+
+    public void testGetParentInvalidId() throws Exception {
+        ResourceApi api = getApi().getResourceApi();
+
+        Resource r = new Resource();
+        r.setId(Integer.MAX_VALUE);
+        ResourceResponse response = api.getParent(r);
+
+        hqAssertFailureObjectNotFound(response);
+    }
 }

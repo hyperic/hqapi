@@ -518,4 +518,21 @@ public class ResourceApi extends BaseApi {
         return doGet("resource/move.hqu", params, 
                      new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
+
+    /**
+     * Get the parent Resource for a given Resource
+     *
+     * @param r The resource to query
+     * @return The parent {@link Resource} for the given Resource
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public ResourceResponse getParent(Resource r)
+        throws IOException
+    {
+        Map<String,String[]> params = new HashMap<String, String[]>();
+        params.put("parentOf", new String[] { Integer.toString(r.getId()) });
+        return doGet("resource/get.hqu", params,
+                     new XmlResponseHandler<ResourceResponse>(ResourceResponse.class));
+    }
 }

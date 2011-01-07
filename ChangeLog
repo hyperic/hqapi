@@ -1,7 +1,11 @@
 Changes in HQApi 4.1
 
- *) [HHQ-4528] HQApi: When using excludeTypeIds recovery alert conditions still 
+ *) [HHQ-4545] Add ResourceApi.getParent() API to allow for parent resources
+    to be queried.
+
+ *) [HHQ-4528] When using excludeTypeIds recovery alert conditions still
     show id for alert they are recovering
+
  *) Package the tools classes into a separate hqapi1-tools.jar so that
     the core HQApi classes can be used without Spring dependencies
     in HQ integration tests 
