@@ -1,5 +1,8 @@
 Changes in HQApi 4.1
 
+ *) [HHQ-4544] Add RoleApi.getRoles(User u) to allow for Roles to be queried
+    by User.
+
  *) [HHQ-4545] Add ResourceApi.getParent() API to allow for parent resources
     to be queried.
 

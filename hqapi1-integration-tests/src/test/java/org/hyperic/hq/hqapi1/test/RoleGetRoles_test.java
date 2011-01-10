@@ -28,10 +28,15 @@
 package org.hyperic.hq.hqapi1.test;
 
 import org.hyperic.hq.hqapi1.RoleApi;
+import org.hyperic.hq.hqapi1.UserApi;
 import org.hyperic.hq.hqapi1.types.Operation;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.RolesResponse;
+import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.User;
+import org.hyperic.hq.hqapi1.types.UserResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RoleGetRoles_test extends RoleTestBase {
@@ -56,5 +61,47 @@ public class RoleGetRoles_test extends RoleTestBase {
             }
             assertNotNull(role.getUser());
         }
+    }
+
+    public void testGetRolesByUser() throws Exception {
+
+        RoleApi api = getRoleApi();
+        UserApi uApi = getUserApi();
+
+        User u = generateTestUser();
+        UserResponse uResponse = uApi.createUser(u, TESTUSER_PASSWORD);
+        hqAssertSuccess(uResponse);
+
+        List<Role> roles = new ArrayList<Role>();
+        // Create 10 Roles adding the generated user to 5 of them.
+        int SYNC_NUM = 10;
+        for (int i = 0; i < SYNC_NUM; i++) {
+            Role r = generateTestRole();
+            r.getOperation().addAll(VIEW_OPS);
+            if (i < 5) {
+                r.getUser().add(uResponse.getUser());
+            }
+            roles.add(r);
+        }
+
+        StatusResponse response = api.syncRoles(roles);
+        hqAssertSuccess(response);
+
+        RolesResponse rolesResponse = api.getRoles(uResponse.getUser());
+        hqAssertSuccess(rolesResponse);
+
+        assertEquals("Wrong number of roles for user",
+                     5, rolesResponse.getRole().size());
+    }
+
+    public void testGetRolesInvalidUser() throws Exception {
+
+        RoleApi api = getRoleApi();
+
+        User u = new User();
+        u.setName("testUser");
+        RolesResponse response = api.getRoles(u);
+
+        hqAssertFailureObjectNotFound(response);
     }
 }

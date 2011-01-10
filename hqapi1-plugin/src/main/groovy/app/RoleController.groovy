@@ -33,10 +33,30 @@ class RoleController extends ApiController {
     }
 
     def list(params) {
+        def user = params.getOne("user")
+
+        def roles
+        if (user && user.length() != 0) {
+            def subject = getUser(null, user)
+            if (!subject) {
+                renderXml() {
+                    RolesResponse() {
+                        out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                             "User with name " + user +
+                                             " not found")
+                    }
+                }
+                return
+            }
+            roles = subject.roles
+        } else {
+            roles = roleHelper.allRoles
+        }
+
         renderXml() {
             out << RolesResponse() {
                 out << getSuccessXML()
-                for (role in roleHelper.allRoles.sort {a, b -> a.name <=> b.name}) {
+                for (role in roles.sort {a, b -> a.name <=> b.name}) {
                     if (!role.system) {
                         out << getRoleXML(role)
                     }

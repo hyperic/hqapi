@@ -33,6 +33,7 @@ import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.RolesRequest;
 import org.hyperic.hq.hqapi1.types.RolesResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.User;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -68,6 +69,25 @@ public class RoleApi extends BaseApi {
         throws IOException
     {
         return doGet("role/list.hqu", new HashMap<String, String[]>(),
+                     new XmlResponseHandler<RolesResponse>(RolesResponse.class));
+    }
+
+    /**
+     * Find all {@link Role}s for the given {@link User}
+     *
+     * @param u The User to query for Roles.
+     *
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * a list of roles is returned.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public RolesResponse getRoles(User u)
+        throws IOException
+    {
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("user", new String[] { u.getName() });
+        return doGet("role/list.hqu", params,
                      new XmlResponseHandler<RolesResponse>(RolesResponse.class));
     }
 
