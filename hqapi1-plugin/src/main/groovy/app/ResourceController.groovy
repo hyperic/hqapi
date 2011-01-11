@@ -3,7 +3,6 @@ import org.hyperic.hq.appdef.shared.AppdefEntityID
 import org.hyperic.hq.appdef.shared.AppdefUtil;
 import org.hyperic.hq.authz.shared.AuthzConstants
 import org.hyperic.hq.authz.shared.PermissionException
-import org.hyperic.hq.authz.shared.ResourceEdgeCreateException
 import org.hyperic.hq.common.VetoException
 
 
@@ -1030,8 +1029,6 @@ class ResourceController extends ApiController {
     		}
     	} catch (PermissionException p) {
             return getFailureXML(ErrorCode.PERMISSION_DENIED)
-    	} catch (ResourceEdgeCreateException r)  {
-    		return getFailureXML(ErrorCode.INVALID_PARAMETERS, r.getMessage())
     	} catch (IllegalArgumentException i)  {
     		return getFailureXML(ErrorCode.INVALID_PARAMETERS, i.getMessage())
     	} catch (Exception e) {
