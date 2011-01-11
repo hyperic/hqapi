@@ -47,8 +47,6 @@
 	<classpathentry kind="var" path="M2_REPO/gnu-getopt/getopt/1.0.13/getopt-1.0.13.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/hibernate/hibernate/3.2.6.ga/hibernate-3.2.6.ga.jar" sourcepath="M2_REPO/org/hibernate/hibernate/3.2.6.ga/hibernate-3.2.6.ga-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/jasypt/jasypt/1.6/jasypt-1.6.jar" sourcepath="M2_REPO/org/jasypt/jasypt/1.6/jasypt-1.6-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/sun/xml/bind/jaxb-impl/2.0.3/jaxb-impl-2.0.3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/sun/xml/bind/jaxb-xjc/2.0.3/jaxb-xjc-2.0.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/jboss/jboss-remoting/2.2.2.SP8/jboss-remoting-2.2.2.SP8.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/jdom/jdom/1.1/jdom-1.1.jar" sourcepath="M2_REPO/org/jdom/jdom/1.1/jdom-1.1-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/jline/jline/0.9.94/jline-0.9.94.jar" sourcepath="M2_REPO/jline/jline/0.9.94/jline-0.9.94-sources.jar"/>
@@ -90,7 +88,6 @@
 	<classpathentry kind="var" path="M2_REPO/org/apache/tomcat-jdbc/1.0.8.5/tomcat-jdbc-1.0.8.5.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/tomcat-juli/6.0.20/tomcat-juli-6.0.20.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/velocity/velocity/1.6.3/velocity-1.6.3.jar" sourcepath="M2_REPO/org/apache/velocity/velocity/1.6.3/velocity-1.6.3-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/jvnet/ws/wadl/wadl-core/1.0-SNAPSHOT/wadl-core-1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="M2_REPO/tanukisoft/wrapper/3.2.3/wrapper-3.2.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/xalan/xalan/2.7.1/xalan-2.7.1.jar" sourcepath="M2_REPO/xalan/xalan/2.7.1/xalan-2.7.1-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/xbean/xbean-spring/3.6/xbean-spring-3.6.jar" sourcepath="M2_REPO/org/apache/xbean/xbean-spring/3.6/xbean-spring-3.6-sources.jar"/>
@@ -100,10 +97,10 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/hqapi1"/>
 	<classpathentry exported="true" kind="con" path="GROOVY_SUPPORT"/>
-	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-rendit/4.5.0.BUILD-SNAPSHOT/hq-rendit-4.5.0.BUILD-SNAPSHOT.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-server/4.5.0.BUILD-SNAPSHOT/hq-server-4.5.0.BUILD-SNAPSHOT.jar" sourcepath="/M2_REPO/org/hyperic/hq/hq-server/4.5.0.BUILD-SNAPSHOT/hq-server-4.5.0.BUILD-SNAPSHOT-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-util/4.5.0.BUILD-SNAPSHOT/hq-util-4.5.0.BUILD-SNAPSHOT.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-common/4.5.0.BUILD-SNAPSHOT/hq-common-4.5.0.BUILD-SNAPSHOT.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-pdk-shared/4.5.0.BUILD-SNAPSHOT/hq-pdk-shared-4.5.0.BUILD-SNAPSHOT.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-rendit/5.0.0.BUILD-SNAPSHOT/hq-rendit-5.0.0.BUILD-SNAPSHOT.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-server/5.0.0.BUILD-SNAPSHOT/hq-server-5.0.0.BUILD-SNAPSHOT.jar" sourcepath="/M2_REPO/org/hyperic/hq/hq-server/5.0.0.BUILD-SNAPSHOT/hq-server-5.0.0.BUILD-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-util/5.0.0.BUILD-SNAPSHOT/hq-util-5.0.0.BUILD-SNAPSHOT.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-common/5.0.0.BUILD-SNAPSHOT/hq-common-5.0.0.BUILD-SNAPSHOT.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-pdk/5.0.0.BUILD-SNAPSHOT/hq-pdk-5.0.0.BUILD-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
