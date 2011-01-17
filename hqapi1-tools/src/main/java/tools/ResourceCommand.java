@@ -454,7 +454,7 @@ public class ResourceCommand extends AbstractCommand {
         ResourceResponse resourceResponse =
                 resourceApi.getResource((Integer)getRequired(options,
                                                              OPT_RESOURCE_ID),
-                                        false, true);
+                                        false, false);
         checkSuccess(resourceResponse);
 
         String name = (String)getRequired(options ,OPT_NAME);
@@ -505,7 +505,7 @@ public class ResourceCommand extends AbstractCommand {
         ResourceResponse resourceResponse =
                 resourceApi.getResource((Integer)getRequired(options,
                                                              OPT_RESOURCE_ID),
-                                        false, true);
+                                        false, false);
         checkSuccess(resourceResponse);
 
         String name = (String)getRequired(options ,OPT_NAME);
