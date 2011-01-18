@@ -546,7 +546,7 @@ public class AlertdefinitionController extends ApiController {
     def sync(params) {
         def syncRequest = new XmlParser().parseText(getPostData())
         def definitions = []
-        def sess = org.hyperic.hq.hibernate.SessionManager.currentSession()
+      
 
         for (xmlDef in syncRequest['AlertDefinition']) {
             def failureXml = null
@@ -1088,8 +1088,7 @@ public class AlertdefinitionController extends ApiController {
 
             // Keep synced definitions for sync return XML
             definitions << pojo.id
-            sess.flush()
-            sess.clear()
+           
         }
 
         renderXml() {
