@@ -9,6 +9,8 @@ import org.hyperic.hq.appdef.shared.AppdefEntityTypeID
 import org.hyperic.hq.context.Bootstrap;
 import org.hyperic.hq.events.AlertSeverity
 import org.hyperic.hq.events.EventConstants
+import org.hyperic.hq.events.server.session.ResourceAlertDefinition
+import org.hyperic.hq.events.server.session.ResourceTypeAlertDefinition
 import org.hyperic.hq.events.shared.ActionValue
 import org.hyperic.hq.events.shared.AlertConditionValue
 import org.hyperic.hq.events.shared.AlertDefinitionManager;
@@ -126,21 +128,21 @@ public class AlertdefinitionController extends ApiController {
             }
 
             // parent is nullable.
-            if (d.parent != null) {
-                attrs['parent'] = d.parent.id
+            if (d instanceof ResourceAlertDefinition && ((ResourceAlertDefinition)d).resourceTypeAlertDefinition != null) {
+                attrs['parent'] = ((ResourceAlertDefinition)d).resourceTypeAlertDefinition.id
             }
 
             AlertDefinition(attrs) {
 
-                if (d.resource) {
-                    if (d.parent != null && d.parent.id == 0) {
-                        ResourcePrototype(id: d.resource.id,
-                                          name: d.resource.name)
+                
+                    if (d instanceof ResourceTypeAlertDefinition) {
+                        ResourcePrototype(id: ((ResourceTypeAlertDefinition)d).resourceType.id,
+                                          name: ((ResourceTypeAlertDefinition)d).resourceType.name)
                     } else {
                         Resource(id : d.resource.id,
                                  name : d.resource.name)
                     }
-                }
+                
                 if (d.escalation) {
                     def e = d.escalation
                     Escalation(id :           e.id,
@@ -601,7 +603,7 @@ public class AlertdefinitionController extends ApiController {
                         def allTypeAlerts = alertHelper.findTypeBasedDefinitions()
                         def existingTypeAlerts = allTypeAlerts.grep {
                             it.name == xmlDef.'@name' &&
-                            it.resource.name == name
+                            it.resourceType.name == name
                         }
 
                         if (existingTypeAlerts.size() > 1) {
@@ -714,9 +716,9 @@ public class AlertdefinitionController extends ApiController {
             adv.count = xmlDef.'@count'.toLong()
             adv.range = xmlDef.'@range'.toLong()
             adv.escalationId = escalation?.id
-            if (existing) {
-                // If the alert is pre-existing, set the parent id.
-                adv.parentId = existing.parent?.id
+            if (existing && existing instanceof ResourceAlertDefinition) {
+                	// If the alert is pre-existing, set the parent id.
+                	adv.parentId = existing.resourceTypeAlertDefinition?.id
             }
 
             def templs
