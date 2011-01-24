@@ -1,5 +1,7 @@
 Changes in HQApi 4.1
 
+ *) [HHQ-4573] Add --id parameter to alertdefinition list.
+
  *) Fix performance issues with createService and createServer resource
     CLI commands.
 

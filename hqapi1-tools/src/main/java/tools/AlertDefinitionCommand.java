@@ -155,6 +155,8 @@ public class AlertDefinitionCommand extends AbstractCommand {
 
         OptionParser p = getOptionParser();
 
+        p.accepts(OPT_ID, "If specified, return the alert definition with the given id.").
+                withRequiredArg().ofType(Integer.class);
         p.accepts(OPT_TYPEALERTS, "If specified, only parent resource type " +
                                   "alerts will be returned.");
         p.accepts(OPT_EXCLUDE_TYPEALERTS, "If specified, individual alerts " +
@@ -228,6 +230,13 @@ public class AlertDefinitionCommand extends AbstractCommand {
                     rApi.getResources(description, false, false);
             checkSuccess(resourcesResponse);
             alertDefs = definitionApi.getAlertDefinitions(resourcesResponse.getResource());
+        } else if (options.has(OPT_ID)) {
+            Integer id = (Integer)getRequired(options, OPT_ID);
+            AlertDefinitionResponse response =
+                    definitionApi.getAlertDefinition(id);
+            checkSuccess(response);
+            XmlUtil.serialize(response, System.out, Boolean.TRUE);
+            return;
         } else {
             boolean excludeTypeAlerts = false;
             if (options.has(OPT_EXCLUDE_TYPEALERTS)) {
