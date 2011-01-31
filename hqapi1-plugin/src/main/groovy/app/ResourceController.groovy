@@ -32,7 +32,9 @@ class ResourceController extends ApiController {
             Resource(id : r.id,
                      name : r.name,
                      description : r.description,
-                     location : getLocation(r)) {
+                     location : getLocation(r),
+                     instanceId : r.entityId.id,
+                     typeId : r.entityId.type) {
                 if (verbose) {
                     def config = r.getConfig()
                     config.each { k, v ->
