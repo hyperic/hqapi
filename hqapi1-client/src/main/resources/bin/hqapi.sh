@@ -1,6 +1,7 @@
 #!/bin/sh
 
 RUNDIR=`dirname $0`/..
+HQAPILOGDIR=$RUNDIR/logs
 
 CLASSPATH=$CLASSPATH:$RUNDIR/conf
 
@@ -12,4 +13,4 @@ for i in `ls $RUNDIR/lib/*.jar`; do
    CLASSPATH=$CLASSPATH:$i 
 done 
 
-java -cp $CLASSPATH org.hyperic.hq.hqapi1.tools.Shell "$@"
+java -Dhqapi.logDir=$HQAPILOGDIR -cp $CLASSPATH org.hyperic.hq.hqapi1.tools.Shell "$@"
