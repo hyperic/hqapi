@@ -1,5 +1,7 @@
 Changes in HQApi 4.1
 
+ *) [HHQ-4608] Expose AlertManager.getLastAlertFixedBy via HQApi REST Api
+
  *) [HHQ-4607] Add alertdefinition list --resourceId
 
  *) [HHQ-4606] hqapi log4j configuration creates logs\commandline.log in cwd.
