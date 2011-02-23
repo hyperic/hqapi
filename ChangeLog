@@ -1,5 +1,7 @@
 Changes in HQApi 4.1
 
+ *) [HHQ-4607] Add alertdefinition list --resourceId
+
  *) [HHQ-4606] hqapi log4j configuration creates logs\commandline.log in cwd.
 
  *) [HHQ-4581] Add instanceId and typeId attributes to Resource object to

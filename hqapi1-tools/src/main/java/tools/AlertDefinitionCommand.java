@@ -80,6 +80,8 @@ public class AlertDefinitionCommand extends AbstractCommand {
     private static String OPT_EXCLUDE_IDS = "excludeTypeIds";
     private static String OPT_GROUP = "group";
     private static String OPT_RESOURCE_NAME = "resourceName";
+    private static String OPT_RESOURCE_ID = "resourceId";
+    private static String OPT_CHILDREN = "children";
     private static String OPT_RESOURCE_DESC = "resourceDescription";
     private static String OPT_ALERT_NAME = "alertName";
     private static String OPT_ALERT_PRIORITY = "alertPriority";
@@ -178,6 +180,12 @@ public class AlertDefinitionCommand extends AbstractCommand {
                                      "belonging to a resource with a description " +
                                      "matching in whole or part the given description").
                 withRequiredArg().ofType(String.class);
+        p.accepts(OPT_RESOURCE_ID, "If specificed, only show alert definitions " +
+                                   "belonging to a resource with the given " +
+                                   "resource id").
+                withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_CHILDREN, "If used with " + OPT_RESOURCE_ID + ", includes" +
+                                   " childrens of resource");
         p.accepts(OPT_ALERT_NAME, "If specified, only show alert definitions " +
                                    "with names that match the given regex.").
                 withRequiredArg().ofType(String.class);
@@ -234,6 +242,19 @@ public class AlertDefinitionCommand extends AbstractCommand {
             Integer id = (Integer)getRequired(options, OPT_ID);
             AlertDefinitionResponse response =
                     definitionApi.getAlertDefinition(id);
+            checkSuccess(response);
+            XmlUtil.serialize(response, System.out, Boolean.TRUE);
+            return;
+        } else if (options.has(OPT_RESOURCE_ID)) {
+            boolean children = false;
+            Integer resourceId = (Integer)getRequired(options, OPT_RESOURCE_ID);
+            if (options.has(OPT_CHILDREN)) {
+                children = true;
+            }
+            ResourceResponse resourceResponse = rApi.getResource(resourceId, false, false);
+            checkSuccess(resourceResponse);
+            AlertDefinitionsResponse response =
+                    definitionApi.getAlertDefinitions(resourceResponse.getResource(), children);
             checkSuccess(response);
             XmlUtil.serialize(response, System.out, Boolean.TRUE);
             return;
