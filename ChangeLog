@@ -1,5 +1,7 @@
 Changes in HQApi 4.1
 
+ *) [HHQ-4607] Add alertdefinition list --resourceId
+
  *) [HHQ-4581] Add instanceId and typeId attributes to Resource object to
     aid generation of URLs. (As an alternative to sanedirect)
 
