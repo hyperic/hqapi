@@ -6,7 +6,6 @@
 	<classpathentry kind="var" path="M2_REPO/javax/xml/bind/jaxb-api/2.1/jaxb-api-2.1.jar" sourcepath="M2_REPO/javax/xml/bind/jaxb-api/2.1/jaxb-api-2.1-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/javax/xml/jaxb-impl/2.1/jaxb-impl-2.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/javax/jms/jms/1.1/jms-1.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/javax/xml/bind/jsr173_api/1.0/jsr173_api-1.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/javax/transaction/jta/1.1/jta-1.1.jar" sourcepath="M2_REPO/javax/transaction/jta/1.1/jta-1.1-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/javax/mail/mail/1.4/mail-1.4.jar" sourcepath="M2_REPO/javax/mail/mail/1.4/mail-1.4-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2.jar" sourcepath="M2_REPO/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2-sources.jar"/>
@@ -54,7 +53,6 @@
 	<classpathentry kind="var" path="M2_REPO/com/jcraft/jsch/0.1.42/jsch-0.1.42.jar" sourcepath="M2_REPO/com/jcraft/jsch/0.1.42/jsch-0.1.42-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/json/json/20090211/json-20090211.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/safehaus/jug/jug/2.0.0/jug-2.0.0-asl.jar"/>
-	<classpathentry kind="var" path="M2_REPO/junit/junit/4.4/junit-4.4.jar" sourcepath="M2_REPO/junit/junit/4.4/junit-4.4-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/activemq/kahadb/5.3.0/kahadb-5.3.0.jar" sourcepath="M2_REPO/org/apache/activemq/kahadb/5.3.0/kahadb-5.3.0-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/sun/localizer/localizer/1.0/localizer-1.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.14/log4j-1.2.14.jar" sourcepath="M2_REPO/log4j/log4j/1.2.14/log4j-1.2.14-sources.jar"/>
@@ -63,11 +61,8 @@
 	<classpathentry kind="var" path="M2_REPO/org/springframework/roo/org.springframework.roo.file.monitor.polling/1.0.2.RELEASE/org.springframework.roo.file.monitor.polling-1.0.2.RELEASE.jar" sourcepath="M2_REPO/org/springframework/roo/org.springframework.roo.file.monitor.polling/1.0.2.RELEASE/org.springframework.roo.file.monitor.polling-1.0.2.RELEASE-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/roo/org.springframework.roo.support/1.0.2.RELEASE/org.springframework.roo.support-1.0.2.RELEASE.jar" sourcepath="M2_REPO/org/springframework/roo/org.springframework.roo.support/1.0.2.RELEASE/org.springframework.roo.support-1.0.2.RELEASE-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/oro/oro/2.0.8/oro-2.0.8.jar" sourcepath="M2_REPO/oro/oro/2.0.8/oro-2.0.8-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/postgresql/postgresql/8.2-505.jdbc3/postgresql-8.2-505.jdbc3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/quartz-scheduler/quartz/1.7.3/quartz-1.7.3.jar" sourcepath="M2_REPO/org/quartz-scheduler/quartz/1.7.3/quartz-1.7.3-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/xalan/serializer/2.7.1/serializer-2.7.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/hyperic/sigar/1.6.4/sigar-1.6.4.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/snmp4j/snmp4j/1.10.1/snmp4j-1.10.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-aop/3.0.1.RELEASE/spring-aop-3.0.1.RELEASE.jar" sourcepath="M2_REPO/org/springframework/spring-aop/3.0.1.RELEASE/spring-aop-3.0.1.RELEASE-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-asm/3.0.1.RELEASE/spring-asm-3.0.1.RELEASE.jar" sourcepath="M2_REPO/org/springframework/spring-asm/3.0.1.RELEASE/spring-asm-3.0.1.RELEASE-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-beans/3.0.1.RELEASE/spring-beans-3.0.1.RELEASE.jar" sourcepath="M2_REPO/org/springframework/spring-beans/3.0.1.RELEASE/spring-beans-3.0.1.RELEASE-sources.jar"/>
@@ -84,7 +79,6 @@
 	<classpathentry kind="var" path="M2_REPO/org/springframework/security/spring-security-taglibs/3.0.0.RELEASE/spring-security-taglibs-3.0.0.RELEASE.jar" sourcepath="M2_REPO/org/springframework/security/spring-security-taglibs/3.0.0.RELEASE/spring-security-taglibs-3.0.0.RELEASE-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/security/spring-security-web/3.0.0.RELEASE/spring-security-web-3.0.0.RELEASE.jar" sourcepath="M2_REPO/org/springframework/security/spring-security-web/3.0.0.RELEASE/spring-security-web-3.0.0.RELEASE-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-tx/3.0.1.RELEASE/spring-tx-3.0.1.RELEASE.jar" sourcepath="M2_REPO/org/springframework/spring-tx/3.0.1.RELEASE/spring-tx-3.0.1.RELEASE-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-web/3.0.0.RELEASE/spring-web-3.0.0.RELEASE.jar" sourcepath="M2_REPO/org/springframework/spring-web/3.0.0.RELEASE/spring-web-3.0.0.RELEASE-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/tomcat-jdbc/1.0.8.5/tomcat-jdbc-1.0.8.5.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/tomcat-juli/6.0.20/tomcat-juli-6.0.20.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/velocity/velocity/1.6.3/velocity-1.6.3.jar" sourcepath="M2_REPO/org/apache/velocity/velocity/1.6.3/velocity-1.6.3-sources.jar"/>
@@ -102,5 +96,10 @@
 	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-util/5.0.0.BUILD-SNAPSHOT/hq-util-5.0.0.BUILD-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-common/5.0.0.BUILD-SNAPSHOT/hq-common-5.0.0.BUILD-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-pdk/5.0.0.BUILD-SNAPSHOT/hq-pdk-5.0.0.BUILD-SNAPSHOT.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/hq-messaging/5.0.0.BUILD-SNAPSHOT/hq-messaging-5.0.0.BUILD-SNAPSHOT.jar" sourcepath="M2_REPO/org/hyperic/hq/hq-messaging/5.0.0.BUILD-SNAPSHOT/hq-messaging-5.0.0.BUILD-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/hyperic/hq/inventory-neo4j/5.0.0.BUILD-SNAPSHOT/inventory-neo4j-5.0.0.BUILD-SNAPSHOT.jar" sourcepath="M2_REPO/org/hyperic/hq/inventory-neo4j/5.0.0.BUILD-SNAPSHOT/inventory-neo4j-5.0.0.BUILD-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/springframework/data/spring-data-neo4j/1.0.0.M2-Chrysalis/spring-data-neo4j-1.0.0.M2-Chrysalis.jar" sourcepath="M2_REPO/org/springframework/data/spring-data-neo4j/1.0.0.BUILD-SNAPSHOT/spring-data-neo4j-1.0.0.BUILD-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/hibernate/hibernate-annotations/3.5.6-Final/hibernate-annotations-3.5.6-Final.jar" sourcepath="M2_REPO/org/hibernate/hibernate-annotations/3.5.6-Final/hibernate-annotations-3.5.6-Final-sources.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/hibernate/javax/persistence/hibernate-jpa-2.0-api/1.0.0.Final/hibernate-jpa-2.0-api-1.0.0.Final.jar" sourcepath="M2_REPO/org/hibernate/javax/persistence/hibernate-jpa-2.0-api/1.0.0.Final/hibernate-jpa-2.0-api-1.0.0.Final-sources.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
