@@ -11,9 +11,10 @@ import org.hyperic.hq.events.AlertSeverity
 import org.hyperic.hq.events.EventConstants
 import org.hyperic.hq.events.shared.ActionValue
 import org.hyperic.hq.events.shared.AlertConditionValue
-import org.hyperic.hq.events.shared.AlertDefinitionManager;
+import org.hyperic.hq.events.shared.AlertDefinitionManager
 import org.hyperic.hq.events.shared.AlertDefinitionValue
 import org.hyperic.hq.measurement.shared.ResourceLogEvent
+import org.hyperic.hq.measurement.shared.MeasurementManager;
 import org.hyperic.hq.product.LogTrackPlugin
 import org.hyperic.util.config.ConfigResponse
 import org.hyperic.hq.appdef.server.session.Platform
@@ -25,6 +26,7 @@ import ApiController
 public class AlertdefinitionController extends ApiController {
     private eventBoss   = Bootstrap.getBean(EventsBoss.class)
     private aMan        = Bootstrap.getBean(AlertDefinitionManager.class)
+    private mMan        = Bootstrap.getBean(MeasurementManager.class)
 
     private EMAIL_NOTIFY_TYPE = [1:"email", 2:"users", 3:"roles"]
 
@@ -92,11 +94,7 @@ public class AlertdefinitionController extends ApiController {
             }
         }
         else {
-            try {
-                return metricHelper.findMeasurementById(mid).template
-            } catch (Exception e) {
-                log.warn("Lookup of metric id=${mid} failed", e)
-            }
+            return mMan.getMeasurement(mid)?.template
         }
         return null
     }
@@ -195,7 +193,7 @@ public class AlertdefinitionController extends ApiController {
                         conditionAttrs["logLevel"] = ResourceLogEvent.getLevelString(level)
                         conditionAttrs["logMatches"] = c.optionStatus
                     } else if (c.type == EventConstants.TYPE_ALERT) {
-                        def alert = alertHelper.getById(c.measurementId)
+                        def alert = aMan.getByIdNoCheck(c.measurementId)
                         if (alert == null) {
                             // TODO: This is not handled correctly in HQ.  NPE
                             //       is thrown rather than null returned.
@@ -297,7 +295,7 @@ public class AlertdefinitionController extends ApiController {
         def definition
         if (!failureXml) {
             try {
-                definition = alertHelper.getById(id)
+                definition = aMan.getByIdAndCheck(user, id)
                 
                 if (!definition) {
                 	failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
@@ -389,7 +387,7 @@ public class AlertdefinitionController extends ApiController {
         def definitions = []
 
         if (parentId) {
-            def typeAlert = alertHelper.getById(parentId)
+            def typeAlert = aMan.getByIdAndCheck(user, parentId)
             if (!typeAlert) {
                 failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                            "Unable to find parent alert definition " +
@@ -501,7 +499,7 @@ public class AlertdefinitionController extends ApiController {
     def delete(params) {
         def id   = params.getOne("id")?.toInteger()
 
-        def alertdefinition = alertHelper.getById(id)
+        def alertdefinition = aMan.getByIdAndCheck(user, id)
         def failureXml = null
 
         if (!alertdefinition) {
@@ -557,7 +555,7 @@ public class AlertdefinitionController extends ApiController {
             def existing = null
             Integer id = xmlDef.'@id'?.toInteger()
             if (id) {
-                existing = alertHelper.getById(id)
+                existing = aMan.getByIdAndCheck(user, id)
                 if (!existing) {
                     failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                                "Definition with id " + id +
@@ -1073,7 +1071,7 @@ public class AlertdefinitionController extends ApiController {
                 return
             }
 
-            def pojo = alertHelper.getById(adv.id)
+            def pojo = aMan.getByIdNoCheck(adv.id)
 
             // Deal with Escalations
             if (escalation) {
@@ -1098,7 +1096,7 @@ public class AlertdefinitionController extends ApiController {
             out << AlertDefinitionsResponse() {
                 out << getSuccessXML()
                 for (alertdefid in definitions) {
-                    out << getAlertDefinitionXML(alertHelper.getById(alertdefid), false)
+                    out << getAlertDefinitionXML(aMan.getByIdNoCheck(alertdefid), false)
                 }
             }
         }

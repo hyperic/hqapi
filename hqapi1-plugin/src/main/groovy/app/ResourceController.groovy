@@ -1,11 +1,17 @@
 import org.hyperic.hq.hqapi1.ErrorCode
 import org.hyperic.hq.appdef.shared.AppdefEntityID
-import org.hyperic.hq.appdef.shared.AppdefUtil;
+import org.hyperic.hq.appdef.shared.AppdefUtil
 import org.hyperic.hq.authz.shared.AuthzConstants
 import org.hyperic.hq.authz.shared.PermissionException
 import org.hyperic.hq.authz.shared.ResourceEdgeCreateException
-import org.hyperic.hq.common.VetoException
 
+import org.hyperic.hq.appdef.shared.ServiceManager
+import org.hyperic.hq.appdef.shared.ServerManager
+import org.hyperic.hq.appdef.shared.PlatformManager
+
+import org.hyperic.hq.authz.server.session.Resource
+import org.hyperic.hq.context.Bootstrap
+import org.hyperic.hq.common.VetoException
 
 class ResourceController extends ApiController {
 
@@ -14,25 +20,42 @@ class ResourceController extends ApiController {
     private static final String PROP_AIIDENIFIER = "autoIdentifier"
     private static final String PROP_AGENT_ID    = "agentId"
 
-    // TODO: move into ResourceCategory
-    private getLocation(r) {
-        if (r.isPlatform()) {
-            return r.toPlatform().location
-        } else if (r.isServer()) {
-            return r.toServer().location
-        } else if (r.isService()) {
-            return r.toService().location
-        }
-        throw new IllegalArgumentException("getLocation() called for invalid resource " +
-                                           r.name + " (id=" + r.id + ")")
+    private static platMan = Bootstrap.getBean(PlatformManager.class)
+    private static svrMan = Bootstrap.getBean(ServerManager.class)
+    private static svcMan = Bootstrap.getBean(ServiceManager.class)
+
+    private toPlatform(Resource r) {
+        platMan.findPlatformById(r.instanceId)
+    }
+
+    private toServer(Resource r) {
+        svrMan.findServerById(r.instanceId)
+    }
+
+    private toService(Resource r) {
+        svcMan.findServiceById(r.instanceId)
     }
 
     private Closure getResourceXML(user, r, boolean verbose, boolean children) {
         { doc ->
+            def appdefRes = null
+            def isPlatform = r.isPlatform()
+            if (isPlatform) {
+                appdefRes = toPlatform(r)
+            }
+            def isServer = r.isServer()
+            if (isServer) {
+                appdefRes = toServer(r)
+            }
+            def isService = r.isService()
+            if (isService) {
+                appdefRes = toService(r)
+            }
+
             Resource(id : r.id,
                      name : r.name,
-                     description : r.description,
-                     location : getLocation(r),
+                     description : appdefRes.description,
+                     location : appdefRes.location,
                      instanceId : r.entityId.id,
                      typeId : r.entityId.type) {
                 if (verbose) {
@@ -48,7 +71,7 @@ class ResourceController extends ApiController {
                         }
                     }
                 }
-                if (children) {
+                if (children && !isService) {
                     r.getViewableChildren(user).each { child ->
                         out << getResourceXML(user, child, verbose, children)
                     }
@@ -56,8 +79,8 @@ class ResourceController extends ApiController {
                 ResourcePrototype(id : r.prototype.id,
                                   name : r.prototype.name)
 
-                if (r.isPlatform()) {
-                    def p = r.toPlatform()
+                if (isPlatform) {
+                    def p = appdefRes
                     def a = p.agent
                     Agent(id             : a.id,
                           address        : a.address,
@@ -71,12 +94,12 @@ class ResourceController extends ApiController {
                     }
 
                     ResourceInfo(key: PROP_FQDN, value: p.fqdn)
-                } else if (r.isServer()) {
-                    def s = r.toServer()
+                } else if (isServer) {
+                    def s = appdefRes
                     ResourceInfo(key: PROP_INSTALLPATH, value: s.installPath)
                     ResourceInfo(key: PROP_AIIDENIFIER, value: s.autoinventoryIdentifier)
-                } else if (r.isService()) {
-                    def s = r.toService()
+                } else if (isService) {
+                    def s = appdefRes
                     ResourceInfo(key: PROP_AIIDENIFIER, value: s.autoinventoryIdentifier)
                 }
             }
