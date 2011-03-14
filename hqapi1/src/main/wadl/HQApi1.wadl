@@ -1179,6 +1179,26 @@
             </wadl:method>
         </wadl:resource>
 
+        <wadl:resource path="alert/getLastAlertFixedBy.hqu">
+            <wadl:doc title="HQApi Alert getLastAlertFixedBy command">
+                Find the last alert fixed by given recovery alert id
+            </wadl:doc>
+            <wadl:method name="GET" id="AlertGetLastAlertFixedBy">
+                <wadl:request>
+                    <wadl:param name="id" style="query" required="true"
+                                type="xs:int">
+                        <wadl:doc>
+                            The id of the Alert to acknowledge.
+                        </wadl:doc>
+                    </wadl:param>
+                </wadl:request>
+                <wadl:response>
+                    <wadl:representation mediaType="application/xml"
+                                         element="AlertResponse"/>
+                </wadl:response>
+            </wadl:method>
+        </wadl:resource>
+        
         <wadl:resource path="alert/find.hqu">
             <wadl:doc title="HQApi Alert find command">
                 Find Alerts

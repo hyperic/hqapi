@@ -10,6 +10,7 @@ import org.hyperic.hq.context.Bootstrap;
 import org.hyperic.hq.events.server.session.ClassicEscalationAlertType
 import org.hyperic.hq.authz.shared.PermissionException
 import org.hyperic.hq.authz.shared.PermissionException
+import org.hyperic.hq.events.EventConstants
 
 public class AlertController extends ApiController {
 
@@ -358,6 +359,78 @@ public class AlertController extends ApiController {
             }
         }
     }
+
+    private findRecoveryForFromDefinition(adef) {
+        def alert = null
+        if (adef) {
+            System.out.println(adef.conditions)
+            for (c in adef.conditions) {
+                System.out.println(c.type)
+                if (c.type == EventConstants.TYPE_ALERT) {
+                    alert = alertHelper.getById(c.measurementId)
+                }
+            } 
+            if (alert == null) {
+                return null
+            }
+        } else {
+            return null
+        }
+        return alert
+    }
+
+    private findLastFixedByDefinition(adef) {
+        try {
+            return aMan.findLastFixedByDefinition(adef)
+        } catch (Throwable t) {
+            return null
+        }
+    }
+    
+    def getLastAlertFixedBy(params) {
+        def id = params.getOne("id")?.toInteger()
+        def alert = getAlertById(id)
+        def failureXml = null
+        def recoveryAlert = null
+        def lastAlert = null
+        
+        if (id == null) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS,
+                                       "Required parameter id not given")
+        } else {
+            recoveryAlert = getAlertById(id)
+            if (!recoveryAlert) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Unable to find recovery alert with id = " + id)
+            }
+        }
+        
+        if (!failureXml) {
+            alert = findRecoveryForFromDefinition(recoveryAlert.definition)
+            if (!alert) {
+                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                                "Unable to find alert for recovery alert " + recoveryAlert)
+            } else {
+                lastAlert = findLastFixedByDefinition(alert)
+                if (!lastAlert) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                           "Unable to find alert fixed by id = " + id)
+                }
+            }
+        }
+
+        renderXml() {
+            AlertResponse() {
+                if (failureXml) {
+                    out << failureXml
+                } else {
+                    out << getSuccessXML()
+                    out << getAlertXML(lastAlert)
+                }
+            }
+        } 
+        
+    }    
 
     def delete(params) {
         def ids = params.get("id")*.toInteger()
