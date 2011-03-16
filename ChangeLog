@@ -1,5 +1,7 @@
 Changes in HQApi 4.1
 
+ *) [HHQ-4654] Add ability to retrieve a resource via aeid to HQApi
+
  *) [HHQ-4608] Expose AlertManager.getLastAlertFixedBy via HQApi REST Api
 
  *) [HHQ-4607] Add alertdefinition list --resourceId

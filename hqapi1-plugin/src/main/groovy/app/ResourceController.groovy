@@ -8,6 +8,7 @@ import org.hyperic.hq.authz.shared.ResourceEdgeCreateException
 import org.hyperic.hq.appdef.shared.ServiceManager
 import org.hyperic.hq.appdef.shared.ServerManager
 import org.hyperic.hq.appdef.shared.PlatformManager
+import org.hyperic.hq.authz.shared.ResourceManager
 
 import org.hyperic.hq.authz.server.session.Resource
 import org.hyperic.hq.context.Bootstrap
@@ -23,7 +24,8 @@ class ResourceController extends ApiController {
     private static platMan = Bootstrap.getBean(PlatformManager.class)
     private static svrMan = Bootstrap.getBean(ServerManager.class)
     private static svcMan = Bootstrap.getBean(ServiceManager.class)
-
+    private static resMan = Bootstrap.getBean(ResourceManager.class)
+    
     private toPlatform(Resource r) {
         platMan.findPlatformById(r.instanceId)
     }
@@ -387,12 +389,13 @@ class ResourceController extends ApiController {
         def fqdn = params.getOne("fqdn")
         def parentOf = params.getOne("parentOf")?.toInteger()
         def platformId = params.getOne("platformId")?.toInteger()
+        def aeid = params.getOne("aeid")?.toString()
         boolean children = params.getOne("children", "false").toBoolean()
         boolean verbose = params.getOne("verbose", "false").toBoolean()
 
         def resource = null
         def failureXml
-        if (!id && !platformName && !fqdn && !platformId && !parentOf) {
+        if (!id && !platformName && !fqdn && !platformId && !parentOf && !aeid) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             try {
@@ -401,6 +404,15 @@ class ResourceController extends ApiController {
                     if (!resource) {
                         failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                 "Resource id=" + id +
+                                        " not found")
+                    }
+                } else if (aeid) {
+                    def appdefeid = new AppdefEntityID(aeid)
+                    resource = resMan.findResource(appdefeid)
+                    
+                    if (!resource) {
+                        failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                "Resource aeid=" + aeid +
                                         " not found")
                     }
                 } else if (platformId) {

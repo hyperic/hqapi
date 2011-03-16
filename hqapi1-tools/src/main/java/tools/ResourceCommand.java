@@ -74,6 +74,7 @@ public class ResourceCommand extends AbstractCommand {
     private static String OPT_RESOURCE_ID = "resourceId";
     private static String OPT_NAME        = "name";
     private static String OPT_ID          = "id";
+    private static String OPT_AEID        = "aeid";
     private static String OPT_PLATFORM    = "platform";
     private static String OPT_VERBOSE     = "verbose";
     private static String OPT_CHILDREN    = "children";
@@ -131,8 +132,8 @@ public class ResourceCommand extends AbstractCommand {
                 withRequiredArg().ofType(String.class);
         p.accepts(OPT_PLATFORM, "If specified, return only resources with the " +
                   "specified platform name").withRequiredArg().ofType(String.class);
-        p.accepts(OPT_ID, "If specified, return the resource with the given id.").
-                withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_AEID, "If specified, return the resource with the given aeid.").
+                withRequiredArg().ofType(String.class);
         p.accepts(OPT_AGENT_ID, "If specified, return only resources belonging to " +
         		  "specified agent id").withRequiredArg().ofType(Integer.class);
         p.accepts(OPT_NAME, "If specified, return resources that match the " +
@@ -202,6 +203,16 @@ public class ResourceCommand extends AbstractCommand {
             resources = new ResourcesResponse();
             resources.setStatus(resource.getStatus());
             resources.getResource().add(resource.getResource());
+        } else if (options.has(OPT_AEID)) {
+            String aeid = (String)options.valueOf(OPT_AEID);
+            ResourceResponse resource;
+            resource = resourceApi.getResource(aeid, verbose, children);
+
+            checkSuccess(resource);
+
+            resources = new ResourcesResponse();
+            resources.setStatus(resource.getStatus());
+            resources.getResource().add(resource.getResource());            
         } else if (options.has(OPT_AGENT_ID)){
         	AgentApi agentApi = api.getAgentApi();
             Integer agentId = (Integer)options.valueOf(OPT_AGENT_ID);
