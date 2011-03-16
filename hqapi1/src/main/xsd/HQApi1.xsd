@@ -42,8 +42,10 @@
     </xs:complexType>
 
     <xs:complexType name="ResourcePrototype">
-        <xs:attribute name="name"   type="xs:string" use="required"/>
-        <xs:attribute name="id"     type="xs:int"    use="required"/>
+        <xs:attribute name="name"       type="xs:string" use="required"/>
+        <xs:attribute name="id"         type="xs:int"    use="required"/>
+        <xs:attribute name="instanceId"         type="xs:int"    use="optional"/>
+        <xs:attribute name="resourceTypeId"     type="xs:int"    use="optional"/>
     </xs:complexType>
 
     <xs:complexType name="ResourceConfig">

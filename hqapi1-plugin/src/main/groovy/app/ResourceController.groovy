@@ -76,7 +76,9 @@ class ResourceController extends ApiController {
                         out << getResourceXML(user, child, verbose, children)
                     }
                 }
-                ResourcePrototype(id : r.prototype.id,
+                ResourcePrototype(instanceId: r.prototype.instanceId,
+                                  resourceTypeId: r.prototype.resourceType.id - 600,
+                                  id : r.prototype.id,
                                   name : r.prototype.name)
 
                 if (isPlatform) {
@@ -108,7 +110,9 @@ class ResourceController extends ApiController {
 
     private Closure getPrototypeXML(p) {
         { doc -> 
-            ResourcePrototype(id   : p.id,
+            ResourcePrototype(instanceId: p.instanceId,
+                              resourceTypeId: p.resourceType.id - 600,
+                              id   : p.id,
                               name : p.name)
         }
     }

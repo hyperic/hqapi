@@ -1,5 +1,8 @@
 Changes in HQApi 4.1
 
+ *) [HHQ-4581] Add instanceId and resourceTypeId attributes to ResourcePrototype
+    object to aid in generation of URLs.
+
  *) [HHQ-4608] Expose AlertManager.getLastAlertFixedBy via HQApi REST Api
 
  *) [HHQ-4607] Add alertdefinition list --resourceId
