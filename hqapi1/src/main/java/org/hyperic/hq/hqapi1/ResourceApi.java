@@ -275,7 +275,7 @@ public class ResourceApi extends BaseApi {
     /**
      * Get a {@link Resource} by aeid.
      *
-     * @param id The resource id to look up.
+     * @param aeid The resource id to look up.
      * @param verbose Flag to indicate whether {@link org.hyperic.hq.hqapi1.types.ResourceConfig}
      * and {@link org.hyperic.hq.hqapi1.types.ResourceProperty} information will
      * be included.
