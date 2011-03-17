@@ -763,6 +763,15 @@
         <xs:attribute name="id"             type="xs:int"    use="required"/>
     </xs:complexType>
 
+    <!-- Agent Bundle objects --> 
+    <xs:complexType name="AgentBundleFile">
+        <xs:attribute name="name"             type="xs:string"    use="required"/>
+    </xs:complexType>
+    
+    <xs:complexType name="AgentBundleName">
+        <xs:attribute name="name"             type="xs:string"    use="required"/>
+    </xs:complexType>
+    
     <!-- Agent responses -->
 
     <xs:element name="AgentResponse">
@@ -795,6 +804,30 @@
                 <xs:extension base="Response">
                     <xs:sequence>
                         <xs:element name="Up" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="AgentBundleFilesResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="AgentBundleFile" maxOccurs="unbounded" type="AgentBundleFile"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="AgentBundleNameResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="AgentBundleName" type="AgentBundleName"/>
                     </xs:sequence>
                 </xs:extension>
             </xs:complexContent>

@@ -36,6 +36,8 @@ import org.hyperic.hq.hqapi1.types.AgentResponse;
 import org.hyperic.hq.hqapi1.types.AgentsResponse;
 import org.hyperic.hq.hqapi1.types.PingAgentResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.AgentBundleFilesResponse;
+import org.hyperic.hq.hqapi1.types.AgentBundleNameResponse;
 
 /**
  * The Hyperic HQ Agent API.
@@ -173,4 +175,59 @@ public class AgentApi extends BaseApi {
         return doGet("agent/transferPlugin.hqu", params,
                      new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
+    
+    
+    /**
+     * List current agent bundles available on server
+     *
+     * @return On success, returns list of 
+     * {@link org.hyperic.hq.hqapi1.types.AgentBundleFilesResponse#getAgentBundleFile}
+     * 
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public AgentBundleFilesResponse bundleList()
+        throws IOException
+    {
+        return doGet("agent/bundleList.hqu", new HashMap<String,String[]>(),
+                     new XmlResponseHandler<AgentBundleFilesResponse>(AgentBundleFilesResponse.class));
+    }
+    
+    /**
+     * List current agent bundles available on server
+     *
+     * @param agent The agent to get current bundle
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.AgentBundleNameResponse#getAgentBundleName}
+     * 
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public AgentBundleNameResponse bundleStatus(Agent agent)
+        throws IOException
+    {
+        Map <String,String[]> params = new HashMap<String,String[]>();
+        params.put("id", new String[] { String.valueOf(agent.getId()) });
+        return doGet("agent/bundleStatus.hqu", params,
+                     new XmlResponseHandler<AgentBundleNameResponse>(AgentBundleNameResponse.class));
+    }
+
+    /**
+     * Upgrade bunle on {@link Agent}
+     *
+     * @param agent The agent to upgradee
+     * @param bundle The name of the bundle
+     *
+     * @return {@link org.hyperic.hq.hqapi1.types.StatusResponse}
+     * 
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public StatusResponse bundlePush(Agent agent, String bundle)
+        throws IOException
+    {
+        Map <String,String[]> params = new HashMap<String,String[]>();
+        params.put("id", new String[] { String.valueOf(agent.getId()) });
+        params.put("bundle", new String[] { bundle });
+        return doGet("agent/bundlePush.hqu", params,
+                     new XmlResponseHandler<StatusResponse>(StatusResponse.class));
+    }
+        
 }

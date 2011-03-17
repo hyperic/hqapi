@@ -40,6 +40,9 @@ import org.springframework.stereotype.Component;
 import org.hyperic.hq.hqapi1.types.PingAgentResponse;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
+import org.hyperic.hq.hqapi1.types.AgentBundleFile;
+import org.hyperic.hq.hqapi1.types.AgentBundleFilesResponse;
+import org.hyperic.hq.hqapi1.types.AgentBundleNameResponse;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -51,14 +54,19 @@ public class AgentCommand extends AbstractCommand {
     private static final String CMD_LIST            = "list";
     private static final String CMD_PING            = "ping";
     private static final String CMD_TRANSFER_PLUGIN = "transferPlugin";
+    private static final String CMD_BUNDLE_LIST     = "bundle-list";
+    private static final String CMD_BUNDLE_STATUS   = "bundle-status";
+    private static final String CMD_BUNDLE_PUSH  = "bundle-push";
 
     private static final String OPT_ID      = "id";
     private static final String OPT_ADDRESS = "agentAddress";
     private static final String OPT_PORT    = "agentPort";
     private static final String OPT_FQDN    = "fqdn";
     private static final String OPT_PLUGIN  = "plugin";
-
-    private static String[] COMMANDS = { CMD_LIST, CMD_PING, CMD_TRANSFER_PLUGIN };
+    private static final String OPT_BUNDLE  = "bundle";
+    
+    private static String[] COMMANDS = { CMD_LIST, CMD_PING, CMD_TRANSFER_PLUGIN, 
+                                         CMD_BUNDLE_LIST, CMD_BUNDLE_STATUS, CMD_BUNDLE_PUSH };
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -81,6 +89,12 @@ public class AgentCommand extends AbstractCommand {
             ping(trim(args));
         } else if (args[0].equals(CMD_TRANSFER_PLUGIN)) {
             transferPlugin(trim(args));
+        } else if (args[0].equals(CMD_BUNDLE_LIST)) {
+            bundleList(trim(args));
+        } else if (args[0].equals(CMD_BUNDLE_STATUS)) {
+            bundleStatus(trim(args));
+        } else if (args[0].equals(CMD_BUNDLE_PUSH)) {
+            bundlePush(trim(args));
         } else {
             printUsage();
             return 1;
@@ -239,4 +253,151 @@ public class AgentCommand extends AbstractCommand {
             }
         }
     }
+    
+    private void bundleList(String[] args) throws Exception {
+        OptionParser p = getOptionParser();
+
+        OptionSet options = getOptions(p, args);
+
+        HQApi api = getApi(options);
+
+        AgentApi agentApi = api.getAgentApi();
+        AgentBundleFilesResponse abResponse = agentApi.bundleList();
+        
+        checkSuccess(abResponse);
+        XmlUtil.serialize(abResponse, System.out, Boolean.TRUE);
+    }
+
+    private void bundleStatus(String[] args) throws Exception {
+
+        OptionParser p = getOptionParser();
+
+        p.accepts(OPT_ID, "The id of the agent").
+                withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_ADDRESS, "The address of the agent.  Must be used with --" + OPT_PORT).
+                withRequiredArg().ofType(String.class);
+        p.accepts(OPT_PORT, "The port of the agent.  Must be used with --" + OPT_ADDRESS).
+                withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_FQDN, "The platform FQDN of the agent").
+                withRequiredArg().ofType(String.class);
+
+        OptionSet options = getOptions(p, args);
+
+        HQApi api = getApi(options);
+
+        AgentApi agentApi = api.getAgentApi();
+
+        if (options.has(OPT_ID)) {
+            Integer id = (Integer)options.valueOf(OPT_ID);
+            AgentResponse response = agentApi.getAgent(id);
+            checkSuccess(response);
+            AgentBundleNameResponse abCurrentResponse = agentApi.bundleStatus(response.getAgent());
+            checkSuccess(abCurrentResponse);
+            printCurrentBundleResponse(abCurrentResponse.getAgentBundleName().getName());
+        } else if (options.has(OPT_ADDRESS) && options.has(OPT_PORT)) {
+            String address = (String)options.valueOf(OPT_ADDRESS);
+            Integer port = (Integer)options.valueOf(OPT_PORT);
+            AgentResponse response = agentApi.getAgent(address, port);
+            checkSuccess(response);
+            AgentBundleNameResponse abCurrentResponse = agentApi.bundleStatus(response.getAgent());
+            checkSuccess(abCurrentResponse);
+            printCurrentBundleResponse(abCurrentResponse.getAgentBundleName().getName());
+        } else if (options.has(OPT_FQDN)) {
+            ResourceApi rApi = api.getResourceApi();
+            String fqdn = (String)options.valueOf(OPT_FQDN);
+            ResourceResponse resourceResponse = rApi.getPlatformResource(fqdn, false, false);
+            checkSuccess(resourceResponse);
+            Agent a = resourceResponse.getResource().getAgent();
+            AgentBundleNameResponse abCurrentResponse = agentApi.bundleStatus(a);
+            checkSuccess(abCurrentResponse);
+            printCurrentBundleResponse(abCurrentResponse.getAgentBundleName().getName());
+        } else {
+            // Ping via XML
+            InputStream is = getInputStream(options);
+
+            AgentsResponse resp = XmlUtil.deserialize(AgentsResponse.class, is);
+            List<Agent> agents = resp.getAgent();
+            for (Agent a : agents) {
+                AgentBundleNameResponse abCurrentResponse = agentApi.bundleStatus(a);
+                checkSuccess(abCurrentResponse);
+                printCurrentBundleResponse(abCurrentResponse.getAgentBundleName().getName());
+           }
+        }
+    }
+
+    private void printCurrentBundleResponse(String bundle) {
+        System.out.println("Current Bundle: " + bundle);
+    }
+
+    private void bundlePush(String[] args) throws Exception {
+
+        OptionParser p = getOptionParser();
+
+        p.accepts(OPT_ID, "The id of the agent").
+                withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_ADDRESS, "The address of the agent.  Must be used with --" + OPT_PORT).
+                withRequiredArg().ofType(String.class);
+        p.accepts(OPT_PORT, "The port of the agent.  Must be used with --" + OPT_ADDRESS).
+                withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_FQDN, "The platform FQDN of the agent").
+                withRequiredArg().ofType(String.class);
+        p.accepts(OPT_BUNDLE, "The bundle to transfer").
+                withRequiredArg().ofType(String.class);
+
+        OptionSet options = getOptions(p, args);
+
+        HQApi api = getApi(options);
+
+        AgentApi agentApi = api.getAgentApi();
+
+        if (!options.has(OPT_BUNDLE)) {
+            System.err.println("Error, required argument --" + OPT_BUNDLE + " not given.");
+            System.exit(-1);
+        }
+
+        String bundle = (String)options.valueOf(OPT_BUNDLE);
+        
+        if (options.has(OPT_ID)) {
+            Integer id = (Integer)options.valueOf(OPT_ID);
+            AgentResponse response = agentApi.getAgent(id);
+            checkSuccess(response);
+            StatusResponse statusResponse = agentApi.bundlePush(response.getAgent(), bundle);
+            checkSuccess(statusResponse);
+            printBundlePushResponse(response.getAgent(), bundle);
+        } else if (options.has(OPT_ADDRESS) && options.has(OPT_PORT)) {
+            String address = (String)options.valueOf(OPT_ADDRESS);
+            Integer port = (Integer)options.valueOf(OPT_PORT);
+            AgentResponse response = agentApi.getAgent(address, port);
+            checkSuccess(response);
+            StatusResponse statusResponse = agentApi.bundlePush(response.getAgent(), bundle);
+            checkSuccess(statusResponse);
+            printBundlePushResponse(response.getAgent(), bundle);
+        } else if (options.has(OPT_FQDN)) {
+            ResourceApi rApi = api.getResourceApi();
+            String fqdn = (String)options.valueOf(OPT_FQDN);
+            ResourceResponse resourceResponse = rApi.getPlatformResource(fqdn, false, false);
+            checkSuccess(resourceResponse);
+            Agent a = resourceResponse.getResource().getAgent();
+            StatusResponse statusResponse = agentApi.bundlePush(a, bundle);
+            checkSuccess(statusResponse);
+            printBundlePushResponse(a, bundle);
+        } else {
+            // Ping via XML
+            InputStream is = getInputStream(options);
+
+            AgentsResponse resp = XmlUtil.deserialize(AgentsResponse.class, is);
+            List<Agent> agents = resp.getAgent();
+            for (Agent a : agents) {
+                StatusResponse statusResponse = agentApi.bundlePush(a, bundle);
+                checkSuccess(statusResponse);
+                printBundlePushResponse(a, bundle);
+           }
+        }
+    }
+
+    private void printBundlePushResponse(Agent a, String bundle) {
+        System.out.println("Pushed bundle " + bundle + " to " + 
+                a.getAddress() + ":" + a.getPort());
+    }
+
 }
