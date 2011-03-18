@@ -134,6 +134,8 @@ public class ResourceCommand extends AbstractCommand {
                   "specified platform name").withRequiredArg().ofType(String.class);
         p.accepts(OPT_AEID, "If specified, return the resource with the given aeid.").
                 withRequiredArg().ofType(String.class);
+        p.accepts(OPT_ID, "If specified, return the resource with the given id.").
+                withRequiredArg().ofType(Integer.class);        
         p.accepts(OPT_AGENT_ID, "If specified, return only resources belonging to " +
         		  "specified agent id").withRequiredArg().ofType(Integer.class);
         p.accepts(OPT_NAME, "If specified, return resources that match the " +
