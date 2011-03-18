@@ -1,5 +1,7 @@
 Changes in HQApi 4.1
 
+ *) [HHQ-4662] metric reschedule will now include newly added metrics
+
  *) [HHQ-4581] Add instanceId and resourceTypeId attributes to ResourcePrototype
     object to aid in generation of URLs.
  
