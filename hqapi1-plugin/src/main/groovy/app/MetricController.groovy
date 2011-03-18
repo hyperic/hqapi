@@ -1,9 +1,16 @@
+import com.sun.org.apache.xalan.internal.xsltc.compiler.Import;
+
 import org.hyperic.hq.hqu.rendit.BaseController
 
-import org.hyperic.hq.hqapi1.ErrorCode;
-import org.hyperic.hq.zevents.ZeventManager;
-import org.hyperic.hq.appdef.server.session.ResourceRefreshZevent;
+import org.hyperic.hq.context.Bootstrap
+import org.hyperic.hq.hqapi1.ErrorCode
+import org.hyperic.hq.zevents.ZeventManager
+import org.hyperic.hq.appdef.server.session.ResourceRefreshZevent
 import org.hyperic.hq.authz.shared.PermissionException
+import org.hyperic.hq.measurement.shared.TemplateManager
+import org.hyperic.hq.measurement.shared.MeasurementManager
+import org.hyperic.hq.appdef.shared.ConfigManager
+import org.hyperic.hq.product.ProductPlugin
 
 class MetricController extends ApiController {
 
@@ -598,7 +605,9 @@ class MetricController extends ApiController {
                 }
                 return
             }
-
+            // This should schedule new templates created by plugin updates
+            createMissingTemplates(resource)
+            
             def zevent = new ResourceRefreshZevent(user,
                                                    resource.entityId);
             zevents.add(zevent);
@@ -611,5 +620,28 @@ class MetricController extends ApiController {
                 out << getSuccessXML()
             }
         }
+    }
+    
+    private createMissingTemplates(res) {
+        def measMan = Bootstrap.getBean(MeasurementManager.class)
+        def tempMan = Bootstrap.getBean(TemplateManager.class)
+        def cfgMan = Bootstrap.getBean(ConfigManager.class)
+        
+        def tIds = tempMan.findTemplateIds(res.getPrototype().name)
+        
+        def measurements = measMan.findMeasurements(user, res)
+        def notFound = tIds - measurements.template.id
+        def aeid = res.entityId
+    
+        if (notFound.length > 0) {
+            try {
+                def mergedCR = cfgMan.getMergedConfigResponse(user,
+                                                     ProductPlugin.TYPE_MEASUREMENT,
+                                                     aeid, true);
+                measMan.createMeasurements(user, aeid, notFound as Integer[], mergedCR)
+            } catch (org.hyperic.hq.appdef.shared.ConfigFetchException e) {
+                //ignore
+            }
+        }    
     }
 }
