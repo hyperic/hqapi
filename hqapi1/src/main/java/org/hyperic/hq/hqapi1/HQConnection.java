@@ -214,7 +214,7 @@ class HQConnection implements Connection {
             return responseHandler.getErrorResponse(error);
         }
 
-        Part[] parts = { new StringPart("postdata", bos.toString()) };
+        Part[] parts = { new StringPart("postdata", bos.toString("utf-8"), "utf-8") };
 
         method.setRequestEntity(new MultipartRequestEntity(parts, method.getParams()));
 

@@ -79,6 +79,37 @@ public class ResourceUpdate_test extends ResourceTestBase {
         hqAssertSuccess(updateResponse);
     }
 
+    public void testUpdateNonAsciiCharacters() throws Exception {
+
+        Agent a = getRunningAgent();
+        ResourceApi api = getApi().getResourceApi();
+
+        ResourcesResponse resourcesResponse = api.getResources(a, false, false);
+        hqAssertSuccess(resourcesResponse);
+        Resource platform = resourcesResponse.getResource().get(0);
+
+        final String UPDATED_DESCRIPTION = "金魚 きんぎょ キンギョ";
+
+        String origDescription = platform.getDescription();
+
+        platform.setDescription(UPDATED_DESCRIPTION);
+
+        StatusResponse updateResponse = api.updateResource(platform);
+        hqAssertSuccess(updateResponse);
+
+        ResourceResponse updatedResource = api.getResource(platform.getId(),
+                                                           false, false);
+        hqAssertSuccess(updatedResource);
+        Resource updated = updatedResource.getResource();
+
+        assertEquals(updated.getDescription(), UPDATED_DESCRIPTION);
+
+        // Reset
+        updated.setDescription(origDescription);
+        updateResponse = api.updateResource(updated);
+        hqAssertSuccess(updateResponse);
+    }
+
     public void testUpdateConfig() throws Exception {
 
         ResourceApi api = getApi().getResourceApi();

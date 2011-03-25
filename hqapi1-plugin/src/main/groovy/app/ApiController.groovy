@@ -148,7 +148,7 @@ class ApiController extends BaseController {
         if (invokeArgs.request.contentType.contains("multipart")) {
             return getUpload('postdata')
         } else {
-            return invokeArgs.request.inputStream.getText()
+            return invokeArgs.request.inputStream.getText("utf-8")
         }
     }
 

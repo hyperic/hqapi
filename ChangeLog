@@ -1,3 +1,8 @@
+Changes in HQApi 4.2
+
+ *) [HHQ-4666] Fix handling of non-ascii characters.  When posting XML back
+    to the server ensure it's UTF-8 encoded.
+
 Changes in HQApi 4.1
 
  *) [HHQ-4572] Added agent bundle commands
