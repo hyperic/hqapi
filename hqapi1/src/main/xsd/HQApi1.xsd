@@ -266,6 +266,7 @@
             <xs:enumeration value="controlApplication"/>
             <xs:enumeration value="manageApplicationAlerts"/>
             <!-- Group operations -->
+            <xs:enumeration value="createResourceGroup"/>
             <xs:enumeration value="viewResourceGroup"/>
             <xs:enumeration value="manageGroupAlerts"/>
             <xs:enumeration value="modifyResourceGroup"/>
@@ -289,6 +290,7 @@
             <xs:enumeration value="createEscalation"/>
             <xs:enumeration value="modifyEscalation"/>
             <xs:enumeration value="removeEscalation"/>
+            <xs:enumeration value="viewEscalation"/>
             <!-- Resource ops -->
             <xs:enumeration value="createResource"/>
             <xs:enumeration value="modifyResourceType"/>
