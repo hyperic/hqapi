@@ -1,3 +1,7 @@
+Changes in HQApi 4.3
+
+ *) [HHQ-4561] Allow selective access to system roles in HQApi
+
 Changes in HQApi 4.2
 
  *) [HHQ-4666] Fix handling of non-ascii characters.  When posting XML back
