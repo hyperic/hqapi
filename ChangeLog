@@ -1,3 +1,7 @@
+Changes in HQApi 4.3
+
+ *) [HQ-3409] Add ability to schedule maintenance for an individual resource
+
 Changes in HQApi 4.2
 
  *) [HHQ-4666] Fix handling of non-ascii characters.  When posting XML back

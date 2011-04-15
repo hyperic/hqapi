@@ -1,16 +1,15 @@
 /*
- *
- * NOTE: This copyright does *not* cover user programs that use HQ
+ * NOTE: This copyright does *not* cover user programs that use Hyperic
  * program services by normal system calls through the application
  * program interfaces provided as part of the Hyperic Plug-in Development
  * Kit or the Hyperic Client Development Kit - this is merely considered
  * normal use of the program, and does *not* fall under the heading of
  * "derived work".
  *
- * Copyright (C) [2008, 2009], Hyperic, Inc.
- * This file is part of HQ.
+ * Copyright (C) [2004-2011], VMware, Inc.
+ * This file is part of Hyperic.
  *
- * HQ is free software; you can redistribute it and/or modify
+ * Hyperic is free software; you can redistribute it and/or modify
  * it under the terms version 2 of the GNU General Public License as
  * published by the Free Software Foundation. This program is distributed
  * in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -22,7 +21,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
- *
  */
 
 package org.hyperic.hq.hqapi1.tools;
@@ -39,7 +37,11 @@ import java.text.ParseException;
 
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.MaintenanceApi;
+import org.hyperic.hq.hqapi1.XmlUtil;
+import org.hyperic.hq.hqapi1.types.MaintenanceEvent;
 import org.hyperic.hq.hqapi1.types.MaintenanceResponse;
+import org.hyperic.hq.hqapi1.types.MaintenancesResponse;
+import org.hyperic.hq.hqapi1.types.ResourceResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.springframework.stereotype.Component;
 @Component
@@ -52,7 +54,9 @@ public class MaintenanceCommand extends AbstractCommand {
     private static final String[] COMMANDS = { CMD_SCHEDULE, CMD_UNSCHEDULE,
                                                CMD_GET };
 
+    private static final String OPT_RESOURCEID    = "resourceId";
     private static final String OPT_GROUPID    = "groupId";
+    private static final String OPT_ALL		   = "all";
     private static final String OPT_START      = "start";
     private static final String OPT_END        = "end";
 
@@ -179,32 +183,79 @@ public class MaintenanceCommand extends AbstractCommand {
     }
 
     private void get(String[] args) throws Exception {
-        final DateFormat df = SimpleDateFormat.getInstance();
+        String[] ONE_REQUIRED = { OPT_RESOURCEID, OPT_GROUPID, OPT_ALL };
+
+    	final DateFormat df = SimpleDateFormat.getInstance();
         OptionParser p = getOptionParser();
+
+        p.accepts(OPT_RESOURCEID, "The id of the resource to query for maintenance").
+        		withRequiredArg().ofType(Integer.class);
 
         p.accepts(OPT_GROUPID, "The id of the group to query for maintenance").
                 withRequiredArg().ofType(Integer.class);
 
+        p.accepts(OPT_ALL, "Get all maintenance schedules");
+
         OptionSet options = getOptions(p, args);
 
+        int criteria = 0;
+        for (String opt : ONE_REQUIRED) {
+            if (options.has(opt)) {
+                criteria++;
+            }
+        }
+        
+        if (criteria == 0) {
+            System.err.println("One of " + Arrays.toString(ONE_REQUIRED) + " is required.");
+            System.exit(-1);
+        } else if (criteria > 1) {
+            System.err.println("Only one of " + Arrays.toString(ONE_REQUIRED) + " may be specified");
+            System.exit(-1);
+        }
+        
         HQApi api = getApi(options);
         MaintenanceApi maintenanceApi = api.getMaintenanceApi();
 
-        Integer groupId = (Integer)getRequired(options, OPT_GROUPID);
-
-        MaintenanceResponse response = maintenanceApi.get(groupId);
-        checkSuccess(response);
-
-        if (response.getMaintenanceEvent() != null &&
-            response.getMaintenanceEvent().getState() != null &&
-            response.getMaintenanceEvent().getStartTime() != 0 &&
-            response.getMaintenanceEvent().getEndTime() != 0) {
-            System.out.println("Maintenance scheudle for group " + groupId);
-            System.out.println("State: " + response.getMaintenanceEvent().getState().value());
-            System.out.println("Start Time: " + df.format(response.getMaintenanceEvent().getStartTime()));
-            System.out.println("End Time: " + df.format(response.getMaintenanceEvent().getEndTime()));
+        if (options.has(OPT_ALL)) {
+        	MaintenancesResponse schedules = maintenanceApi.getAll(null);
+	        checkSuccess(schedules);
+            XmlUtil.serialize(schedules, System.out, Boolean.TRUE);
         } else {
-            System.out.println("No maintenance events found for group " + groupId);
+        	MaintenanceResponse response = null;
+        	Integer id = null;
+        	
+        	if (options.has(OPT_GROUPID)) {
+        		id = (Integer)getRequired(options, OPT_GROUPID);
+        		response = maintenanceApi.get(id);
+        	} else if (options.has(OPT_RESOURCEID)) {
+        		id = (Integer)getRequired(options, OPT_RESOURCEID);
+        		ResourceResponse resourceResponse = api.getResourceApi().getResource(id, false, false);
+    	        checkSuccess(resourceResponse);
+        		response = maintenanceApi.get(resourceResponse.getResource());
+        	}
+	        checkSuccess(response);	        
+	        MaintenanceEvent event = response.getMaintenanceEvent();
+	
+	        if (event != null &&
+	        	event.getState() != null &&
+	        	event.getStartTime() != 0 &&
+	        	event.getEndTime() != 0) {
+	        	
+	        	if (event.getGroupId() > 0) {
+	        		System.out.println("Maintenance schedule for group " + event.getGroupId());
+	        	} else {
+	        		System.out.println("Maintenance schedule for resource " + event.getResourceId());	        		
+	        	}
+	            System.out.println("State: " + event.getState().value());
+	            System.out.println("Start Time: " + df.format(event.getStartTime()));
+	            System.out.println("End Time: " + df.format(event.getEndTime()));
+	        } else {
+	        	if (options.has(OPT_GROUPID)) {
+	        		System.out.println("No maintenance events found for group " + id);
+	        	} else if (options.has(OPT_RESOURCEID)) {
+	        		System.out.println("No maintenance events found for resource " + id);	        		
+	        	}
+	        }
         }
     }
 }

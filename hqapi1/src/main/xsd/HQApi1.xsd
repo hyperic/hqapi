@@ -963,7 +963,8 @@
         </xs:sequence>
         <xs:attribute name="endTime"        type="xs:long"    use="required"/>
         <xs:attribute name="startTime"      type="xs:long"    use="required"/>
-        <xs:attribute name="groupId"        type="xs:int"     use="required"/>
+        <xs:attribute name="groupId"        type="xs:int"     use="optional"/>
+        <xs:attribute name="resourceId"     type="xs:int"     use="optional"/>
         <xs:attribute name="modifiedBy"     type="xs:string"  use="optional" />
     </xs:complexType>
 
@@ -981,6 +982,18 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="MaintenancesResponse">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Response">
+                    <xs:sequence>
+                        <xs:element name="MaintenanceEvent" type="MaintenanceEvent" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    
     <!-- Resource Edge objects -->
 
     <xs:complexType name="ResourceFrom">
