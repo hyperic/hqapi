@@ -61,16 +61,21 @@ class ResourceController extends ApiController {
                      instanceId : r.entityId.id,
                      typeId : r.entityId.type) {
                 if (verbose) {
-                    def config = r.getConfig()
-                    config.each { k, v ->
-                        if (v.type.equals("configResponse")) {
-                            ResourceConfig(key: k, value: v.value)
+                    try {
+                        def config = r.getConfig()
+                        config.each { k, v ->
+                            if (v.type.equals("configResponse")) {
+                                ResourceConfig(key: k, value: v.value)
+                            }
                         }
-                    }
-                    config.each { k, v ->
-                        if (v.type.equals("cprop")) {
-                            ResourceProperty(key: k, value: v.value)
+                        config.each { k, v ->
+                            if (v.type.equals("cprop")) {
+                                ResourceProperty(key: k, value: v.value)
+                            }
                         }
+                    } catch (Throwable t) {
+                        // Invalid confi?. Bad DB entry?
+                        log.error("Exception thrown while retrieving config for Resource ID " + r.id + " probably needs to be deleted manually")
                     }
                 }
                 if (children && !isService) {
@@ -78,34 +83,40 @@ class ResourceController extends ApiController {
                         out << getResourceXML(user, child, verbose, children)
                     }
                 }
-                ResourcePrototype(instanceId: r.prototype.instanceId,
-                                  resourceTypeId: r.prototype.resourceType.id - 600,
-                                  id : r.prototype.id,
-                                  name : r.prototype.name)
+                try { 
+                    ResourcePrototype(instanceId: r.prototype.instanceId,
+                                      resourceTypeId: r.prototype.resourceType.id - 600,
+                                      id : r.prototype.id,
+                                      name : r.prototype.name)
 
-                if (isPlatform) {
-                    def p = appdefRes
-                    def a = p.agent
-                    Agent(id             : a.id,
-                          address        : a.address,
-                          port           : a.port,
-                          version        : a.version,
-                          unidirectional : a.unidirectional)
-                    for (ip in p.ips) {
-                        Ip(address : ip.address,
-                           netmask : ip.netmask,
-                           mac     : ip.macAddress)
+                    if (isPlatform) {
+                        def p = appdefRes
+                        def a = p.agent
+                        Agent(id             : a.id,
+                            address        : a.address,
+                            port           : a.port,
+                            version        : a.version,
+                            unidirectional : a.unidirectional)
+                        for (ip in p.ips) {
+                            Ip(address : ip.address,
+                               netmask : ip.netmask,
+                               mac     : ip.macAddress)
+                        }
+
+                        ResourceInfo(key: PROP_FQDN, value: p.fqdn)
+                    } else if (isServer) {
+                        def s = appdefRes
+                        ResourceInfo(key: PROP_INSTALLPATH, value: s.installPath)
+                        ResourceInfo(key: PROP_AIIDENIFIER, value: s.autoinventoryIdentifier)
+                    } else if (isService) {
+                        def s = appdefRes
+                        ResourceInfo(key: PROP_AIIDENIFIER, value: s.autoinventoryIdentifier)
                     }
-
-                    ResourceInfo(key: PROP_FQDN, value: p.fqdn)
-                } else if (isServer) {
-                    def s = appdefRes
-                    ResourceInfo(key: PROP_INSTALLPATH, value: s.installPath)
-                    ResourceInfo(key: PROP_AIIDENIFIER, value: s.autoinventoryIdentifier)
-                } else if (isService) {
-                    def s = appdefRes
-                    ResourceInfo(key: PROP_AIIDENIFIER, value: s.autoinventoryIdentifier)
+                } catch (Throwable t) {
+                    // Invalid confi?. Bad DB entry?
+                    log.error("Exception thrown while retrieving info for Resource ID " + r.id + " probably needs to be deleted manually")
                 }
+
             }
         }
     }

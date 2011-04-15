@@ -1,5 +1,7 @@
 Changes in HQApi 4.3
 
+ *) [HHQ-4847] Catch exceptions in ResourceController.getResourceXML()
+
  *) [HQ-3409] Add ability to schedule maintenance for an individual resource
 
 Changes in HQApi 4.2
