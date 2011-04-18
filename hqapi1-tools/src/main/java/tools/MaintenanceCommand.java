@@ -125,7 +125,12 @@ public class MaintenanceCommand extends AbstractCommand {
     }
 
     private void schedule(String[] args) throws Exception {
-        OptionParser p = getOptionParser();
+        String[] ONE_REQUIRED = { OPT_RESOURCEID, OPT_GROUPID };
+
+    	OptionParser p = getOptionParser();
+
+        p.accepts(OPT_RESOURCEID, "The id of the resource to schedule for maintenance").
+        		withRequiredArg().ofType(Integer.class);
 
         p.accepts(OPT_GROUPID, "The id of the group to schedule for maintenance").
                 withRequiredArg().ofType(Integer.class);
@@ -135,10 +140,25 @@ public class MaintenanceCommand extends AbstractCommand {
 
         OptionSet options = getOptions(p, args);
 
+        int criteria = 0;
+        for (String opt : ONE_REQUIRED) {
+            if (options.has(opt)) {
+                criteria++;
+            }
+        }
+
+        if (criteria == 0) {
+            System.err.println("One of " + Arrays.toString(ONE_REQUIRED) + " is required.");
+            System.exit(-1);
+        } else if (criteria > 1) {
+            System.err.println("Only one of " + Arrays.toString(ONE_REQUIRED) + " may be specified");
+            System.exit(-1);
+        }
+        
         HQApi api = getApi(options);
         MaintenanceApi maintenanceApi = api.getMaintenanceApi();
-
-        Integer groupId = (Integer)getRequired(options, OPT_GROUPID);
+        MaintenanceResponse response = null;
+        
         String startStr = (String)getRequired(options, OPT_START);
         String endStr = (String)getRequired(options, OPT_END);
 
@@ -154,32 +174,80 @@ public class MaintenanceCommand extends AbstractCommand {
             System.exit(-1);
         }
 
-        MaintenanceResponse response = maintenanceApi.schedule(groupId,
-                                                               startDate.getTime(),
-                                                               endDate.getTime());
-        checkSuccess(response);
+        if (options.has(OPT_GROUPID)) {
+        	Integer groupId = (Integer)getRequired(options, OPT_GROUPID);
+            response = maintenanceApi.schedule(groupId, 
+            								   startDate.getTime(),
+            								   endDate.getTime());
+        } else {
+    		Integer resourceId = (Integer)getRequired(options, OPT_RESOURCEID);
+    		ResourceResponse resourceResponse = api.getResourceApi().getResource(resourceId, false, false);
+	        checkSuccess(resourceResponse);
+    		response = maintenanceApi.schedule(resourceResponse.getResource(),
+    										   startDate.getTime(), 
+    										   endDate.getTime());        	
+        }
 
-        System.out.println("Maintenance scheduled for group " + groupId);
+        checkSuccess(response);
+        MaintenanceEvent event = response.getMaintenanceEvent();
+
+        if (event.getGroupId() > 0) {
+        	System.out.println("Maintenance scheduled for group " + event.getGroupId());
+        } else {
+        	System.out.println("Maintenance scheduled for resource " + event.getResourceId());        	
+        }
     }
 
     private void unschedule(String[] args) throws Exception {
+        String[] ONE_REQUIRED = { OPT_RESOURCEID, OPT_GROUPID };
 
         OptionParser p = getOptionParser();
+
+        p.accepts(OPT_RESOURCEID, "The id of the resource to unschedule from maintenance").
+				withRequiredArg().ofType(Integer.class);
 
         p.accepts(OPT_GROUPID, "The id of the group to unschedule from maintenance").
                 withRequiredArg().ofType(Integer.class);
 
         OptionSet options = getOptions(p, args);
 
+        int criteria = 0;
+        for (String opt : ONE_REQUIRED) {
+            if (options.has(opt)) {
+                criteria++;
+            }
+        }
+
+        if (criteria == 0) {
+            System.err.println("One of " + Arrays.toString(ONE_REQUIRED) + " is required.");
+            System.exit(-1);
+        } else if (criteria > 1) {
+            System.err.println("Only one of " + Arrays.toString(ONE_REQUIRED) + " may be specified");
+            System.exit(-1);
+        }
+        
         HQApi api = getApi(options);
         MaintenanceApi maintenanceApi = api.getMaintenanceApi();
+        StatusResponse response = null;
+        Integer id = null;
+        
+        if (options.has(OPT_GROUPID)) {
+        	id = (Integer)getRequired(options, OPT_GROUPID);
+            response = maintenanceApi.unschedule(id);
+        } else if (options.has(OPT_RESOURCEID)) {
+    		id = (Integer)getRequired(options, OPT_RESOURCEID);
+    		ResourceResponse resourceResponse = api.getResourceApi().getResource(id, false, false);
+	        checkSuccess(resourceResponse);        	
+            response = maintenanceApi.unschedule(resourceResponse.getResource());
+        }
 
-        Integer groupId = (Integer)getRequired(options, OPT_GROUPID);
-
-        StatusResponse response = maintenanceApi.unschedule(groupId);
         checkSuccess(response);
 
-        System.out.println("Maintenance for group " + groupId + " unscheduled.");
+        if (options.has(OPT_GROUPID)) {
+        	System.out.println("Maintenance for group " + id + " unscheduled.");
+        } else {
+        	System.out.println("Maintenance for resource " + id + " unscheduled.");        	
+        }
     }
 
     private void get(String[] args) throws Exception {
