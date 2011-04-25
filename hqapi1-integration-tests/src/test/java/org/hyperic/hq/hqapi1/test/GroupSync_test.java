@@ -266,11 +266,6 @@ public class GroupSync_test extends GroupTestBase {
 	                resourceApi.getResourcePrototype("CPU");
 	        hqAssertSuccess(prototypeResponse);
 
-	        ResourcesResponse resourceResponse =
-	                resourceApi.getResources(prototypeResponse.getResourcePrototype(),
-	                                         false, false);
-	        hqAssertSuccess(resourceResponse);
-
 	        // Find all Roles
 	        RolesResponse roleResponse = roleApi.getRoles();
 	        hqAssertSuccess(roleResponse);
@@ -279,15 +274,13 @@ public class GroupSync_test extends GroupTestBase {
 	        Group g = generateTestGroup();
 	        g.setResourcePrototype(prototypeResponse.getResourcePrototype());
 	        g.getRole().addAll(roleResponse.getRole());
-	        
-	        
 			
 			Criteria nameCriteria = new Criteria();
 			nameCriteria
 						.setClazz("org.hyperic.hq.grouping.critters.ResourceNameCritterType");
 			CriteriaProp nameProp = new CriteriaProp();
 			nameProp.setName("name");
-			nameProp.setValue("foo");
+			nameProp.setValue("blablabla");
 			nameProp.setType("string");
 			nameCriteria.getCriteriaProp().add(nameProp);
 			
@@ -296,7 +289,7 @@ public class GroupSync_test extends GroupTestBase {
 						.setClazz("org.hyperic.hq.grouping.critters.ResourceNameCritterType");
 			CriteriaProp nameProp2 = new CriteriaProp();
 			nameProp2.setName("name");
-			nameProp2.setValue("bar");
+			nameProp2.setValue("yadayadayada");
 			nameProp2.setType("string");
 			nameCriteria2.getCriteriaProp().add(nameProp2);
 				

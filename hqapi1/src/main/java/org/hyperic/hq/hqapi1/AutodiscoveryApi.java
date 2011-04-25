@@ -88,4 +88,15 @@ public class AutodiscoveryApi extends BaseApi {
         return doGet("autodiscovery/approve.hqu", params,
                      new XmlResponseHandler<StatusResponse>(StatusResponse.class));
     }
+    
+	public StatusResponse approveServer(int id) 
+		throws IOException
+	{
+		HashMap<String, String[]> params = new HashMap<String, String[]>();
+
+		params.put("serverId", new String[] { String.valueOf(id) });
+
+		return doGet("autodiscovery/approve.hqu", params,
+					 new XmlResponseHandler<StatusResponse>(StatusResponse.class));
+	}
 }
