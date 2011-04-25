@@ -79,10 +79,17 @@ public class RoleGetRole_test extends RoleTestBase {
 
     public void testGetSystemRole() throws Exception {
         // System roles may not be modified
+        // Exception Super User Role
 
         RoleApi api = getRoleApi();
 
-        RoleResponse response = api.getRole(0);
+        RoleResponse response = api.getRole(1);
         hqAssertFailureNotSupported(response);
+        
+        response = api.getRole(0);
+        hqAssertSuccess(response);
+        Role r = response.getRole();
+        assertEquals(SUPER_USER_ROLENAME, r.getName());
+        
     }
 }

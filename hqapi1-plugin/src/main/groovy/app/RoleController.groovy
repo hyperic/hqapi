@@ -78,7 +78,7 @@ class RoleController extends ApiController {
                                          name + "' not found")
                 } else if (r.system && r.id != 0 && r.id != 2) {  // Allow listing of Super User Role and Guest Role
                     out << getFailureXML(ErrorCode.NOT_SUPPORTED,
-                                         "Cannot get system role " + r.name) 
+                                         "Cannot get system role " + r.name)
                 } else {
                     out << getSuccessXML()
                     out << getRoleXML(r)
@@ -236,14 +236,17 @@ class RoleController extends ApiController {
     }
 
     def sync(params) {
+        def SUPER_USER_ROLE = "Super User Role"
+        def GUEST_ROLE = "Guest Role"
         def failureXml = null
+        
         try {
             def syncRequest = new XmlParser().parseText(getPostData())
             for (xmlRole in syncRequest['Role']) {
                 def existing = getRole(xmlRole.'@id'?.toInteger(),
                                        xmlRole.'@name')
                 // Break early if a system role is being synced.
-                if (existing?.system && existing.id != 0 && existing.id != 1) {
+                if (existing?.system && existing?.id != 0 && existing?.id != 1) {
                     failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
                                                "Cannot sync system role " +
                                                existing.name)
@@ -264,9 +267,9 @@ class RoleController extends ApiController {
                     subjects.each{subj ->
                         def u = getUser(subj.'@id'?.toInteger(), subj.'@name')
                         if (u) {
-                            if (u.id == 1 || u.id == 2)
+                            if (u.id == 1 || u.id == 2) {
                                 systemUserPresent = true
-                                
+                            }
                             users << u
                         } else {
                             failureXml=  getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
@@ -275,14 +278,15 @@ class RoleController extends ApiController {
                                                        " not found")
                         }
                     }
-
+                 
                     if (!failureXml) {
                         if (existing.id == 0 || existing.id == 2) {
-                            if (systemUserPresent)
+                            if (systemUserPresent) {
                                 existing.setSubjects(user, users)
-                            else
-                                failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND, 
+                            } else {
+                                failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED, 
                                                         "Required user missing from system role")
+                            }
                         } else {
                             existing.update(user,
                                         xmlRole.'@name',
