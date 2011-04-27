@@ -236,8 +236,6 @@ class RoleController extends ApiController {
     }
 
     def sync(params) {
-        def SUPER_USER_ROLE = "Super User Role"
-        def GUEST_ROLE = "Guest Role"
         def failureXml = null
         
         try {
@@ -245,7 +243,16 @@ class RoleController extends ApiController {
             for (xmlRole in syncRequest['Role']) {
                 def existing = getRole(xmlRole.'@id'?.toInteger(),
                                        xmlRole.'@name')
+                
+                // Prevent non-super users from syncing system groups
+                if ((existing?.id == 0 || existing?.id == 2) && !user.isSuperUser()) {
+                    failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED,
+                                                "Must be Super User to sync " +
+                                                "System Role")
+                }
+                
                 // Break early if a system role is being synced.
+                // Allow Super User Role/Guest Role to be sync'd if hqadmin/guest users present
                 if (existing?.system && existing?.id != 0 && existing?.id != 1) {
                     failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
                                                "Cannot sync system role " +
@@ -267,7 +274,7 @@ class RoleController extends ApiController {
                     subjects.each{subj ->
                         def u = getUser(subj.'@id'?.toInteger(), subj.'@name')
                         if (u) {
-                            if (u.id == 1 || u.id == 2) {
+                            if ((existing.id == 0 && u.id == 1) || (existing.id == 2 && u.id == 2)) {
                                 systemUserPresent = true
                             }
                             users << u
