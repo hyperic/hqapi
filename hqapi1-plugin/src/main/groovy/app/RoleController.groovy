@@ -249,6 +249,7 @@ class RoleController extends ApiController {
                     failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED,
                                                 "Must be Super User to sync " +
                                                 "System Role")
+                    break
                 }
                 
                 // Break early if a system role is being synced.
