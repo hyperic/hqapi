@@ -194,7 +194,7 @@ public class RoleSyncRoles_test extends RoleTestBase {
         hqAssertFailurePermissionDenied(response);
     }
 
-    public void testSyncSystemRole() throws Exception {
+    public void testSyncRenameSuperUserRole() throws Exception {
 
         RoleApi api = getRoleApi();
 
@@ -209,6 +209,22 @@ public class RoleSyncRoles_test extends RoleTestBase {
         hqAssertFailureNotSupported(response);              
     }
 
+    public void testSyncRenameGuestRole() throws Exception {
+
+        RoleApi api = getRoleApi();
+
+        Role r = new Role();
+        r.setId(2);
+        r.setName("Updated Guest Role!");
+
+        List<Role> roles = new ArrayList<Role>();
+        roles.add(r);
+
+        StatusResponse response = api.syncRoles(roles);
+        hqAssertFailureNotSupported(response);              
+    }
+
+    
     public void testSyncRolesInvalidUsers() throws Exception {
         RoleApi api = getRoleApi();
 
@@ -225,4 +241,92 @@ public class RoleSyncRoles_test extends RoleTestBase {
         StatusResponse response = api.syncRoles(roles);
         hqAssertFailureObjectNotFound(response);
     }
+    
+    public void testSyncSuperUserRoleWithOutHqadmin() throws Exception {
+        RoleApi api = getRoleApi();
+
+        Role r = new Role();
+        r.setId(0);
+        r.setName("Super User Role");
+
+        List<Role> roles = new ArrayList<Role>();
+        roles.add(r);
+
+        StatusResponse response = api.syncRoles(roles);
+        hqAssertFailureNotSupported(response);   
+    }
+
+    public void testSyncGuestRoleWithOutGuest() throws Exception {
+        RoleApi api = getRoleApi();
+
+        Role r = new Role();
+        r.setId(2);
+        r.setName("Guest Role");
+
+        List<Role> roles = new ArrayList<Role>();
+        roles.add(r);
+
+        StatusResponse response = api.syncRoles(roles);
+        hqAssertFailureNotSupported(response);   
+    }
+
+    public void testSyncSuperUserRoleWithOutHqadminNoPermission() throws Exception {
+        //Create an underprivileged user
+        UserApi userapi = getUserApi();
+
+        User user = generateTestUser();
+
+        userapi.createUser(user, TESTUSER_PASSWORD);
+        
+        RoleApi roleapi = getRoleApi(user.getName(), TESTUSER_PASSWORD);
+
+        Role r = new Role();
+        r.setId(0);
+        r.setName("Super User Role");
+        User hqadmin = new User();
+        hqadmin.setName("HQ Administrator");
+        hqadmin.setId(0);
+        r.getUser().add(hqadmin);
+
+        r.getUser().add(hqadmin);
+        r.getUser().add(user); 
+        
+        List<Role> roles = new ArrayList<Role>();
+        roles.add(r);
+
+        StatusResponse response = roleapi.syncRoles(roles);
+        hqAssertFailurePermissionDenied(response);   
+    }
+
+    public void testSyncGuestRoleWithOutGuestNoPermission() throws Exception {
+        //Create an underprivileged user
+        UserApi userapi = getUserApi();
+
+        User user = generateTestUser();
+
+        userapi.createUser(user, TESTUSER_PASSWORD);
+        
+        RoleApi roleapi = getRoleApi(user.getName(), TESTUSER_PASSWORD);
+
+        Role r = new Role();
+        r.setId(2);
+        r.setName("Guest Role");
+        
+        User guest = new User();
+        guest.setName("Guest User");
+        guest.setId(2);
+        r.getUser().add(guest);
+        r.getUser().add(user); 
+
+        List<Role> roles = new ArrayList<Role>();
+        roles.add(r);
+        
+        //RoleManager.addSubjects() doesn't throw a PermissionException
+        //as it claims. So we need to work around it
+        
+        StatusResponse response = roleapi.syncRoles(roles);
+        hqAssertFailurePermissionDenied(response);   
+    }
+    
+    
 }

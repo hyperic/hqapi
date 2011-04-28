@@ -1,5 +1,7 @@
 Changes in HQApi 4.3
 
+ *) [HHQ-4561] Allow selective access to system roles in HQApi
+ 
  *) Add support to approve servers in the autoinventory queue. Functionality
     added primarily to do integration testing for HQ-2623. No corresponding
     CLI command was added.

@@ -76,7 +76,7 @@ class RoleController extends ApiController {
                     out << getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                          "Role with id=" + id + " name='" +
                                          name + "' not found")
-                } else if (r.system) {
+                } else if (r.system && r.id != 0 && r.id != 2) {  // Allow listing of Super User Role and Guest Role
                     out << getFailureXML(ErrorCode.NOT_SUPPORTED,
                                          "Cannot get system role " + r.name)
                 } else {
@@ -237,13 +237,24 @@ class RoleController extends ApiController {
 
     def sync(params) {
         def failureXml = null
+        
         try {
             def syncRequest = new XmlParser().parseText(getPostData())
             for (xmlRole in syncRequest['Role']) {
                 def existing = getRole(xmlRole.'@id'?.toInteger(),
                                        xmlRole.'@name')
+                
+                // Prevent non-super users from syncing system groups
+                if ((existing?.id == 0 || existing?.id == 2) && !user.isSuperUser()) {
+                    failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED,
+                                                "Must be Super User to sync " +
+                                                "System Role")
+                    break
+                }
+                
                 // Break early if a system role is being synced.
-                if (existing?.system) {
+                // Allow Super User Role/Guest Role to be sync'd if hqadmin/guest users present
+                if (existing?.system && existing?.id != 0 && existing?.id != 1) {
                     failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
                                                "Cannot sync system role " +
                                                existing.name)
@@ -251,6 +262,7 @@ class RoleController extends ApiController {
                 }
 
                 if (existing) {
+                    def systemUserPresent = false
                     def opMap = roleHelper.operationMap
                     def operations = []
                     def ops = xmlRole['Operation']
@@ -263,6 +275,9 @@ class RoleController extends ApiController {
                     subjects.each{subj ->
                         def u = getUser(subj.'@id'?.toInteger(), subj.'@name')
                         if (u) {
+                            if ((existing.id == 0 && u.id == 1) || (existing.id == 2 && u.id == 2)) {
+                                systemUserPresent = true
+                            }
                             users << u
                         } else {
                             failureXml=  getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
@@ -271,13 +286,22 @@ class RoleController extends ApiController {
                                                        " not found")
                         }
                     }
-
+                 
                     if (!failureXml) {
-                        existing.update(user,
+                        if (existing.id == 0 || existing.id == 2) {
+                            if (systemUserPresent) {
+                                existing.setSubjects(user, users)
+                            } else {
+                                failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED, 
+                                                        "Required user missing from system role")
+                            }
+                        } else {
+                            existing.update(user,
                                         xmlRole.'@name',
                                         xmlRole.'@description')
-                        existing.setOperations(user, operations)
-                        existing.setSubjects(user, users)
+                            existing.setOperations(user, operations)
+                            existing.setSubjects(user, users)
+                        }
                     }
                 } else {
                     def operations = []
