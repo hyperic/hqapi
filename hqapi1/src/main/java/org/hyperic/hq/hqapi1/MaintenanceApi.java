@@ -83,7 +83,7 @@ public class MaintenanceApi extends BaseApi {
     /**
      * Schedule a {@link org.hyperic.hq.hqapi1.types.Resource} for maintenance.
      *
-     * @param resourceId The resource id to schedule.
+     * @param resource The resource to schedule.
      * @param start The start time for maintenance, in ephoch-millis.
      * @param end The end time for maintenance, in ephoch-millis.
      * @return The {@link org.hyperic.hq.hqapi1.types.MaintenanceEvent} for
@@ -122,7 +122,7 @@ public class MaintenanceApi extends BaseApi {
     /**
      * Unschedule a {@link org.hyperic.hq.hqapi1.types.Resource} from maintenance.
      *
-     * @param resourceId The resource id to unschedule.
+     * @param resource The resource to unschedule.
      * @return The status repsonse representing success or failure of this unschedule.
      *
      * @throws IOException If a network error occurs while making the request.
@@ -159,7 +159,7 @@ public class MaintenanceApi extends BaseApi {
      * Get the {@link org.hyperic.hq.hqapi1.types.MaintenanceEvent} for this
      * resource.
      *
-     * @param resourceId The resource id to query.
+     * @param resource The resource to query.
      * @return The {@link org.hyperic.hq.hqapi1.types.MaintenanceEvent} for this
      * resource.
      *
