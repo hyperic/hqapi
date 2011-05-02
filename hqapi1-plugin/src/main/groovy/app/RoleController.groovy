@@ -57,7 +57,7 @@ class RoleController extends ApiController {
             out << RolesResponse() {
                 out << getSuccessXML()
                 for (role in roles.sort {a, b -> a.name <=> b.name}) {
-                    if (!role.system) {
+                    if (!role.system || (role.id == 0 || role.id == 2)) {
                         out << getRoleXML(role)
                     }
                 }
