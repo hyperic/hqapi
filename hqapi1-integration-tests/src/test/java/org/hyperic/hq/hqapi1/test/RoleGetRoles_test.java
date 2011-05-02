@@ -46,7 +46,7 @@ public class RoleGetRoles_test extends RoleTestBase {
     }
 
     public void testGetAllRoles() throws Exception {
-
+        boolean containsSuperUser = false;
         RoleApi api = getRoleApi();
 
         RolesResponse response = api.getRoles();
@@ -59,8 +59,14 @@ public class RoleGetRoles_test extends RoleTestBase {
             for (Operation o : role.getOperation()) {
                 assertNotNull(o);
             }
+            if (role.getId() == 0) {
+                containsSuperUser = true;
+            }
             assertNotNull(role.getUser());
         }
+        
+        assertEquals("Did not include Super User Role", containsSuperUser, true);
+        
     }
 
     public void testGetRolesByUser() throws Exception {
