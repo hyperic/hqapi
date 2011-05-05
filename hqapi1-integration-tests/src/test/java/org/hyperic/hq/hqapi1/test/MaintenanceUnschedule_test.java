@@ -1,15 +1,16 @@
 /*
- * NOTE: This copyright does *not* cover user programs that use Hyperic
+ *
+ * NOTE: This copyright does *not* cover user programs that use HQ
  * program services by normal system calls through the application
  * program interfaces provided as part of the Hyperic Plug-in Development
  * Kit or the Hyperic Client Development Kit - this is merely considered
  * normal use of the program, and does *not* fall under the heading of
  * "derived work".
  *
- * Copyright (C) [2004-2011], VMware, Inc.
- * This file is part of Hyperic.
+ * Copyright (C) [2008, 2009], Hyperic, Inc.
+ * This file is part of HQ.
  *
- * Hyperic is free software; you can redistribute it and/or modify
+ * HQ is free software; you can redistribute it and/or modify
  * it under the terms version 2 of the GNU General Public License as
  * published by the Free Software Foundation. This program is distributed
  * in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -21,6 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
+ *
  */
 
 package org.hyperic.hq.hqapi1.test;
@@ -31,7 +33,6 @@ import org.hyperic.hq.hqapi1.types.MaintenanceResponse;
 import org.hyperic.hq.hqapi1.types.Group;
 import org.hyperic.hq.hqapi1.types.GroupResponse;
 import org.hyperic.hq.hqapi1.types.Operation;
-import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.Role;
 import org.hyperic.hq.hqapi1.types.RoleResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
@@ -58,7 +59,7 @@ public class MaintenanceUnschedule_test extends MaintenanceTestBase {
         hqAssertFailureObjectNotFound(response);
     }
 
-    public void testUnscheduleGroup() throws Exception {
+    public void testUnschedule() throws Exception {
 
         MaintenanceApi mApi = getApi().getMaintenanceApi();
 
@@ -74,24 +75,8 @@ public class MaintenanceUnschedule_test extends MaintenanceTestBase {
 
         cleanupGroup(g);
     }
-    
-    public void testUnscheduleService() throws Exception {
 
-        MaintenanceApi mApi = getApi().getMaintenanceApi();
-
-        List<Resource> resources = getFileServerMountResources();
-        Resource service = resources.get(0);
-        long start = System.currentTimeMillis() + HOUR;
-        long end = start + HOUR;
-        MaintenanceResponse response = mApi.schedule(service,
-                                                     start, end);
-        hqAssertSuccess(response);
-
-        StatusResponse unscheduleResponse = mApi.unschedule(service);
-        hqAssertSuccess(unscheduleResponse);
-    }
-
-    public void testUnscheduleGroupNotInMaintenance() throws Exception {
+    public void testUnscheduleNotInMaintenance() throws Exception {
  
         MaintenanceApi mApi = getApi().getMaintenanceApi();
 
@@ -102,19 +87,8 @@ public class MaintenanceUnschedule_test extends MaintenanceTestBase {
 
         cleanupGroup(g);
     }
-
-    public void testUnscheduleServiceNotInMaintenance() throws Exception {
-    	 
-        MaintenanceApi mApi = getApi().getMaintenanceApi();
-
-        List<Resource> resources = getFileServerMountResources();
-        Resource service = resources.get(0);
-
-        StatusResponse unscheduleResponse = mApi.unschedule(service);
-        hqAssertSuccess(unscheduleResponse);
-    }
     
-    public void testUnscheduleGroupWithNoGroupPermission() throws Exception {
+    public void testUnscheduleNoGroupPermission() throws Exception {
         
         List<User> users = createTestUsers(1);
         User user = users.get(0);
@@ -130,28 +104,11 @@ public class MaintenanceUnschedule_test extends MaintenanceTestBase {
         deleteTestUsers(users);
         cleanupGroup(g);         
     }
-
-    public void testUnscheduleServiceWithNoServicePermission() throws Exception {
-        
-        List<User> users = createTestUsers(1);
-        User user = users.get(0);
-        
-        HQApi apiUnpriv = getApi(user.getName(), TESTUSER_PASSWORD);
-        MaintenanceApi mApi = apiUnpriv.getMaintenanceApi();
-
-        List<Resource> resources = getFileServerMountResources();
-        Resource service = resources.get(0);
-
-        StatusResponse response = mApi.unschedule(service);
-        hqAssertFailurePermissionDenied(response);
-
-        deleteTestUsers(users);
-    }
     
     /**
      * To validate HQ-1832
      */
-    public void testUnscheduleWithNoMaintenancePermission() throws Exception {
+    public void testUnscheduleNoMaintenancePermission() throws Exception {
         
         // create user
         List<User> users = createTestUsers(1);
@@ -178,16 +135,11 @@ public class MaintenanceUnschedule_test extends MaintenanceTestBase {
         assertEquals("The group should have one role",
                      1, groupWithRole.getRole().size());
 
+        // unschedule maintanence with insufficient permissions
         HQApi apiUnpriv = getApi(user.getName(), TESTUSER_PASSWORD);
         MaintenanceApi mApi = apiUnpriv.getMaintenanceApi();
 
-        // unschedule maintanence for group with insufficient permissions
         StatusResponse statusResponse = mApi.unschedule(groupWithRole.getId());
-        hqAssertFailurePermissionDenied(statusResponse);
-
-        // unschedule maintanence for resource with insufficient permissions
-        Resource resource = g.getResource().get(0);
-        statusResponse = mApi.unschedule(resource);
         hqAssertFailurePermissionDenied(statusResponse);
 
         // cleanup
