@@ -2,10 +2,6 @@ Changes in HQApi 4.3
 
  *) [HHQ-4561] Allow selective access to system roles in HQApi
  
- *) Add support to approve servers in the autoinventory queue. Functionality
-    added primarily to do integration testing for HQ-2623. No corresponding
-    CLI command was added.
-
  *) [HHQ-4847] Catch exceptions in ResourceController.getResourceXML()
 
  *) [HQ-3409] Add ability to schedule maintenance for an individual resource

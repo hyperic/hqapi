@@ -37,10 +37,11 @@ class AutodiscoveryController extends ApiController {
 
     def approve(params) {
         def id = params.getOne('id')?.toInteger()
-        def serverId = params.getOne('serverId')?.toInteger()
 
         def failureXml
-        if (id) {
+        if (!id) {
+            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
+        } else {
             try {
                 def plat = autodiscoveryHelper.findById(id)
                 if (!plat) {
@@ -53,21 +54,6 @@ class AutodiscoveryController extends ApiController {
                 log.error("UnexpectedError: " + e.getMessage(), e);
                 failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
             }
-        } else if (serverId) {
-        	try {
-        		def server = autodiscoveryHelper.findServerById(serverId)
-        		if (!server) {
-                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                               "Server " + serverId + " not found")
-        		} else {
-        			autodiscoveryHelper.approve(server)
-        		}
-        	} catch (Exception e) {
-                log.error("UnexpectedError: " + e.getMessage(), e);
-                failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR)
-        	}
-        } else {
-            failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         }
 
         renderXml() {
