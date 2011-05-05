@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.hyperic.hq.hqapi</groupId>
 		<artifactId>parent</artifactId>
-		<version>4.3.0.BUILD-SNAPSHOT</version>
+		<version>5.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>hqapi1-integration-tests</artifactId>
