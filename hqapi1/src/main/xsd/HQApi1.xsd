@@ -79,6 +79,7 @@
                  e.g installpath, fqdn, autoinventory identifier -->
             <xs:element name="ResourceInfo" maxOccurs="unbounded" type="ResourceInfo"/>
         </xs:sequence>
+        <xs:attribute name="instanceId"  type="xs:int" use="optional"/> 
         <xs:attribute name="location"    type="xs:string" use="optional"/> 
         <xs:attribute name="description" type="xs:string" use="optional"/>
         <xs:attribute name="name"        type="xs:string" use="required"/>

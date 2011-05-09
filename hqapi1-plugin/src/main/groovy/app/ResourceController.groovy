@@ -31,6 +31,7 @@ class ResourceController extends ApiController {
             Resource(id : r.id,
                      name : r.name,
                      description : r.description,
+                     instanceId: r.instanceId,
                      location : getLocation(r)) {
                 if (verbose) {
                     def config = r.getConfig()
