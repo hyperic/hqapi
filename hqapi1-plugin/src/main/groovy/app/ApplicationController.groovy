@@ -7,7 +7,6 @@ import org.hyperic.hq.appdef.shared.AppdefEntityID
 import org.hyperic.hq.appdef.shared.ApplicationManager;
 import org.hyperic.hq.appdef.shared.ApplicationValue
 import org.hyperic.hq.appdef.shared.ServiceValue
-import org.hyperic.hq.appdef.server.session.AppServiceDAO
 import org.hyperic.hq.appdef.shared.AppdefDuplicateNameException;
 import org.hyperic.hq.context.Bootstrap
 
