@@ -64,9 +64,14 @@ public class Shell {
                 System.exit(-1);
             }
         } else {
-            String home = System.getProperty("user.home");
-            File hq = new File(home, ".hq");
-            clientProperties = new File(hq, "client.properties");
+            // Look in cwd first for conf/client.properties
+            clientProperties = new File("conf/client.properties"); 
+            if (!clientProperties.exists()) {
+                // Default to ~/.hq/client.properties
+                String home = System.getProperty("user.home");
+                File hq = new File(home, ".hq");
+                clientProperties = new File(hq, "client.properties");
+            }
         }
 
         if (clientProperties.exists()) {
