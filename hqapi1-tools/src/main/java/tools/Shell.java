@@ -30,6 +30,7 @@ package org.hyperic.hq.hqapi1.tools;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -54,7 +55,7 @@ public class Shell {
     static private Properties getClientProperties(String file) {
         Properties props = new Properties();
 
-        File clientProperties;
+        File clientProperties = null;
 
         if (file != null) {
             clientProperties = new File(file);
@@ -64,9 +65,23 @@ public class Shell {
                 System.exit(-1);
             }
         } else {
-            // Look in cwd first for conf/client.properties
-            clientProperties = new File("conf/client.properties"); 
-            if (!clientProperties.exists()) {
+            InputStream is = Shell.class.getResourceAsStream("/client.properties");
+            try {
+                if (is != null) {
+                    props.load(is);
+                }
+            } catch (IOException e) {
+                // System.err..etc..
+                System.exit(-1);
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException ignore) {}
+                }
+            }
+            
+            if (is == null) {
                 // Default to ~/.hq/client.properties
                 String home = System.getProperty("user.home");
                 File hq = new File(home, ".hq");
@@ -74,7 +89,7 @@ public class Shell {
             }
         }
 
-        if (clientProperties.exists()) {
+        if (clientProperties != null && clientProperties.exists()) {
             FileInputStream fis = null;
             props = new Properties();
             try {
