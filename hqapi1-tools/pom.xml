@@ -13,6 +13,10 @@
 	<packaging>jar</packaging>
 	<name>Hyperic HQAPI Tools</name>
 
+    <properties>
+        <jasypt.version>1.6</jasypt.version>
+    </properties>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -35,6 +39,11 @@
 			<artifactId>hqapi1</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+            <groupId>org.jasypt</groupId>
+            <artifactId>jasypt</artifactId>
+            <version>${jasypt.version}</version>
+        </dependency>
 	</dependencies>
 
 </project>

@@ -37,6 +37,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.properties.PropertyValueEncryptionUtils;
+
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
@@ -175,6 +178,12 @@ public class Shell {
         String password = (String)options.valueOf(OptionParserFactory.OPT_PASS);
         if (password == null) {
             password = clientProps.getProperty(OptionParserFactory.OPT_PASS);
+            // Check for encrypted password
+            if (password == null || password.isEmpty()) {
+                String encryptionKey = clientProps.getProperty(OptionParserFactory.OPT_ENCRYPTIONKEY);
+                String encryptedPassword = clientProps.getProperty(OptionParserFactory.OPT_ENCRYPTEDPASSWORD);
+                password = decryptPassword(encryptedPassword, encryptionKey);
+            }
         }
 
         if (host != null && port != null && user != null && password == null) {
@@ -200,6 +209,20 @@ public class Shell {
         System.setProperty(OptionParserFactory.SYSTEM_PROP_PREFIX + OptionParserFactory.OPT_SECURE[1], secure.toString());  
     }
 
+    private static String decryptPassword(String encryptedPassword, String encryptionKey) {
+        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        encryptor.setPassword(encryptionKey);
+        encryptor.setAlgorithm("PBEWithMD5AndDES");
+        return PropertyValueEncryptionUtils.decrypt(encryptedPassword, encryptor);
+    }
+    
+    private static String encryptPassword(String plainPassword, String encryptionKey) {
+        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        encryptor.setPassword(encryptionKey);
+        encryptor.setAlgorithm("PBEWithMD5AndDES");
+        return PropertyValueEncryptionUtils.encrypt(plainPassword, encryptor);
+    }    
+    
     private void printHelp() {
         System.out.println("HQ Api Command Shell");
         System.out.println("");
