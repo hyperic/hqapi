@@ -1,5 +1,7 @@
 Changes in HQApi 4.3
 
+ *) [HHQ-4945] Allow encrypted password in client.properties
+
  *) [HHQ-4933] Allow client.properties to be in conf/ or ~/.hq
 
  *) [HHQ-4561] Allow selective access to system roles in HQApi
