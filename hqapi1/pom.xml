@@ -78,7 +78,7 @@
 					<windowtitle>Hyperic HQ API</windowtitle>
 					<doctitle>Hyperic HQ API Specification</doctitle>
 					<bottom>
-						<![CDATA[Copyright &#169; 2008 <a href="http://www.hyperic.com">Hyperic, Inc.</a>, All Rights Reserved.]]>
+						<![CDATA[Copyright &#169; 2008-2011 <a href="http://www.vmware.com">VMware, Inc.</a>, All Rights Reserved.]]>
 					</bottom>
 				</configuration>
 				<executions>
