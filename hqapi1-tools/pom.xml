@@ -15,6 +15,7 @@
 
     <properties>
         <jasypt.version>1.6</jasypt.version>
+        <groovy.version>1.6.7</groovy.version>
     </properties>
 
 	<build>
@@ -43,6 +44,11 @@
             <groupId>org.jasypt</groupId>
             <artifactId>jasypt</artifactId>
             <version>${jasypt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>${groovy.version}</version>
         </dependency>
 	</dependencies>
 
