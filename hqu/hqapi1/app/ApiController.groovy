@@ -158,6 +158,10 @@ class ApiController extends BaseController {
         super.dispatchRequest()
         long total = System.currentTimeMillis() - start;
 
+        // Since API sessions are stateless, override the configured
+        // session-timeout from web.xml so that sessions are expired earlier
+        invokeArgs.request.session.setMaxInactiveInterval(10)
+
         synchronized(STATS_LOCK) {
             def method = controllerName + "." + action
             def stats = _methodStats[method]
