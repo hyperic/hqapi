@@ -7,8 +7,9 @@ Binary builds for HQApi can be found at:
 
 http://hudson.hyperic.com/
 
-Version compatiblity guide:
+Version compatibility guide:
 
+HQApi 5.x -> HQ 4.6
 HQApi 4.x -> HQ 4.5
 HQApi 3.x -> HQ 4.3/4.4
 HQApi 2.x -> HQ 4.2
