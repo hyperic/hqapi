@@ -19,15 +19,35 @@ package org.hyperic.hq.hqapi1;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.logging.Log;
@@ -36,11 +56,16 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.entity.mime.FormBodyPart;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
@@ -50,6 +75,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.message.BasicNameValuePair;
 import org.hyperic.hq.hqapi1.types.ServiceError;
+import org.springframework.util.StringUtils;
 
 class HQConnection implements Connection {
 
@@ -244,7 +270,7 @@ class HQConnection implements Connection {
         
         if (_isSecure) {
             // To allow for self signed certificates
-            (new UntrustedSSLProtocolSocketFactory()).register(client);
+        	configureSSL(client, false);
         }
 
         // Validate user & password inputs
@@ -278,5 +304,170 @@ class HQConnection implements Connection {
         HttpResponse response = client.execute(method);
             
         return responseHandler.handleResponse(response);        
+    }
+    
+    private KeyStore getKeyStore(String keyStorePath, String keyStorePassword) throws KeyStoreException, IOException {
+    	FileInputStream keyStoreFileInputStream = null;
+    	
+    	try {
+            KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+            File file = new File(keyStorePath);
+            char[] password = null;
+            
+            if (!file.exists()) {
+                // ...if file doesn't exist, and path was user specified throw IOException...
+                if (StringUtils.hasText(keyStorePath)) {
+                    throw new IOException("User specified keystore [" + keyStorePath + "] does not exist.");
+                }
+                
+                password = keyStorePassword.toCharArray();
+            }
+            
+            // ...keystore file exist, so init the file input stream...
+            keyStoreFileInputStream = new FileInputStream(file);
+            
+            keystore.load(keyStoreFileInputStream, password);
+
+            return keystore;
+        } catch (NoSuchAlgorithmException e) {
+            // can't check integrity of keystore, if this happens we're kind of screwed
+            // is there anything we can do to self heal this problem?
+            throw new KeyStoreException(e);
+        } catch (CertificateException e) {
+            // there are some corrupted certificates in the keystore, a bad thing
+            // is there anything we can do to self heal this problem?
+            throw new KeyStoreException(e);
+        } finally {
+            if (keyStoreFileInputStream != null) {
+                keyStoreFileInputStream.close();
+                keyStoreFileInputStream = null;
+            }
+        }
+    }
+    
+    private KeyManagerFactory getKeyManagerFactory(final KeyStore keystore, final String password) throws KeyStoreException {
+    	try {
+    		KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+    		
+    		keyManagerFactory.init(keystore, password.toCharArray());
+    		
+    		return keyManagerFactory;
+		} catch (NoSuchAlgorithmException e) {
+			// no support for algorithm, if this happens we're kind of screwed
+        	// we're using the default so it should never happen
+			throw new KeyStoreException(e);
+		} catch (UnrecoverableKeyException e) {
+			// invalid password, should never happen
+			throw new KeyStoreException(e);
+		}
+    }
+    
+    private TrustManagerFactory getTrustManagerFactory(final KeyStore keystore) throws KeyStoreException, IOException {
+    	try {
+	    	TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+	    	
+	    	trustManagerFactory.init(keystore);
+	    	
+	    	return trustManagerFactory;
+    	} catch (NoSuchAlgorithmException e) {
+    		// no support for algorithm, if this happens we're kind of screwed
+        	// we're using the default so it should never happen
+            throw new KeyStoreException(e);
+		}
+    }
+    
+    private void configureSSL(HttpClient client, final boolean acceptUnverifiedCertificates) {
+    	final String keyStorePath = System.getProperty("javax.net.ssl.keyStore");
+    	final String keyStorePassword = System.getProperty("javax.net.ssl.keyStorePassword");
+    	final boolean validateSSLCertificates = StringUtils.hasText(keyStorePath) && StringUtils.hasText(keyStorePassword);
+    	
+    	X509TrustManager customTrustManager = null;
+    	KeyManager[] keyManagers = null;
+    	
+    	try {
+	    	if (validateSSLCertificates) {
+	    		// Use specified key store and perform SSL validation...
+	    		try {
+		    		KeyStore keystore = getKeyStore(keyStorePath, keyStorePassword);
+			        KeyManagerFactory keyManagerFactory = getKeyManagerFactory(keystore, keyStorePassword);
+			        TrustManagerFactory trustManagerFactory = getTrustManagerFactory(keystore);
+			   
+			        keyManagers = keyManagerFactory.getKeyManagers();
+			        customTrustManager = (X509TrustManager) trustManagerFactory.getTrustManagers()[0];
+	    		} catch(FileNotFoundException e) {
+	    			
+	    		} catch (KeyStoreException e) {
+					// TODO: handle exception
+				} catch (IOException e) {
+					
+				}
+	    	} else {
+	    		// Revert to previous functionality and ignore SSL certs...
+	    		customTrustManager = new X509TrustManager() {
+	          		 public void checkClientTrusted(X509Certificate[] chain, String authType) {}
+	           		 
+	          		 public void checkServerTrusted(X509Certificate[] chain, String authType) {}
+							
+	          		 //required for jdk 1.3/jsse 1.0.3_01
+	          		 public boolean isClientTrusted(X509Certificate[] chain) {
+	          			 return true;
+	          		 }
+							
+	          		 //required for jdk 1.3/jsse 1.0.3_01
+	          		 public boolean isServerTrusted(X509Certificate[] chain) {
+	          			 return true;
+	          		 }
+							
+	          		 public X509Certificate[] getAcceptedIssuers(){
+	          			 return null;
+	          		 }
+	  			};
+	    	}
+	    	
+	   		SSLContext sslContext = SSLContext.getInstance("TLS");
+	   	        
+	   	    sslContext.init(keyManagers, new TrustManager[] { customTrustManager }, new SecureRandom());
+	   	        
+	   	    // XXX Should we use ALLOW_ALL_HOSTNAME_VERIFIER (least restrictive) or 
+	   	    //     BROWSER_COMPATIBLE_HOSTNAME_VERIFIER (moderate restrictive) or
+	   	    //     STRICT_HOSTNAME_VERIFIER (most restrictive)???
+	   	    // For now allow all, and make it configurable later...
+	   	    
+	   	    X509HostnameVerifier hostnameVerifier = null;
+	   	    
+	   	    if (validateSSLCertificates) {
+	   	    	hostnameVerifier = new AllowAllHostnameVerifier();
+	   	    } else {
+	   	    	hostnameVerifier = new X509HostnameVerifier() {
+	   				private AllowAllHostnameVerifier internalVerifier = new AllowAllHostnameVerifier();
+					
+	   				public boolean verify(String host, SSLSession session) {
+	   					return internalVerifier.verify(host, session);
+	   				}
+	   					
+	   				public void verify(String host, String[] cns, String[] subjectAlts) throws SSLException {
+	   					internalVerifier.verify(host, cns, subjectAlts);
+	   				}
+	   					
+	   				public void verify(String host, X509Certificate cert) throws SSLException {
+	   					internalVerifier.verify(host, cert);
+	   				}
+	   					
+	   				public void verify(String host, SSLSocket ssl) throws IOException {
+	   					try {
+	   						internalVerifier.verify(host, ssl);
+	   					} catch(SSLPeerUnverifiedException e) {
+	   						// ignore
+	   					}
+					}
+	   	   	    };
+	   	    }
+	   	        
+	   	    client.getConnectionManager().getSchemeRegistry().register(new Scheme("https", 443, new SSLSocketFactory(sslContext, hostnameVerifier)));
+    	} catch (KeyManagementException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
     }
 }
