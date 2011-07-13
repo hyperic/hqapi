@@ -8,9 +8,9 @@ import java.lang.reflect.Method;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpResponse;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.ServiceError;
 
@@ -31,13 +31,15 @@ public class XmlResponseHandler<T> implements ResponseHandler<T> {
 		this.clazz = clazz;
 	}
 
-	public T handleResponse(int responseCode, HttpMethodBase method) throws IOException {
-	    
+	public T handleResponse(HttpResponse response) throws IOException {
 	    ServiceError error;
+	    int responseCode = response.getStatusLine().getStatusCode();
+	    
 	    switch (responseCode) {
             case 200:
                 // We only deal with HTTP_OK responses
-                InputStream is = method.getResponseBodyAsStream();
+                InputStream is = response.getEntity().getContent();
+                
                 try {
                     return XmlUtil.deserialize(clazz, is);
                 } catch (JAXBException e) {
@@ -63,8 +65,6 @@ public class XmlResponseHandler<T> implements ResponseHandler<T> {
                 error.setReasonText("An unexpected error occurred");
                 return getErrorResponse(error);
         }
-		
-	
 	}
 	
 	 /**

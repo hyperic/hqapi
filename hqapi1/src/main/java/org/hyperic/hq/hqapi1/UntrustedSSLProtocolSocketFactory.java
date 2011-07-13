@@ -27,138 +27,109 @@
 
 package org.hyperic.hq.hqapi1;
 
-import org.apache.commons.httpclient.params.HttpConnectionParams;
-import org.apache.commons.httpclient.protocol.Protocol;
-import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
-import org.apache.commons.httpclient.protocol.SSLProtocolSocketFactory;
-
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
+
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 
 // For use with Commons-HTTPClient
-class UntrustedSSLProtocolSocketFactory
-    extends SSLProtocolSocketFactory
-{
-    private SSLSocketFactory factory;
+class UntrustedSSLProtocolSocketFactory {
+	private SSLSocketFactory factory;
+    private Scheme defaultSSL;
 
-    private static Protocol defaultSSL;
-    private static Protocol untrustSSL;
-
-    private static boolean isRegistered() {
-        Protocol https = Protocol.getProtocol("https");
-        boolean isRegistered =
-            https.getSocketFactory() instanceof UntrustedSSLProtocolSocketFactory;
-        if (!isRegistered) {
-            defaultSSL = https;
+    private boolean isRegistered(HttpClient client) {
+    	Scheme https = client.getConnectionManager().getSchemeRegistry().get("https");
+    	boolean isRegistered = https.getSocketFactory() instanceof UntrustedSSLProtocolSocketFactory;
+        
+    	if (!isRegistered) {
+            this.defaultSSL = https;
         }
-        return isRegistered;
+        
+    	return isRegistered;
     }
 
-    public static void register() {
+    public void register(HttpClient client) {
         //don't croak on self-signed certs
-
-        if (!isRegistered()) {
-            if (untrustSSL == null) {
-                ProtocolSocketFactory factory =
-                    (ProtocolSocketFactory)new UntrustedSSLProtocolSocketFactory();
-                untrustSSL =
-                    new Protocol("https", factory, 443);
-            }
-            Protocol.registerProtocol("https", untrustSSL);
+        if (!isRegistered(client)) {
+        	try {
+	           	X509TrustManager customTrustManager = new X509TrustManager() {
+	           		 public void checkClientTrusted(X509Certificate[] chain, String authType) {}
+	            		 
+	           		 public void checkServerTrusted(X509Certificate[] chain, String authType) {}
+							
+	           		 //required for jdk 1.3/jsse 1.0.3_01
+	           		 public boolean isClientTrusted(X509Certificate[] chain) {
+	           			 return true;
+	           		 }
+							
+	           		 //required for jdk 1.3/jsse 1.0.3_01
+	           		 public boolean isServerTrusted(X509Certificate[] chain) {
+	           			 return true;
+	           		 }
+							
+	           		 public X509Certificate[] getAcceptedIssuers(){
+	           			 return null;
+	           		 }
+	   			};
+	    	        
+	    		SSLContext sslContext = SSLContext.getInstance("TLS");
+	    	        
+	    	    sslContext.init(null, new TrustManager[] { customTrustManager }, new SecureRandom());
+	    	        
+	    	    // XXX Should we use ALLOW_ALL_HOSTNAME_VERIFIER (least restrictive) or 
+	    	    //     BROWSER_COMPATIBLE_HOSTNAME_VERIFIER (moderate restrictive) or
+	    	    //     STRICT_HOSTNAME_VERIFIER (most restrictive)???
+	    	    this.factory = new SSLSocketFactory(sslContext, new X509HostnameVerifier() {
+					private AllowAllHostnameVerifier internalVerifier = new AllowAllHostnameVerifier();
+					
+					public boolean verify(String host, SSLSession session) {
+						return internalVerifier.verify(host, session);
+					}
+					
+					public void verify(String host, String[] cns, String[] subjectAlts) throws SSLException {
+						internalVerifier.verify(host, cns, subjectAlts);
+					}
+					
+					public void verify(String host, X509Certificate cert) throws SSLException {
+						internalVerifier.verify(host, cert);
+					}
+					
+					public void verify(String host, SSLSocket ssl) throws IOException {
+						try {
+							internalVerifier.verify(host, ssl);
+						} catch(SSLPeerUnverifiedException e) {
+							//ignore
+						}
+					}
+	    	    });
+	    	        
+	    	    client.getConnectionManager().getSchemeRegistry().register(new Scheme("https", 443, this.factory));
+        	} catch (KeyManagementException e) {
+				e.printStackTrace();
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+			}
         }
     }
 
-    public static void unregister() {
-        if (isRegistered()) {
-            Protocol.registerProtocol("https", defaultSSL);
-        }
-    }
-
-    public UntrustedSSLProtocolSocketFactory() {
-        super();
-
-        try {
-            BogusTrustManager trustMan;
-            SSLContext tlsContext;
-
-            trustMan = new BogusTrustManager();
-            tlsContext = SSLContext.getInstance("TLS");
-            tlsContext.init(null, new X509TrustManager[] { trustMan },
-                            null);
-            this.factory = tlsContext.getSocketFactory();
-        } catch(NoSuchAlgorithmException exc){
-            throw new IllegalStateException("Unable to get SSL context: "+
-                                            exc.getMessage());
-        } catch(KeyManagementException exc){
-            throw new IllegalStateException("Unable to initialize ctx " +
-                                            "with BogusTrustManager: " +
-                                            exc.getMessage());
-        }
-    }
-
-    public Socket createSocket(String host, int port,
-                               InetAddress clientHost, int clientPort)
-        throws IOException
-    {
-        return this.factory.createSocket(host, port, clientHost,
-                                         clientPort);
-    }
-
-    public Socket createSocket(String host, int port)
-        throws IOException
-    {
-        return this.factory.createSocket(host, port);
-    }
-
-    public Socket createSocket(Socket socket, String host, int port,
-                               boolean autoClose)
-        throws IOException
-    {
-        return this.factory.createSocket(socket, host, port, autoClose);
-    }
-
-    public Socket createSocket(String host, int port,
-                               InetAddress clientHost,
-                               int clientPort,
-                               HttpConnectionParams params)
-        throws IOException
-    {
-        //as of 3.0 super.createSocket jumps through some hoops to support
-        //timeout in jre 1.3 and in the process by-passes our factory
-        return createSocket(host, port, clientHost, clientPort);
-    }
-
-    static final class BogusTrustManager
-        implements X509TrustManager
-    {
-        public void checkClientTrusted(X509Certificate[] chain,
-                                       String authType) {}
-
-        public void checkServerTrusted(X509Certificate[] chain,
-                                       String authType) {}
-
-        //required for jdk 1.3/jsse 1.0.3_01
-        public boolean isClientTrusted(X509Certificate[] chain) {
-            return true;
-        }
-
-        //required for jdk 1.3/jsse 1.0.3_01
-        public boolean isServerTrusted(X509Certificate[] chain) {
-            return true;
-        }
-
-        public X509Certificate[] getAcceptedIssuers(){
-            return null;
+    public void unregister(HttpClient client) {
+        if (isRegistered(client)) {
+        	client.getConnectionManager().getSchemeRegistry().register(defaultSSL);
         }
     }
 }
-
-
-

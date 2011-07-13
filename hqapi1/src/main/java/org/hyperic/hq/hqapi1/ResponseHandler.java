@@ -4,7 +4,7 @@ package org.hyperic.hq.hqapi1;
 
 import java.io.IOException;
 
-import org.apache.commons.httpclient.HttpMethodBase;
+import org.apache.http.HttpResponse;
 import org.hyperic.hq.hqapi1.types.ServiceError;
 
 /**
@@ -32,10 +32,9 @@ public interface ResponseHandler<T> {
 	/**
 	 * Handles the method response and creates a response object of the given class
 	 *
-	 * @param responseCode The status code from the Method execution
-	 * @param method The method that was executed
+	 * @param response The response that was returned from the Method execution
 	 * @return A response object of the given type
 	 * @throws IOException If there is an error handling the response.
 	 */
-	T handleResponse(int responseCode, HttpMethodBase method) throws IOException;
+	T handleResponse(HttpResponse response) throws IOException;
 }

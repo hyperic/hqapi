@@ -20,32 +20,35 @@ package org.hyperic.hq.hqapi1;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.SocketException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.URI;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
-import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.params.ClientPNames;
+import org.apache.http.entity.mime.FormBodyPart;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.message.BasicNameValuePair;
 import org.hyperic.hq.hqapi1.types.ServiceError;
 
 class HQConnection implements Connection {
@@ -77,11 +80,6 @@ class HQConnection implements Connection {
         _isSecure = isSecure;
         _user = user;
         _password = password;
-
-        if (_isSecure) {
-            // To allow for self signed certificates
-            UntrustedSSLProtocolSocketFactory.register();
-        }
     }
 
     private String urlEncode(String s) throws IOException {
@@ -99,14 +97,12 @@ class HQConnection implements Connection {
      * @return The response object from the operation. This response will be of
      *         the type given in the responseHandler argument.
      * @throws IOException If a network error occurs during the request.
+     * @throws  
      */
-    public <T> T doGet(String path, Map<String, String[]> params,
-                       ResponseHandler<T> responseHandler)
-            throws IOException
+    public <T> T doGet(String path, Map<String, String[]> params, ResponseHandler<T> responseHandler)
+    throws IOException
     {
-        GetMethod method = new GetMethod();
-        method.setDoAuthentication(true);
-        return runMethod(method, buildUri(path, params), responseHandler);
+        return runMethod(new HttpGet(), buildUri(path, params), responseHandler);
     }
 
     private String buildUri(String path, Map<String, String[]> params) throws IOException {
@@ -130,23 +126,31 @@ class HQConnection implements Connection {
         }
         return uri.toString();
     }
-
+    
     public <T> T doGet(String path, Map<String, String[]> params, File targetFile,
                        ResponseHandler<T> responseHandler)
             throws IOException
     {
-        GetMethod method = new GetMethod();
-        method.setDoAuthentication(true);
-        return runMethod(method, buildUri(path, params), responseHandler);
+        return runMethod(new HttpGet(), buildUri(path, params), responseHandler);
     }
 
-    public <T> T doPost(String path, Map<String, String[]> params,
-                        ResponseHandler<T> responseHandler)
-            throws IOException
-    {
-        PostMethod method = new PostMethod();
-        method.setDoAuthentication(true);
-        return runMethod(method, buildUri(path, params), responseHandler);
+    public <T> T doPost(String path, Map<String, String[]> params, ResponseHandler<T> responseHandler)
+    throws IOException {
+    	HttpPost post = new HttpPost();
+    	
+    	if (params != null && !params.isEmpty()) {
+	    	List<NameValuePair> postParams = new ArrayList<NameValuePair>();
+	    	
+	    	for (Map.Entry<String, String[]> entry : params.entrySet()) {
+	    		for (String value : entry.getValue()) {
+	    			postParams.add(new BasicNameValuePair(entry.getKey(), value));	    			
+	    		}
+	    	}
+        
+	    	post.setEntity(new UrlEncodedFormEntity(postParams, "UTF-8"));
+    	}
+    	
+        return runMethod(post, buildUri(path, params), responseHandler);
     }
     
     /**
@@ -165,22 +169,20 @@ class HQConnection implements Connection {
      * @throws IOException
      *             If a network error occurs during the request.
      */
-    public <T> T doPost(String path, Map<String, String> params, File file,
-    		            ResponseHandler<T> responseHandler)
-            throws IOException
-    {
-        PostMethod method = new PostMethod();
-        method.setDoAuthentication(true);
-        final List<Part> parts = new ArrayList<Part>();
-        parts.add(new FilePart("filename", file.getName(), file));
+    public <T> T doPost(String path, Map<String, String> params, File file, ResponseHandler<T> responseHandler)
+    throws IOException {
+        HttpPost post = new HttpPost();
+        MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+        
+        multipartEntity.addPart(file.getName(), new FileBody(file));
+        
         for (Map.Entry<String, String> paramEntry : params.entrySet()) {
-            parts
-                    .add(new StringPart(paramEntry.getKey(), paramEntry
-                            .getValue()));
+        	multipartEntity.addPart(new FormBodyPart(paramEntry.getKey(), new StringBody(paramEntry.getValue())));
         }
-        method.setRequestEntity(new MultipartRequestEntity(parts
-                .toArray(new Part[parts.size()]), method.getParams()));
-        return runMethod(method, path, responseHandler);
+        
+        post.setEntity(multipartEntity);
+        
+        return runMethod(post, path, responseHandler);
     }
 
     /**
@@ -196,73 +198,85 @@ class HQConnection implements Connection {
      * @throws IOException If a network error occurs during the request.
      */
     public <T> T doPost(String path, Object o, ResponseHandler<T> responseHandler)
-            throws IOException
-    {
-        PostMethod method = new PostMethod();
-        method.setDoAuthentication(true);
-
+    throws IOException {
+        HttpPost post = new HttpPost();
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        
         try {
             XmlUtil.serialize(o, bos, Boolean.FALSE);
         } catch (JAXBException e) {
             ServiceError error = new ServiceError();
+        
             error.setErrorCode("UnexpectedError");
             error.setReasonText("Unable to serialize response");
+            
             if (_log.isDebugEnabled()) {
                 _log.debug("Unable to serialize response", e);
             }
+            
             return responseHandler.getErrorResponse(error);
         }
+       
+        MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+        
+        multipartEntity.addPart("postdata", new StringBody(bos.toString("UTF-8"), Charset.forName("UTF-8")));
+        post.setEntity(multipartEntity);
 
-        Part[] parts = { new StringPart("postdata", bos.toString("utf-8"), "utf-8") };
-
-        method.setRequestEntity(new MultipartRequestEntity(parts, method.getParams()));
-
-        return runMethod(method, path, responseHandler);
+        return runMethod(post, path, responseHandler);
     }
 
-    private <T> T runMethod(HttpMethodBase method, String uri,
-                            ResponseHandler<T> responseHandler)
+    private <T> T runMethod(HttpRequestBase method, String uri, ResponseHandler<T> responseHandler)
             throws IOException
     {
         String protocol = _isSecure ? "https" : "http";
         ServiceError error;
         URL url = new URL(protocol, _host, _port, uri);
-        method.setURI(new URI(url.toString(), true));
+        
+        try {
+        	method.setURI(url.toURI());
+        } catch(URISyntaxException e) {
+        	throw new IllegalArgumentException("The syntax of request url [" + uri + "] is invalid", e);
+        }
+        
         _log.debug("Setting URI: " + url.toString());
 
-        try {
-            HttpClient client = new HttpClient();
-
-            // Validate user & password inputs
-            if (_user == null || _user.length() == 0) {
-                error = new ServiceError();
-                error.setErrorCode("LoginFailure");
-                error.setReasonText("User name cannot be null or empty");
-                return responseHandler.getErrorResponse(error);
-            }
-
-            if (_password == null || _password.length() == 0) {
-                error = new ServiceError();
-                error.setErrorCode("LoginFailure");
-                error.setReasonText("Password cannot be null or empty");
-                return responseHandler.getErrorResponse(error);
-            }
-
-            // Set Basic auth creds
-            client.getParams().setAuthenticationPreemptive(true);
-            Credentials defaultcreds = new UsernamePasswordCredentials(_user, _password);
-            client.getState().setCredentials(AuthScope.ANY, defaultcreds);
-
-            // Disable re-tries
-            DefaultHttpMethodRetryHandler retryhandler = new DefaultHttpMethodRetryHandler(0, true);
-            client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, retryhandler);
-            int responseCode = client.executeMethod(method);
-            return responseHandler.handleResponse(responseCode, method);
-        } catch (SocketException e) {
-            throw new HttpException("Error issuing request", e);
-        } finally {
-            method.releaseConnection();
+        DefaultHttpClient client = new DefaultHttpClient();
+        
+        if (_isSecure) {
+            // To allow for self signed certificates
+            (new UntrustedSSLProtocolSocketFactory()).register(client);
         }
+
+        // Validate user & password inputs
+        if (_user == null || _user.length() == 0) {
+        	error = new ServiceError();
+            error.setErrorCode("LoginFailure");
+            error.setReasonText("User name cannot be null or empty");
+            
+            return responseHandler.getErrorResponse(error);
+        }
+
+        if (_password == null || _password.length() == 0) {
+            error = new ServiceError();
+            error.setErrorCode("LoginFailure");
+            error.setReasonText("Password cannot be null or empty");
+        
+            return responseHandler.getErrorResponse(error);
+        }
+
+        // Set Basic auth creds
+        UsernamePasswordCredentials defaultcreds = new UsernamePasswordCredentials(_user, _password);
+            
+        client.getCredentialsProvider().setCredentials(AuthScope.ANY, defaultcreds);
+            
+        // Preemptive authentication
+        method.getParams().setParameter(ClientPNames.HANDLE_AUTHENTICATION, true);
+
+        // Disable re-tries
+        client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(0, true));
+
+        HttpResponse response = client.execute(method);
+            
+        return responseHandler.handleResponse(response);        
     }
 }

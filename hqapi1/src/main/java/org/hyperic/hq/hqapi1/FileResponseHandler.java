@@ -8,9 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 
-import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.ServiceError;
 
@@ -82,53 +83,59 @@ public class FileResponseHandler<T> implements ResponseHandler<T> {
 		}
 	}
 
-	public T handleResponse(int responseCode, HttpMethodBase method)
-		throws IOException {
+	public T handleResponse(HttpResponse response) throws IOException {
 		ServiceError error;
+		int responseCode = response.getStatusLine().getStatusCode();
+		
 		switch (responseCode) {
-		case 200:
-			FileOutputStream fileOutputStream = null;
-			InputStream in = method.getResponseBodyAsStream();
-			try {
-				fileOutputStream = new FileOutputStream(targetFile.getAbsolutePath());
-				final byte[] buf = new byte[1024];
-				int len;
-				while ((len = in.read(buf)) > 0) {
-					fileOutputStream.write(buf, 0, len);
-				}
-				return getSuccessResponse();
-			} catch (Exception e) {
-				error = new ServiceError();
-				error.setErrorCode("UnexpectedError");
-				error.setReasonText("Unable to deserialize result");
-				_log.warn("Unable to deserialize result", e);
-				return getErrorResponse(error);
-			} finally {
-				if (fileOutputStream != null) {
-					try {
-						fileOutputStream.close();
-					} catch (IOException e) {
-						_log.warn("Unable to close output stream to file: "
-								+ targetFile + ".  Cause: " + e.getMessage());
+			case 200:
+				FileOutputStream fileOutputStream = null;
+				InputStream in = response.getEntity().getContent();
+				
+				try {
+					fileOutputStream = new FileOutputStream(targetFile.getAbsolutePath());
+					final byte[] buf = new byte[1024];
+					int len;
+					while ((len = in.read(buf)) > 0) {
+						fileOutputStream.write(buf, 0, len);
+					}
+					return getSuccessResponse();
+				} catch (Exception e) {
+					error = new ServiceError();
+					error.setErrorCode("UnexpectedError");
+					error.setReasonText("Unable to deserialize result");
+					_log.warn("Unable to deserialize result", e);
+					return getErrorResponse(error);
+				} finally {
+					if (fileOutputStream != null) {
+						try {
+							fileOutputStream.close();
+						} catch (IOException e) {
+							_log.warn("Unable to close output stream to file: "
+									+ targetFile + ".  Cause: " + e.getMessage());
+						}
 					}
 				}
-			}
-		case 401:
-			// Unauthorized
-			error = new ServiceError();
-			error.setErrorCode("LoginFailure");
-			error.setReasonText("The given username and password could "
-					+ "not be validated");
-			return getErrorResponse(error);
-		default:
-			error = new ServiceError();
-			error.setErrorCode("Unexpected Error");
-			if (method.getStatusText() != null) {
-				error.setReasonText(method.getStatusText());
-			} else {
-				error.setReasonText("An unexpected error occurred");
-			}
-			return getErrorResponse(error);
+			case 401:
+				// Unauthorized
+				error = new ServiceError();
+				error.setErrorCode("LoginFailure");
+				error.setReasonText("The given username and password could "
+						+ "not be validated");
+				return getErrorResponse(error);
+			default:
+				error = new ServiceError();
+				error.setErrorCode("Unexpected Error");
+				
+				String reason = response.getStatusLine().getReasonPhrase();
+				
+				if (reason != null) {
+					error.setReasonText(reason);
+				} else {
+					error.setReasonText("An unexpected error occurred");
+				}
+				
+				return getErrorResponse(error);
 		}
 	}
 }
