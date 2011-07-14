@@ -52,16 +52,19 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 import org.apache.http.conn.ssl.SSLSocketFactory;
@@ -71,9 +74,12 @@ import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.BasicHttpContext;
 import org.hyperic.hq.hqapi1.types.ServiceError;
 import org.springframework.util.StringUtils;
 
@@ -270,7 +276,7 @@ class HQConnection implements Connection {
         
         if (_isSecure) {
             // To allow for self signed certificates
-        	configureSSL(client, false);
+        	configureSSL(client);
         }
 
         // Validate user & password inputs
@@ -294,14 +300,23 @@ class HQConnection implements Connection {
         UsernamePasswordCredentials defaultcreds = new UsernamePasswordCredentials(_user, _password);
             
         client.getCredentialsProvider().setCredentials(AuthScope.ANY, defaultcreds);
-            
+           
         // Preemptive authentication
+        AuthCache authCache = new BasicAuthCache();
+        BasicScheme basicAuth = new BasicScheme();
+        HttpHost host = new HttpHost(_host, _port, protocol);
+        
+        authCache.put(host, basicAuth);
+
+        BasicHttpContext localContext = new BasicHttpContext();
+        localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);        
+
         method.getParams().setParameter(ClientPNames.HANDLE_AUTHENTICATION, true);
 
         // Disable re-tries
         client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(0, true));
 
-        HttpResponse response = client.execute(method);
+        HttpResponse response = client.execute(method, localContext);
             
         return responseHandler.handleResponse(response);        
     }
@@ -376,7 +391,7 @@ class HQConnection implements Connection {
 		}
     }
     
-    private void configureSSL(HttpClient client, final boolean acceptUnverifiedCertificates) {
+    private void configureSSL(HttpClient client) throws IOException {
     	final String keyStorePath = System.getProperty("javax.net.ssl.keyStore");
     	final String keyStorePassword = System.getProperty("javax.net.ssl.keyStorePassword");
     	final boolean validateSSLCertificates = StringUtils.hasText(keyStorePath) && StringUtils.hasText(keyStorePassword);
@@ -387,20 +402,12 @@ class HQConnection implements Connection {
     	try {
 	    	if (validateSSLCertificates) {
 	    		// Use specified key store and perform SSL validation...
-	    		try {
-		    		KeyStore keystore = getKeyStore(keyStorePath, keyStorePassword);
-			        KeyManagerFactory keyManagerFactory = getKeyManagerFactory(keystore, keyStorePassword);
-			        TrustManagerFactory trustManagerFactory = getTrustManagerFactory(keystore);
+	    		KeyStore keystore = getKeyStore(keyStorePath, keyStorePassword);
+		        KeyManagerFactory keyManagerFactory = getKeyManagerFactory(keystore, keyStorePassword);
+		        TrustManagerFactory trustManagerFactory = getTrustManagerFactory(keystore);
 			   
-			        keyManagers = keyManagerFactory.getKeyManagers();
-			        customTrustManager = (X509TrustManager) trustManagerFactory.getTrustManagers()[0];
-	    		} catch(FileNotFoundException e) {
-	    			
-	    		} catch (KeyStoreException e) {
-					// TODO: handle exception
-				} catch (IOException e) {
-					
-				}
+		        keyManagers = keyManagerFactory.getKeyManagers();
+		        customTrustManager = (X509TrustManager) trustManagerFactory.getTrustManagers()[0];
 	    	} else {
 	    		// Revert to previous functionality and ignore SSL certs...
 	    		customTrustManager = new X509TrustManager() {
@@ -464,10 +471,8 @@ class HQConnection implements Connection {
 	   	    }
 	   	        
 	   	    client.getConnectionManager().getSchemeRegistry().register(new Scheme("https", 443, new SSLSocketFactory(sslContext, hostnameVerifier)));
-    	} catch (KeyManagementException e) {
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+    	} catch (Exception e) {
+    		throw new IOException(e);
 		}
     }
 }
