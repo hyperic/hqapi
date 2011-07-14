@@ -23,19 +23,19 @@ import org.hyperic.hq.hqapi1.types.ServiceError;
  */
 public class XmlResponseHandler<T> implements ResponseHandler<T> {
 
-	private static Log _log = LogFactory.getLog(XmlResponseHandler.class);
+    private static Log _log = LogFactory.getLog(XmlResponseHandler.class);
 
-	private Class<T> clazz;
-	
-	public XmlResponseHandler(Class<T> clazz) {
-		this.clazz = clazz;
-	}
+    private Class<T> clazz;
+    
+    public XmlResponseHandler(Class<T> clazz) {
+        this.clazz = clazz;
+    }
 
-	public T handleResponse(HttpResponse response) throws IOException {
-	    ServiceError error;
-	    int responseCode = response.getStatusLine().getStatusCode();
-	    
-	    switch (responseCode) {
+    public T handleResponse(HttpResponse response) throws IOException {
+        ServiceError error;
+        int responseCode = response.getStatusLine().getStatusCode();
+        
+        switch (responseCode) {
             case 200:
                 // We only deal with HTTP_OK responses
                 InputStream is = response.getEntity().getContent();
@@ -65,9 +65,9 @@ public class XmlResponseHandler<T> implements ResponseHandler<T> {
                 error.setReasonText("An unexpected error occurred");
                 return getErrorResponse(error);
         }
-	}
-	
-	 /**
+    }
+    
+     /**
      * Generate an response object with the given Error.  In some cases the
      * HQ server will not give us a result, so we generate one ourselves.
      * XXX: It would be nice here if we could get JAXB to generate an
