@@ -86,6 +86,7 @@ public class ResourceCommand extends AbstractCommand {
     private static String OPT_PARENT_PLATFORM = "parentPlatform";
     private static String OPT_SETNAME     = "setName";
     private static String OPT_SETCONFIG   = "setConfig";
+    private static String OPT_ALLPLATFORMS= "allPlatforms";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -145,6 +146,7 @@ public class ResourceCommand extends AbstractCommand {
         p.accepts(OPT_CHILDREN, "Include child resources");
         p.accepts(OPT_PARENT_PLATFORM, "Return the parent platform Resource.  " +
                                        "Can only be used with --" + OPT_ID);
+        p.accepts(OPT_ALLPLATFORMS, "List all platforms in inventory");
 
         OptionSet options = getOptions(p, args);
 
@@ -191,6 +193,10 @@ public class ResourceCommand extends AbstractCommand {
             resources = new ResourcesResponse();
             resources.setStatus(resource.getStatus());
             resources.getResource().add(resource.getResource());
+        } else if (options.has(OPT_ALLPLATFORMS)) {
+            resources = 
+                resourceApi.getPlatformResources(verbose, children);
+            checkSuccess(resources);
         } else if (options.has(OPT_ID)) {
             Integer id = (Integer)options.valueOf(OPT_ID);
             ResourceResponse resource;
