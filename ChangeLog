@@ -1,5 +1,12 @@
 Changes in HQApi 5.0
 
+ *) Upgraded Commons-HttpClient to 4.1.1.
+
+ *) Added SSL validation and ability to configure keystore using standard JSSE
+    system properties. (For now just javax.net.ssl.keyStore and
+    javax.net.ssl.keyStorePassword)  If system properties aren't set and
+    the secure option is set, the server certificate is not validated.
+
  *) [HQ-3409] Add ability to schedule maintenance for an individual resource
 
  *) Add support to approve servers in the autoinventory queue. Functionality
