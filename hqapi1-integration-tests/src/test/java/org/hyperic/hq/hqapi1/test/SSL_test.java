@@ -27,19 +27,88 @@
 
 package org.hyperic.hq.hqapi1.test;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.security.KeyStore;
+
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.UserApi;
 import org.hyperic.hq.hqapi1.types.UsersResponse;
 
 public class SSL_test extends HQApiTestBase {
-
     public SSL_test(String name) {
         super(name);
     }
 
-    public void testSSL() throws Exception {
+    private KeyStore keystore;
+    
+    @Override
+	public void setUp() throws Exception {
+		super.setUp();
+		
+		// generate keystore for testing...
+		File file = new File("SSL_test_keystore");
+		
+		if (file.exists()) {
+			file.delete();
+		}
+		
+        String javaHome = System.getProperty("java.home");
+        String keytool = javaHome + File.separator + "bin" + File.separator + "keytool";
+        String[] args = {
+            keytool,
+            "-genkey",
+            "-dname",  		"CN=ssltest_cert, OU=HQ, O=hyperic.net, L=Unknown, ST=Unknown, C=US",
+            "-alias",     "ssltest",
+            "-keystore",  "SSL_test_keystore",
+            "-storepass", "ssltest",
+            "-keypass",   "ssltest",
+            "-keyalg",    "RSA"
+        };
 
-        HQApi api = getApi(true);
+        Runtime.getRuntime().exec(args);
+        
+        if (file.exists()) {
+        	FileInputStream keyStoreFileInputStream = null;
+        	
+        	try {
+        		keyStoreFileInputStream = new FileInputStream(file);
+	        	keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+	        	
+	        	keystore.load(keyStoreFileInputStream, "ssltest".toCharArray());
+        	} finally {
+        		if (keyStoreFileInputStream != null) {
+        			keyStoreFileInputStream.close();
+        			keyStoreFileInputStream = null;
+        		}
+        	}
+        }
+	}
+   
+	public void testSSLNoValidation() throws Exception {
+		// non-validating SSL connection...maintains backwards compatibility
+		makeSSLRequest();
+    }
+    
+    public void testSSLWithValidation() throws Exception {
+    	/*
+    	System.setProperty("javax.net.ssl.keyStore", "SSL_test_keystore");
+    	System.setProperty("javax.net.ssl.keyStorePassword", "ssltest");
+    	
+    	try {
+    		// First time we fail...
+    		makeSSLRequest();
+    	} catch(Exception e) {
+    		// TODO Need to do some work to import a cert on demand
+    		
+    		// ...this time should succeed
+    		makeSSLRequest();
+    	}
+    	*/
+    }
+
+    private void makeSSLRequest() throws Exception {
+    	HQApi api = getApi(true);
         UserApi userApi = api.getUserApi();
 
         UsersResponse response = userApi.getUsers();
