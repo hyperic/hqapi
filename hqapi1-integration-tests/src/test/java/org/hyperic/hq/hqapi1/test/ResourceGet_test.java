@@ -34,6 +34,7 @@ import org.hyperic.hq.hqapi1.ResourceApi;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourceInfo;
 import org.hyperic.hq.hqapi1.types.ResourceResponse;
+import org.hyperic.hq.hqapi1.types.ResourcesResponse;
 import org.hyperic.hq.hqapi1.types.User;
 
 public class ResourceGet_test extends ResourceTestBase {
@@ -360,5 +361,15 @@ public class ResourceGet_test extends ResourceTestBase {
         ResourceResponse response = api.getParent(r);
 
         hqAssertFailureObjectNotFound(response);
+    }
+    
+    public void testGetPlatformResources() throws Exception {
+        ResourceApi api = getApi().getResourceApi();
+        
+        Resource localPlatform = getLocalPlatformResource(false, false);
+        ResourcesResponse response = api.getPlatformResources(false,  false);
+        
+        assertEquals("Platform ids not equal", localPlatform.getId(),
+            response.getResource().get(0).getId());
     }
 }
