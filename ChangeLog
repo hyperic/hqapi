@@ -1,5 +1,7 @@
 Changes in HQApi 4.3
 
+ *) [HHQ-4991] Add getPlatformResources() API
+
  *) [HHQ-4945] Allow encrypted password in client.properties
  
  *) [HHQ-4948] Added groovyshell for hqapi client side groovy scripting

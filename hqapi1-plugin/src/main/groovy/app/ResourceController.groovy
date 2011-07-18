@@ -1241,4 +1241,20 @@ class ResourceController extends ApiController {
             }
         }
     }
+    
+    def getPlatformResources(params) {
+        boolean children = params.getOne("children", "false").toBoolean()
+        boolean verbose = params.getOne("verbose", "false").toBoolean()
+        def resources = resourceHelper.findAllPlatforms()
+    
+        renderXml() {
+            out << ResourcesResponse() {
+                out << getSuccessXML()
+                for (r in resources.sort {a, b -> a.name <=> b.name}) {
+                    out << getResourceXML(user, r, verbose, children)
+                }
+            }
+        }
+
+    }
 }

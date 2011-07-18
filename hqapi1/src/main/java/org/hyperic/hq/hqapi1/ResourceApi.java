@@ -561,4 +561,15 @@ public class ResourceApi extends BaseApi {
         return doGet("resource/get.hqu", params,
                      new XmlResponseHandler<ResourceResponse>(ResourceResponse.class));
     }
+    
+    public ResourcesResponse getPlatformResources(boolean verbose, boolean children)
+        throws IOException
+    {
+        Map<String,String[]> params = new HashMap<String, String[]>();
+        params.put("verbose", new String[] { Boolean.toString(verbose) });
+        params.put("children", new String[] { Boolean.toString(children)});
+        return doGet("resource/getPlatformResources.hqu", params,
+                     new XmlResponseHandler<ResourcesResponse>(ResourcesResponse.class));        
+    }
+    
 }
