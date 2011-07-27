@@ -104,6 +104,8 @@ public class AlertDefinitionCommand extends AbstractCommand {
     private static String OPT_ASSIGN_OTHER_NOTIFICATION = "assignOtherNotification";
     private static String OPT_REGEX = "regex";
     private static String OPT_PROTOTYPE = "prototype";
+    private static String OPT_DISABLE = "disable";
+    private static String OPT_ENABLE = "enable";
     
     // Options for create command
     private static String OPT_TEMPLATEDEFINITIONID = "templateDefinition";
@@ -393,6 +395,8 @@ public class AlertDefinitionCommand extends AbstractCommand {
         p.accepts(OPT_ASSIGN_OTHER_NOTIFICATION, "If specified, assign notification to the given " +
                                                 "comma separated list of email addresses").
                 withRequiredArg().ofType(String.class);
+        p.accepts(OPT_DISABLE, "If specified, disables alert definitions in this sync");
+        p.accepts(OPT_ENABLE, "If specified, enables alert definitions in this sync");
 
         OptionSet options = getOptions(p, args);
 
@@ -489,6 +493,19 @@ public class AlertDefinitionCommand extends AbstractCommand {
                 AlertDefinitionBuilder.addEmailAction(def, emails);
             }
         }
+        
+        if (options.has(OPT_ENABLE)) {
+            for (AlertDefinition def : definitions) {
+                def.setActive(true);
+            }
+        }
+        
+        if (options.has(OPT_DISABLE)) {
+            for (AlertDefinition def : definitions) {
+                def.setActive(false);
+            }
+        }
+                
 
         System.out.println("Syncing " + definitions.size() + " alert definitions");
 
