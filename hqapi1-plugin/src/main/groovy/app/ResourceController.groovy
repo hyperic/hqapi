@@ -10,6 +10,8 @@ import org.hyperic.hq.appdef.shared.ServerManager
 import org.hyperic.hq.appdef.shared.PlatformManager
 import org.hyperic.hq.authz.shared.ResourceManager
 
+import org.hyperic.hq.appdef.shared.PlatformNotFoundException
+
 import org.hyperic.hq.authz.server.session.Resource
 import org.hyperic.hq.context.Bootstrap
 import org.hyperic.hq.common.VetoException
@@ -402,6 +404,7 @@ class ResourceController extends ApiController {
         def id = params.getOne("id")?.toInteger()
         def platformName = params.getOne("platformName")
         def fqdn = params.getOne("fqdn")
+        def ip = params.getOne("ip")
         def parentOf = params.getOne("parentOf")?.toInteger()
         def platformId = params.getOne("platformId")?.toInteger()
         def aeid = params.getOne("aeid")?.toString()
@@ -410,7 +413,7 @@ class ResourceController extends ApiController {
 
         def resource = null
         def failureXml
-        if (!id && !platformName && !fqdn && !platformId && !parentOf && !aeid) {
+        if (!ip && !id && !platformName && !fqdn && !platformId && !parentOf && !aeid) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             try {
@@ -452,6 +455,13 @@ class ResourceController extends ApiController {
                         failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
                                                "Platform fqdn='" + fqdn +
                                                "' not found")
+                    }
+                } else if (ip) {
+                    resource = findByIp(ip)
+                    if (!resource) {
+                        failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                              "Platform ip='" + ip +
+                                              "' not found")
                     }
                 } else if (parentOf) {
                     def child = getResource(parentOf)
@@ -1257,4 +1267,14 @@ class ResourceController extends ApiController {
         }
 
     }
+    
+    private Resource findByIp(ip) {
+        try {
+            def plat = platMan.findPlatformByFqdn(user, ip)
+            return plat.resource
+        } catch (PlatformNotFoundException e) {
+            return null
+        }
+    }
+    
 }
