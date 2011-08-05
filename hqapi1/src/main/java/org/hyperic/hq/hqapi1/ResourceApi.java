@@ -353,6 +353,33 @@ public class ResourceApi extends BaseApi {
     }
 
     /**
+     * Get a {@link Resource} by it's platform ip.
+     *
+     * @param ip The platform ip to look up.
+     * @param verbose Flag to indicate whether {@link org.hyperic.hq.hqapi1.types.ResourceConfig}
+     * and {@link org.hyperic.hq.hqapi1.types.ResourceProperty} information will
+     * be included.
+     * @param children Flag to control whether child resources of this resource
+     * will be included.
+     * @return On {@link org.hyperic.hq.hqapi1.types.ResponseStatus#SUCCESS},
+     * the Resource is returned via
+     * {@link org.hyperic.hq.hqapi1.types.ResourceResponse#getResource()}.
+     *
+     * @throws java.io.IOException If a network error occurs while making the request.
+     */
+    public ResourceResponse getPlatformResourceByIp(String ip, boolean verbose,
+                                                      boolean children)
+        throws IOException
+    {
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("ip", new String[] { ip });
+        params.put("verbose", new String[] { Boolean.toString(verbose) });
+        params.put("children", new String[] { Boolean.toString(children)});
+        return doGet("resource/get.hqu", params,
+                     new XmlResponseHandler<ResourceResponse>(ResourceResponse.class));
+    }
+    
+    /**
      * Get the platform {@link Resource} for the given resource id.
      *
      * @param id The resource id to query.
