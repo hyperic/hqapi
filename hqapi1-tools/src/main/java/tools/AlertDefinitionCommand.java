@@ -57,6 +57,9 @@ import org.springframework.stereotype.Component;
 import org.hyperic.hq.hqapi1.types.User;
 import org.hyperic.hq.hqapi1.types.UserResponse;
 
+import org.hyperic.hq.hqapi1.AgentApi;
+import org.hyperic.hq.hqapi1.types.AgentResponse;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,6 +78,7 @@ public class AlertDefinitionCommand extends AbstractCommand {
 
     private static String[] COMMANDS = { CMD_LIST, CMD_DELETE, CMD_SYNC, CMD_CREATE };
 
+    private static String OPT_AGENTID = "agentId";
     private static String OPT_TYPEALERTS = "typeAlerts";
     private static String OPT_EXCLUDE_TYPEALERTS = "excludeTypeAlerts";
     private static String OPT_EXCLUDE_IDS = "excludeTypeIds";
@@ -159,6 +163,9 @@ public class AlertDefinitionCommand extends AbstractCommand {
 
         OptionParser p = getOptionParser();
 
+        p.accepts(OPT_AGENTID, "If specified, return alert definitions for resources" + 
+                               "serviced by agentId").
+                withRequiredArg().ofType(Integer.class);
         p.accepts(OPT_ID, "If specified, return the alert definition with the given id.").
                 withRequiredArg().ofType(Integer.class);
         p.accepts(OPT_TYPEALERTS, "If specified, only parent resource type " +
@@ -234,6 +241,29 @@ public class AlertDefinitionCommand extends AbstractCommand {
             checkSuccess(resourceResponse);
 
             alertDefs = definitionApi.getAlertDefinitions(resourceResponse.getResource(), true);
+        } else if (options.has(OPT_AGENTID)) {
+            Integer agentId = (Integer)getRequired(options, OPT_AGENTID);
+            
+            AgentApi agentApi = api.getAgentApi();
+            AgentResponse agentResponse = agentApi.getAgent(agentId);
+            checkSuccess(agentResponse);
+
+            ResourcesResponse resourcesResponse =
+                    rApi.getResources(agentResponse.getAgent(), false, true);
+            checkSuccess(resourcesResponse);
+            // Flatten the list to pass to getAlertDefinitions()
+            List <Resource> resources = new ArrayList<Resource>();
+            for (Iterator<Resource> i =
+                resourcesResponse.getResource().iterator(); i.hasNext(); ) {
+                Resource r = i.next();
+                resources.add(r);
+                for (Iterator<Resource> it =
+                    r.getResource().iterator(); it.hasNext(); ) {
+                    Resource server = it.next();
+                    resources.addAll(server.getResource());                  
+                }
+             }
+            alertDefs = definitionApi.getAlertDefinitions(resources);
         } else if (options.has(OPT_RESOURCE_DESC)) {
             String description = (String)getRequired(options, OPT_RESOURCE_DESC);
             ResourcesResponse resourcesResponse =
