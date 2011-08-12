@@ -379,38 +379,18 @@ public class ResourceGet_test extends ResourceTestBase {
         String ip = "127.0.0.1";
         assertNotNull("Platform has no ip", ip);
         
-        ResourceResponse getResponse = 
+        ResourcesResponse resourcesResponse = 
             getApi().getResourceApi().getPlatformResourceByIp(ip, false, false);
         
-        hqAssertSuccess(getResponse);
-        Resource resource = getResponse.getResource();
-        validateResource(resource);
-    }
-
-    public void testGetPlatformResourceByIpNoPermission() throws Exception {
-
-        Resource r = getLocalPlatformResource(false, false);
-        
-        String ip = "127.0.0.1";
-        assertNotNull("Platform has no ip", ip);
-
-        List<User> users = createTestUsers(1);
-        User user = users.get(0);
-        HQApi apiUnpriv = getApi(user.getName(), TESTUSER_PASSWORD);
-
-        ResourceResponse getResponse = 
-            apiUnpriv.getResourceApi().getPlatformResourceByIp(ip, false, false);
-        
-        hqAssertFailurePermissionDenied(getResponse);
-
-        deleteTestUsers(users);
+        hqAssertSuccess(resourcesResponse);
+        assertTrue(resourcesResponse.getResource().size() > 0);
     }
     
     public void testGetInvalidPlatformResourceByIp() throws Exception {
 
         ResourceApi api = getApi().getResourceApi();
 
-        ResourceResponse getResponse = api.getPlatformResourceByIp("Invalid platform ip",
+        ResourcesResponse getResponse = api.getPlatformResourceByIp("Invalid platform ip",
                                                                      false, false);
         hqAssertFailureObjectNotFound(getResponse);
     }

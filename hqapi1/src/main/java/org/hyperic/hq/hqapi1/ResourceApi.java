@@ -367,7 +367,7 @@ public class ResourceApi extends BaseApi {
      *
      * @throws java.io.IOException If a network error occurs while making the request.
      */
-    public ResourceResponse getPlatformResourceByIp(String ip, boolean verbose,
+    public ResourcesResponse getPlatformResourceByIp(String ip, boolean verbose,
                                                       boolean children)
         throws IOException
     {
@@ -375,8 +375,8 @@ public class ResourceApi extends BaseApi {
         params.put("ip", new String[] { ip });
         params.put("verbose", new String[] { Boolean.toString(verbose) });
         params.put("children", new String[] { Boolean.toString(children)});
-        return doGet("resource/get.hqu", params,
-                     new XmlResponseHandler<ResourceResponse>(ResourceResponse.class));
+        return doGet("resource/find.hqu", params,
+                     new XmlResponseHandler<ResourcesResponse>(ResourcesResponse.class));
     }
     
     /**

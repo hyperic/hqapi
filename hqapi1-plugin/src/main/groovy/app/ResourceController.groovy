@@ -404,7 +404,6 @@ class ResourceController extends ApiController {
         def id = params.getOne("id")?.toInteger()
         def platformName = params.getOne("platformName")
         def fqdn = params.getOne("fqdn")
-        def ip = params.getOne("ip")
         def parentOf = params.getOne("parentOf")?.toInteger()
         def platformId = params.getOne("platformId")?.toInteger()
         def aeid = params.getOne("aeid")?.toString()
@@ -413,7 +412,7 @@ class ResourceController extends ApiController {
 
         def resource = null
         def failureXml
-        if (!ip && !id && !platformName && !fqdn && !platformId && !parentOf && !aeid) {
+        if (!id && !platformName && !fqdn && !platformId && !parentOf && !aeid) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             try {
@@ -456,13 +455,6 @@ class ResourceController extends ApiController {
                                                "Platform fqdn='" + fqdn +
                                                "' not found")
                     }
-                } else if (ip) {
-                    resource = findByIp(ip)
-                    if (!resource) {
-                        failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                                              "Platform ip='" + ip +
-                                              "' not found")
-                    }
                 } else if (parentOf) {
                     def child = getResource(parentOf)
                     if (!child) {
@@ -502,11 +494,12 @@ class ResourceController extends ApiController {
         def description = params.getOne("description")
         def children = params.getOne("children", "false").toBoolean()
         def verbose = params.getOne("verbose", "false").toBoolean()
-
+        def ip = params.getOne("ip")
+        
         def resources = []
         def failureXml
         
-        if (!agentId && !prototype && !description) {
+        if (!agentId && !prototype && !description && !ip) {
             failureXml = getFailureXML(ErrorCode.INVALID_PARAMETERS)
         } else {
             if (agentId) {
@@ -535,6 +528,20 @@ class ResourceController extends ApiController {
                         log.debug("Ignoring resource " + resource.name + " due to permissions")
                     }
                 }
+            } else if (ip) {
+                def matching = findPlatformByIpAddr(ip)
+                if (matching.isEmpty()) {
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                              "Platform ip='" + ip +
+                                              "' not found")
+                }
+                for (resource in matching) {
+                    try {
+                        resources.add(resource.checkPerms(operation: 'view', user:user))
+                    } catch (PermissionException e) {
+                        log.debug("Ignoring resource " + resource.name + " due to permissions")
+                    }
+                } 
             } else if (description) {
                 // TODO: Move into HQ.
                 def matching = []
@@ -1268,13 +1275,8 @@ class ResourceController extends ApiController {
 
     }
     
-    private Resource findByIp(ip) {
-        try {
-            def plat = platMan.findPlatformByFqdn(user, ip)
-            return plat.resource
-        } catch (PlatformNotFoundException e) {
-            return null
-        }
+    private Collection<Resource> findPlatformByIpAddr(ip) {
+        return platMan.getPlatformByIpAddr(user, ip)
     }
     
 }
