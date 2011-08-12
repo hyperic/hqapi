@@ -510,7 +510,6 @@ class ResourceController extends ApiController {
                                                " not found")
                 } else {
                     def platforms = agent.platforms
-                    System.out.println(platforms)
                     for (platform in platforms) {
                         try {
                             resources.add(platform.checkPerms(operation: 'view', user:user))
