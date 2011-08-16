@@ -27,6 +27,9 @@
 
 package org.hyperic.hq.hqapi1;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URI;
 
 /**
@@ -73,7 +76,15 @@ public class HQApi {
     public HQApi(URI uri, String user, String password) {
         this(new HQConnection(uri, user, password));
     }
-   
+
+    /**
+     * @param clientProperties The File representing the client.properties.
+     */
+    public HQApi(File clientProperties) 
+        throws FileNotFoundException, IOException {
+        this(new HQConnection(clientProperties));
+    }
+    
     public HQApi(HQConnection connection) {
         _userApi          = new UserApi(connection);
         _roleApi          = new RoleApi(connection);
