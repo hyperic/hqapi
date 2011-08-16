@@ -1,5 +1,7 @@
 Changes in HQApi 4.3
 
+ *) [HHQ-5141] Made HQConnection public
+
  *) [HHQ-5137] Added new constructor for HQApi to parse client.properties from passed File
 
  *) [HHQ-4991] Add getPlatformResources() API
