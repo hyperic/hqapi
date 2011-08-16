@@ -159,37 +159,6 @@ public class HQConnection implements Connection {
         }
     }
 
-    HQConnection(File clientProperties) 
-        throws FileNotFoundException, IOException {
-        Properties props = new Properties();;
-        if (clientProperties != null && clientProperties.exists()) {
-            FileInputStream fis = null;
-            try {
-                fis = new FileInputStream(clientProperties);
-                props.load(fis);
-            } finally {
-                try {
-                    if (fis != null) {
-                        fis.close();
-                    }
-                } catch (IOException ioe) {
-                    // Ignore
-                }
-            }
-        }
-
-        _host       = props.getProperty(OPT_HOST, "localhost");
-        _port       = Integer.parseInt(props.getProperty(OPT_PORT, "7080"));
-        _isSecure   = Boolean.valueOf(props.getProperty(OPT_SECURE, "false"));
-        _user       = props.getProperty(OPT_USER, "hqadmin");
-        _password   = props.getProperty(OPT_PASS);
-        if (_password != null || _password.isEmpty()) {
-            String encryptionKey = props.getProperty(OPT_ENCRYPTIONKEY);
-            String encryptedPassword = props.getProperty(OPT_ENCRYPTEDPASSWORD);
-            _password = decryptPassword(encryptedPassword, encryptionKey);
-        }
-    }
-
     private static String decryptPassword(String encryptedPassword, String encryptionKey) {
         StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
         encryptor.setPassword(encryptionKey);
