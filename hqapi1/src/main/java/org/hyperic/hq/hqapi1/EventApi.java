@@ -79,6 +79,10 @@ public class EventApi extends BaseApi {
          */
         CLONE("org.hyperic.hq.events.CloningEvent"),
         /**
+         * Events for when configuration changes.
+         */
+        CONFIGCHANGED("org.hyperic.hq.measurement.shared.ConfigChangedEvent"),
+        /**
          * Events for when control actions are run.
          */
         CONTROL("org.hyperic.hq.control.ControlEvent"),
