@@ -76,7 +76,7 @@ public class HQApi {
     public HQApi(URI uri, String user, String password) {
         this(new HQConnection(uri, user, password));
     }
-  
+
     /**
      * @param clientProperties The File representing the client.properties.
      */
@@ -84,7 +84,7 @@ public class HQApi {
         throws FileNotFoundException, IOException {
         this(new HQConnection(clientProperties));
     }
- 
+
     public HQApi(HQConnection connection) {
         _userApi          = new UserApi(connection);
         _roleApi          = new RoleApi(connection);
