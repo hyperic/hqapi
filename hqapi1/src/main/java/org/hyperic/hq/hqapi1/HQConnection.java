@@ -20,6 +20,7 @@ package org.hyperic.hq.hqapi1;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -35,6 +36,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -81,7 +83,18 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.hyperic.hq.hqapi1.types.ServiceError;
 import org.springframework.util.StringUtils;
 
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.properties.PropertyValueEncryptionUtils;
+
 class HQConnection implements Connection {
+
+    static final String OPT_HOST = "host";
+    static final String OPT_PORT = "port";
+    static final String OPT_USER = "user";
+    static final String OPT_PASS = "password";
+    static final String OPT_ENCRYPTEDPASSWORD = "encryptedPassword";
+    static final String OPT_ENCRYPTIONKEY = "encryptionKey";
+    static final String OPT_SECURE = "secure";
 
     private static Log _log = LogFactory.getLog(HQConnection.class);
 
@@ -110,6 +123,44 @@ class HQConnection implements Connection {
         _isSecure = isSecure;
         _user = user;
         _password = password;
+    }
+
+    HQConnection(File clientProperties) 
+        throws FileNotFoundException, IOException {
+        Properties props = new Properties();;
+        if (clientProperties != null && clientProperties.exists()) {
+            FileInputStream fis = null;
+            try {
+                fis = new FileInputStream(clientProperties);
+                props.load(fis);
+            } finally {
+                try {
+                    if (fis != null) {
+                        fis.close();
+                    }
+                } catch (IOException ioe) {
+                    // Ignore
+                }
+            }
+        }
+
+        _host       = props.getProperty(OPT_HOST, "localhost");
+        _port       = Integer.parseInt(props.getProperty(OPT_PORT, "7080"));
+        _isSecure   = Boolean.valueOf(props.getProperty(OPT_SECURE, "false"));
+        _user       = props.getProperty(OPT_USER, "hqadmin");
+        _password   = props.getProperty(OPT_PASS);
+        if (_password != null || _password.isEmpty()) {
+            String encryptionKey = props.getProperty(OPT_ENCRYPTIONKEY);
+            String encryptedPassword = props.getProperty(OPT_ENCRYPTEDPASSWORD);
+            _password = decryptPassword(encryptedPassword, encryptionKey);
+        }
+    }
+
+    private static String decryptPassword(String encryptedPassword, String encryptionKey) {
+        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        encryptor.setPassword(encryptionKey);
+        encryptor.setAlgorithm("PBEWithMD5AndDES");
+        return PropertyValueEncryptionUtils.decrypt(encryptedPassword, encryptor);
     }
 
     private String urlEncode(String s) throws IOException {
