@@ -86,7 +86,7 @@ import org.springframework.util.StringUtils;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.properties.PropertyValueEncryptionUtils;
 
-public class HQConnection implements Connection {
+class HQConnection implements Connection {
 
     static final String OPT_HOST = "host";
     static final String OPT_PORT = "port";
