@@ -32,8 +32,11 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpConnectionManager;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethodBase;
+import org.apache.commons.httpclient.HttpState;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -43,6 +46,7 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,11 +56,22 @@ class HQConnection implements Connection {
 
     private static Log _log = LogFactory.getLog(HQConnection.class);
 
+    private static final int DEFAULT_MAX_HTTP_CONNECTIONS = 6;
+
     private String _host;
     private int _port;
     private boolean _isSecure;
     private String _user;
     private String _password;
+
+    private String _protocol;
+
+    private HttpClient _httpClient;
+    private HttpConnectionManager _connectionManager;
+    private HttpState _httpState;
+
+    private boolean illegalUsername = false;
+    private boolean illegalPassword = false;
 
     HQConnection(java.net.URI uri, String user, String password) {
     	this(uri.getHost(),
@@ -65,23 +80,69 @@ class HQConnection implements Connection {
     		 user,
     		 password);
     }
-    
+
+    HQConnection(java.net.URI uri, String user, String password, int maxHttpConnections) {
+        this(uri.getHost(), uri.getPort(),
+            uri.getScheme().equalsIgnoreCase("https") ? true : false, user, password,
+            maxHttpConnections);
+    }
+
+    HQConnection(String host, int port, boolean isSecure, String user, String password) {
+        this(host, port, isSecure, user, password, DEFAULT_MAX_HTTP_CONNECTIONS);
+    }
+
     HQConnection(String host,
                  int port,
                  boolean isSecure,
                  String user,
-                 String password)
-    {
+                 String password,
+                 int maxHttpConnections) {
+        // Basic validation of user and password inputs
+        // We only mark the problems due to backward compatibility. If it's not
+        // needed then these should throw exceptions right here in the
+        // constructor
+        if (user == null || user.length() == 0) {
+            illegalUsername = true;
+        }
+        if (password == null || password.length() == 0) {
+            illegalPassword = true;
+        }
+
         _host = host;
         _port = port;
         _isSecure = isSecure;
         _user = user;
         _password = password;
+        _protocol = _isSecure ? "https" : "http";
 
         if (_isSecure) {
             // To allow for self signed certificates
             UntrustedSSLProtocolSocketFactory.register();
         }
+
+        // Initialize connection manager - We use a private connection manager
+        // per HQConnection, therefore the per-host and the total
+        // connections are identical.
+        _connectionManager = new MultiThreadedHttpConnectionManager();
+        HttpConnectionManagerParams params = new HttpConnectionManagerParams();
+        params.setDefaultMaxConnectionsPerHost(maxHttpConnections);
+        params.setMaxConnectionsPerHost(null, maxHttpConnections);
+        params.setMaxTotalConnections(maxHttpConnections);
+        _connectionManager.setParams(params);
+
+        // Initialize http state with the credentials
+        _httpState = new HttpState();
+        Credentials defaultcreds = new UsernamePasswordCredentials(_user, _password);
+        _httpState.setCredentials(AuthScope.ANY, defaultcreds);
+
+        // Create the http client instance
+        _httpClient = new HttpClient(_connectionManager);
+        // and make sure it tried to authenticate preemptively
+        _httpClient.getParams().setAuthenticationPreemptive(true);
+
+        // Disable re-tries
+        DefaultHttpMethodRetryHandler retryhandler = new DefaultHttpMethodRetryHandler(0, true);
+        _httpClient.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, retryhandler);
     }
 
     private String urlEncode(String s) throws IOException {
@@ -225,39 +286,33 @@ class HQConnection implements Connection {
                             ResponseHandler<T> responseHandler)
             throws IOException
     {
-        String protocol = _isSecure ? "https" : "http";
         ServiceError error;
-        URL url = new URL(protocol, _host, _port, uri);
+        URL url = new URL(_protocol, _host, _port, uri);
         method.setURI(new URI(url.toString(), true));
         _log.debug("Setting URI: " + url.toString());
 
         try {
-            HttpClient client = new HttpClient();
-
-            // Validate user & password inputs
-            if (_user == null || _user.length() == 0) {
+            // These tests are just here for backward compatibility, if the
+            // error
+            // responses are not part of the expected contract, then these
+            // tests should move to the constructor
+            if (illegalUsername) {
                 error = new ServiceError();
                 error.setErrorCode("LoginFailure");
                 error.setReasonText("User name cannot be null or empty");
                 return responseHandler.getErrorResponse(error);
             }
-
-            if (_password == null || _password.length() == 0) {
+            if (illegalPassword) {
                 error = new ServiceError();
                 error.setErrorCode("LoginFailure");
                 error.setReasonText("Password cannot be null or empty");
                 return responseHandler.getErrorResponse(error);
             }
 
-            // Set Basic auth creds
-            client.getParams().setAuthenticationPreemptive(true);
-            Credentials defaultcreds = new UsernamePasswordCredentials(_user, _password);
-            client.getState().setCredentials(AuthScope.ANY, defaultcreds);
+            // Execute the http method, using the state information (i.e. cookie
+            // and authentication)
+            int responseCode = _httpClient.executeMethod(null, method, _httpState);
 
-            // Disable re-tries
-            DefaultHttpMethodRetryHandler retryhandler = new DefaultHttpMethodRetryHandler(0, true);
-            client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, retryhandler);
-            int responseCode = client.executeMethod(method);
             return responseHandler.handleResponse(responseCode, method);
         } catch (SocketException e) {
             throw new HttpException("Error issuing request", e);
