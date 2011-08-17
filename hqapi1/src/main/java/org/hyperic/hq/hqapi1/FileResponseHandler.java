@@ -104,6 +104,13 @@ public class FileResponseHandler<T> implements ResponseHandler<T> {
 				_log.warn("Unable to deserialize result", e);
 				return getErrorResponse(error);
 			} finally {
+				if (in != null) {
+					try {
+						in.close();
+					} catch (IOException e) {
+						_log.warn("Unable to close response stream. Cause: " + e.getMessage());
+					}
+				}
 				if (fileOutputStream != null) {
 					try {
 						fileOutputStream.close();

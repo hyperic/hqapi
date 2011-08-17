@@ -48,6 +48,14 @@ public class XmlResponseHandler<T> implements ResponseHandler<T> {
                         _log.debug("Unable to deserialize result", e);
                     }
                     return getErrorResponse(error);
+                } finally {
+                    if (is != null) {
+                        try {
+                                is.close();
+                        } catch (IOException e) {
+                                _log.warn("Unable to close XML response stream. Cause: " + e.getMessage());
+                        }
+                    }
                 }
             case 401:
                 // Unauthorized
