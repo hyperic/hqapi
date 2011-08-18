@@ -107,15 +107,15 @@ public class HQConnection implements Connection {
     private String _user;
     private String _password;
 
-    HQConnection(java.net.URI uri, String user, String password) {
-         this(uri.getHost(),
-             uri.getPort(),
-             uri.getScheme().equalsIgnoreCase("https") ? true : false,
-             user,
-             password);
+    public HQConnection(java.net.URI uri, String user, String password) {
+    	this(uri.getHost(),
+    		 uri.getPort(),
+    		 uri.getScheme().equalsIgnoreCase("https") ? true : false,
+    		 user,
+    		 password);
     }
-
-    HQConnection(String host,
+    
+    public HQConnection(String host,
                  int port,
                  boolean isSecure,
                  String user,
@@ -128,7 +128,7 @@ public class HQConnection implements Connection {
         _password = password;
     }
 
-    HQConnection(File clientProperties) 
+    public HQConnection(File clientProperties) 
         throws FileNotFoundException, IOException {
         Properties props = new Properties();;
         if (clientProperties != null && clientProperties.exists()) {
