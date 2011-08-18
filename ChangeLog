@@ -1,3 +1,5 @@
+Changes in HQApi 4.4
+
 Changes in HQApi 4.3
 
  *) [HHQ-5047] Added ConfigChangedEvent type to EventType enum
