@@ -117,7 +117,14 @@ public class HQConnection implements Connection {
                 }
             }
         }
+        initConnectionProperties(props);
+    }
 
+    public HQConnection(Properties props) {
+        initConnectionProperties(props);
+    }
+
+    private void initConnectionProperties(Properties props) {
         _host       = props.getProperty(OPT_HOST, "localhost");
         _port       = Integer.parseInt(props.getProperty(OPT_PORT, "7080"));
         _isSecure   = Boolean.valueOf(props.getProperty(OPT_SECURE, "false"));
@@ -127,6 +134,11 @@ public class HQConnection implements Connection {
             String encryptionKey = props.getProperty(OPT_ENCRYPTIONKEY);
             String encryptedPassword = props.getProperty(OPT_ENCRYPTEDPASSWORD);
             _password = decryptPassword(encryptedPassword, encryptionKey);
+        }
+
+        if (_isSecure) {
+            // To allow for self signed certificates
+            UntrustedSSLProtocolSocketFactory.register();
         }
     }
 
