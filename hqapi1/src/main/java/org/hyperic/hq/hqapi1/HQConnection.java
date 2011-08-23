@@ -158,10 +158,14 @@ public class HQConnection implements Connection {
         _port       = Integer.parseInt(props.getProperty(OPT_PORT, "7080"));
         _isSecure   = Boolean.valueOf(props.getProperty(OPT_SECURE, "false"));
         _user       = props.getProperty(OPT_USER, "hqadmin");
-        _password   = props.getProperty(OPT_PASS);
-        if (_password != null || _password.isEmpty()) {
-            String encryptionKey = props.getProperty(OPT_ENCRYPTIONKEY);
-            String encryptedPassword = props.getProperty(OPT_ENCRYPTEDPASSWORD);
+        _password   = props.getProperty(OPT_PASS, "");
+        if (_password.isEmpty()) {
+            String encryptionKey = props.getProperty(OPT_ENCRYPTIONKEY, "");
+            String encryptedPassword = props.getProperty(OPT_ENCRYPTEDPASSWORD, "");
+            if (encryptionKey.isEmpty() || encryptedPassword.isEmpty()) {
+                _log.error(OPT_PASS + ", " + OPT_ENCRYPTIONKEY + ", " + OPT_ENCRYPTEDPASSWORD + 
+                    " not set");
+            }
             _password = decryptPassword(encryptedPassword, encryptionKey);
         }
 
