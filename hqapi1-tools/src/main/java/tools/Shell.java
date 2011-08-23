@@ -124,17 +124,14 @@ public class Shell {
         final List<String> connectionArgs = new ArrayList<String>(5);
         for (int i=0;i <args.length;i++) {
             final String arg = args[i];
-            if (arg.trim().startsWith("--" + OptionParserFactory.OPT_HOST)
-                    || arg.trim().startsWith(
-                            "--" + OptionParserFactory.OPT_PORT)
-                    || arg.trim().startsWith(
-                            "--" + OptionParserFactory.OPT_PASS)
-                    || arg.trim().startsWith(
-                            "--" + OptionParserFactory.OPT_USER)
-                    || arg.trim().startsWith(
-                            "--" + OptionParserFactory.OPT_SECURE)
-                    || arg.trim().startsWith(
-                            "--" + OptionParserFactory.OPT_PROPERTIES)) {
+            if (arg.trim().startsWith("--" + OptionParserFactory.OPT_HOST) ||
+                arg.trim().startsWith("--" + OptionParserFactory.OPT_PORT) ||
+                arg.trim().startsWith("--" + OptionParserFactory.OPT_PASS) ||
+                arg.trim().startsWith("--" + OptionParserFactory.OPT_USER) ||
+                arg.trim().startsWith("--" + OptionParserFactory.OPT_SECURE[1]) ||
+                arg.trim().equals("-" + OptionParserFactory.OPT_SECURE[0]) ||
+                arg.trim().startsWith("--" + OptionParserFactory.OPT_PROPERTIES))
+            {
                 connectionArgs.add(arg);
                 if( i != args.length-1 && !(args[i+1].startsWith("--"))) {
                     connectionArgs.add(args[i+1]);
@@ -202,8 +199,8 @@ public class Shell {
             System.setProperty(OptionParserFactory.SYSTEM_PROP_PREFIX + OptionParserFactory.OPT_PASS,password);
         }
 
-
-        Boolean secure = options.hasArgument(OptionParserFactory.OPT_SECURE[0]) ||
+        Boolean secure = options.has(OptionParserFactory.OPT_SECURE[0]) ||
+                         options.has(OptionParserFactory.OPT_SECURE[1]) ||
                          Boolean.valueOf(clientProps.getProperty(OptionParserFactory.OPT_SECURE[1],
                                                                  "false"));
         System.setProperty(OptionParserFactory.SYSTEM_PROP_PREFIX + OptionParserFactory.OPT_SECURE[1], secure.toString());  

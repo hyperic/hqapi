@@ -13,6 +13,8 @@ Changes in HQApi 5.0
     added primarily to do integration testing for HQ-2623. No corresponding
     CLI command was added.
 
+ *) [HHQ-5151] Fix handling of -s and --secure options.
+
 Changes in HQApi 4.3
 
  *) [HHQ-5047] Added ConfigChangedEvent type to EventType enum
