@@ -168,11 +168,6 @@ public class HQConnection implements Connection {
             }
             _password = decryptPassword(encryptedPassword, encryptionKey);
         }
-
-        if (_isSecure) {
-            // To allow for self signed certificates
-            UntrustedSSLProtocolSocketFactory.register();
-        }
     }
 
     private static String decryptPassword(String encryptedPassword, String encryptionKey) {
