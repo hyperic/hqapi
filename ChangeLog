@@ -1,5 +1,7 @@
 Changes in HQApi 4.4
 
+ *) [HHQ-5151] Fix handling of -s and --secure options.
+
 Changes in HQApi 4.3
 
  *) [HHQ-5047] Added ConfigChangedEvent type to EventType enum
