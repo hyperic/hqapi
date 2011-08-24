@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -329,6 +330,12 @@ public class HQConnection implements Connection {
             client.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, retryhandler);
             int responseCode = client.executeMethod(method);
             return responseHandler.handleResponse(responseCode, method);
+        } catch (UnknownHostException e ) {
+            _log.debug(e);
+            error = new ServiceError();
+            error.setErrorCode("UnknownHost");
+            error.setReasonText("Unknown host specified in connection properties: " + _host);
+            return responseHandler.getErrorResponse(error);
         } catch (SocketException e) {
             throw new HttpException("Error issuing request", e);
         } finally {
