@@ -33,6 +33,7 @@ import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -379,9 +380,17 @@ public class HQConnection implements Connection {
         // Disable re-tries
         client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(0, true));
 
-        HttpResponse response = client.execute(method, localContext);
+        try {
+            HttpResponse response = client.execute(method, localContext);
+            return responseHandler.handleResponse(response);        
+        } catch (UnknownHostException e ) {
+            _log.debug(e);
+            error = new ServiceError();
+            error.setErrorCode("UnknownHost");
+            error.setReasonText("Unknown host specified in connection properties: " + _host);
+            return responseHandler.getErrorResponse(error);
+        }
 
-        return responseHandler.handleResponse(response);        
     }
 
     private KeyStore getKeyStore(String keyStorePath, String keyStorePassword) throws KeyStoreException, IOException {
