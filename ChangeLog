@@ -15,6 +15,8 @@ Changes in HQApi 5.0
 
 Changes in HQApi 4.4
 
+ *) [HHQ-5156] Updated UI view of plugin to include more descriptive text and include .zip client download
+
  *) [HHQ-5151] Fix handling of -s and --secure options.
 
 Changes in HQApi 4.3

@@ -38,6 +38,12 @@
 			<version>${project.version}</version>
 			<type>tar.gz</type>
 		</dependency>
+		<dependency>
+            <groupId>org.hyperic.hq.hqapi</groupId>
+            <artifactId>hqapi1-client</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
 	</dependencies>
 
 </project>
