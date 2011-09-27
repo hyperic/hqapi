@@ -736,7 +736,15 @@
     <!-- Autodiscvoery objects -->
 
     <xs:complexType name="AIPlatform">
+        <xs:sequence>
+            <xs:element name="AIServer" type="AIServer" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>    
         <xs:attribute name="fqdn" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="id"   type="xs:int" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="AIServer">
         <xs:attribute name="name" type="xs:string" use="required"/>
         <xs:attribute name="id"   type="xs:int" use="required"/>
     </xs:complexType>

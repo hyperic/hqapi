@@ -7,7 +7,12 @@ class AutodiscoveryController extends ApiController {
         { doc ->
             AIPlatform(id    : p.id,
                        name  : p.name,
-                       fqdn  : p.fqdn)
+                       fqdn  : p.fqdn) {
+                       p.getAIServerValues().each { s ->
+                           AIServer(id                  : s.id,
+                                    name                : s.name) 
+                       }
+            }
         }
     }
 
