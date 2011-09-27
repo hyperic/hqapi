@@ -33,6 +33,7 @@ import org.hyperic.hq.hqapi1.AutodiscoveryApi;
 import org.hyperic.hq.hqapi1.HQApi;
 import org.hyperic.hq.hqapi1.XmlUtil;
 import org.hyperic.hq.hqapi1.types.AIPlatform;
+import org.hyperic.hq.hqapi1.types.AIServer;
 import org.hyperic.hq.hqapi1.types.QueueResponse;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.springframework.stereotype.Component;
@@ -48,7 +49,11 @@ public class AutoDiscoveryCommand extends AbstractCommand {
 
     private static String[] COMMANDS = { CMD_LIST, CMD_APPROVE };
 
-    private static String OPT_REGEX = "regex";
+    private static String OPT_REGEX         = "regex"; // deprecated
+    private static String OPT_PLATFORMREGEX = "platform-regex"; 
+    private static String OPT_SERVERID      = "server-id";
+    private static String OPT_PLATFORMID    = "platform-id";
+    private static String OPT_SERVERREGEX   = "server-regex";
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -97,15 +102,27 @@ public class AutoDiscoveryCommand extends AbstractCommand {
         OptionParser p = getOptionParser();
 
         p.accepts(OPT_REGEX, "If specified, only platforms that match the given " +
+                  "regular expression will be approved (deprecated)").
+                  withRequiredArg().ofType(String.class);
+        p.accepts(OPT_PLATFORMREGEX, "If specified, only platforms that match the given " +
                   "regular expression will be approved").
-                withRequiredArg().ofType(String.class);
+                  withRequiredArg().ofType(String.class);      
+        p.accepts(OPT_SERVERREGEX, "If specified, only platforms that match the given " +
+                  "regular expression will be approved").
+                  withRequiredArg().ofType(String.class);         
+        p.accepts(OPT_SERVERID, "If specified, approve the server id provided").
+                  withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_PLATFORMID, "If specified, approve the platform id provided").
+                  withRequiredArg().ofType(Integer.class);
 
         OptionSet options = getOptions(p, args);
 
 
         Pattern pattern;
-        if (options.has(OPT_REGEX)) {
+        if (options.has(OPT_REGEX)) {   // --regex is deprecated
             pattern = Pattern.compile((String)options.valueOf(OPT_REGEX));
+        } else if (options.has(OPT_PLATFORMREGEX)) { 
+            pattern = Pattern.compile((String)options.valueOf(OPT_PLATFORMREGEX));
         } else {
             pattern = Pattern.compile(".*");
         }
@@ -117,15 +134,38 @@ public class AutoDiscoveryCommand extends AbstractCommand {
         checkSuccess(queue);
 
         int num = 0;
-        for (AIPlatform plat : queue.getAIPlatform()) {
-            Matcher m = pattern.matcher(plat.getName());
-            if (m.matches()) {
-                System.out.println("Approving " + plat.getName());
-                StatusResponse approveResponse = autodiscoveryApi.approve(plat.getId());
-                checkSuccess(approveResponse);
-                num++;
+        if (options.has(OPT_SERVERID)) {
+            StatusResponse response = autodiscoveryApi.approveServer((Integer)options.valueOf(OPT_SERVERID));
+            checkSuccess(response);
+            num = 1;
+        } else if (options.has(OPT_PLATFORMID)) {
+            StatusResponse response = autodiscoveryApi.approve((Integer)options.valueOf(OPT_PLATFORMID));
+            checkSuccess(response);
+            num = 1;            
+        } else if (options.has(OPT_SERVERREGEX)) {
+            for (AIPlatform plat : queue.getAIPlatform()) {
+                pattern = Pattern.compile((String)options.valueOf(OPT_SERVERREGEX));
+                for (AIServer server : plat.getAIServer()) {
+                    Matcher m = pattern.matcher(server.getName());
+                    if (m.matches()) {
+                        System.out.println("Approving " + server.getName());
+                        StatusResponse approveResponse = autodiscoveryApi.approveServer(server.getId());
+                        checkSuccess(approveResponse);
+                        num++;
+                    }
+                }
+            }            
+        } else {
+            for (AIPlatform plat : queue.getAIPlatform()) {
+                Matcher m = pattern.matcher(plat.getName());
+                if (m.matches()) {
+                    System.out.println("Approving " + plat.getName());
+                    StatusResponse approveResponse = autodiscoveryApi.approve(plat.getId());
+                    checkSuccess(approveResponse);
+                    num++;
+                }
             }
         }
-        System.out.println("Approved " + num + " platforms.");
+        System.out.println("Approved " + num + " resources.");
     }
 }
