@@ -1,3 +1,7 @@
+Changes in HQApi 5.1
+
+ *) Modified autodiscovery approve to allow more options for approval
+
 Changes in HQApi 5.0
 
  *) Upgraded Commons-HttpClient to 4.1.1.
