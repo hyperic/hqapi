@@ -18,6 +18,7 @@ Changes in HQApi 5.0
     CLI command was added.
 
 Changes in HQApi 4.4
+ *) [HQAPI-161] Allow metricTemplate sync to take command line options
 
  *) [HHQ-5156] Updated UI view of plugin to include more descriptive text and include .zip client download
 
