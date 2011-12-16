@@ -50,6 +50,11 @@ public class MetricTemplateCommand extends AbstractCommand {
     private static String[] COMMANDS = { CMD_LIST, CMD_SYNC };
 
     private static String OPT_PROTOTYPE  = "prototype";
+    private static String OPT_DEFAULTON  = "defaultOn";
+    private static String OPT_DEFAULTINTERVAL   = "defaultInterval";
+    private static String OPT_INDICATOR  = "indicator";
+    
+    private long MINUTE = 60000l;
 
     private void printUsage() {
         System.err.println("One of " + Arrays.toString(COMMANDS) + " required");
@@ -105,8 +110,18 @@ public class MetricTemplateCommand extends AbstractCommand {
     }
 
     private void sync(String[] args) throws Exception {
-
+        Long interval;
+        Boolean defaultOn;
+        Boolean indicator;
+        
         OptionParser p = getOptionParser();
+        p.accepts(OPT_DEFAULTINTERVAL, "Override interval value in provided xml to value in ms." + 
+                "must of in multiples of " + MINUTE).
+            withRequiredArg().ofType(Long.class);
+        p.accepts(OPT_DEFAULTON, "Override defaultOn boolean in provided xml.").
+            withRequiredArg().ofType(Boolean.class);
+        p.accepts(OPT_INDICATOR, "Override indicator boolean in provided xml").
+            withRequiredArg().ofType(Boolean.class);
         OptionSet options = getOptions(p, args);
 
         HQApi api = getApi(options);
@@ -119,6 +134,43 @@ public class MetricTemplateCommand extends AbstractCommand {
                 XmlUtil.deserialize(MetricTemplatesResponse.class, is);
 
         List<MetricTemplate> metricTemplates = resp.getMetricTemplate();
+        
+        if (options.has(OPT_DEFAULTINTERVAL)) {
+            interval = (Long)options.valueOf(OPT_DEFAULTINTERVAL);
+            if (interval % MINUTE != 0) {
+                System.err.println("Invalid interval. Must be a multiple of 60000ms");
+                System.exit(-1);
+            }
+        } else {
+            interval = null;
+        }
+        
+        if (options.has(OPT_DEFAULTON)) {
+            defaultOn = (Boolean)options.valueOf(OPT_DEFAULTON);
+        } else {
+            defaultOn = null;
+        }
+        
+        if (options.has(OPT_INDICATOR)) {
+            indicator = (Boolean)options.valueOf(OPT_INDICATOR);
+        } else {
+            indicator = null;
+        }
+        
+        // Only loop if we need to
+        if (null != interval || null != defaultOn || null != indicator) {
+            for (MetricTemplate template : metricTemplates) {
+                if (null != interval) {
+                    template.setDefaultInterval(interval);
+                }
+                if (null != defaultOn) {
+                    template.setDefaultOn(defaultOn);
+                }
+                if (null != indicator) {
+                    template.setIndicator(indicator);
+                }
+            }
+        }
 
         StatusResponse syncResponse =
                 metricApi.syncMetricTemplates(metricTemplates);
