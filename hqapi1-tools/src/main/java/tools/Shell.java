@@ -179,7 +179,9 @@ public class Shell {
             if (password == null || password.isEmpty()) {
                 String encryptionKey = clientProps.getProperty(OptionParserFactory.OPT_ENCRYPTIONKEY);
                 String encryptedPassword = clientProps.getProperty(OptionParserFactory.OPT_ENCRYPTEDPASSWORD);
-                password = decryptPassword(encryptedPassword, encryptionKey);
+                if (null != encryptionKey && null != encryptedPassword) {
+                    password = decryptPassword(encryptedPassword, encryptionKey);
+                }
             }
         }
 
