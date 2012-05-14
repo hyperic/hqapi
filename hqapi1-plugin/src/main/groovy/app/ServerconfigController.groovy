@@ -12,7 +12,7 @@ class ServerconfigController extends ApiController {
 
     
     private _hiddenProps = ['CAM_SCHEMA_VERSION', 'CAM_SERVER_VERSION', 
-                            'CAM_JAAS_PROVIDER', 'CAM_LDAP_NAMING_FACTORY_INITIAL',
+                            'CAM_LDAP_NAMING_FACTORY_INITIAL',
                             'CAM_HELP_USER', 'CAM_HELP_PASSWORD',
                             'CAM_MULTICAST_ADDRESS', 'CAM_MULTICAST_PORT',
                             'CAM_SYSLOG_ACTIONS_ENABLED', 'CAM_GUIDE_ENABLED',
