@@ -1,4 +1,6 @@
 Changes in HQApi 4.4
+ *) [HQAPI-167] Fixed bug restricting enabling of LDAP auth
+
  *) [HQAPI-162] Fixed NPE when encryptedPassword/encryptionKey are null
 
  *) [HQAPI-161] Allow metricTemplate sync to take command line options
