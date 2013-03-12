@@ -100,7 +100,7 @@ public class AlertdefinitionController extends ApiController {
     }
 
     private Closure getAlertDefinitionXML(d, excludeIds) {
-    	return getAlertDefinitionXML(d, excludeIds, false)
+        return getAlertDefinitionXML(d, excludeIds, false)
     }
 
     private Closure getAlertDefinitionXML(d, excludeIds, showAllActions) {
@@ -202,8 +202,8 @@ public class AlertdefinitionController extends ApiController {
                             continue
                         } else {
                             if (!excludeIds) {
-                        	   conditionAttrs["recoverId"] = alert.id
-                        	}
+                               conditionAttrs["recoverId"] = alert.id
+                            }
                             conditionAttrs["recover"] = alert.name
                         }
                     } else if (c.type == EventConstants.TYPE_CFG_CHG) {
@@ -256,6 +256,8 @@ public class AlertdefinitionController extends ApiController {
                                                   value: resource.id)
                                 AlertActionConfig(key: 'action',
                                                   value: config.getValue('action'))
+                                AlertActionConfig(key: 'params',
+                                    value: config.getValue('params'))
                             }
                         }
                     } else if (a.className == "com.hyperic.hq.bizapp.server.action.email.EmailAction") {
@@ -274,8 +276,8 @@ public class AlertdefinitionController extends ApiController {
                             }
                          }
                     } else if (showAllActions) {
-                    	AlertAction(id: a.id,
-                    				className: a.className)
+                        AlertAction(id: a.id,
+                                    className: a.className)
                     }
                 }
             }
@@ -298,10 +300,10 @@ public class AlertdefinitionController extends ApiController {
                 definition = aMan.getByIdAndCheck(user, id)
                 
                 if (!definition) {
-                	failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
-                							   "Alert Definition with id " + id +
-                							   " not found")
-            	}
+                    failureXml = getFailureXML(ErrorCode.OBJECT_NOT_FOUND,
+                                               "Alert Definition with id " + id +
+                                               " not found")
+                }
             } catch (PermissionException e) {
                 failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
             } catch (Exception e) {
@@ -509,7 +511,7 @@ public class AlertdefinitionController extends ApiController {
         } else if (alertdefinition.parent && alertdefinition.parent.id > 0) {
             failureXml = getFailureXML(ErrorCode.NOT_SUPPORTED,
                                        "Unable to delete alert definition based on " +
-                                       "type alert definition " + 
+                                       "type alert definition " +
                                        alertdefinition.parent.id)
         } else {
             try {
@@ -752,6 +754,11 @@ public class AlertdefinitionController extends ApiController {
                         it.'@key' == 'action'
                     }?.'@value'
 
+                    def par = xmlAction['AlertActionConfig'].find {
+                        it.'@key' == 'params'
+                    }?.'@value'
+
+            
                     def cResource = null
                     try {
                         cResource = getResource(rId)
@@ -769,6 +776,7 @@ public class AlertdefinitionController extends ApiController {
                         cfg['appdefType'] = Integer.toString(cResource.entityId.type)
                         cfg['appdefId'] = Integer.toString(cResource.entityId.id)
                         cfg['action'] = action
+                        cfg['params'] = par
                     } else {
                         // If the resource is not found, don't add the action
                         log.warn("Ignoring invalid ControlAction config " +
@@ -1041,20 +1049,20 @@ public class AlertdefinitionController extends ApiController {
                     }
                     adv.id = newDef.id
                 } else {
-                	if (typeBased 
-                			&& (!adv.name.equals(existing.name)
-                				|| !adv.description.equals(existing.description)
-                				|| adv.priority != existing.priority
-                				|| adv.active != existing.active)) {
-                		
-                		eventBoss.updateAlertDefinitionBasic(sessionId, adv.id,
-                										 	 adv.name, adv.description, 
-                										 	 adv.priority, adv.active)
-                	}
+                    if (typeBased
+                            && (!adv.name.equals(existing.name)
+                                || !adv.description.equals(existing.description)
+                                || adv.priority != existing.priority
+                                || adv.active != existing.active)) {
+                        
+                        eventBoss.updateAlertDefinitionBasic(sessionId, adv.id,
+                                                             adv.name, adv.description,
+                                                             adv.priority, adv.active)
+                    }
                     eventBoss.updateAlertDefinition(sessionId, adv)
                 }
             } catch (PermissionException e) {
-            	failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)    
+                failureXml = getFailureXML(ErrorCode.PERMISSION_DENIED)
             } catch (Exception e) {
                 log.error("Error updating alert definition", e)
                 failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,
