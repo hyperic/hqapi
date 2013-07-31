@@ -1,19 +1,6 @@
-import org.hyperic.hq.grouping.CritterList;
-import org.hyperic.hq.grouping.CritterType;
-import org.hyperic.hq.grouping.CritterRegistry;
-import org.hyperic.hq.grouping.prop.CritterPropType 
-import org.hyperic.hq.grouping.prop.EnumCritterProp 
-import org.hyperic.hq.grouping.prop.EnumCritterPropDescription 
-import org.hyperic.hq.grouping.prop.GroupCritterProp 
-import org.hyperic.hq.grouping.prop.ProtoCritterProp 
-import org.hyperic.hq.grouping.prop.ResourceCritterProp 
-import org.hyperic.hq.grouping.prop.StringCritterProp 
-import org.hyperic.hq.hqapi1.ErrorCode
-import org.hyperic.hq.authz.shared.PermissionException;
-import org.hyperic.hq.authz.shared.ResourceGroupManager 
+import org.hyperic.hq.authz.shared.PermissionException
 import org.hyperic.hq.common.VetoException
-import org.hyperic.hq.context.Bootstrap 
-import org.hyperic.util.HypericEnum 
+import org.hyperic.hq.hqapi1.ErrorCode
 
 class GroupController extends ApiController {
 
@@ -114,76 +101,6 @@ class GroupController extends ApiController {
         }
     }
 	
-	private setCriteria(group,xmlIn) {
-		def isAny = xmlIn[0].'@any'?.toBoolean();
- 		def failureXml = null
- 	 	def critters = parseCritters(xmlIn)
-		CritterList clist = new CritterList(critters, isAny)
- 	 	Bootstrap.getBean(ResourceGroupManager.class).setCriteria(user, group, clist)
-	}
-	
-	 private CritterType findCritterType(String name) {
- 		CritterRegistry.getRegistry().critterTypes.find { t ->
- 	 	 	t.class.name == name
- 		}
- 	 }
-	
-	private List parseCritters(xmlIn) {
-		xmlIn.'Criteria'.collect { critterDef ->
-		CritterType critterType = findCritterType(critterDef.'@class')
-
-		if (critterType == null) {
-			throw new Exception("Unable to find critter class [${critterDef.'@class'}]")
-		}
-
-		def props = [:]
-		for (propDef in critterDef.children()) {
-			String propId   = propDef.'@name'
-			String propType = propDef.'@type'
-			//TODO maybe not so specific on prop type?
-			if (propType == 'string') {
-				props[propId] = new StringCritterProp(propId, propDef.'@value')
-			} else if (propType == 'resource') {
-				def rsrcId   = propDef.'@value'.toInteger()
-				def resource = resourceHelper.findResource(rsrcId)
-				props[propId] = new ResourceCritterProp(propId, resource)
-			} else if (propType == 'group') {
-				def group = resourceHelper.findGroupByName(propDef.'@value')
-				props[propId] = new GroupCritterProp(propId, group)
-			} else if (propType == 'proto') { 
-				def proto  = resourceHelper.findResourcePrototype(propDef.'@value')
-				props[propId] = new ProtoCritterProp(propId, proto)
-			} else if (propType == 'enum') {
-				def desc = critterType.propDescriptions.find { it.id == propId }
-				if (!desc) {
-					throw new Exception("Unknown prop [${propId}] for " + 
-                                "critter [${critterDef.class}]")
-				}
-				if (desc.type != CritterPropType.ENUM) {
-					throw new Exception("Property [${propId}] of critter ["+ 
-                                "[${critterDef.class}] should be " + 
-                                "of type <enum>")
-				}
-        
-				EnumCritterPropDescription eDesc = desc
-				def propDesc = propDef.'@value'
-				HypericEnum match = eDesc.possibleValues.find { it.description == propDesc }
-        		if (match == null) {
-            		throw new Exception("[${propDesc}] is not a valid " + 
-                                "value for prop [${propId}] for " +
-                                "critter [${critterDef.@class}]")
-        		}
-        		props[propId] = new EnumCritterProp(propId, match)
-    		} else {
-    			throw new Exception("Unknown prop type [${propDef.@type}] for " + 
-                            "critter [${critterDef.@class}]")
-    		}
-		}
-		critterType.newInstance(props)
-		}
-    }
-
-
     def sync(params) {
         def syncRequest = new XmlParser().parseText(getPostData())
 
@@ -312,37 +229,13 @@ class GroupController extends ApiController {
                     } 
                 } else {
                     // TODO: private groups
-					def criteriaList = xmlGroup.'CriteriaList'
-					
-					if(criteriaList) {
-						def clist
-						def isAny = criteriaList[0].'@any'?.toBoolean();
-						try {
-							def critters = parseCritters(criteriaList)
-							clist = new CritterList(critters, isAny)
-						}catch(Exception e) {
-							failureXml = getFailureXML(ErrorCode.UNEXPECTED_ERROR,e.getMessage())
-							log.error("Unable to set group criteria", e)	
-						}
-						if(!failureXml) {
-							def group = resourceHelper.createGroup(xmlGroup.'@name',
-                                                           xmlGroup.'@description',
-                                                           xmlGroup.'@location',
-                                                           prototype, roles,
-                                                           resources,
-                                                           false, clist)
-                           groups << group
-						}
-					} else {
-							def group = resourceHelper.createGroup(xmlGroup.'@name',
+                    def group = resourceHelper.createGroup(xmlGroup.'@name',
                                                            xmlGroup.'@description',
                                                            xmlGroup.'@location',
                                                            prototype, roles,
                                                            resources,
                                                            false)
-                           groups << group
-					}
-					
+                    groups << group
                 }
             }
 			
