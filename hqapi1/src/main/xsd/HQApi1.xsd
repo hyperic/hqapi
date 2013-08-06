@@ -297,7 +297,11 @@
             <!-- Operation ops -->
             <xs:enumeration value="addOperation"/>
             <xs:enumeration value="removeOperation"/>
-
+            <!-- Policy ops -->
+            <xs:enumeration value="viewPolicy"/>
+            <xs:enumeration value="createPolicy"/>
+            <xs:enumeration value="modifyPolicy"/>
+            <xs:enumeration value="removePolicy"/>
         </xs:restriction>
     </xs:simpleType>
 
