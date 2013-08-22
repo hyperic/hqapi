@@ -1,3 +1,6 @@
+Changes in HQApi 6.0.1
+ *) [HQ-4531] Added policy permissions to available operations for roles
+
 Changes in HQApi 5.1
 
  *) Modified autodiscovery approve to allow more options for approval
