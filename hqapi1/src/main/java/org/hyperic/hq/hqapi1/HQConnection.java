@@ -58,6 +58,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.auth.params.AuthPNames;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -376,6 +377,8 @@ public class HQConnection implements Connection {
         localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);        
 
         method.getParams().setParameter(ClientPNames.HANDLE_AUTHENTICATION, true);
+        
+        method.getParams().setParameter(AuthPNames.CREDENTIAL_CHARSET, "UTF-8");
 
         // Disable re-tries
         client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(0, true));
