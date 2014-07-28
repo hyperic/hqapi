@@ -9,6 +9,7 @@ http://hudson.hyperic.com/
 
 Version compatibility guide:
 
+HQApi 6.0.4 -> HQ 5.8.3
 HQApi 6.0.3 -> HQ 5.8.1
 HQApi 6.0.1 -> HQ 5.8
 HQApi 5.x -> HQ 4.6

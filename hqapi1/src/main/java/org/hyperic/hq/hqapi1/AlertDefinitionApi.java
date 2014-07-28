@@ -30,6 +30,7 @@ package org.hyperic.hq.hqapi1;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionsResponse;
 import org.hyperic.hq.hqapi1.types.Resource;
 import org.hyperic.hq.hqapi1.types.ResourcesRequest;
+import org.hyperic.hq.hqapi1.types.ResponseStatus;
 import org.hyperic.hq.hqapi1.types.StatusResponse;
 import org.hyperic.hq.hqapi1.types.AlertDefinition;
 import org.hyperic.hq.hqapi1.types.AlertDefinitionResponse;
@@ -78,6 +79,29 @@ public class AlertDefinitionApi extends BaseApi {
         return doGet("alertdefinition/get.hqu", params,
                      new XmlResponseHandler<AlertDefinitionResponse>(AlertDefinitionResponse.class));
     }
+    
+    /**
+     * Return AlertDefinitionsResponse by list 
+     * @param id Alert Id
+     * @return AlertDefinitionsResponse
+     * @throws IOException
+     */
+    public AlertDefinitionsResponse getAlertDefinitionAsList(Integer id)
+            throws IOException
+        {
+            Map<String, String[]> params = new HashMap<String, String[]>();
+
+            params.put("id", new String[] { id.toString() });
+
+            AlertDefinitionResponse alertDefinitionResponse = doGet("alertdefinition/get.hqu", params,
+                    new XmlResponseHandler<AlertDefinitionResponse>(AlertDefinitionResponse.class));
+            
+            alertDefinitionResponse.setStatus(ResponseStatus.SUCCESS);
+            AlertDefinitionsResponse alertDefinitionsResponse = new AlertDefinitionsResponse();
+            alertDefinitionsResponse.getAlertDefinition().add(alertDefinitionResponse.getAlertDefinition());
+            alertDefinitionsResponse.setStatus(ResponseStatus.SUCCESS);
+            return alertDefinitionsResponse;
+        }
     
     /**
      * Find all {@link org.hyperic.hq.hqapi1.types.AlertDefinition}s in the system.

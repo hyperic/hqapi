@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.hyperic.hq.hqapi</groupId>
         <artifactId>parent</artifactId>
-        <version>6.0.3</version>
+        <version>6.0.4</version>
     </parent>
 
     <artifactId>hqapi1</artifactId>
@@ -94,6 +94,41 @@
                 <artifactId>maven-clover2-plugin</artifactId>
             </plugin>
         </plugins>
+        <pluginManagement>
+        	<plugins>
+        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        		<plugin>
+        			<groupId>org.eclipse.m2e</groupId>
+        			<artifactId>lifecycle-mapping</artifactId>
+        			<version>1.0.0</version>
+        			<configuration>
+        				<lifecycleMappingMetadata>
+        					<pluginExecutions>
+        						<pluginExecution>
+        							<pluginExecutionFilter>
+        								<groupId>
+        									org.jvnet.ws.wadl
+        								</groupId>
+        								<artifactId>
+        									wadl-maven-plugin
+        								</artifactId>
+        								<versionRange>
+        									[1.1.20100120,)
+        								</versionRange>
+        								<goals>
+        									<goal>generate</goal>
+        								</goals>
+        							</pluginExecutionFilter>
+        							<action>
+        								<ignore></ignore>
+        							</action>
+        						</pluginExecution>
+        					</pluginExecutions>
+        				</lifecycleMappingMetadata>
+        			</configuration>
+        		</plugin>
+        	</plugins>
+        </pluginManagement>
     </build>
 
     <dependencies>

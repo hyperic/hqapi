@@ -86,6 +86,7 @@ public class AlertDefinitionCommand extends AbstractCommand {
     private static String OPT_ALERT_NAME = "alertName";
     private static String OPT_ALERT_PRIORITY = "alertPriority";
     private static String OPT_ID   = "id";
+    private static String OPT_ID_AS_LIST   = "idAsList";
     private static String OPT_BATCH_SIZE = "batchSize";
     private static String OPT_ESCLATION = "escalation";
     private static String OPT_COND_COUNT = "conditionCount";
@@ -159,6 +160,8 @@ public class AlertDefinitionCommand extends AbstractCommand {
 
         p.accepts(OPT_ID, "If specified, return the alert definition with the given id.").
                 withRequiredArg().ofType(Integer.class);
+        p.accepts(OPT_ID_AS_LIST, "If specified, return the alert definition with the given id as list.").
+        withRequiredArg().ofType(Integer.class);
         p.accepts(OPT_TYPEALERTS, "If specified, only parent resource type " +
                                   "alerts will be returned.");
         p.accepts(OPT_EXCLUDE_TYPEALERTS, "If specified, individual alerts " +
@@ -242,6 +245,13 @@ public class AlertDefinitionCommand extends AbstractCommand {
             Integer id = (Integer)getRequired(options, OPT_ID);
             AlertDefinitionResponse response =
                     definitionApi.getAlertDefinition(id);
+            checkSuccess(response);
+            XmlUtil.serialize(response, System.out, Boolean.TRUE);
+            return;
+        } else if (options.has(OPT_ID_AS_LIST)) {
+            Integer id = (Integer)getRequired(options, OPT_ID_AS_LIST);
+            AlertDefinitionsResponse response =
+                    definitionApi.getAlertDefinitionAsList(id);
             checkSuccess(response);
             XmlUtil.serialize(response, System.out, Boolean.TRUE);
             return;

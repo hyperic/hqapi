@@ -1,3 +1,7 @@
+Changes in HQApi 6.0.4
+ *) [HHQ-6006] alertdefinition list by ID comes back with AlertDefinitionResponse   object instead of AlertDefinitionsResponse 
+	Add new API getAlertDefinitionAsList, add new field: idAsList
+
 Changes in HQApi 6.0.2
  *) [HHQ-5972] I18N:Non-ASCII user name cannot connect via HQAPI
 
