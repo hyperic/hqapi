@@ -15,7 +15,7 @@
         <commons-logging.version>1.0.4</commons-logging.version>
         <httpclient.version>4.1.1</httpclient.version>
         <jopt-simple.version>3.2</jopt-simple.version>
-        <junit.version>4.4</junit.version>
+        <junit.version>4.13.1</junit.version>
         <localizer.version>1.0</localizer.version>
         <log4j.version>1.2.14</log4j.version>
         <wadl.version>1.1.20100120</wadl.version>
