@@ -14,7 +14,7 @@
     <name>Hyperic HQAPI</name>
 
     <properties>
-        <jasypt.version>1.6</jasypt.version>
+        <jasypt.version>1.9.2</jasypt.version>
     </properties>
 
     <build>
